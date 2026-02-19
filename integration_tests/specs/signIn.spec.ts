@@ -29,11 +29,11 @@ test.describe('SignIn', () => {
   })
 
   test('User name visible in header', async ({ page }) => {
-    await login(page, { name: 'A TestUser' })
+    await login(page)
 
     const homePage = await HomePage.verifyOnPage(page)
 
-    await expect(homePage.usersName).toHaveText('A. Testuser')
+    await expect(homePage.usersName).toHaveText('J. Smith')
   })
 
   test('Phase banner visible in header', async ({ page }) => {
@@ -41,7 +41,7 @@ test.describe('SignIn', () => {
 
     const homePage = await HomePage.verifyOnPage(page)
 
-    await expect(homePage.phaseBanner).toHaveText('dev')
+    await expect(homePage.phaseBanner).toHaveText('DEV')
   })
 
   test('User can sign out', async ({ page }) => {

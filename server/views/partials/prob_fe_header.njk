@@ -1,0 +1,5 @@
+{% if feComponents.header %}
+    {{ feComponents.header | safe }}
+{% else %}
+    {% include "./_fallback_prob_fe_header.njk" %}
+{% endif %}
