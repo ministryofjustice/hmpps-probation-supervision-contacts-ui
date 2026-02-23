@@ -1,3 +1,4 @@
+
 ---
 # Per environment values which override defaults in hmpps-probation-supervision-contacts-ui/values.yaml
 
@@ -14,6 +15,9 @@ generic-service:
     EXAMPLE_API_URL: 'https://template-kotlin-dev.hmpps.service.justice.gov.uk'
     ENVIRONMENT_NAME: DEV
     AUDIT_ENABLED: "false"
+    PROBATION_FRONTEND_COMPONENTS_API_URL: 'https://probation-frontend-components-dev.hmpps.service.justice.gov.uk'
+    PROBATION_FRONTEND_COMPONENTS_CONNECT_SRC: 'https://probation-frontend-components-dev.hmpps.service.justice.gov.uk'
+    PROBATION_FRONTEND_COMPONENTS_FONT_SRC: 'https://probation-frontend-components-dev.hmpps.service.justice.gov.uk'
 
 generic-prometheus-alerts:
   alertSeverity: manage-people-on-probation-alerts-nonprod
