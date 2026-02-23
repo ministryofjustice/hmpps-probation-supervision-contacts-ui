@@ -81,9 +81,30 @@ export default {
       },
       agent: new AgentConfig(Number(get('EXAMPLE_API_TIMEOUT_RESPONSE', 5000))),
     },
+    probationFrontendComponentsApi: {
+      url: get('PROBATION_FRONTEND_COMPONENTS_API_URL', 'http://localhost:8100', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('PROBATION_FRONTEND_COMPONENTS_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('PROBATION_FRONTEND_COMPONENTS_API_TIMEOUT_RESPONSE', 10000)),
+      },
+      agent: new AgentConfig(Number(get('PROBATION_FRONTEND_COMPONENTS_API_TIMEOUT_RESPONSE', 10000))),
+    },
   },
   sqs: {
     audit: auditConfig(),
+  },
+  probationFrontendComponents: {
+    connectSrc: get(
+      'PROBATION_FRONTEND_COMPONENTS_CONNECT_SRC',
+      'https://probation-frontend-components-dev.hmpps.service.justice.gov.uk',
+      requiredInProduction,
+    ),
+    fontSrc: get(
+      'PROBATION_FRONTEND_COMPONENTS_FONT_SRC',
+      'https://probation-frontend-components-dev.hmpps.service.justice.gov.uk',
+      requiredInProduction,
+    ),
   },
   ingressUrl: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   environmentName: get('ENVIRONMENT_NAME', ''),
