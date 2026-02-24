@@ -16,6 +16,8 @@ import setUpWebRequestParsing from './middleware/setupRequestParsing'
 import setUpWebSecurity from './middleware/setUpWebSecurity'
 import setUpWebSession from './middleware/setUpWebSession'
 import getFrontendComponents from './middleware/probationFEComponentsMiddleware'
+import baseController from './baseController'
+import { getUserAlertsCount } from './middleware/getUserAlertsCount'
 
 import routes from './routes'
 import type { Services } from './services'
@@ -33,12 +35,14 @@ export default function createApp(services: Services): express.Application {
   app.use(setUpWebSession())
   app.use(setUpWebRequestParsing())
   app.use(setUpStaticResources())
+  app.use(baseController())
   nunjucksSetup(app)
   app.use(setUpAuthentication())
   app.use(authorisationMiddleware())
   app.use(setUpCsrf())
   app.use(setUpCurrentUser())
   app.use(getFrontendComponents(services.probationComponentsService))
+  app.use(getUserAlertsCount(services.hmppsAuthClient))
 
   app.use(routes(services))
 
