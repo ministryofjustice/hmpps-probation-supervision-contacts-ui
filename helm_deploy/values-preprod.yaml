@@ -18,6 +18,8 @@ generic-service:
     PROBATION_FRONTEND_COMPONENTS_CONNECT_SRC: 'https://probation-frontend-components-preprod.hmpps.service.justice.gov.uk'
     PROBATION_FRONTEND_COMPONENTS_FONT_SRC: 'https://probation-frontend-components-preprod.hmpps.service.justice.gov.uk'
     MAS_API_URL: 'https://manage-supervision-and-delius-preprod.hmpps.service.justice.gov.uk'
+    ARNS_API_URL: 'https://assess-risks-and-needs-preprod.hmpps.service.justice.gov.uk'
+    TIER_API_URL: 'https://hmpps-tier-preprod.hmpps.service.justice.gov.uk'
 
 generic-prometheus-alerts:
   alertSeverity: manage-people-on-probation-alerts-nonprod

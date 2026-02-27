@@ -2,12 +2,15 @@ import { Router } from 'express'
 
 import type { Services } from '../services'
 import { Page } from '../services/auditService'
+import caseRoutes from './caseRoutes'
 
-export default function routes({ auditService }: Services): Router {
+export default function routes(services: Services): Router {
   const router = Router()
 
+  router.use(caseRoutes(services))
+
   router.get('/', async (req, res, next) => {
-    await auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
+    await services.auditService.logPageView(Page.EXAMPLE_PAGE, { who: res.locals.user.username, correlationId: req.id })
 
     const currentTime = new Date().toLocaleTimeString('en-GB', {
       hour12: false,

@@ -1,3 +1,17 @@
 .govuk-main-wrapper {
   min-height: 600px;
 }
+
+.inline-list-from-tablet {
+  > li {
+    @include govuk-media-query($from: tablet) {
+      display: inline;
+    }
+  }
+}
+
+.hide-mobile {
+  @include govuk-media-query($until: tablet) {
+    display: none;
+  }
+}
