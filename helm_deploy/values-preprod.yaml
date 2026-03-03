@@ -20,6 +20,7 @@ generic-service:
     MAS_API_URL: 'https://manage-supervision-and-delius-preprod.hmpps.service.justice.gov.uk'
     ARNS_API_URL: 'https://assess-risks-and-needs-preprod.hmpps.service.justice.gov.uk'
     TIER_API_URL: 'https://hmpps-tier-preprod.hmpps.service.justice.gov.uk'
+    TIER_LINK: 'https://tier-preprod.hmpps.service.justice.gov.uk/case'
 
 generic-prometheus-alerts:
   alertSeverity: manage-people-on-probation-alerts-nonprod
