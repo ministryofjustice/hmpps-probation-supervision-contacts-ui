@@ -99,6 +99,24 @@ export default {
       },
       agent: new AgentConfig(Number(get('MAS_API_TIMEOUT_RESPONSE', 10000))),
     },
+    arnsApi: {
+      url: get('ARNS_API_URL', 'http://localhost:8100', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('ARNS_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('ARNS_API_TIMEOUT_DEADLINE', 10000)),
+      },
+      agent: new AgentConfig(Number(get('ARNS_API_TIMEOUT_RESPONSE', 10000))),
+    },
+    tierApi: {
+      url: get('TIER_API_URL', 'http://localhost:8100', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('TIER_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('TIER_API_TIMEOUT_DEADLINE', 10000)),
+      },
+      agent: new AgentConfig(Number(get('TIER_API_TIMEOUT_RESPONSE', 10000))),
+    },
   },
   sqs: {
     audit: auditConfig(),
@@ -117,4 +135,7 @@ export default {
   },
   ingressUrl: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   environmentName: get('ENVIRONMENT_NAME', ''),
+  tier: {
+    link: get('TIER_LINK', 'https://tier-dummy-url', requiredInProduction),
+  },
 }

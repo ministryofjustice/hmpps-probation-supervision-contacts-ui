@@ -50,6 +50,7 @@
     "helmet": "^8.1.0",
     "http-errors": "^2.0.1",
     "jwt-decode": "^4.0.0",
+    "luxon": "3.7.2",
     "nocache": "^4.0.0",
     "nunjucks": "^3.2.4",
     "passport": "^0.7.0",
@@ -72,6 +73,7 @@
     "@types/http-errors": "^2.0.5",
     "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/luxon": "3.7.1",
     "@types/node": "^24.10.10",
     "@types/nunjucks": "^3.2.6",
     "@types/passport": "^1.0.17",
@@ -91,6 +93,7 @@
     "jsonwebtoken": "^9.0.3",
     "lint-staged": "^16.2.7",
     "nock": "^14.0.10",
+    "node-mocks-http": "1.17.2",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.6",
     "typescript": "^5.9.3"
