@@ -42,7 +42,7 @@ export default function createApp(services: Services): express.Application {
   app.use(setUpCsrf())
   app.use(setUpCurrentUser())
   app.use(getFrontendComponents(services.probationComponentsService))
-  app.use(getUserAlertsCount(services.hmppsAuthClient))
+  app.use(getUserAlertsCount(services.masApiClient))
 
   app.use(routes(services))
 

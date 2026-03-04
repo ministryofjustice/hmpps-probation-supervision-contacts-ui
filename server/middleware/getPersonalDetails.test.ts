@@ -1,5 +1,4 @@
 import httpMocks from 'node-mocks-http'
-import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import { getPersonalDetails } from './getPersonalDetails'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient, { TierCalculation } from '../data/tierApiClient'
@@ -18,10 +17,6 @@ import {
 } from '../data/model/personalDetails'
 import { Contact } from '../data/model/professionalContact'
 import { RiskSummary } from '../data/model/risk'
-
-jest.mock('../data/masApiClient')
-jest.mock('../data/tierApiClient')
-jest.mock('../data/arnsApiClient')
 
 const mockRisks = {
   overallRisk: 'VERY_HIGH',
@@ -49,19 +44,13 @@ const mockTierCalculation = {
   calculationDate: '2023-12-07T12:05:11.524616',
 } as unknown as TierCalculation
 
-const tierCalculationSpy = jest
-  .spyOn(TierApiClient.prototype, 'getCalculationDetails')
-  .mockImplementation(() => Promise.resolve(mockTierCalculation))
-const risksSpy = jest.spyOn(ArnsApiClient.prototype, 'getRisks').mockImplementation(() => Promise.resolve(mockRisks))
-const predictorsSpy = jest
-  .spyOn(ArnsApiClient.prototype, 'getPredictorsAll')
-  .mockImplementation(() => Promise.resolve(mockPredictors))
-let getPersonalDetailsSpy: jest.SpyInstance
+let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getPersonalDetails'>>
+let mockArnsApiClient: jest.Mocked<Pick<ArnsApiClient, 'getRisks' | 'getPredictorsAll'>>
+let mockTierApiClient: jest.Mocked<Pick<TierApiClient, 'getCalculationDetails'>>
+
 let req: httpMocks.MockRequest<any>
 let res: httpMocks.MockResponse<any>
 let nextSpy: jest.Mock
-
-let hmppsAuthClient: jest.Mocked<AuthenticationClient>
 
 const overview = (crn = 'X000001'): PersonalDetails => ({
   name: {
@@ -122,12 +111,15 @@ describe('/middleware/getPersonalDetails', () => {
   beforeEach(() => {
     jest.resetModules()
     jest.clearAllMocks()
-    getPersonalDetailsSpy = jest.spyOn(MasApiClient.prototype, 'getPersonalDetails')
     nextSpy = jest.fn()
     process.env = { ...ORIGINAL_ENV }
-    hmppsAuthClient = {
-      getToken: jest.fn().mockResolvedValue('test-system-token'),
-    } as unknown as jest.Mocked<AuthenticationClient>
+
+    mockMasApiClient = { getPersonalDetails: jest.fn() }
+    mockArnsApiClient = {
+      getRisks: jest.fn().mockResolvedValue(mockRisks),
+      getPredictorsAll: jest.fn().mockResolvedValue(mockPredictors),
+    }
+    mockTierApiClient = { getCalculationDetails: jest.fn().mockResolvedValue(mockTierCalculation) }
   })
 
   afterEach(() => {
@@ -136,10 +128,14 @@ describe('/middleware/getPersonalDetails', () => {
 
   it('should request data from the api if personal details for crn does not exist in the session and env is not development', async () => {
     process.env.NODE_ENV = 'production'
-    getPersonalDetailsSpy.mockResolvedValueOnce(overview('X000002'))
+    mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(overview('X000002'))
     req = getReq()
     res = getRes({ enableTierLink: true })
-    await getPersonalDetails(hmppsAuthClient)(req, res, nextSpy)
+    await getPersonalDetails(
+      mockMasApiClient as unknown as MasApiClient,
+      mockArnsApiClient as unknown as ArnsApiClient,
+      mockTierApiClient as unknown as TierApiClient,
+    )(req, res, nextSpy)
     const expected = {
       personalDetails: {
         X000001: mockSession(),
@@ -147,10 +143,10 @@ describe('/middleware/getPersonalDetails', () => {
       },
     }
     expect((req.session as any).data).toEqual(expected)
-    expect(getPersonalDetailsSpy).toHaveBeenCalledWith(req.params.crn)
-    expect(tierCalculationSpy).toHaveBeenCalledWith(req.params.crn)
-    expect(risksSpy).toHaveBeenCalledWith(req.params.crn)
-    expect(predictorsSpy).toHaveBeenCalledWith(req.params.crn)
+    expect(mockMasApiClient.getPersonalDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
+    expect(mockTierApiClient.getCalculationDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
+    expect(mockArnsApiClient.getRisks).toHaveBeenCalledWith(req.params.crn, 'user-1')
+    expect(mockArnsApiClient.getPredictorsAll).toHaveBeenCalledWith(req.params.crn, 'user-1')
     expect(res.locals.case).toEqual(overview('X000002'))
     expect(res.locals.risksWidget).toEqual(toRoshWidget(mockRisks))
     expect(res.locals.tierCalculation).toEqual(mockTierCalculation)
@@ -164,7 +160,7 @@ describe('/middleware/getPersonalDetails', () => {
 
   it('should request data from the api if personal details for crn exist in the session and the env is development', async () => {
     process.env.NODE_ENV = 'development'
-    getPersonalDetailsSpy.mockResolvedValueOnce(overview('X000002'))
+    mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(overview('X000002'))
     req = httpMocks.createRequest({
       params: {
         crn: 'X000002',
@@ -179,11 +175,15 @@ describe('/middleware/getPersonalDetails', () => {
       },
     })
     res = getRes({ enableTierLink: true })
-    await getPersonalDetails(hmppsAuthClient)(req, res, nextSpy)
-    expect(getPersonalDetailsSpy).toHaveBeenCalledWith(req.params.crn)
-    expect(tierCalculationSpy).toHaveBeenCalledWith(req.params.crn)
-    expect(risksSpy).toHaveBeenCalledWith(req.params.crn)
-    expect(predictorsSpy).toHaveBeenCalledWith(req.params.crn)
+    await getPersonalDetails(
+      mockMasApiClient as unknown as MasApiClient,
+      mockArnsApiClient as unknown as ArnsApiClient,
+      mockTierApiClient as unknown as TierApiClient,
+    )(req, res, nextSpy)
+    expect(mockMasApiClient.getPersonalDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
+    expect(mockTierApiClient.getCalculationDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
+    expect(mockArnsApiClient.getRisks).toHaveBeenCalledWith(req.params.crn, 'user-1')
+    expect(mockArnsApiClient.getPredictorsAll).toHaveBeenCalledWith(req.params.crn, 'user-1')
     expect(res.locals.case).toEqual(overview('X000002'))
     expect(res.locals.risksWidget).toEqual(toRoshWidget(mockRisks))
     expect(res.locals.tierCalculation).toEqual(mockTierCalculation)
@@ -211,11 +211,15 @@ describe('/middleware/getPersonalDetails', () => {
       },
     })
     res = getRes({ enableTierLink: true })
-    await getPersonalDetails(hmppsAuthClient)(req, res, nextSpy)
-    expect(getPersonalDetailsSpy).not.toHaveBeenCalled()
-    expect(risksSpy).not.toHaveBeenCalled()
-    expect(tierCalculationSpy).not.toHaveBeenCalled()
-    expect(predictorsSpy).not.toHaveBeenCalled()
+    await getPersonalDetails(
+      mockMasApiClient as unknown as MasApiClient,
+      mockArnsApiClient as unknown as ArnsApiClient,
+      mockTierApiClient as unknown as TierApiClient,
+    )(req, res, nextSpy)
+    expect(mockMasApiClient.getPersonalDetails).not.toHaveBeenCalled()
+    expect(mockArnsApiClient.getRisks).not.toHaveBeenCalled()
+    expect(mockTierApiClient.getCalculationDetails).not.toHaveBeenCalled()
+    expect(mockArnsApiClient.getPredictorsAll).not.toHaveBeenCalled()
     expect(res.locals.case).toEqual(overview('X000002'))
     expect(res.locals.risksWidget).toEqual(toRoshWidget(mockRisks))
     expect(res.locals.tierCalculation).toEqual(mockTierCalculation)
@@ -232,21 +236,29 @@ describe('/middleware/getPersonalDetails', () => {
     req = getReq()
     res = getRes()
     const dateOfDeath = '2025-11-15'
-    getPersonalDetailsSpy.mockImplementationOnce(() =>
+    mockMasApiClient.getPersonalDetails.mockImplementationOnce(() =>
       Promise.resolve({
         ...overview('X000002'),
         dateOfDeath,
       } as PersonalDetails),
     )
-    await getPersonalDetails(hmppsAuthClient)(req, res, nextSpy)
+    await getPersonalDetails(
+      mockMasApiClient as unknown as MasApiClient,
+      mockArnsApiClient as unknown as ArnsApiClient,
+      mockTierApiClient as unknown as TierApiClient,
+    )(req, res, nextSpy)
     expect(res.locals.dateOfDeath).toEqual(dateOfDeath)
   })
 
   it('should not set res.locals.headerTierLink if feature flag is disabled', async () => {
-    getPersonalDetailsSpy.mockImplementationOnce(() => Promise.resolve(overview('X000002')))
+    mockMasApiClient.getPersonalDetails.mockImplementationOnce(() => Promise.resolve(overview('X000002')))
     req = getReq()
     res = getRes({ enableTierLink: false })
-    await getPersonalDetails(hmppsAuthClient)(req, res, nextSpy)
+    await getPersonalDetails(
+      mockMasApiClient as unknown as MasApiClient,
+      mockArnsApiClient as unknown as ArnsApiClient,
+      mockTierApiClient as unknown as TierApiClient,
+    )(req, res, nextSpy)
     expect(res.locals.headerTierLink).toBeUndefined()
   })
 })
