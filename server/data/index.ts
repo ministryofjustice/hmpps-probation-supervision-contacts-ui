@@ -17,6 +17,9 @@ import HmppsAuditClient from './hmppsAuditClient'
 import logger from '../../logger'
 import ExampleApiClient from './exampleApiClient'
 import ProbationFrontendComponentsApiClient from './probationFrontendComponentsClient'
+import MasApiClient from './masApiClient'
+import ArnsApiClient from './arnsApiClient'
+import TierApiClient from './tierApiClient'
 
 export const dataAccess = () => {
   const hmppsAuthClient = new AuthenticationClient(
@@ -31,9 +34,10 @@ export const dataAccess = () => {
     exampleApiClient: new ExampleApiClient(hmppsAuthClient),
     hmppsAuditClient: new HmppsAuditClient(config.sqs.audit),
     probationFrontendComponentsApiClient: new ProbationFrontendComponentsApiClient(),
+    masApiClient: new MasApiClient(hmppsAuthClient),
+    arnsApiClient: new ArnsApiClient(hmppsAuthClient),
+    tierApiClient: new TierApiClient(hmppsAuthClient),
   }
 }
-
-export type DataAccess = ReturnType<typeof dataAccess>
 
 export { AuthenticationClient, HmppsAuditClient, ExampleApiClient, ProbationFrontendComponentsApiClient }

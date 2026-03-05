@@ -4,8 +4,16 @@ import ExampleService from './exampleService'
 import ProbationComponentsService from './ProbationComponentsService'
 
 export const services = () => {
-  const { applicationInfo, hmppsAuthClient, hmppsAuditClient, exampleApiClient, probationFrontendComponentsApiClient } =
-    dataAccess()
+  const {
+    applicationInfo,
+    hmppsAuthClient,
+    hmppsAuditClient,
+    exampleApiClient,
+    probationFrontendComponentsApiClient,
+    masApiClient,
+    arnsApiClient,
+    tierApiClient,
+  } = dataAccess()
 
   return {
     applicationInfo,
@@ -13,6 +21,9 @@ export const services = () => {
     auditService: new AuditService(hmppsAuditClient),
     exampleService: new ExampleService(exampleApiClient),
     probationComponentsService: new ProbationComponentsService(probationFrontendComponentsApiClient),
+    masApiClient,
+    arnsApiClient,
+    tierApiClient,
   }
 }
 

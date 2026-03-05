@@ -1,34 +1,33 @@
 import type { RequestHandler } from 'express'
-import { AuthenticationClient } from '../data'
 import MasApiClient from '../data/masApiClient'
 import ArnsApiClient from '../data/arnsApiClient'
 import TierApiClient, { TierCalculation } from '../data/tierApiClient'
 import { tierLink } from '../utils/tierLink'
 import { toPredictors } from '../utils/toPredictors'
 import { toRoshWidget } from '../utils/toRoshWidget'
-import logger from '../../logger'
 import { PersonalDetails } from '../data/model/personalDetails'
 import { RiskScoresDto, RiskSummary } from '../data/model/risk'
 import { ErrorSummary } from '../data/model/common'
 
-export const getPersonalDetails = (hmppsAuthClient: AuthenticationClient): RequestHandler => {
+export const getPersonalDetails = (
+  masApiClient: MasApiClient,
+  arnsApiClient: ArnsApiClient,
+  tierApiClient: TierApiClient,
+): RequestHandler => {
   return async (req, res, next) => {
     const crn = req.params.crn as string
+    const { username } = res.locals.user
     let overview: PersonalDetails
-    let risks: RiskSummary
-    let tierCalculation: TierCalculation
-    let predictors: ErrorSummary | RiskScoresDto[]
+    let risks: RiskSummary | ErrorSummary | null
+    let tierCalculation: TierCalculation | ErrorSummary | null
+    let predictors: ErrorSummary | RiskScoresDto[] | null
     const sessionData = (req.session as any).data
     if (!sessionData?.personalDetails?.[crn] || process.env.NODE_ENV === 'development') {
-      const token = await hmppsAuthClient.getToken(res.locals.user.username)
-      const masClient = new MasApiClient(token)
-      const arnsClient = new ArnsApiClient(token)
-      const tierClient = new TierApiClient(token)
       ;[overview, risks, tierCalculation, predictors] = await Promise.all([
-        masClient.getPersonalDetails(crn),
-        arnsClient.getRisks(crn),
-        tierClient.getCalculationDetails(crn),
-        arnsClient.getPredictorsAll(crn),
+        masApiClient.getPersonalDetails(crn, username),
+        arnsApiClient.getRisks(crn, username),
+        tierApiClient.getCalculationDetails(crn, username),
+        arnsApiClient.getPredictorsAll(crn, username),
       ])
       ;(req.session as any).data = {
         ...(sessionData ?? {}),
