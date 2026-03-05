@@ -11,22 +11,15 @@ export interface Scores {
   RSR: Score
   OSPC: Score
   OSPI: Score
-  OGRS: ScoreTwoYears
-  OVP: ScoreTwoYears
-  OGP: ScoreTwoYears
+  OGRS: Score
+  OVP: Score
+  OGP: Score
 }
 
 export interface Score {
   type: string
   level: string
   score: number
-}
-
-export interface ScoreTwoYears {
-  type: string
-  level: string
-  oneYear: number
-  twoYears: number
 }
 
 export interface RoshRiskWidgetDto {
@@ -37,25 +30,18 @@ export interface RoshRiskWidgetDto {
 
 export interface RiskScoresDto {
   completedDate?: string
-  assessmentStatus?: string
+  status?: string
+  assessmentType?: string
+  outputVersion?: string
+  output?: RiskScoreOutput
+}
+
+export interface RiskScoreOutput {
   groupReconvictionScore?: OgrScoreDto
   violencePredictorScore?: OvpScoreDto
   generalPredictorScore?: OgpScoreDto
   riskOfSeriousRecidivismScore?: RsrScoreDto
   sexualPredictorScore?: OspScoreDto
-}
-
-export interface Mappa {
-  level?: number
-  category?: number
-  categoryDescription?: string
-  startDate?: string
-  reviewDate?: string
-}
-
-export interface Opd {
-  eligible?: boolean
-  date?: string
 }
 
 export interface OgrScoreDto {
@@ -96,7 +82,7 @@ export interface OgpScoreDto {
 export interface RsrScoreDto {
   percentageScore?: number
   staticOrDynamic?: StaticOrDynamicEnum
-  source: SourceEnum
+  source?: SourceEnum
   algorithmVersion?: string
   scoreLevel?: ScoreLevelEnum
 }
@@ -105,6 +91,19 @@ export type RiskEnum = 'LOW' | 'MEDIUM' | 'HIGH' | 'VERY_HIGH' | 'NOT_APPLICABLE
 export type ScoreLevelEnum = 'LOW' | 'MEDIUM' | 'HIGH' | 'VERY_HIGH' | 'NOT_APPLICABLE'
 export type StaticOrDynamicEnum = 'STATIC' | 'DYNAMIC'
 export type SourceEnum = 'OASYS'
+
+export interface Mappa {
+  level?: number
+  category?: number
+  categoryDescription?: string
+  startDate?: string
+  reviewDate?: string
+}
+
+export interface Opd {
+  eligible?: boolean
+  date?: string
+}
 
 export interface PersonRiskFlags {
   personSummary: PersonSummary

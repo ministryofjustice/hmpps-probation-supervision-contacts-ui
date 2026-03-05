@@ -47,7 +47,8 @@ export default class ArnsApiClient extends RestClient {
       'OASys is experiencing technical difficulties. It has not been possible to provide the predictor score information held in OASys'
     return this.get<RiskScoresDto[] | ErrorSummary | null>(
       {
-        path: `/risks/crn/${crn}/predictors/all`,
+        // path: `/risks/crn/${crn}/predictors/all`,
+        path: `/risks/predictors/all/crn/${crn}`,
         errorHandler: (_path, _method, error) => {
           if (error.responseStatus === 404) return null
           if (error.responseStatus === 500 || error.responseStatus === 401) return { errors: [{ text: errorMessage }] }
