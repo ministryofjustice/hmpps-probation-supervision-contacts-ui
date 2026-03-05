@@ -16,6 +16,7 @@ export default function nunjucksSetup(app: express.Express): void {
   app.locals.applicationName = 'HMPPS Probation Supervision Contacts Ui'
   app.locals.environmentName = config.environmentName
   app.locals.environmentNameColour = config.environmentName === 'PRE-PRODUCTION' ? 'govuk-tag--green' : ''
+  app.locals.manageProbationUrl = config.manageProbationUrl
   let assetManifest: Record<string, string> = {}
 
   try {

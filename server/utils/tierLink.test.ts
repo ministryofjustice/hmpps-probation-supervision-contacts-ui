@@ -3,7 +3,7 @@ import { tierLink } from './tierLink'
 describe('utils/tierLink', () => {
   it.each([
     ['Returns empty', null, ''],
-    ['Returns link', 'X000001', 'https://tier-dummy-url/X000001'],
+    ['Returns link', 'X000001', 'https://tier-dev.hmpps.service.justice.gov.uk/case/X000001'],
   ])('%s tierLink(%s, %s)', (_: string, a: string, expected: string) => {
     expect(tierLink(a)).toEqual(expected)
   })

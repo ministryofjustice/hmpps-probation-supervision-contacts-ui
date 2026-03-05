@@ -136,6 +136,11 @@ export default {
   ingressUrl: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   environmentName: get('ENVIRONMENT_NAME', ''),
   tier: {
-    link: get('TIER_LINK', 'https://tier-dummy-url', requiredInProduction),
+    link: get('TIER_LINK', 'https://tier-dev.hmpps.service.justice.gov.uk/case', requiredInProduction),
   },
+  manageProbationUrl: get(
+    'MANAGE_PEOPLE_ON_PROBATION_URL',
+    'https://manage-people-on-probation-dev.hmpps.service.justice.gov.uk',
+    requiredInProduction,
+  ),
 }
