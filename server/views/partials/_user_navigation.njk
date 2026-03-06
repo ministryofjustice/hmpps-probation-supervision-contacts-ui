@@ -17,16 +17,16 @@
         <nav class="moj-primary-navigation" aria-label="Primary navigation">
           <ul class="moj-primary-navigation__list">
             <li class="moj-primary-navigation__item">
-              <a class="moj-primary-navigation__link" href="/">Home</a>
+              <a class="moj-primary-navigation__link" href="{{ manageProbationUrl }}/">Home</a>
             </li>
             <li class="moj-primary-navigation__item">
-              <a class="moj-primary-navigation__link" aria-current="cases" href="/case">Cases</a>
+              <a class="moj-primary-navigation__link" aria-current="cases" href="{{ manageProbationUrl }}/case">Cases</a>
             </li>
             <li class="moj-primary-navigation__item">
-              <a class="moj-primary-navigation__link" href="/search">Search</a>
+              <a class="moj-primary-navigation__link" href="{{ manageProbationUrl }}/search">Search</a>
             </li>
             <li class="moj-primary-navigation__item">
-              <a class="moj-primary-navigation__link" href="/alerts"> Alerts {{ mojNotificationBadge({text: alertsCount}) }}</a>
+              <a class="moj-primary-navigation__link" href="{{ manageProbationUrl }}/alerts"> Alerts {{ mojNotificationBadge({text: alertsCount}) }}</a>
             </li>
           </ul>
         </nav>

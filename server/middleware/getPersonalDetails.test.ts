@@ -94,13 +94,12 @@ const getReq = () =>
     },
   })
 
-const getRes = (flags = {}) =>
+const getRes = () =>
   ({
     locals: {
       user: {
         username: 'user-1',
       },
-      flags,
     },
     redirect: jest.fn().mockReturnThis(),
   }) as unknown as any
@@ -130,7 +129,7 @@ describe('/middleware/getPersonalDetails', () => {
     process.env.NODE_ENV = 'production'
     mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(overview('X000002'))
     req = getReq()
-    res = getRes({ enableTierLink: true })
+    res = getRes()
     await getPersonalDetails(
       mockMasApiClient as unknown as MasApiClient,
       mockArnsApiClient as unknown as ArnsApiClient,
@@ -154,7 +153,7 @@ describe('/middleware/getPersonalDetails', () => {
     expect(res.locals.headerPersonName).toEqual({ forename: 'Caroline', surname: 'Wolff' })
     expect(res.locals.headerCRN).toEqual(req.params.crn)
     expect(res.locals.headerDob).toEqual('1979-08-18')
-    expect(res.locals.headerTierLink).toEqual('https://tier-dummy-url/X000002')
+    expect(res.locals.headerTierLink).toEqual('https://tier-dev.hmpps.service.justice.gov.uk/case/X000002')
     expect(nextSpy).toHaveBeenCalled()
   })
 
@@ -174,7 +173,7 @@ describe('/middleware/getPersonalDetails', () => {
         },
       },
     })
-    res = getRes({ enableTierLink: true })
+    res = getRes()
     await getPersonalDetails(
       mockMasApiClient as unknown as MasApiClient,
       mockArnsApiClient as unknown as ArnsApiClient,
@@ -191,7 +190,7 @@ describe('/middleware/getPersonalDetails', () => {
     expect(res.locals.headerPersonName).toEqual({ forename: 'Caroline', surname: 'Wolff' })
     expect(res.locals.headerCRN).toEqual(req.params.crn)
     expect(res.locals.headerDob).toEqual('1979-08-18')
-    expect(res.locals.headerTierLink).toEqual('https://tier-dummy-url/X000002')
+    expect(res.locals.headerTierLink).toEqual('https://tier-dev.hmpps.service.justice.gov.uk/case/X000002')
     expect(nextSpy).toHaveBeenCalled()
   })
 
@@ -210,7 +209,7 @@ describe('/middleware/getPersonalDetails', () => {
         },
       },
     })
-    res = getRes({ enableTierLink: true })
+    res = getRes()
     await getPersonalDetails(
       mockMasApiClient as unknown as MasApiClient,
       mockArnsApiClient as unknown as ArnsApiClient,
@@ -227,7 +226,7 @@ describe('/middleware/getPersonalDetails', () => {
     expect(res.locals.headerPersonName).toEqual({ forename: 'Caroline', surname: 'Wolff' })
     expect(res.locals.headerCRN).toEqual(req.params.crn)
     expect(res.locals.headerDob).toEqual('1979-08-18')
-    expect(res.locals.headerTierLink).toEqual('https://tier-dummy-url/X000002')
+    expect(res.locals.headerTierLink).toEqual('https://tier-dev.hmpps.service.justice.gov.uk/case/X000002')
     expect(res.locals.dateOfDeath).toBeUndefined()
     expect(nextSpy).toHaveBeenCalled()
   })
@@ -248,17 +247,5 @@ describe('/middleware/getPersonalDetails', () => {
       mockTierApiClient as unknown as TierApiClient,
     )(req, res, nextSpy)
     expect(res.locals.dateOfDeath).toEqual(dateOfDeath)
-  })
-
-  it('should not set res.locals.headerTierLink if feature flag is disabled', async () => {
-    mockMasApiClient.getPersonalDetails.mockImplementationOnce(() => Promise.resolve(overview('X000002')))
-    req = getReq()
-    res = getRes({ enableTierLink: false })
-    await getPersonalDetails(
-      mockMasApiClient as unknown as MasApiClient,
-      mockArnsApiClient as unknown as ArnsApiClient,
-      mockTierApiClient as unknown as TierApiClient,
-    )(req, res, nextSpy)
-    expect(res.locals.headerTierLink).toBeUndefined()
   })
 })
