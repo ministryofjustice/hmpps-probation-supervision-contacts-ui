@@ -24,8 +24,8 @@ generic-service:
     TIER_LINK: 'https://tier-dev.hmpps.service.justice.gov.uk/case'
     MANAGE_PEOPLE_ON_PROBATION_URL: 'https://manage-people-on-probation-dev.hmpps.service.justice.gov.uk'
 
-generic-prometheus-alerts:
-  alertSeverity: manage-people-on-probation-alerts-nonprod
-
   scheduledDowntime:
     enabled: true
+
+generic-prometheus-alerts:
+  alertSeverity: manage-people-on-probation-alerts-nonprod
