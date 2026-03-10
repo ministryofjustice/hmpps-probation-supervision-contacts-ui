@@ -1,4 +1,10 @@
-import { isNotEmpty, isValidDate, isValidDateFormat, timeIsValid24HourFormat, validateWithSpec } from './validationUtils'
+import {
+  isNotEmpty,
+  isValidDate,
+  isValidDateFormat,
+  timeIsValid24HourFormat,
+  validateWithSpec,
+} from './validationUtils'
 
 describe('isNotEmpty', () => {
   it('returns true when value is present', () => {
