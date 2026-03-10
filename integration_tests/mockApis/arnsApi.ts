@@ -14,4 +14,42 @@ export default {
         jsonBody: { status: httpStatus === 200 ? 'UP' : 'DOWN' },
       },
     }),
+
+  stubGetRisks: (crn = 'A000001'): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/arns-api/risks/crn/[^/]+',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          riskToSelf: {},
+          otherRisks: {},
+          summary: {
+            whoIsAtRisk: null,
+            natureOfRisk: null,
+            riskImminence: null,
+            riskIncreaseFactors: null,
+            riskMitigationFactors: null,
+            riskInCommunity: {},
+            riskInCustody: {},
+          },
+        },
+      },
+    }),
+
+  stubGetPredictorsAll: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/arns-api/risks/crn/.+/predictors/all',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: [],
+      },
+    }),
 }
