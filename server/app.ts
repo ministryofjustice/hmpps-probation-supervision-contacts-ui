@@ -19,8 +19,8 @@ import getFrontendComponents from './middleware/probationFEComponentsMiddleware'
 import baseController from './baseController'
 import { getUserAlertsCount } from './middleware/getUserAlertsCount'
 
-import routes from './routes'
 import addContactRoutes from './routes/addContactRoutes'
+import caseRoutes from './routes/caseRoutes'
 import type { Services } from './services'
 
 export default function createApp(services: Services): express.Application {
@@ -47,10 +47,10 @@ export default function createApp(services: Services): express.Application {
   // Routes that use multer for multipart upload must be registered before csrf executes
   const router = Router()
   addContactRoutes(router, services)
+  router.use(caseRoutes(services))
   app.use(router)
 
   app.use(setUpCsrf())
-  app.use(routes(router, services))
 
   app.use((req, res, next) => next(createError(404, 'Not found')))
   app.use(errorHandler(process.env.NODE_ENV === 'production'))
