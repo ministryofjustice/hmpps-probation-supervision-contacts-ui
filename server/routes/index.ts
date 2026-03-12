@@ -4,9 +4,8 @@ import type { Services } from '../services'
 import { Page } from '../services/auditService'
 import caseRoutes from './caseRoutes'
 
-export default function routes(services: Services): Router {
-  const router = Router()
-
+/* TODO - need to delete once feature added */
+export default function routes(router: Router, services: Services): Router {
   router.use(caseRoutes(services))
 
   router.get('/', async (req, res, next) => {

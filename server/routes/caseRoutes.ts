@@ -5,10 +5,9 @@ import { getPersonalDetails } from '../middleware/getPersonalDetails'
 export default function caseRoutes({ masApiClient, arnsApiClient, tierApiClient }: Services): Router {
   const router = Router()
 
-  router.get('/case/:crn', getPersonalDetails(masApiClient, arnsApiClient, tierApiClient), async (req, res) => {
-    return res.render('pages/case', {
-      pageTitle: `${res.locals.headerPersonName?.forename} ${res.locals.headerPersonName?.surname} - Contacts`,
-    })
+  router.get('/case/:crn', (req, res) => {
+    const { crn } = req.params
+    return res.redirect(`/case/${crn}/add-frequently-used-contact`)
   })
 
   return router

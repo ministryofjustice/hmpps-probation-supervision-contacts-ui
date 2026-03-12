@@ -1,4 +1,4 @@
-import express, { Express } from 'express'
+import express, { Express, Router } from 'express'
 import { NotFound } from 'http-errors'
 
 import { randomUUID } from 'crypto'
@@ -46,7 +46,7 @@ function appSetup(services: Services, production: boolean, userSupplier: () => H
   })
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
-  app.use(routes(services))
+  app.use(routes(Router(), services))
   app.use((req, res, next) => next(new NotFound()))
   app.use(errorHandler(production))
 
