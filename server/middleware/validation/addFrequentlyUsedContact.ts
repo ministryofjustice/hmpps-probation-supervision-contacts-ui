@@ -1,6 +1,7 @@
 import type { RequestHandler } from 'express'
 import { validateWithSpec } from '../../utils/validationUtils'
 import { addFrequentlyUsedContactValidation } from '../../properties/validation/addFrequentlyUsedContact'
+import { deliusDeepLinkUrl } from '../../utils/deliusDeepLinkUrl'
 
 const addFrequentlyUsedContact: RequestHandler = (req, res, next) => {
   const { crn } = req.params
@@ -13,7 +14,7 @@ const addFrequentlyUsedContact: RequestHandler = (req, res, next) => {
       crn,
       formValues: req.body,
       radioItems: res.locals.radioItems,
-      ndeliusDeepLinkUrl: '#', // TODO: deliusDeepLinkUrl when NDelius config available
+      ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn as string),
       contactLogUrl: `/case/${crn}/activity-log/`,
     })
   }

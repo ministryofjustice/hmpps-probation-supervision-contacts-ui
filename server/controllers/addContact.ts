@@ -2,6 +2,7 @@ import type { RequestHandler } from 'express'
 import MasApiClient from '../data/masApiClient'
 import { getFrequentContactTypes } from '../middleware/getFrequentlyUsedContactTypes'
 import { slugify } from '../utils/slugify'
+import { deliusDeepLinkUrl } from '../utils/deliusDeepLinkUrl'
 import { formattedDate } from '../utils/formattedDate'
 import { CreateContactRequest } from '../data/model/contacts'
 import ContactService from '../services/contactService'
@@ -16,8 +17,7 @@ const addContactController = {
         radioItems: res.locals.radioItems,
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `/case/${crn}/activity-log/`,
-        // TODO: provide ndeliusDeepLinkUrl when NDelius config is available
-        ndeliusDeepLinkUrl: '#',
+        ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn as string),
       })
     }
   },

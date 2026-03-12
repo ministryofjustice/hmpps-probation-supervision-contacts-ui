@@ -149,4 +149,7 @@ export default {
     'https://manage-people-on-probation-dev.hmpps.service.justice.gov.uk',
     requiredInProduction,
   ),
+  delius: {
+    link: get('DELIUS_LINK', 'https://ndelius-dummy-url', requiredInProduction),
+  },
 }
