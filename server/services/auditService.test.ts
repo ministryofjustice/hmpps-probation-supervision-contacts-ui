@@ -33,6 +33,4 @@ describe('Audit service', () => {
       })
     })
   })
-
-
 })
