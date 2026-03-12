@@ -28,7 +28,7 @@ export default function setUpWebSecurity(): Router {
           connectSrc: ["'self'", config.probationFrontendComponents.connectSrc],
           styleSrc: ["'self'", (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`],
           fontSrc: ["'self'", config.probationFrontendComponents.fontSrc],
-          formAction: [`'self' ${config.apis.hmppsAuth.externalUrl}`],
+          formAction: [`'self' ${config.apis.hmppsAuth.externalUrl} ${config.manageProbationUrl}`],
           ...(config.production ? {} : { upgradeInsecureRequests: null }),
         },
       },
