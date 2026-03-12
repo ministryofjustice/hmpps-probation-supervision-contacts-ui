@@ -1,8 +1,8 @@
-import express, { Express } from 'express'
+import express, { Express, Router } from 'express'
 import { NotFound } from 'http-errors'
 
 import { randomUUID } from 'crypto'
-import caseRoutes from '../caseRoutes'
+import addContactRoutes from '../addContact'
 import nunjucksSetup from '../../utils/nunjucksSetup'
 import errorHandler from '../../errorHandler'
 import type { Services } from '../../services'
@@ -46,7 +46,9 @@ function appSetup(services: Services, production: boolean, userSupplier: () => H
   })
   app.use(express.json())
   app.use(express.urlencoded({ extended: true }))
-  app.use(caseRoutes(services))
+  const router = Router()
+  addContactRoutes(router, services)
+  app.use(router)
   app.use((req, res, next) => next(new NotFound()))
   app.use(errorHandler(production))
 
