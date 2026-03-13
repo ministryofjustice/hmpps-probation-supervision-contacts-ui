@@ -16,7 +16,7 @@ const addContactController = {
         crn,
         radioItems: res.locals.radioItems,
         csrfToken: res.locals.csrfToken,
-        contactLogUrl: `/case/${crn}/activity-log/`,
+        contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
         ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn as string),
       })
     }
@@ -29,10 +29,6 @@ const addContactController = {
       if (contactType === 'APPOINTMENT') {
         const uuid = crypto.randomUUID()
         return res.redirect(`${config.manageProbationUrl}/case/${crn}/arrange-appointment/${uuid}/sentence`)
-      }
-
-      if (contactType === 'NDELIUS') {
-        return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity-log`)
       }
 
       const contactTypes = await getFrequentContactTypes(req, masApiClient, res.locals.user.username)
