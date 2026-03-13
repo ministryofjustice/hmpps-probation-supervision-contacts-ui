@@ -66,13 +66,14 @@ const addContactController = {
       const staffCode = userProviders.defaultUserDetails?.staffCode || 'UNKNOWN'
       const teamName = userProviders.defaultUserDetails?.team
       const teamCode = userProviders.teams?.find(t => t.description === teamName)?.code || 'UNKNOWN'
+      const eventId = sentence === 'PERSON_LEVEL_CONTACT' ? null : Number(sentence)
       const payload: CreateContactRequest = {
         date: formattedDate(date),
         time,
         staffCode,
         teamCode,
         type: selectedType?.code || slug,
-        eventId: sentence ? Number(sentence) : undefined,
+        eventId,
         requirementId: null,
         description: title || undefined,
         notes: details || '',
