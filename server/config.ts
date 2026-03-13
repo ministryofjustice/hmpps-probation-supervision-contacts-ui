@@ -135,6 +135,12 @@ export default {
   },
   ingressUrl: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   environmentName: get('ENVIRONMENT_NAME', ''),
+  validMimeTypes: {
+    pdf: 'application/pdf',
+    doc: 'application/msword',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  },
+  maxFileSize: 5 * 1024 * 1024, // 5mb
   tier: {
     link: get('TIER_LINK', 'https://tier-dev.hmpps.service.justice.gov.uk/case', requiredInProduction),
   },
@@ -143,4 +149,7 @@ export default {
     'https://manage-people-on-probation-dev.hmpps.service.justice.gov.uk',
     requiredInProduction,
   ),
+  delius: {
+    link: get('DELIUS_LINK', 'https://ndelius-dummy-url', requiredInProduction),
+  },
 }
