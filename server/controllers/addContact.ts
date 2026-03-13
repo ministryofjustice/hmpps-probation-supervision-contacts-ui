@@ -25,7 +25,16 @@ const addContactController = {
     return async (req, res) => {
       const { crn } = req.params
       const { contactType } = req.body
-      if (contactType === 'NDELIUS') return res.redirect(`/case/${crn}/activity-log`)
+
+      if (contactType === 'APPOINTMENT') {
+        const uuid = crypto.randomUUID()
+        return res.redirect(`${config.manageProbationUrl}/case/${crn}/arrange-appointment/${uuid}/sentence`)
+      }
+
+      if (contactType === 'NDELIUS') {
+        return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity-log`)
+      }
+
       const contactTypes = await getFrequentContactTypes(req, masApiClient, res.locals.user.username)
       const selected = contactTypes.find((c: any) => c.code === contactType)
       const slug = selected ? slugify(selected.description) : contactType
