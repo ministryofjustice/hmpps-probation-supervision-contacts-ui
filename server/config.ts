@@ -143,4 +143,8 @@ export default {
   delius: {
     link: get('DELIUS_LINK', 'https://ndelius-dummy-url', requiredInProduction),
   },
+  flipt: {
+    url: get('FLIPT_URL', 'http://localhost:8100', requiredInProduction),
+    token: get('FLIPT_TOKEN', 'FLIPT_TOKEN', requiredInProduction),
+  },
 }
