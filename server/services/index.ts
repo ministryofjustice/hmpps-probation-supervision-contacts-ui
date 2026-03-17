@@ -1,6 +1,5 @@
 import { dataAccess } from '../data'
 import AuditService from './auditService'
-import ExampleService from './exampleService'
 import ProbationComponentsService from './ProbationComponentsService'
 
 export const services = () => {
@@ -8,7 +7,6 @@ export const services = () => {
     applicationInfo,
     hmppsAuthClient,
     hmppsAuditClient,
-    exampleApiClient,
     probationFrontendComponentsApiClient,
     masApiClient,
     arnsApiClient,
@@ -19,7 +17,6 @@ export const services = () => {
     applicationInfo,
     hmppsAuthClient,
     auditService: new AuditService(hmppsAuditClient),
-    exampleService: new ExampleService(exampleApiClient),
     probationComponentsService: new ProbationComponentsService(probationFrontendComponentsApiClient),
     masApiClient,
     arnsApiClient,
