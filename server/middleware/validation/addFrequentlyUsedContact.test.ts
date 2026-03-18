@@ -1,8 +1,8 @@
 import httpMocks from 'node-mocks-http'
 import addFrequentlyUsedContact from './addFrequentlyUsedContact'
 
-function createRes(locals: Record<string, unknown> = {}) {
-  return { locals, render: jest.fn() } as unknown as any
+function createRes(locals: Record<string, any> = {}): httpMocks.MockResponse<any> {
+  return { locals, render: jest.fn() }
 }
 
 describe('middleware/validation/addFrequentlyUsedContact', () => {
