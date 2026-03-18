@@ -41,6 +41,7 @@ export default function createApp(services: Services): express.Application {
   app.use(authorisationMiddleware())
   app.use(setUpCurrentUser())
   app.use(getFrontendComponents(services.probationComponentsService))
+  app.use(authorisationMiddleware(['ROLE_MANAGE_SUPERVISIONS']))
   app.use(getUserAlertsCount(services.masApiClient))
 
   // Routes that use multer for multipart upload must be registered before csrf executes
