@@ -13,7 +13,6 @@ buildAppInsightsClient(applicationInfo)
 
 import { createRedisClient } from './redisClient'
 import config from '../config'
-import HmppsAuditClient from './hmppsAuditClient'
 import logger from '../../logger'
 import ProbationFrontendComponentsApiClient from './probationFrontendComponentsClient'
 import MasApiClient from './masApiClient'
@@ -30,7 +29,6 @@ export const dataAccess = () => {
   return {
     applicationInfo,
     hmppsAuthClient,
-    hmppsAuditClient: new HmppsAuditClient(config.sqs.audit),
     probationFrontendComponentsApiClient: new ProbationFrontendComponentsApiClient(),
     masApiClient: new MasApiClient(hmppsAuthClient),
     arnsApiClient: new ArnsApiClient(hmppsAuthClient),
@@ -38,4 +36,4 @@ export const dataAccess = () => {
   }
 }
 
-export { AuthenticationClient, HmppsAuditClient, ProbationFrontendComponentsApiClient }
+export { AuthenticationClient, ProbationFrontendComponentsApiClient }

@@ -1,7 +1,8 @@
 export default {
   transform: {
-    '^.+\\.tsx?$': ['ts-jest'],
+    '^.+\\.[tj]sx?$': ['ts-jest', { useESM: false }],
   },
+  transformIgnorePatterns: ['/node_modules/(?!(uuid)/)'],
   collectCoverageFrom: ['server/**/*.{ts,js,jsx,mjs}'],
   testMatch: ['<rootDir>/(server|job)/**/?(*.)(cy|test).{ts,js,jsx,mjs}'],
   testEnvironment: 'node',

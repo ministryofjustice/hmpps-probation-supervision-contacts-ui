@@ -3,7 +3,7 @@ generic-service:
   productId: 'HMPPS541' # productId for the product that this belongs too, i.e. DPS001, see README.md for details
 
   # the IRSA service account name for accessing AWS resources
-  # serviceAccountName: "hmpps-probation-supervision-contacts-ui"
+  serviceAccountName: "hmpps-probation-supervision-contacts-ui"
 
   replicaCount: 4
 
@@ -46,7 +46,7 @@ generic-service:
       CLIENT_CREDS_CLIENT_SECRET: 'CLIENT_CREDS_CLIENT_SECRET'
     hmpps-probation-supervision-contacts-ui-auth-code:
       AUTH_CODE_CLIENT_ID: 'AUTH_CODE_CLIENT_ID'
-      AUTH_CODE_CLIENT_SECRET: 'AUTH_CODE_CLIENT_SECRET'    
+      AUTH_CODE_CLIENT_SECRET: 'AUTH_CODE_CLIENT_SECRET'
     hmpps-probation-supervision-contacts-ui-session-secret:
       SESSION_SECRET: 'SESSION_SECRET'
     flipt-bootstrap-token:
