@@ -16,19 +16,30 @@
 {% block content %}
     {% include "../../partials/pop-header.njk" %}
 
-    {% if errorMessages %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% if errorMessages %}
         {% set errorList = [] %}
+
         {% for field, message in errorMessages %}
-            {% set errorList = (errorList.push({
-                text: message,
-                href: "#" + field
-            }), errorList) %}
+          {% set errorList = (errorList.push({
+            text: message,
+            href: "#" + field
+          }), errorList) %}
         {% endfor %}
+
         {{ govukErrorSummary({
-            titleText: "There is a problem",
-            errorList: errorList
+          titleText: "There is a problem",
+          classes: "govuk-!-margin-bottom-6",
+          attributes: { "data-qa": "errorList" },
+          errorList: errorList
         }) }}
-    {% endif %}
+
+      {% endif %}
+
+    </div>
+  </div>
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
