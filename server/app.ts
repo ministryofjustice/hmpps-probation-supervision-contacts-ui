@@ -18,6 +18,7 @@ import setUpWebSession from './middleware/setUpWebSession'
 import getFrontendComponents from './middleware/probationFEComponentsMiddleware'
 import baseController from './baseController'
 import { getUserAlertsCount } from './middleware/getUserAlertsCount'
+import setUpFlags from './middleware/setUpFlags'
 
 import addContactRoutes from './routes/addContact'
 import type { Services } from './services'
@@ -40,6 +41,7 @@ export default function createApp(services: Services): express.Application {
   app.use(setUpAuthentication())
   app.use(authorisationMiddleware())
   app.use(setUpCurrentUser())
+  app.use(setUpFlags(services))
   app.use(getFrontendComponents(services.probationComponentsService))
   app.use(authorisationMiddleware(['ROLE_MANAGE_SUPERVISIONS']))
   app.use(getUserAlertsCount(services.masApiClient))

@@ -23,6 +23,7 @@ generic-service:
     TIER_LINK: 'https://tier-preprod.hmpps.service.justice.gov.uk/case'
     MANAGE_PEOPLE_ON_PROBATION_URL: 'https://manage-people-on-probation-preprod.hmpps.service.justice.gov.uk'
     DELIUS_LINK: 'https://ndelius.pre-prod.delius.probation.hmpps.dsd.io'
+    FLIPT_URL: 'https://feature-flags-manage-people-on-probation-preprod.hmpps.service.justice.gov.uk'
 
 generic-prometheus-alerts:
   alertSeverity: manage-people-on-probation-alerts-nonprod

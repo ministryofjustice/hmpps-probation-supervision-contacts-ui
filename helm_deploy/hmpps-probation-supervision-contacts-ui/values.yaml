@@ -49,6 +49,8 @@ generic-service:
       AUTH_CODE_CLIENT_SECRET: 'AUTH_CODE_CLIENT_SECRET'    
     hmpps-probation-supervision-contacts-ui-session-secret:
       SESSION_SECRET: 'SESSION_SECRET'
+    flipt-bootstrap-token:
+      FLIPT_TOKEN: 'TOKEN'
     hmpps-probation-supervision-contacts-ui-elasticache-redis:
       REDIS_HOST: 'primary_endpoint_address'
       REDIS_AUTH_TOKEN: 'auth_token'
