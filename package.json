@@ -102,7 +102,7 @@
     "typescript": "^5.9.3"
   },
   "overrides": {
-    "fast-xml-parser": "5.5.6",
+    "fast-xml-parser": "5.5.7",
     "minimatch":  "^3.1.4",
     "flatted": "^3.4.0",
     "@ministryofjustice/hmpps-npm-script-allowlist": {
