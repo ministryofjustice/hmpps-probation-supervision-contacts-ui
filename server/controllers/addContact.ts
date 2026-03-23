@@ -11,20 +11,37 @@ import config from '../config'
 const addContactController = {
   getFrequentlyUsedContact: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res) => {
-      const { crn } = req.params
+      const crn = req.params.crn as string
+      const sessionData = (req.session as any).data || {}
+      const selectedContactType = sessionData?.contactType?.[crn]
+      const baseRadioItems = res.locals.radioItems || []
+      const radioItems = baseRadioItems.map((item: any) => ({
+        ...item,
+        ...(item.value === selectedContactType ? { checked: true } : {}),
+      }))
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
-        radioItems: res.locals.radioItems,
+        radioItems,
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
-        ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn as string),
+        ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
       })
     }
   },
   postFrequentlyUsedContact: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res) => {
-      const { crn } = req.params
+      const crn = req.params.crn as string
       const { contactType } = req.body
+      const session = req.session as any
+      const sessionData = session.data || {}
+
+      session.data = {
+        ...sessionData,
+        contactType: {
+          ...(sessionData.contactType || {}),
+          [crn]: contactType,
+        },
+      }
 
       if (contactType === 'APPOINTMENT') {
         const uuid = crypto.randomUUID()
@@ -34,6 +51,7 @@ const addContactController = {
       const contactTypes = await getFrequentContactTypes(req, masApiClient, res.locals.user.username)
       const selected = contactTypes.find((c: any) => c.code === contactType)
       const slug = selected ? slugify(selected.description) : contactType
+
       return res.redirect(`/case/${crn}/contacts/add-${slug}`)
     }
   },

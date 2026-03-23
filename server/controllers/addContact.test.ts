@@ -31,6 +31,7 @@ function createReq(overrides: Partial<Request> = {}): Request {
     params: {},
     body: {},
     query: {},
+    session: { data: {} },
     ...overrides,
   } as unknown as Request
 }
@@ -84,6 +85,18 @@ describe('addContactController', () => {
   })
 
   describe('postFrequentlyUsedContact', () => {
+    it('stores selected contactType in session', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        body: { contactType: 'CM3A' },
+      })
+
+      const res = createRes()
+
+      await addContactController.postFrequentlyUsedContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      expect((req.session as any).data.contactType.X123456).toBe('CM3A')
+    })
     it('redirects to arrange-appointment when contactType is APPOINTMENT', async () => {
       jest.spyOn(crypto, 'randomUUID').mockReturnValue('test-uuid' as ReturnType<typeof crypto.randomUUID>)
       const req = createReq({ params: { crn: 'X123456' }, body: { contactType: 'APPOINTMENT' } })
