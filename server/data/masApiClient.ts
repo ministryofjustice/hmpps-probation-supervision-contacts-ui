@@ -87,6 +87,16 @@ export default class MasApiClient extends RestClient {
     )
   }
 
+  async patchDocuments(crn: string, contactId: string, file: Express.Multer.File, username: string): Promise<void> {
+    await this.patch(
+      {
+        path: `/documents/${crn}/update/contact/${contactId}`,
+        files: { file: { buffer: file.buffer, originalname: file.originalname } },
+      } as Parameters<typeof this.patch>[0],
+      asSystem(username),
+    )
+  }
+
   async getPersonalDetails(crn: string, username: string): Promise<PersonalDetails | null> {
     return this.get<PersonalDetails | null>(
       {

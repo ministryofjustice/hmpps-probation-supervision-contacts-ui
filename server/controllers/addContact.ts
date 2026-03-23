@@ -86,7 +86,19 @@ const addContactController = {
         sensitive: sensitivity === 'Yes',
         visorReport: visor === 'Yes',
       }
-      await contactService.createContact(crn, payload, username)
+      const { id: contactId } = await contactService.createContact(crn, payload, username)
+
+      if (req.file) {
+        try {
+          await contactService.patchDocuments(crn, contactId.toString(), req.file, username)
+          return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity-log?showSuccessBanner=true`)
+        } catch {
+          return res.redirect(
+            `${config.manageProbationUrl}/case/${crn}/activity-log?showSuccessBanner=true&uploadFailed=true`,
+          )
+        }
+      }
+
       return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity-log?showSuccessBanner=true`)
     }
   },
