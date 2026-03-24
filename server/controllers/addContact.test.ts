@@ -39,6 +39,7 @@ function createReq(overrides: Partial<Request> = {}): Request {
 describe('addContactController', () => {
   let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getUserProviders'>>
   let mockCreateContact: jest.Mock
+  let mockPatchDocuments: jest.Mock
   let next: jest.Mock
 
   beforeEach(() => {
@@ -51,7 +52,10 @@ describe('addContactController', () => {
       }),
     }
     mockCreateContact = jest.fn().mockResolvedValue({ id: 1 })
-    MockContactService.mockImplementation(() => ({ createContact: mockCreateContact }) as any)
+    mockPatchDocuments = jest.fn().mockResolvedValue(undefined)
+    MockContactService.mockImplementation(
+      () => ({ createContact: mockCreateContact, patchDocuments: mockPatchDocuments }) as any,
+    )
     mockGetFrequentContactTypes.mockResolvedValue(mockContactTypes)
   })
 
@@ -218,6 +222,49 @@ describe('addContactController', () => {
       await addContactController.postAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
       expect(mockCreateContact).toHaveBeenCalledWith('X123456', expect.objectContaining({ eventId: null }), 'test-user')
+    })
+
+    it('redirects with showSuccessBanner only when no file is attached', async () => {
+      const req = createReq({ params: { crn: 'X123456', contactType: 'community-intervention' }, body: validBody })
+      const res = createRes()
+
+      await addContactController.postAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      expect(mockPatchDocuments).not.toHaveBeenCalled()
+      expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('showSuccessBanner=true'))
+      expect(res.redirect).not.toHaveBeenCalledWith(expect.stringContaining('uploadFailed=true'))
+    })
+
+    it('redirects with showSuccessBanner only when file upload succeeds', async () => {
+      const mockFile = { buffer: Buffer.from('data'), originalname: 'test.pdf', mimetype: 'application/pdf' }
+      const req = createReq({
+        params: { crn: 'X123456', contactType: 'community-intervention' },
+        body: validBody,
+        file: mockFile as Express.Multer.File,
+      })
+      const res = createRes()
+
+      await addContactController.postAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      expect(mockPatchDocuments).toHaveBeenCalledWith('X123456', '1', mockFile, 'test-user')
+      expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('showSuccessBanner=true'))
+      expect(res.redirect).not.toHaveBeenCalledWith(expect.stringContaining('uploadFailed=true'))
+    })
+
+    it('redirects with uploadFailed=true when file upload fails', async () => {
+      mockPatchDocuments.mockRejectedValue(new Error('Upload failed'))
+      const mockFile = { buffer: Buffer.from('data'), originalname: 'test.pdf', mimetype: 'application/pdf' }
+      const req = createReq({
+        params: { crn: 'X123456', contactType: 'community-intervention' },
+        body: validBody,
+        file: mockFile as Express.Multer.File,
+      })
+      const res = createRes()
+
+      await addContactController.postAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      expect(mockPatchDocuments).toHaveBeenCalledWith('X123456', '1', mockFile, 'test-user')
+      expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('showSuccessBanner=true&uploadFailed=true'))
     })
   })
 })

@@ -19,4 +19,8 @@ export default class ContactService {
   async createContact(crn: string, payload: CreateContactRequest, username: string): Promise<CreateContactResponse> {
     return this.masApiClient.createContact(crn, payload, username)
   }
+
+  async patchDocuments(crn: string, contactId: string, file: Express.Multer.File, username: string): Promise<void> {
+    return this.masApiClient.patchDocuments(crn, contactId, file, username)
+  }
 }
