@@ -4,14 +4,17 @@ import ContactService from '../services/contactService'
 import { getFrequentContactTypes } from '../middleware/getFrequentlyUsedContactTypes'
 import addContactController from './addContact'
 import { ContactType } from '../data/model/contacts'
+import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
 
 jest.mock('../middleware/getFrequentlyUsedContactTypes', () => ({
   getFrequentContactTypes: jest.fn(),
 }))
 jest.mock('../services/contactService')
+jest.mock('../middleware/sendAuditMessage')
 
 const mockGetFrequentContactTypes = getFrequentContactTypes as jest.Mock
 const MockContactService = ContactService as jest.MockedClass<typeof ContactService>
+const mockSendAuditMessage = sendAuditMessage as jest.Mock
 
 const mockContactTypes: ContactType[] = [
   { code: 'CM3A', description: 'Community intervention', isPersonLevelContact: false },
@@ -66,6 +69,12 @@ describe('addContactController', () => {
 
       await addContactController.getFrequentlyUsedContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
+      expect(mockSendAuditMessage).toHaveBeenCalledWith(
+        res,
+        AuditAction.VIEW_ADD_FREQUENTLY_USED_CONTACT,
+        'X123456',
+        SubjectType.CRN,
+      )
       expect(res.render).toHaveBeenCalledWith(
         'pages/contacts/add-frequently-used-contact',
         expect.objectContaining({
@@ -108,6 +117,12 @@ describe('addContactController', () => {
 
       await addContactController.postFrequentlyUsedContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
+      expect(mockSendAuditMessage).toHaveBeenCalledWith(
+        res,
+        AuditAction.SELECT_FREQUENTLY_USED_CONTACT_TYPE,
+        'X123456',
+        SubjectType.CRN,
+      )
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('/case/X123456/arrange-appointment/'))
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('test-uuid'))
     })
@@ -144,6 +159,7 @@ describe('addContactController', () => {
 
       await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
+      expect(mockSendAuditMessage).toHaveBeenCalledWith(res, AuditAction.VIEW_ADD_CONTACT, 'X123456', SubjectType.CRN)
       expect(res.render).toHaveBeenCalledWith(
         'pages/contacts/add-contact-type',
         expect.objectContaining({
@@ -193,6 +209,7 @@ describe('addContactController', () => {
 
       await addContactController.postAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
+      expect(mockSendAuditMessage).toHaveBeenCalledWith(res, AuditAction.ADD_CONTACT, 'X123456', SubjectType.CRN)
       expect(mockCreateContact).toHaveBeenCalledWith(
         'X123456',
         expect.objectContaining({

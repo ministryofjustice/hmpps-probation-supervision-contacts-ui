@@ -1,5 +1,4 @@
 import { dataAccess } from '../data'
-import AuditService from './auditService'
 import FlagService from './flagService'
 import ProbationComponentsService from './ProbationComponentsService'
 
@@ -7,7 +6,6 @@ export const services = () => {
   const {
     applicationInfo,
     hmppsAuthClient,
-    hmppsAuditClient,
     probationFrontendComponentsApiClient,
     masApiClient,
     arnsApiClient,
@@ -17,7 +15,6 @@ export const services = () => {
   return {
     applicationInfo,
     hmppsAuthClient,
-    auditService: new AuditService(hmppsAuditClient),
     flagService: new FlagService(),
     probationComponentsService: new ProbationComponentsService(probationFrontendComponentsApiClient),
     masApiClient,

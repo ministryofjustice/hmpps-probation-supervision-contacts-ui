@@ -7,11 +7,13 @@ import { formattedDate } from '../utils/formattedDate'
 import { CreateContactRequest } from '../data/model/contacts'
 import ContactService from '../services/contactService'
 import config from '../config'
+import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
 
 const addContactController = {
   getFrequentlyUsedContact: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res) => {
       const crn = req.params.crn as string
+      await sendAuditMessage(res, AuditAction.VIEW_ADD_FREQUENTLY_USED_CONTACT, crn as string, SubjectType.CRN)
       const sessionData = (req.session as any).data || {}
       const selectedContactType = sessionData?.contactType?.[crn]
       const baseRadioItems = res.locals.radioItems || []
@@ -31,6 +33,7 @@ const addContactController = {
   postFrequentlyUsedContact: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res) => {
       const crn = req.params.crn as string
+      await sendAuditMessage(res, AuditAction.SELECT_FREQUENTLY_USED_CONTACT_TYPE, crn as string, SubjectType.CRN)
       const { contactType } = req.body
       const session = req.session as any
       const sessionData = session.data || {}
@@ -58,6 +61,7 @@ const addContactController = {
   getAddContactType: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res) => {
       const { crn, contactType } = req.params
+      await sendAuditMessage(res, AuditAction.VIEW_ADD_CONTACT, crn as string, SubjectType.CRN)
       const { username } = res.locals.user
       const contactTypes = await getFrequentContactTypes(req, masApiClient, username)
       const selectedType = contactTypes.find((c: any) => slugify(c.description) === contactType)
@@ -79,6 +83,7 @@ const addContactController = {
   postAddContactType: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res) => {
       const crn = req.params.crn as string
+      await sendAuditMessage(res, AuditAction.ADD_CONTACT, crn, SubjectType.CRN)
       const slug = req.params.contactType as string
       const { username } = res.locals.user
       const { sentence, title, details, sensitivity, visor, alertResponsibleOfficer, date, time } = req.body
