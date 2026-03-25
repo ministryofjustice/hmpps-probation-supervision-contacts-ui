@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPathPattern": "/tier-api/crn/.+/tier/details"
+    "urlPathPattern": "/crn/x12345678/tier/details"
   },
   "response": {
     "status": 200,

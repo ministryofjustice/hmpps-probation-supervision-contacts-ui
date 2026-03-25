@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPathPattern": "/arns-api/risks/crn/.+"
+    "urlPathPattern": "/arns-api/risks/crn/.+/predictors/all"
   },
   "response": {
     "status": 200,
