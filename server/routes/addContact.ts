@@ -25,7 +25,7 @@ export default function addContactRoutes(
     '/case/:crn/add-frequently-used-contact',
     loadPersonalDetails,
     populate,
-    controllers.addContact.getFrequentlyUsedContact(masApiClient),
+    controllers.addContact.getFrequentlyUsedContact(),
   )
 
   router.post(

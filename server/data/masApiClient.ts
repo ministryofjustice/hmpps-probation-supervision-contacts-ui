@@ -3,6 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import config from '../config'
 import logger from '../../logger'
 import { PersonalDetails } from './model/personalDetails'
+import { Overview } from './model/overview'
 import { ContactType, CreateContactRequest, CreateContactResponse, Sentence, UserProviders } from './model/contacts'
 
 interface UserAlerts {
@@ -93,6 +94,19 @@ export default class MasApiClient extends RestClient {
         path: `/documents/${crn}/update/contact/${contactId}`,
         files: { file: { buffer: file.buffer, originalname: file.originalname } },
       } as Parameters<typeof this.patch>[0],
+      asSystem(username),
+    )
+  }
+
+  async getOverview(crn: string, username: string): Promise<Overview | null> {
+    return this.get<Overview | null>(
+      {
+        path: `/overview/${crn}`,
+        errorHandler: (_path, _method, error) => {
+          if (error.responseStatus === 404) return null
+          throw error
+        },
+      },
       asSystem(username),
     )
   }
