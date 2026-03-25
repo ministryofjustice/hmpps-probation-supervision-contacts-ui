@@ -6,16 +6,16 @@
   "response": {
     "status": 200,
     "jsonBody": [
-      { "code": "CM3A", "description": "Home visit" },
-      { "code": "CM3B", "description": "Home visit (2)" },
-      { "code": "CMOA", "description": "Office appointment" },
-      { "code": "CMOB", "description": "Office appointment (2)" },
-      { "code": "C326", "description": "Telephone contact" },
-      { "code": "C204", "description": "Email contact" },
-      { "code": "CT3A", "description": "Community contact A" },
-      { "code": "CT3B", "description": "Community contact B" },
-      { "code": "CTOA", "description": "Other contact A" },
-      { "code": "CTOB", "description": "Other contact B" }
+      { "code": "CM3A", "description": "Email or text from other" },
+      { "code": "CM3B", "description": "Email or text to other" },
+      { "code": "CMOA", "description": "Email or text from person on probation" },
+      { "code": "CMOB", "description": "Email or text to person on probation" },
+      { "code": "C326", "description": "Internal communications" },
+      { "code": "C202", "description": "Police liaison" },
+      { "code": "CT3A", "description": "Other Telephone contact from other" },
+      { "code": "CT3B", "description": "Telephone contact to other" },
+      { "code": "CTOA", "description": "Telephone contact from person on probation" },
+      { "code": "CTOB", "description": "Telephone contact to person on probation" }
     ],
     "headers": {
       "Content-Type": "application/json"
