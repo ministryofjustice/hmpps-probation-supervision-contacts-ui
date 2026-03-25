@@ -1,0 +1,19 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/mas-api/alerts"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "content": [],
+      "totalResults": 0,
+      "totalPages": 0,
+      "page": 0,
+      "size": 10
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
