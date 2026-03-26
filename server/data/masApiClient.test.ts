@@ -213,6 +213,28 @@ describe('MasApiClient', () => {
     })
   })
 
+  describe('getOverview', () => {
+    it('returns the overview for a given crn', async () => {
+      const overview = { registrations: ['VISOR', 'Restraining Order'] }
+      nock(config.apis.masApi.url)
+        .get('/overview/X123456')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, overview)
+
+      const result = await masApiClient.getOverview('X123456', 'test-user')
+
+      expect(result).toEqual(overview)
+    })
+
+    it('returns null when the overview is not found', async () => {
+      nock(config.apis.masApi.url).get('/overview/X123456').reply(404)
+
+      const result = await masApiClient.getOverview('X123456', 'test-user')
+
+      expect(result).toBeNull()
+    })
+  })
+
   describe('createContact', () => {
     it('posts a contact and returns the response', async () => {
       const payload = {

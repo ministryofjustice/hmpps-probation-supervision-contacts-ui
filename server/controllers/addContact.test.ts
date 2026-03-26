@@ -40,7 +40,7 @@ function createReq(overrides: Partial<Request> = {}): Request {
 }
 
 describe('addContactController', () => {
-  let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getUserProviders'>>
+  let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getUserProviders' | 'getOverview'>>
   let mockCreateContact: jest.Mock
   let mockPatchDocuments: jest.Mock
   let next: jest.Mock
@@ -53,6 +53,7 @@ describe('addContactController', () => {
         defaultUserDetails: { staffCode: 'N01A001', username: 'test-user', homeArea: 'N01', team: 'Team One' },
         teams: [{ description: 'Team One', code: 'N01T01' }],
       }),
+      getOverview: jest.fn().mockResolvedValue({ registrations: [] }),
     }
     mockCreateContact = jest.fn().mockResolvedValue({ id: 1 })
     mockPatchDocuments = jest.fn().mockResolvedValue(undefined)
@@ -67,7 +68,7 @@ describe('addContactController', () => {
       const req = createReq({ params: { crn: 'X123456' } })
       const res = createRes({ radioItems: [{ value: 'CM3A', text: 'Some contact' }], csrfToken: 'token' })
 
-      await addContactController.getFrequentlyUsedContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+      await addContactController.getFrequentlyUsedContact()(req, res, next)
 
       expect(mockSendAuditMessage).toHaveBeenCalledWith(
         res,
@@ -89,7 +90,7 @@ describe('addContactController', () => {
       const req = createReq({ params: { crn: 'X123456' } })
       const res = createRes()
 
-      await addContactController.getFrequentlyUsedContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+      await addContactController.getFrequentlyUsedContact()(req, res, next)
 
       const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
       expect(renderArgs.contactLogUrl).toContain('X123456')
@@ -101,7 +102,7 @@ describe('addContactController', () => {
       const req = createReq({ params: { crn: 'X123456' }, query: { contactType: 'APPOINTMENT' } })
       const res = createRes({ flags: { searchContactsByCategory: true } })
 
-      await addContactController.getFrequentlyUsedContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+      await addContactController.getFrequentlyUsedContact()(req, res, next)
 
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('/case/X123456/arrange-appointment/'))
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('test-uuid'))
@@ -199,6 +200,39 @@ describe('addContactController', () => {
 
       const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
       expect(renderArgs.responsibleOfficer).toBeUndefined()
+    })
+
+    it('sets isVisor to SHOW_VISOR when registrations include visor', async () => {
+      mockMasApiClient.getOverview.mockResolvedValue({ registrations: ['VISOR', 'Restraining Order'] })
+      const req = createReq({ params: { crn: 'X123456', contactType: 'community-intervention' } })
+      const res = createRes()
+
+      await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.isVisor).toBe('SHOW_VISOR')
+    })
+
+    it('sets isVisor to undefined when registrations do not include visor', async () => {
+      mockMasApiClient.getOverview.mockResolvedValue({ registrations: ['Restraining Order'] })
+      const req = createReq({ params: { crn: 'X123456', contactType: 'community-intervention' } })
+      const res = createRes()
+
+      await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.isVisor).toBeUndefined()
+    })
+
+    it('sets isVisor to undefined when overview is null', async () => {
+      mockMasApiClient.getOverview.mockResolvedValue(null)
+      const req = createReq({ params: { crn: 'X123456', contactType: 'community-intervention' } })
+      const res = createRes()
+
+      await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.isVisor).toBeUndefined()
     })
   })
 

@@ -10,9 +10,9 @@ import config from '../config'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
 
 const addContactController = {
-  getFrequentlyUsedContact: (masApiClient: MasApiClient): RequestHandler => {
-    return async (req, res) => {
-      const crn = req.params.crn as string
+  getFrequentlyUsedContact: (): RequestHandler => {
+    return async (req, res, next) => {
+      const { crn } = req.params as Record<string, string>
       await sendAuditMessage(res, AuditAction.VIEW_ADD_FREQUENTLY_USED_CONTACT, crn as string, SubjectType.CRN)
       const sessionData = (req.session as any).data || {}
       const selectedContactType = sessionData?.contactType?.[crn]
@@ -45,8 +45,8 @@ const addContactController = {
     }
   },
   postFrequentlyUsedContact: (masApiClient: MasApiClient): RequestHandler => {
-    return async (req, res) => {
-      const crn = req.params.crn as string
+    return async (req, res, next) => {
+      const { crn } = req.params as Record<string, string>
       await sendAuditMessage(res, AuditAction.SELECT_FREQUENTLY_USED_CONTACT_TYPE, crn as string, SubjectType.CRN)
       const { contactType } = req.body
       const session = req.session as any
@@ -73,13 +73,17 @@ const addContactController = {
     }
   },
   getAddContactType: (masApiClient: MasApiClient): RequestHandler => {
-    return async (req, res) => {
-      const { crn, contactType } = req.params
+    return async (req, res, next) => {
+      const { crn, contactType } = req.params as Record<string, string>
       await sendAuditMessage(res, AuditAction.VIEW_ADD_CONTACT, crn as string, SubjectType.CRN)
       const { username } = res.locals.user
-      const contactTypes = await getFrequentContactTypes(req, masApiClient, username)
+      const [contactTypes, overview] = await Promise.all([
+        getFrequentContactTypes(req, masApiClient, username),
+        masApiClient.getOverview(crn, username),
+      ])
       const selectedType = contactTypes.find((c: any) => slugify(c.description) === contactType)
-      const isVisor: string | undefined = undefined // TODO: check risk flags for ViSOR
+      const hasVisorRegistration = overview?.registrations?.some(r => r.toLowerCase() === 'visor') ?? false
+      const isVisor: string | undefined = hasVisorRegistration ? 'SHOW_VISOR' : undefined
       const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? 'SHOW_OFFICER' : undefined
       return res.render('pages/contacts/add-contact-type', {
         crn,
@@ -95,8 +99,8 @@ const addContactController = {
     }
   },
   postAddContactType: (masApiClient: MasApiClient): RequestHandler => {
-    return async (req, res) => {
-      const crn = req.params.crn as string
+    return async (req, res, next) => {
+      const { crn } = req.params as Record<string, string>
       await sendAuditMessage(res, AuditAction.ADD_CONTACT, crn, SubjectType.CRN)
       const slug = req.params.contactType as string
       const { username } = res.locals.user
