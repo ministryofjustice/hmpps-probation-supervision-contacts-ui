@@ -8,11 +8,14 @@ import addContactType from '../middleware/validation/addContactType'
 import { multerErrorHandler } from '../middleware/validation/multerErrorHandler'
 import addFrequentlyUsedContact from '../middleware/validation/addFrequentlyUsedContact'
 import controllers from '../controllers'
+import validateCrnParam from '../middleware/validateCrnParam'
 
 export default function addContactRoutes(
   router: Router,
   { masApiClient, arnsApiClient, tierApiClient }: Services,
 ): void {
+  router.param('crn', validateCrnParam)
+
   const populate = populateContactTypes(masApiClient)
   const loadPersonalDetails = getPersonalDetails(masApiClient, arnsApiClient, tierApiClient)
   const loadContactFormDeps = [

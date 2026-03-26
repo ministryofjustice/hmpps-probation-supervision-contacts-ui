@@ -1,6 +1,8 @@
 import express from 'express'
 import addContactRoutes from './addContact'
+import validateCrnParam from '../middleware/validateCrnParam'
 
+jest.mock('../middleware/validateCrnParam', () => jest.fn())
 jest.mock('../middleware/populateContactTypes', () => ({
   populateContactTypes: jest.fn().mockReturnValue(jest.fn()),
 }))
@@ -40,12 +42,14 @@ describe('addContactRoutes', () => {
   let router: express.Router
   let getSpy: jest.SpyInstance
   let postSpy: jest.SpyInstance
+  let paramSpy: jest.SpyInstance
 
   beforeEach(() => {
     jest.clearAllMocks()
     router = express.Router()
     getSpy = jest.spyOn(router, 'get')
     postSpy = jest.spyOn(router, 'post')
+    paramSpy = jest.spyOn(router, 'param')
     addContactRoutes(router, mockServices as any)
   })
 
@@ -68,5 +72,9 @@ describe('addContactRoutes', () => {
   it('registers exactly 2 GET routes and 2 POST routes', () => {
     expect(getSpy).toHaveBeenCalledTimes(2)
     expect(postSpy).toHaveBeenCalledTimes(2)
+  })
+
+  it('registers validateCrnParam for the crn route parameter', () => {
+    expect(paramSpy).toHaveBeenCalledWith('crn', validateCrnParam)
   })
 })

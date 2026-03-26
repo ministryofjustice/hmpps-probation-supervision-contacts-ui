@@ -1,11 +1,9 @@
 import type { RequestHandler } from 'express'
-import createError from 'http-errors'
 import MasApiClient from '../data/masApiClient'
 import { getFrequentContactTypes } from '../middleware/getFrequentlyUsedContactTypes'
 import { slugify } from '../utils/slugify'
 import { deliusDeepLinkUrl } from '../utils/deliusDeepLinkUrl'
 import { formattedDate } from '../utils/formattedDate'
-import { isValidCrn } from '../utils/isValidCrn'
 import { CreateContactRequest } from '../data/model/contacts'
 import ContactService from '../services/contactService'
 import config from '../config'
@@ -15,9 +13,6 @@ const addContactController = {
   getFrequentlyUsedContact: (): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
-      if (!isValidCrn(crn)) {
-        return next(createError(404, 'Not found'))
-      }
       await sendAuditMessage(res, AuditAction.VIEW_ADD_FREQUENTLY_USED_CONTACT, crn as string, SubjectType.CRN)
       const sessionData = (req.session as any).data || {}
       const selectedContactType = sessionData?.contactType?.[crn]
@@ -52,9 +47,6 @@ const addContactController = {
   postFrequentlyUsedContact: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
-      if (!isValidCrn(crn)) {
-        return next(createError(404, 'Not found'))
-      }
       await sendAuditMessage(res, AuditAction.SELECT_FREQUENTLY_USED_CONTACT_TYPE, crn as string, SubjectType.CRN)
       const { contactType } = req.body
       const session = req.session as any
@@ -83,9 +75,6 @@ const addContactController = {
   getAddContactType: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res, next) => {
       const { crn, contactType } = req.params as Record<string, string>
-      if (!isValidCrn(crn)) {
-        return next(createError(404, 'Not found'))
-      }
       await sendAuditMessage(res, AuditAction.VIEW_ADD_CONTACT, crn as string, SubjectType.CRN)
       const { username } = res.locals.user
       const [contactTypes, overview] = await Promise.all([
@@ -93,9 +82,8 @@ const addContactController = {
         masApiClient.getOverview(crn, username),
       ])
       const selectedType = contactTypes.find((c: any) => slugify(c.description) === contactType)
-      const isVisor: string | undefined = overview?.registrations.map(r => r.toLowerCase()).includes('visor')
-        ? 'SHOW_VISOR'
-        : undefined
+      const hasVisorRegistration = overview?.registrations?.some(r => r.toLowerCase() === 'visor') ?? false
+      const isVisor: string | undefined = hasVisorRegistration ? 'SHOW_VISOR' : undefined
       const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? 'SHOW_OFFICER' : undefined
       return res.render('pages/contacts/add-contact-type', {
         crn,
@@ -113,9 +101,6 @@ const addContactController = {
   postAddContactType: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
-      if (!isValidCrn(crn)) {
-        return next(createError(404, 'Not found'))
-      }
       await sendAuditMessage(res, AuditAction.ADD_CONTACT, crn, SubjectType.CRN)
       const slug = req.params.contactType as string
       const { username } = res.locals.user
