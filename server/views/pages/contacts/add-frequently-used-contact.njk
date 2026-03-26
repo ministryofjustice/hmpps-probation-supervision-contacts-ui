@@ -6,13 +6,17 @@
 {% set backLink = '/case/' + crn + '/activity-log/' %}
 
 {% block pageTitle %}
-    Add a frequently used contact - {{ headerPersonName.forename }} {{ headerPersonName.surname }}
+    {% if flags and flags.searchContactsByCategory %}
+        Find a contact to add - {{ headerPersonName.forename }} {{ headerPersonName.surname }}
+    {% else %}
+        Add a frequently used contact - {{ headerPersonName.forename }} {{ headerPersonName.surname }}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
     {% include "../../partials/pop-header.njk" %}
 
-    {% if errorMessages %}
+    {% if errorMessages and not (flags and flags.searchContactsByCategory) %}
         {% set errorList = [] %}
         {% for field, message in errorMessages %}
             {% set errorList = (errorList.push({
@@ -29,36 +33,72 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
 
-            <h2 class="govuk-heading-m">Add a frequently used contact</h2>
+            {% if flags and flags.searchContactsByCategory %}
+                <h2 class="govuk-heading-m">Find a contact to add</h2>
+            {% else %}
+                <h2 class="govuk-heading-m">Add a frequently used contact</h2>
+            {% endif %}
 
             <p class="govuk-body">
                 You can currently add the most frequently used contacts using this service. For any other contacts,
                 <a href="{{ ndeliusDeepLinkUrl }}" target="_blank" class="govuk-link">use NDelius (opens in new tab).</a>
             </p>
 
-            <form method="post" action="/case/{{ crn }}/add-frequently-used-contact" id="choose-contact-form"
-                  data-ndelius-url="{{ ndeliusDeepLinkUrl }}"
-                  data-back-url="{{ contactLogUrl }}">
-                <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+            {% if flags and flags.searchContactsByCategory %}
+                <div class="govuk-tabs" data-module="govuk-tabs" data-scroll-top-on-change="true">
+                    <ul class="govuk-tabs__list">
+                        <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                            <a class="govuk-tabs__tab" href="#frequently-used-contacts">Frequently used contacts</a>
+                        </li>
+                        <li class="govuk-tabs__list-item">
+                            <a class="govuk-tabs__tab" href="#search-by-category">Search by category</a>
+                        </li>
+                    </ul>
 
-                {{ govukRadios({
-                    name: "contactType",
-                    idPrefix: "contactType",
-                    fieldset: {
-                        legend: {
-                            text: "Select a contact",
-                            classes: "govuk-fieldset__legend--s"
-                        }
-                    },
-                    items: radioItems,
-                    errorMessage: { text: errorMessages.contactType } if errorMessages.contactType
-                }) }}
+                    <div class="govuk-tabs__panel" id="frequently-used-contacts">
+                        <h3 class="govuk-heading-s">Select a frequently used contact</h3>
+                        <ul class="govuk-list app-contact-list" data-qa="frequentlyUsedContactList">
+                            <li class="app-contact-list__item">
+                                <a class="govuk-link" href="/case/{{ crn }}/add-frequently-used-contact?contactType=APPOINTMENT">An appointment</a>
+                            </li>
+                            {% for contact in frequentlyUsedContacts %}
+                                <li class="app-contact-list__item">
+                                    <a class="govuk-link" href="{{ contact.href }}">{{ contact.text }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
 
-                {{ govukButton({
-                    text: "Continue",
-                    attributes: { "data-qa": "continue-button" }
-                }) }}
-            </form>
+                    <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="search-by-category">
+                        <h3 class="govuk-heading-s">Search by category</h3>
+                        <p class="govuk-body">Browse contact categories to find the type you need.</p>
+                    </div>
+                </div>
+            {% else %}
+                <form method="post" action="/case/{{ crn }}/add-frequently-used-contact" id="choose-contact-form"
+                      data-ndelius-url="{{ ndeliusDeepLinkUrl }}"
+                      data-back-url="{{ contactLogUrl }}">
+                    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+                    {{ govukRadios({
+                        name: "contactType",
+                        idPrefix: "contactType",
+                        fieldset: {
+                            legend: {
+                                text: "Select a contact",
+                                classes: "govuk-fieldset__legend--s"
+                            }
+                        },
+                        items: radioItems,
+                        errorMessage: { text: errorMessages.contactType } if errorMessages.contactType
+                    }) }}
+
+                    {{ govukButton({
+                        text: "Continue",
+                        attributes: { "data-qa": "continue-button" }
+                    }) }}
+                </form>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

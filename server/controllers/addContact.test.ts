@@ -86,6 +86,17 @@ describe('addContactController', () => {
       expect(renderArgs.contactLogUrl).toContain('X123456')
       expect(renderArgs.ndeliusDeepLinkUrl).toContain('X123456')
     })
+
+    it('redirects to arrange-appointment when feature flag is on and appointment query is set', async () => {
+      jest.spyOn(crypto, 'randomUUID').mockReturnValue('test-uuid' as ReturnType<typeof crypto.randomUUID>)
+      const req = createReq({ params: { crn: 'X123456' }, query: { contactType: 'APPOINTMENT' } })
+      const res = createRes({ flags: { searchContactsByCategory: true } })
+
+      await addContactController.getFrequentlyUsedContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('/case/X123456/arrange-appointment/'))
+      expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('test-uuid'))
+    })
   })
 
   describe('postFrequentlyUsedContact', () => {

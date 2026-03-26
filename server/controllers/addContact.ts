@@ -19,9 +19,23 @@ const addContactController = {
         ...item,
         ...(item.value === selectedContactType ? { checked: true } : {}),
       }))
+      const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
+      const frequentlyUsedContacts = contactTypes
+        .slice()
+        .sort((first: any, second: any) => first.description.localeCompare(second.description))
+        .map((contact: any) => ({
+          text: contact.description,
+          href: `/case/${crn}/contacts/add-${slugify(contact.description)}`,
+        }))
+
+      if (res.locals.flags?.searchContactsByCategory && req.query?.contactType === 'APPOINTMENT') {
+        const uuid = crypto.randomUUID()
+        return res.redirect(`${config.manageProbationUrl}/case/${crn}/arrange-appointment/${uuid}/sentence`)
+      }
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         radioItems,
+        frequentlyUsedContacts,
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
         ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
