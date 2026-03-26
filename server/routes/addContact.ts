@@ -14,6 +14,7 @@ export default function addContactRoutes(
   router: Router,
   { masApiClient, arnsApiClient, tierApiClient }: Services,
 ): void {
+  router.param('crn', validateCrnParam)
   const populate = populateContactTypes()
   const loadPersonalDetails = getPersonalDetails(masApiClient, arnsApiClient, tierApiClient)
   const loadContactFormDeps = [
