@@ -6,9 +6,8 @@
 {% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
-
-{% set backLink = '/case/' + crn + '/add-frequently-used-contact' %}
 {% set addContactType = 'Add ' + contactTypeName %}
+{% set backLink = '/case/' + crn + '/add-frequently-used-contact' %}
 
 {% block pageTitle %}
     {{ addContactType }} - {{ headerPersonName.forename }} {{ headerPersonName.surname }}
