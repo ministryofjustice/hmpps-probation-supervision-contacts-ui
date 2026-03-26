@@ -2,8 +2,16 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "../../partials/breadcrumb.njk" import breadcrumb %}
 
-{% set backLink = '/case/' + crn + '/activity-log/' %}
+{% block beforeContent %}
+  {% set breadcrumbItems = [
+    { title: "Cases", href: manageProbationUrl + "/case" },
+    { title: headerPersonName.forename + " " + headerPersonName.surname, href: manageProbationUrl + "/case/" + crn },
+    { title: "Contacts", href: manageProbationUrl + "/case/" + crn + "/activity-log" }
+  ] %}
+  {{ breadcrumb("Add a contact", breadcrumbItems) }}
+{% endblock %}
 
 {% block pageTitle %}
     {% if flags and flags.searchContactsByCategory %}
