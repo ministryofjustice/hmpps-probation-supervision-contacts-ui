@@ -4,8 +4,7 @@ import FlagService from '../services/flagService'
 import logger from '../../logger'
 
 const mockFlags = {
-  enableContactLog: true,
-  enableCreateContact: true,
+  searchContactsByCategory: true,
 }
 jest.mock('../services/flagService')
 
