@@ -39,10 +39,12 @@
                 <h2 class="govuk-heading-m">Add a frequently used contact</h2>
             {% endif %}
 
-            <p class="govuk-body">
-                You can currently add the most frequently used contacts using this service. For any other contacts,
-                <a href="{{ ndeliusDeepLinkUrl }}" target="_blank" class="govuk-link">use NDelius (opens in new tab).</a>
-            </p>
+            {% if not (flags and flags.searchContactsByCategory) %}
+                <p class="govuk-body">
+                    You can currently add the most frequently used contacts using this service. For any other contacts,
+                    <a href="{{ ndeliusDeepLinkUrl }}" target="_blank" class="govuk-link">use NDelius (opens in new tab).</a>
+                </p>
+            {% endif %}
 
             {% if flags and flags.searchContactsByCategory %}
                 <div class="govuk-tabs" data-module="govuk-tabs" data-scroll-top-on-change="true">
