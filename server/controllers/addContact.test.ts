@@ -102,7 +102,7 @@ describe('addContactController', () => {
       const req = createReq({ params: { crn: 'X123456' }, query: { contactType: 'APPOINTMENT' } })
       const res = createRes({ flags: { searchContactsByCategory: true } })
 
-      await addContactController.getFrequentlyUsedContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+      await addContactController.getFrequentlyUsedContact()(req, res, next)
 
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('/case/X123456/arrange-appointment/'))
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('test-uuid'))
