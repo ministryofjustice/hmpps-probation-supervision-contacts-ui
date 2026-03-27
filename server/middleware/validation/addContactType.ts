@@ -5,7 +5,11 @@ import { addContactValidation } from '../../properties/validation/addContactType
 const addContactType: RequestHandler = (req, res, next) => {
   const { crn } = req.params
   const { responsibleOfficer, isVisor, responsibleOfficerSurname, responsibleOfficerForename } = req.body
-
+  const slug = req.params.contactType as string
+  const contactTypeName = slug
+    .replace(/^add-/, '')
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase())
   const errorMessages = validateWithSpec(req.body, addContactValidation({ responsibleOfficer, isVisor }))
 
   if (Object.keys(errorMessages).length) {
@@ -18,6 +22,7 @@ const addContactType: RequestHandler = (req, res, next) => {
       responsibleOfficer,
       responsibleOfficerForename,
       responsibleOfficerSurname,
+      contactTypeName,
     })
   }
   return next()
