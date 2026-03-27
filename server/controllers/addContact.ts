@@ -1,6 +1,5 @@
 import type { RequestHandler } from 'express'
 import MasApiClient from '../data/masApiClient'
-import { getFrequentContactTypes } from '../middleware/getFrequentlyUsedContactTypes'
 import { slugify } from '../utils/slugify'
 import { deliusDeepLinkUrl } from '../utils/deliusDeepLinkUrl'
 import { formattedDate } from '../utils/formattedDate'
@@ -8,6 +7,7 @@ import { CreateContactRequest } from '../data/model/contacts'
 import ContactService from '../services/contactService'
 import config from '../config'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
+import { ContactTypeOptions } from '../data/model/contactTypes'
 
 const addContactController = {
   getFrequentlyUsedContact: (): RequestHandler => {
@@ -65,7 +65,7 @@ const addContactController = {
         return res.redirect(`${config.manageProbationUrl}/case/${crn}/arrange-appointment/${uuid}/sentence`)
       }
 
-      const contactTypes = await getFrequentContactTypes(req, masApiClient, res.locals.user.username)
+      const contactTypes = ContactTypeOptions
       const selected = contactTypes.find((c: any) => c.code === contactType)
       const slug = selected ? slugify(selected.description) : contactType
 
@@ -77,10 +77,8 @@ const addContactController = {
       const { crn, contactType } = req.params as Record<string, string>
       await sendAuditMessage(res, AuditAction.VIEW_ADD_CONTACT, crn as string, SubjectType.CRN)
       const { username } = res.locals.user
-      const [contactTypes, overview] = await Promise.all([
-        getFrequentContactTypes(req, masApiClient, username),
-        masApiClient.getOverview(crn, username),
-      ])
+      const overview = await masApiClient.getOverview(crn, username)
+      const contactTypes = ContactTypeOptions
       const selectedType = contactTypes.find((c: any) => slugify(c.description) === contactType)
       const hasVisorRegistration = overview?.registrations?.some(r => r.toLowerCase() === 'visor') ?? false
       const isVisor: string | undefined = hasVisorRegistration ? 'SHOW_VISOR' : undefined
@@ -105,7 +103,7 @@ const addContactController = {
       const slug = req.params.contactType as string
       const { username } = res.locals.user
       const { sentence, title, details, sensitivity, visor, alertResponsibleOfficer, date, time } = req.body
-      const contactTypes = await getFrequentContactTypes(req, masApiClient, username)
+      const contactTypes = ContactTypeOptions
       const selectedType = contactTypes.find(c => slugify(c.description) === slug)
       const contactService = new ContactService(masApiClient)
       const userProviders = await masApiClient.getUserProviders(username)

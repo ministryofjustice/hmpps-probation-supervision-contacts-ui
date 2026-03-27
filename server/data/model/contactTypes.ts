@@ -1,9 +1,9 @@
-export type ContactTypesOption = {
+export type ContactTypeOption = {
   code: string
   description: string
 }
 
-export const ContactTypeOptions: ContactTypesOption[] = [
+export const ContactTypeOptions: ContactTypeOption[] = [
   { code: 'CM3A', description: 'Email or text from other' },
   { code: 'CM3B', description: 'Email or text to other' },
   { code: 'CMOA', description: 'Email or text from person on probation' },
