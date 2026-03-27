@@ -21,7 +21,7 @@ describe('middleware/validation/addContactType', () => {
 
   it('calls next when all required fields are valid', () => {
     const req = httpMocks.createRequest({
-      params: { crn: 'X123456', contactType: 'add-police-liason' },
+      params: { crn: 'X123456', contactType: 'add-police-liaison' },
       body: validBody,
     })
     const res = createRes()
@@ -30,6 +30,24 @@ describe('middleware/validation/addContactType', () => {
 
     expect(next).toHaveBeenCalledWith()
     expect(res.render).not.toHaveBeenCalled()
+  })
+  it('renders with errors when all required fields are  missing', () => {
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactType: 'add-police-liaison' },
+      body: { date: '', time: '', sensitivity: '' },
+    })
+    const res = createRes()
+
+    addContactType(req, res, next)
+
+    expect(next).not.toHaveBeenCalled()
+    const renderData = (res.render as jest.Mock).mock.calls[0][1]
+    expect(renderData.errorMessages).toEqual({
+      sentence: 'Select what the contact is related to',
+      date: 'Enter or select a date',
+      time: 'Enter a time in the 24-hour format, for example 16:30',
+      sensitivity: 'Select if the contact includes sensitive information',
+    })
   })
 
   it('renders with errors when sentence is missing', () => {
