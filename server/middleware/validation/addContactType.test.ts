@@ -20,7 +20,10 @@ describe('middleware/validation/addContactType', () => {
   })
 
   it('calls next when all required fields are valid', () => {
-    const req = httpMocks.createRequest({ params: { crn: 'X123456' }, body: validBody })
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactType: 'add-police-liason' },
+      body: validBody,
+    })
     const res = createRes()
 
     addContactType(req, res, next)
@@ -31,7 +34,7 @@ describe('middleware/validation/addContactType', () => {
 
   it('renders with errors when sentence is missing', () => {
     const req = httpMocks.createRequest({
-      params: { crn: 'X123456' },
+      params: { crn: 'X123456', contactType: 'add-police-liason' },
       body: { date: '17/5/2024', time: '09:00', sensitivity: 'Yes' },
     })
     const res = createRes()
@@ -45,7 +48,7 @@ describe('middleware/validation/addContactType', () => {
 
   it('renders with errors when date is missing', () => {
     const req = httpMocks.createRequest({
-      params: { crn: 'X123456' },
+      params: { crn: 'X123456', contactType: 'add-police-liason' },
       body: { sentence: '1', time: '09:00', sensitivity: 'Yes' },
     })
     const res = createRes()
@@ -55,11 +58,12 @@ describe('middleware/validation/addContactType', () => {
     expect(next).not.toHaveBeenCalled()
     const renderData = (res.render as jest.Mock).mock.calls[0][1]
     expect(renderData.errorMessages.date).toBeDefined()
+    expect(renderData.contactTypeName).toBe('Police Liason')
   })
 
   it('renders with errors when time format is invalid', () => {
     const req = httpMocks.createRequest({
-      params: { crn: 'X123456' },
+      params: { crn: 'X123456', contactType: 'add-police-liason' },
       body: { sentence: '1', date: '17/5/2024', time: 'not-a-time', sensitivity: 'Yes' },
     })
     const res = createRes()
@@ -73,7 +77,7 @@ describe('middleware/validation/addContactType', () => {
 
   it('requires alertResponsibleOfficer when responsibleOfficer is SHOW_OFFICER', () => {
     const req = httpMocks.createRequest({
-      params: { crn: 'X123456' },
+      params: { crn: 'X123456', contactType: 'add-police-liason' },
       body: { ...validBody, responsibleOfficer: 'SHOW_OFFICER' },
     })
     const res = createRes()
@@ -86,7 +90,11 @@ describe('middleware/validation/addContactType', () => {
   })
 
   it('does not require alertResponsibleOfficer when responsibleOfficer is not SHOW_OFFICER', () => {
-    const req = httpMocks.createRequest({ params: { crn: 'X123456' }, body: validBody })
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactType: 'add-police-liason' },
+      contactType: 'police-liason',
+      body: validBody,
+    })
     const res = createRes()
 
     addContactType(req, res, next)
@@ -96,7 +104,7 @@ describe('middleware/validation/addContactType', () => {
 
   it('requires visor when isVisor is SHOW_VISOR', () => {
     const req = httpMocks.createRequest({
-      params: { crn: 'X123456' },
+      params: { crn: 'X123456', contactType: 'add-police-liason' },
       body: { ...validBody, isVisor: 'SHOW_VISOR' },
     })
     const res = createRes()
@@ -110,7 +118,7 @@ describe('middleware/validation/addContactType', () => {
 
   it('renders with the crn and form values on error', () => {
     const body = { date: '17/5/2024', time: '09:00', sensitivity: 'Yes' }
-    const req = httpMocks.createRequest({ params: { crn: 'X123456' }, body })
+    const req = httpMocks.createRequest({ params: { crn: 'X123456', contactType: 'add-police-liason' }, body })
     const res = createRes()
 
     addContactType(req, res, next)
