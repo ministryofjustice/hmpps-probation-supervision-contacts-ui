@@ -92,7 +92,6 @@ describe('middleware/validation/addContactType', () => {
   it('does not require alertResponsibleOfficer when responsibleOfficer is not SHOW_OFFICER', () => {
     const req = httpMocks.createRequest({
       params: { crn: 'X123456', contactType: 'add-police-liason' },
-      contactType: 'police-liason',
       body: validBody,
     })
     const res = createRes()
