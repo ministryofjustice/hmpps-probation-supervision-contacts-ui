@@ -1,0 +1,30 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/mas-api/overview/.+"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "crn": "X123456",
+      "name": {
+        "forename": "John",
+        "surname": "Doe"
+      },
+      "sentence": {
+          "personSummary": {
+            "name": {
+              "forename": "Jane",
+              "surname": "Smith"
+            },
+            "crn": "X123456",
+            "dateOfBirth": "1990-01-01"
+          },
+          "sentenceSummaryList": []
+        }
+    }
+  }
+}

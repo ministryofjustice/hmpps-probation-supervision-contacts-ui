@@ -8,8 +8,8 @@
     "jsonBody": {
       "crn": "X123456",
       "name": {
-        "forename": "Test",
-        "surname": "User"
+        "forename": "Jane",
+        "surname": "Smith"
       },
       "dateOfBirth": "1990-01-01"
     },

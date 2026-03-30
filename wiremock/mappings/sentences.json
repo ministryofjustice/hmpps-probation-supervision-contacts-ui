@@ -1,0 +1,28 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/mas-api/sentences/.*",
+    "queryParameters": {
+      "includeRarRequirements": {
+        "equalTo": "false"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+          "personSummary": {
+            "name": {
+              "forename": "Jane",
+              "surname": "Smith"
+            },
+            "crn": "X123456",
+            "dateOfBirth": "1990-01-01"
+          },
+          "sentenceSummaryList": []
+        }
+  }
+}
