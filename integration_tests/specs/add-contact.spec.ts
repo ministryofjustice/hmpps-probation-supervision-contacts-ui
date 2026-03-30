@@ -1,5 +1,26 @@
 import { test } from '@playwright/test'
 import AddContactPage from '../pages/add-contact'
+import { login, resetStubs } from '../testUtils'
+import masApi from '../mockApis/masApi'
+import arnsApi from '../mockApis/arnsApi'
+import tierApi from '../mockApis/tierApi'
+
+test.beforeEach(async ({ page }) => {
+  await Promise.all([
+    masApi.stubGetPersonalDetails('X123456'),
+    arnsApi.stubGetRisks(),
+    tierApi.stubGetCalculationDetails(),
+    arnsApi.stubGetPredictorsAll(),
+    masApi.stubGetProbationPractitioner(),
+    masApi.stubGetSentences(),
+    masApi.stubGetOverview(),
+  ])
+  await login(page)
+})
+
+test.afterEach(async () => {
+  await resetStubs()
+})
 
 test('details and date fields are visible and writable', async ({ page }) => {
   const addContactPage = new AddContactPage(page)
