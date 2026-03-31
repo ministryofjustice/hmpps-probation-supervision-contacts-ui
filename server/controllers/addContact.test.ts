@@ -31,6 +31,7 @@ function createReq(overrides: Partial<Request> = {}): Request {
     body: {},
     query: {},
     session: { data: {} },
+    get: jest.fn().mockReturnValue(''),
     ...overrides,
   } as unknown as Request
 }
@@ -90,6 +91,77 @@ describe('addContactController', () => {
       const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
       expect(renderArgs.contactLogUrl).toContain('X123456')
       expect(renderArgs.ndeliusDeepLinkUrl).toContain('X123456')
+    })
+
+    it('keeps selected contactType when returning from step 2 via query param', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        query: { from: 'step2' },
+        session: {
+          data: {
+            contactType: {
+              X123456: 'CM3A',
+            },
+          },
+        } as any,
+      })
+
+      const res = createRes({
+        radioItems: [{ value: 'CM3A' }, { value: 'CM1' }],
+        contactTypes: [],
+      })
+
+      await addContactController.getFrequentlyUsedContact()(req, res, next)
+
+      expect((req.session as any).data.contactType.X123456).toBe('CM3A')
+    })
+
+    it('keeps selected contactType when returning from step 2 via referer', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        session: {
+          data: {
+            contactType: {
+              X123456: 'CM3A',
+            },
+          },
+        } as any,
+      })
+
+      ;(req.get as jest.Mock).mockReturnValue('/case/X123456/contacts/add-email-or-text-from-other')
+
+      const res = createRes({
+        radioItems: [{ value: 'CM3A' }, { value: 'CM1' }],
+        contactTypes: [],
+      })
+
+      await addContactController.getFrequentlyUsedContact()(req, res, next)
+
+      expect((req.session as any).data.contactType.X123456).toBe('CM3A')
+    })
+
+    it('clears selected contactType when not returning from step 2', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        session: {
+          data: {
+            contactType: {
+              X123456: 'CM3A',
+            },
+          },
+        } as any,
+      })
+
+      ;(req.get as jest.Mock).mockReturnValue('/case/X123456/')
+
+      const res = createRes({
+        radioItems: [{ value: 'CM3A' }, { value: 'CM1' }],
+        contactTypes: [],
+      })
+
+      await addContactController.getFrequentlyUsedContact()(req, res, next)
+
+      expect((req.session as any).data.contactType.X123456).toBeUndefined()
     })
 
     it('redirects to arrange-appointment when feature flag is on and appointment query is set', async () => {

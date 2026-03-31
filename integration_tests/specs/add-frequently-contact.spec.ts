@@ -32,3 +32,31 @@ test('user can select appointment contact', async ({ page }) => {
 
   await expect(page).toHaveURL('/case/X123456/contacts/add-internal-communications')
 })
+
+test('keeps selected contact when using browser back from step 2', async ({ page }) => {
+  const addContactPage = new AddFrequentContactPage(page)
+
+  await page.goto('/case/X123456/add-frequently-used-contact')
+
+  await addContactPage.selectContact('C326')
+  await addContactPage.clickContinue()
+
+  await page.goBack()
+
+  await expect(page.locator('input[value="C326"]')).toBeChecked()
+})
+
+test('clears selected contact when navigating away and returning', async ({ page }) => {
+  const addContactPage = new AddFrequentContactPage(page)
+
+  await page.goto('/case/X123456/add-frequently-used-contact')
+
+  await addContactPage.selectContact('C326')
+  await addContactPage.clickContinue()
+
+  await page.goto('/case/X123456')
+
+  await page.goto('/case/X123456/add-frequently-used-contact')
+
+  await expect(page.locator('input[value="C326"]')).not.toBeChecked()
+})

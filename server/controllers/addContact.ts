@@ -13,9 +13,18 @@ const addContactController = {
   getFrequentlyUsedContact: (): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
+      const referer = req.get('referer') || ''
+      const cameFromStepTwo = req.query.from === 'step2' || referer.includes(`/case/${crn}/contacts/add-`)
+
       await sendAuditMessage(res, AuditAction.VIEW_ADD_FREQUENTLY_USED_CONTACT, crn as string, SubjectType.CRN)
-      const sessionData = (req.session as any).data || {}
-      const selectedContactType = sessionData?.contactType?.[crn]
+      const session = req.session as any
+      session.data ||= {}
+      session.data.contactType ||= {}
+      if (!cameFromStepTwo) {
+        delete session.data.contactType[crn]
+      }
+
+      const selectedContactType = session.data?.contactType?.[crn]
       const baseRadioItems = res.locals.radioItems || []
       const radioItems = baseRadioItems.map((item: any) => ({
         ...item,
