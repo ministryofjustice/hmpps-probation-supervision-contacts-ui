@@ -1,18 +1,14 @@
 import type { Request, Response } from 'express'
 import MasApiClient from '../data/masApiClient'
 import ContactService from '../services/contactService'
-import { getFrequentContactTypes } from '../middleware/getFrequentlyUsedContactTypes'
 import addContactController from './addContact'
 import { ContactType } from '../data/model/contacts'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
+import { ContactTypeOptions } from '../data/model/contactTypes'
 
-jest.mock('../middleware/getFrequentlyUsedContactTypes', () => ({
-  getFrequentContactTypes: jest.fn(),
-}))
 jest.mock('../services/contactService')
 jest.mock('../middleware/sendAuditMessage')
 
-const mockGetFrequentContactTypes = getFrequentContactTypes as jest.Mock
 const MockContactService = ContactService as jest.MockedClass<typeof ContactService>
 const mockSendAuditMessage = sendAuditMessage as jest.Mock
 
@@ -60,7 +56,6 @@ describe('addContactController', () => {
     MockContactService.mockImplementation(
       () => ({ createContact: mockCreateContact, patchDocuments: mockPatchDocuments }) as any,
     )
-    mockGetFrequentContactTypes.mockResolvedValue(mockContactTypes)
   })
 
   describe('getFrequentlyUsedContact', () => {
@@ -145,7 +140,7 @@ describe('addContactController', () => {
 
       await addContactController.postFrequentlyUsedContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
-      expect(res.redirect).toHaveBeenCalledWith('/case/X123456/contacts/add-community-intervention')
+      expect(res.redirect).toHaveBeenCalledWith('/case/X123456/contacts/add-email-or-text-from-other')
     })
 
     it('falls back to raw contactType code in slug when type not found', async () => {
@@ -160,7 +155,7 @@ describe('addContactController', () => {
 
   describe('getAddContactType', () => {
     it('renders add-contact-type page with correct locals', async () => {
-      const req = createReq({ params: { crn: 'X123456', contactType: 'community-intervention' } })
+      const req = createReq({ params: { crn: 'X123456', contactType: 'police-liaison' } })
       const res = createRes({
         isResponsibleOfficer: true,
         sentences: [],
@@ -176,7 +171,7 @@ describe('addContactController', () => {
         'pages/contacts/add-contact-type',
         expect.objectContaining({
           crn: 'X123456',
-          contactTypeName: 'Community intervention',
+          contactTypeName: 'Police liaison',
           sentences: [],
         }),
       )
@@ -249,7 +244,7 @@ describe('addContactController', () => {
     }
 
     it('creates a contact and redirects to activity log', async () => {
-      const req = createReq({ params: { crn: 'X123456', contactType: 'community-intervention' }, body: validBody })
+      const req = createReq({ params: { crn: 'X123456', contactType: 'email-or-text-from-other' }, body: validBody })
       const res = createRes()
 
       await addContactController.postAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)

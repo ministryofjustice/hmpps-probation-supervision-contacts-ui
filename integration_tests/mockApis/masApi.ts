@@ -148,4 +148,37 @@ export default {
         jsonBody: { id },
       },
     }),
+
+  stubGetOverview: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/mas-api/overview/.+',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: { registrations: [] },
+      },
+    }),
+
+  stubGetProbationPractitioner: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/mas-api/case/.+/probation-practitioner',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          code: 'N01A001',
+          name: { forename: 'Jane', surname: 'Doe' },
+          provider: { code: 'N01', name: 'NPS North West' },
+          team: { description: 'Team One', code: 'N01T01' },
+          unallocated: false,
+          username: 'PRACTITIONER1',
+        },
+      },
+    }),
 }

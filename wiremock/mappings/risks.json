@@ -1,0 +1,22 @@
+{
+  "mappings": [
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/arns-api/risks/crn/.*"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "summary": {
+        "overallRiskLevel": "LOW"
+      },
+      "assessedOn": "2026-03-30"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
+]
+}

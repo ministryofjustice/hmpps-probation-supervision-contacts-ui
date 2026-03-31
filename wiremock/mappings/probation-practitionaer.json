@@ -1,0 +1,29 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/mas-api/case/.*/probation-practitioner"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+          "code": "N07B795",
+          "name": {
+            "forename": "Deborah",
+            "surname": "Fern"
+          },
+          "provider": {
+            "code": "N07",
+            "name": "London"
+          },
+          "team": {
+            "code": "N07AAT",
+            "description": "Automated Allocation Team"
+          },
+          "unallocated": false,
+          "username": "DeborahFern"
+        }
+  }
+}

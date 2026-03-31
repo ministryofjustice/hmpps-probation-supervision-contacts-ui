@@ -1,0 +1,16 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/probation-frontend-components/api/components.*"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "header": {},
+      "footer": {}
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/mas-api/personal-details/.*"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "crn": "X123456",
+      "name": {
+        "forename": "Jane",
+        "surname": "Smith"
+      },
+      "dateOfBirth": "1990-01-01"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

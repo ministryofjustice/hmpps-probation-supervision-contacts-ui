@@ -2,6 +2,7 @@ import { Page } from '@playwright/test'
 import tokenVerification from './mockApis/tokenVerification'
 import hmppsAuth, { type UserToken } from './mockApis/hmppsAuth'
 import masApi from './mockApis/masApi'
+import fliptApi from './mockApis/fliptApi'
 import { resetStubs } from './mockApis/wiremock'
 
 export { resetStubs }
@@ -26,6 +27,7 @@ export const login = async (
     hmppsAuth.token({ name, roles, authSource }),
     tokenVerification.stubVerifyToken(active),
     masApi.stubGetAlertsCount(),
+    fliptApi.stubSnapshot(),
   ])
   await attemptHmppsAuthLogin(page)
 }

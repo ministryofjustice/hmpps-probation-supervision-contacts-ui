@@ -1,11 +1,10 @@
 import type { RequestHandler } from 'express'
-import MasApiClient from '../data/masApiClient'
-import { getFrequentContactTypes } from './getFrequentlyUsedContactTypes'
+import { ContactTypeOptions } from '../data/model/contactTypes'
 
-export const populateContactTypes = (masApiClient: MasApiClient): RequestHandler => {
+export const populateContactTypes = (): RequestHandler => {
   return async (req, res, next) => {
     try {
-      const contactTypes = await getFrequentContactTypes(req, masApiClient, res.locals.user.username)
+      const contactTypes = ContactTypeOptions
 
       const radioItems: any[] = [
         {
