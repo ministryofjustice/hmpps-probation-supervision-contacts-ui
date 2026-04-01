@@ -42,13 +42,7 @@ test('selected contact relation radio remains checked after validation error', a
   await page.goto('/case/X123456/contacts/add-internal-communications')
 
   await addContactPage.selectPersonLevelContact()
-
-  // submit without filling required fields
   await addContactPage.clickContinue()
-
-  // validation error should appear
   await addContactPage.expectErrorSummaryVisible()
-
-  // radio should still be selected
   await addContactPage.expectPersonLevelContactChecked()
 })
