@@ -53,6 +53,7 @@
                 {% set allSentences = (allSentences.push({
                     text: headerPersonName.forename,
                     value: 'PERSON_LEVEL_CONTACT',
+                    checked: true if formValues and formValues.sentence == 'PERSON_LEVEL_CONTACT',
                     label: {
                         classes: 'govuk-!-font-weight-bold',
                         attributes: {

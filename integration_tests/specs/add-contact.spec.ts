@@ -35,3 +35,20 @@ test('details and date fields are visible and writable', async ({ page }) => {
   await addContactPage.enterDate('17/05/2024')
   await addContactPage.expectDateValue('17/05/2024')
 })
+
+test('selected contact relation radio remains checked after validation error', async ({ page }) => {
+  const addContactPage = new AddContactPage(page)
+
+  await page.goto('/case/X123456/contacts/add-internal-communications')
+
+  await addContactPage.selectPersonLevelContact()
+
+  // submit without filling required fields
+  await addContactPage.clickContinue()
+
+  // validation error should appear
+  await addContactPage.expectErrorSummaryVisible()
+
+  // radio should still be selected
+  await addContactPage.expectPersonLevelContactChecked()
+})
