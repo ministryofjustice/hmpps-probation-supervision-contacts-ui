@@ -7,10 +7,19 @@ export default class AddContactPage {
 
   readonly dateField: Locator
 
+  readonly continueButton: Locator
+
+  readonly personLevelContactRadio: Locator
+
+  readonly errorSummary: Locator
+
   constructor(page: Page) {
     this.page = page
     this.detailsField = page.locator('#details')
     this.dateField = page.locator('#date')
+    this.personLevelContactRadio = page.locator('#sentence')
+    this.continueButton = page.getByRole('button', { name: 'Create contact' })
+    this.errorSummary = page.locator('.govuk-error-summary')
   }
 
   async expectDetailsVisible(): Promise<void> {
@@ -35,5 +44,21 @@ export default class AddContactPage {
 
   async expectDateValue(date: string): Promise<void> {
     await expect(this.dateField).toHaveValue(date)
+  }
+
+  async selectPersonLevelContact(): Promise<void> {
+    await this.personLevelContactRadio.check()
+  }
+
+  async clickContinue(): Promise<void> {
+    await this.continueButton.click()
+  }
+
+  async expectErrorSummaryVisible(): Promise<void> {
+    await expect(this.errorSummary).toBeVisible()
+  }
+
+  async expectPersonLevelContactChecked(): Promise<void> {
+    await expect(this.personLevelContactRadio).toBeChecked()
   }
 }
