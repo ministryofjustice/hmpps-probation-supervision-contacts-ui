@@ -1,0 +1,16 @@
+.app-checkboxes--two-columns {
+  column-count: 1;
+  column-gap: 30px;
+}
+
+@media (min-width: 40.0625em) {
+  .app-checkboxes--two-columns {
+    column-count: 2;
+  }
+}
+
+.app-checkboxes--two-columns .govuk-checkboxes__item {
+  break-inside: avoid;
+  display: flex;
+  align-items: flex-start;
+}

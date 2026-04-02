@@ -1,6 +1,7 @@
 {% extends "../../partials/layout.njk" %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "../../partials/breadcrumb.njk" import breadcrumb %}
 
@@ -66,17 +67,17 @@
             {% endif %}
 
             {% if flags and flags.searchContactsByCategory %}
-                <div class="govuk-tabs" data-module="govuk-tabs" data-scroll-top-on-change="true">
+                <div class="govuk-tabs" data-module="govuk-tabs" data-scroll-top-on-change="true" data-active-tab="{% if searchByCategoryTabActive %}search-by-category{% endif %}">
                     <ul class="govuk-tabs__list">
-                        <li class="govuk-tabs__list-item govuk-tabs__list-item--selected">
+                        <li class="govuk-tabs__list-item{% if not searchByCategoryTabActive %} govuk-tabs__list-item--selected{% endif %}">
                             <a class="govuk-tabs__tab" href="#frequently-used-contacts">Frequently used contacts</a>
                         </li>
-                        <li class="govuk-tabs__list-item">
+                        <li class="govuk-tabs__list-item{% if searchByCategoryTabActive %} govuk-tabs__list-item--selected{% endif %}">
                             <a class="govuk-tabs__tab" href="#search-by-category">Search by category</a>
                         </li>
                     </ul>
 
-                    <div class="govuk-tabs__panel" id="frequently-used-contacts">
+                    <div class="govuk-tabs__panel{% if searchByCategoryTabActive %} govuk-tabs__panel--hidden{% endif %}" id="frequently-used-contacts">
                         <h3 class="govuk-heading-s">Select a frequently used contact</h3>
                         <ul class="govuk-list app-contact-list" data-qa="frequentlyUsedContactList">
                             <li class="app-contact-list__item">
@@ -90,9 +91,70 @@
                         </ul>
                     </div>
 
-                    <div class="govuk-tabs__panel govuk-tabs__panel--hidden" id="search-by-category">
-                        <h3 class="govuk-heading-s">Search by category</h3>
-                        <p class="govuk-body">Browse contact categories to find the type you need.</p>
+                    <div class="govuk-tabs__panel{% if not searchByCategoryTabActive %} govuk-tabs__panel--hidden{% endif %}" id="search-by-category">
+                        <form method="post" action="/case/{{ crn }}/add-frequently-used-contact/search-by-category" id="category-search-form">
+                            <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                            <input type="hidden" name="lastCategories" value="{{ lastCategories }}">
+
+                            {{ govukCheckboxes({
+                                idPrefix: "categories",
+                                name: "categories",
+                                classes: "govuk-checkboxes--small app-checkboxes--two-columns",
+                                fieldset: {
+                                    legend: {
+                                        text: "Search by category",
+                                        classes: "govuk-fieldset__legend--s"
+                                    }
+                                },
+                                items: categoryCheckboxItems,
+                                errorMessage: { text: errorMessages.categories } if errorMessages.categories
+                            }) }}
+
+                            <div class="govuk-button-group">
+                                {{ govukButton({
+                                    text: "Search",
+                                    attributes: { "data-qa": "category-search-button" }
+                                }) }}
+                                <button class="govuk-button govuk-button--secondary" type="submit" name="action" value="clear" data-qa="category-clear-button">Clear</button>
+                            </div>
+                        </form>
+
+                        {% if searchResults %}
+                            <div data-qa="categorySearchResults">
+                                <h3 class="govuk-heading-m">Search results</h3>
+                                <p class="govuk-body">Showing {{ searchResults.count }} results</p>
+
+                                {% for category in searchResults.categories %}
+                                    <h3 class="govuk-heading-s">{{ category.name }}</h3>
+
+                                    {% if category.items and category.items.length %}
+                                        <ul class="govuk-list app-contact-list">
+                                            {% for item in category.items %}
+                                                <li class="app-contact-list__item">
+                                                    <a class="govuk-link" href="{{ item.href }}">{{ item.displayName }}</a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+
+                                    {% for subcategory in category.subcategories %}
+                                        <h4 class="govuk-heading-xs">{{ subcategory.name }}</h4>
+                                        <ul class="govuk-list app-contact-list">
+                                            {% for item in subcategory.items %}
+                                                <li class="app-contact-list__item">
+                                                    <a class="govuk-link" href="{{ item.href }}">{{ item.displayName }}</a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endfor %}
+                                {% endfor %}
+
+                                <p class="govuk-body govuk-!-margin-top-4">
+                                    If you can't find the contact you need, try
+                                    <a class="govuk-link" href="{{ ndeliusDeepLinkUrl }}" target="_blank" data-ndelius-link="true" data-back-url="{{ contactLogUrl }}">using NDelius (opens in new tab)</a>.
+                                </p>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             {% else %}

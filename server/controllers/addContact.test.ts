@@ -4,7 +4,6 @@ import ContactService from '../services/contactService'
 import addContactController from './addContact'
 import { ContactType } from '../data/model/contacts'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
-import { ContactTypeOptions } from '../data/model/contactTypes'
 
 jest.mock('../services/contactService')
 jest.mock('../middleware/sendAuditMessage')

@@ -26,6 +26,7 @@ jest.mock('../controllers', () => ({
     addContact: {
       getFrequentlyUsedContact: jest.fn().mockReturnValue(jest.fn()),
       postFrequentlyUsedContact: jest.fn().mockReturnValue(jest.fn()),
+      postSearchByCategory: jest.fn().mockReturnValue(jest.fn()),
       getAddContactType: jest.fn().mockReturnValue(jest.fn()),
       postAddContactType: jest.fn().mockReturnValue(jest.fn()),
     },
@@ -61,17 +62,21 @@ describe('addContactRoutes', () => {
     expect(postSpy.mock.calls[0][0]).toBe('/case/:crn/add-frequently-used-contact')
   })
 
+  it('registers POST /case/:crn/add-frequently-used-contact/search-by-category', () => {
+    expect(postSpy.mock.calls[1][0]).toBe('/case/:crn/add-frequently-used-contact/search-by-category')
+  })
+
   it('registers GET /case/:crn/contacts/add-:contactType', () => {
     expect(getSpy.mock.calls[1][0]).toBe('/case/:crn/contacts/add-:contactType')
   })
 
   it('registers POST /case/:crn/contacts/add-:contactType', () => {
-    expect(postSpy.mock.calls[1][0]).toBe('/case/:crn/contacts/add-:contactType')
+    expect(postSpy.mock.calls[2][0]).toBe('/case/:crn/contacts/add-:contactType')
   })
 
-  it('registers exactly 2 GET routes and 2 POST routes', () => {
+  it('registers exactly 2 GET routes and 3 POST routes', () => {
     expect(getSpy).toHaveBeenCalledTimes(2)
-    expect(postSpy).toHaveBeenCalledTimes(2)
+    expect(postSpy).toHaveBeenCalledTimes(3)
   })
 
   it('registers validateCrnParam for the crn route parameter', () => {
