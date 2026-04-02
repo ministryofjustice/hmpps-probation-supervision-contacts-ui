@@ -14,7 +14,8 @@ const setupCategorySearch = () => {
 
   const clearState = () => {
     const checkboxes = form.querySelectorAll('input[name="categories"][type="checkbox"]')
-    checkboxes.forEach(checkbox => {
+    checkboxes.forEach(element => {
+      const checkbox = element
       checkbox.checked = false
       checkbox.removeAttribute('checked')
     })
@@ -35,9 +36,9 @@ const setupCategorySearch = () => {
     }
 
     form.querySelectorAll('.govuk-error-message').forEach(element => element.remove())
-    form.querySelectorAll('.govuk-form-group--error').forEach(element =>
-      element.classList.remove('govuk-form-group--error'),
-    )
+    form
+      .querySelectorAll('.govuk-form-group--error')
+      .forEach(element => element.classList.remove('govuk-form-group--error'))
   }
 
   const frequentTab = document.querySelector('[href="#frequently-used-contacts"]')

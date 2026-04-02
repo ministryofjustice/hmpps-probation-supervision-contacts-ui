@@ -63,7 +63,10 @@ const addContactController = {
       const selectedCategories = normaliseSelectedCategories(req.body?.categories)
       const lastCategories = normaliseSelectedCategories(
         typeof req.body?.lastCategories === 'string' && req.body.lastCategories.length
-          ? req.body.lastCategories.split(',').map((value: string) => value.trim()).filter(Boolean)
+          ? req.body.lastCategories
+              .split(',')
+              .map((value: string) => value.trim())
+              .filter(Boolean)
           : [],
       )
       const action = req.body?.action
