@@ -6,7 +6,7 @@ import TierApiClient from '../data/tierApiClient'
 import { tierLink } from '../utils/tierLink'
 import { toPredictors } from '../utils/toPredictors'
 import { toRoshWidget } from '../utils/toRoshWidget'
-import { PersonalDetailsCache } from '../@types/express'
+import type { PersonalDetailsCache } from '../@types/express'
 import logger from '../../logger'
 
 export const getPersonalDetails = (
