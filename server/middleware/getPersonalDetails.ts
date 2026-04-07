@@ -26,7 +26,6 @@ export const getPersonalDetails = (
     logger.debug(
       {
         cache: personalDetails ? 'hit' : 'miss',
-        sessionId: req.sessionID?.slice(0, 8),
       },
       'Personal details cache',
     )
