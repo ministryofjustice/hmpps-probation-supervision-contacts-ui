@@ -132,7 +132,7 @@
           "Content-Type": "application/json;charset=UTF-8"
         },
         "jsonBody": {
-          "id": "123456789"
+          "id": 123456789
         }
       }
     }
