@@ -385,7 +385,7 @@ export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
   {
     category: 'Communication and information sharing with others',
     subcategory: 'Police',
-    code: 'C202',
+    code: 'C204',
     displayName: 'Police liaison',
   },
   {

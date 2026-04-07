@@ -18,7 +18,13 @@ export const attemptHmppsAuthLogin = async (page: Page) => {
 
 export const login = async (
   page: Page,
-  { name, roles = DEFAULT_ROLES, active = true, authSource = 'nomis' }: UserToken & { active?: boolean } = {},
+  {
+    name,
+    roles = DEFAULT_ROLES,
+    active = true,
+    authSource = 'nomis',
+    flags = [],
+  }: UserToken & { active?: boolean; flags?: Array<{ key: string; enabled?: boolean }> } = {},
 ) => {
   await Promise.all([
     hmppsAuth.favicon(),
@@ -27,7 +33,7 @@ export const login = async (
     hmppsAuth.token({ name, roles, authSource }),
     tokenVerification.stubVerifyToken(active),
     masApi.stubGetAlertsCount(),
-    fliptApi.stubSnapshot(),
+    fliptApi.stubSnapshot(flags),
   ])
   await attemptHmppsAuthLogin(page)
 }
