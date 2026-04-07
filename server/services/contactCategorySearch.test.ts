@@ -1,8 +1,4 @@
-import {
-  buildCategoryCheckboxItems,
-  buildSearchResults,
-  normaliseSelectedCategories,
-} from './contactCategorySearch'
+import { buildCategoryCheckboxItems, buildSearchResults, normaliseSelectedCategories } from './contactCategorySearch'
 
 const crn = 'X123456'
 
