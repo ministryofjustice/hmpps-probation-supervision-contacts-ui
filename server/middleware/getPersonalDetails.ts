@@ -1,13 +1,13 @@
 import type { RequestHandler } from 'express'
+
 import MasApiClient from '../data/masApiClient'
 import ArnsApiClient from '../data/arnsApiClient'
-import TierApiClient, { TierCalculation } from '../data/tierApiClient'
+import TierApiClient from '../data/tierApiClient'
 import { tierLink } from '../utils/tierLink'
 import { toPredictors } from '../utils/toPredictors'
 import { toRoshWidget } from '../utils/toRoshWidget'
-import { PersonalDetails } from '../data/model/personalDetails'
-import { RiskScoresDto, RiskSummary } from '../data/model/risk'
-import { ErrorSummary } from '../data/model/common'
+import { PersonalDetailsCache } from '../@types/express'
+import logger from '../../logger'
 
 export const getPersonalDetails = (
   masApiClient: MasApiClient,
@@ -17,44 +17,62 @@ export const getPersonalDetails = (
   return async (req, res, next) => {
     const crn = req.params.crn as string
     const { username } = res.locals.user
-    let overview: PersonalDetails
-    let risks: RiskSummary | ErrorSummary | null
-    let tierCalculation: TierCalculation | ErrorSummary | null
-    let predictors: ErrorSummary | RiskScoresDto[] | null
-    const sessionData = (req.session as any).data
-    if (!sessionData?.personalDetails?.[crn] || process.env.NODE_ENV === 'development') {
-      ;[overview, risks, tierCalculation, predictors] = await Promise.all([
+
+    const sessionData = req.session.data
+    const personalDetails = sessionData?.personalDetails?.[crn]
+
+    let data: PersonalDetailsCache
+
+    logger.debug(
+      {
+        cache: personalDetails ? 'hit' : 'miss',
+        sessionId: req.sessionID?.slice(0, 8),
+      },
+      'Personal details cache',
+    )
+
+    if (personalDetails) {
+      data = personalDetails
+    } else {
+      const [overview, risks, tierCalculation, predictors] = await Promise.all([
         masApiClient.getPersonalDetails(crn, username),
         arnsApiClient.getRisks(crn, username),
         tierApiClient.getCalculationDetails(crn, username),
         arnsApiClient.getPredictorsAll(crn, username),
       ])
-      ;(req.session as any).data = {
+
+      data = {
+        overview,
+        risks,
+        tierCalculation,
+        predictors,
+      }
+
+      req.session.data = {
         ...(sessionData ?? {}),
         personalDetails: {
           ...(sessionData?.personalDetails ?? {}),
-          [crn]: {
-            overview,
-            risks,
-            tierCalculation,
-            predictors,
-          },
+          [crn]: data,
         },
       }
-    } else {
-      ;({ overview, risks, tierCalculation, predictors } = sessionData.personalDetails[crn])
     }
-    res.locals.case = overview
-    res.locals.risksWidget = toRoshWidget(risks)
-    res.locals.tierCalculation = tierCalculation
-    res.locals.predictorScores = toPredictors(predictors)
-    res.locals.headerPersonName = { forename: overview.name.forename, surname: overview.name.surname }
+
+    res.locals.case = data.overview
+    res.locals.risksWidget = toRoshWidget(data.risks)
+    res.locals.tierCalculation = data.tierCalculation
+    res.locals.predictorScores = toPredictors(data.predictors)
+    res.locals.headerPersonName = {
+      forename: data.overview.name.forename,
+      surname: data.overview.name.surname,
+    }
     res.locals.headerCRN = crn
-    res.locals.headerDob = overview.dateOfBirth
+    res.locals.headerDob = data.overview.dateOfBirth
     res.locals.headerTierLink = tierLink(crn)
-    if (overview?.dateOfDeath) {
-      res.locals.dateOfDeath = overview.dateOfDeath
+
+    if (data.overview.dateOfDeath) {
+      res.locals.dateOfDeath = data.overview.dateOfDeath
     }
+
     return next()
   }
 }
