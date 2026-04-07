@@ -1,8 +1,21 @@
-import { buildCategoryCheckboxItems, buildSearchResults } from './contactCategorySearch'
+import {
+  buildCategoryCheckboxItems,
+  buildSearchResults,
+  normaliseSelectedCategories,
+} from './contactCategorySearch'
 
 const crn = 'X123456'
 
 describe('contactCategorySearch', () => {
+  it('normalises selected categories from single values and arrays', () => {
+    expect(normaliseSelectedCategories(undefined)).toEqual([])
+    expect(normaliseSelectedCategories('Referrals')).toEqual(['Referrals'])
+    expect(normaliseSelectedCategories(['Referrals', 'Sentence management'])).toEqual([
+      'Referrals',
+      'Sentence management',
+    ])
+  })
+
   it('builds category checkbox items in alphabetical order', () => {
     const items = buildCategoryCheckboxItems([])
 
@@ -11,6 +24,13 @@ describe('contactCategorySearch', () => {
     const sorted = [...labels].sort((a, b) => a.localeCompare(b))
 
     expect(labels).toEqual(sorted)
+  })
+
+  it('marks selected categories as checked', () => {
+    const items = buildCategoryCheckboxItems(['Referrals'])
+    const referrals = items.find(item => item.value === 'Referrals')
+
+    expect(referrals?.checked).toBe(true)
   })
 
   it('builds grouped search results with sorted headings and items', () => {
