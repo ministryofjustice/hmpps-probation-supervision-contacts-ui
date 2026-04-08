@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/alerts"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/html"
+    },
+    "body": "<html><body><h1>Mocked Alerts Page</h1></body></html>"
+  }
+}

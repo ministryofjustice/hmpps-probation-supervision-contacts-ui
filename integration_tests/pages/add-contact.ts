@@ -61,4 +61,46 @@ export default class AddContactPage {
   async expectPersonLevelContactChecked(): Promise<void> {
     await expect(this.personLevelContactRadio).toBeChecked()
   }
+
+  async expectSentenceErrorShown() {
+    await expect(this.page.locator('.govuk-error-summary')).toContainText('Select what the contact is related to')
+  }
+
+  async expectDateErrorShown() {
+    await expect(this.page.locator('#date-error')).toContainText('Enter or select a date')
+  }
+
+  async expectTimeErrorShown() {
+    await expect(this.page.locator('#time-error')).toContainText(
+      'Enter a time in the 24-hour format, for example 16:30',
+    )
+  }
+
+  async expectSensitivityErrorShown() {
+    await expect(this.page.locator('.govuk-error-summary')).toContainText(
+      'Select if the contact includes sensitive information',
+    )
+  }
+
+  async expectAlertResponsibleOfficerErrorShown() {
+    await expect(this.page.locator('.govuk-error-summary')).toContainText(
+      'Select if you want to alert the responsible officer',
+    )
+  }
+
+  async enterTime(value: string) {
+    await this.page.locator('#time').fill(value)
+  }
+
+  async selectSensitivityNo() {
+    await this.page.getByLabel('No, it is not sensitive').check()
+  }
+
+  async selectAlertResponsibleOfficerNo() {
+    await this.page.getByLabel('No').last().check()
+  }
+
+  async expectUrlToBe(url: string) {
+    await expect(this.page.url()).toContain(url)
+  }
 }
