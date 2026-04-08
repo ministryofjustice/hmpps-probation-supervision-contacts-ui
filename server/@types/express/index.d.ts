@@ -1,9 +1,24 @@
 import { HmppsUser } from '../../interfaces/hmppsUser'
+import { PersonalDetails } from '../../data/model/personalDetails'
+import { TierCalculation } from '../../data/tierApiClient'
+import { ErrorSummary } from '../../data/model/common'
+import { RiskScoresDto, RiskSummary } from '../../data/model/risk'
+
+export type PersonalDetailsCache = {
+  overview: PersonalDetails
+  risks: RiskSummary | ErrorSummary | null
+  tierCalculation: TierCalculation | ErrorSummary | null
+  predictors: ErrorSummary | RiskScoresDto[] | null
+}
+
+type AppSessionData = {
+  personalDetails?: Record<string, PersonalDetailsCache>
+}
 
 export declare module 'express-session' {
-  // Declare that the session will potentially contain these additional fields
   interface SessionData {
     returnTo: string
+    data?: AppSessionData | null
   }
 }
 

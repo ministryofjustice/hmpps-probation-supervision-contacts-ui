@@ -125,7 +125,7 @@ describe('/middleware/getPersonalDetails', () => {
     process.env = ORIGINAL_ENV
   })
 
-  it('should request data from the api if personal details for crn does not exist in the session and env is not development', async () => {
+  it('should request data from the api if personal details for crn does not exist in the session', async () => {
     process.env.NODE_ENV = 'production'
     mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(overview('X000002'))
     req = getReq()
@@ -157,44 +157,7 @@ describe('/middleware/getPersonalDetails', () => {
     expect(nextSpy).toHaveBeenCalled()
   })
 
-  it('should request data from the api if personal details for crn exist in the session and the env is development', async () => {
-    process.env.NODE_ENV = 'development'
-    mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(overview('X000002'))
-    req = httpMocks.createRequest({
-      params: {
-        crn: 'X000002',
-      },
-      session: {
-        data: {
-          personalDetails: {
-            X000001: mockSession(),
-            X000002: mockSession('X000002'),
-          },
-        },
-      },
-    })
-    res = getRes()
-    await getPersonalDetails(
-      mockMasApiClient as unknown as MasApiClient,
-      mockArnsApiClient as unknown as ArnsApiClient,
-      mockTierApiClient as unknown as TierApiClient,
-    )(req, res, nextSpy)
-    expect(mockMasApiClient.getPersonalDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
-    expect(mockTierApiClient.getCalculationDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
-    expect(mockArnsApiClient.getRisks).toHaveBeenCalledWith(req.params.crn, 'user-1')
-    expect(mockArnsApiClient.getPredictorsAll).toHaveBeenCalledWith(req.params.crn, 'user-1')
-    expect(res.locals.case).toEqual(overview('X000002'))
-    expect(res.locals.risksWidget).toEqual(toRoshWidget(mockRisks))
-    expect(res.locals.tierCalculation).toEqual(mockTierCalculation)
-    expect(res.locals.predictorScores).toEqual(toPredictors(mockPredictors))
-    expect(res.locals.headerPersonName).toEqual({ forename: 'Caroline', surname: 'Wolff' })
-    expect(res.locals.headerCRN).toEqual(req.params.crn)
-    expect(res.locals.headerDob).toEqual('1979-08-18')
-    expect(res.locals.headerTierLink).toEqual('https://tier-dev.hmpps.service.justice.gov.uk/case/X000002')
-    expect(nextSpy).toHaveBeenCalled()
-  })
-
-  it('should not request data from the api if personal details for crn already exist in the session and env is not development', async () => {
+  it('should not request data from the api if personal details for crn already exist in the session', async () => {
     process.env.NODE_ENV = 'production'
     req = httpMocks.createRequest({
       params: {
@@ -247,5 +210,49 @@ describe('/middleware/getPersonalDetails', () => {
       mockTierApiClient as unknown as TierApiClient,
     )(req, res, nextSpy)
     expect(res.locals.dateOfDeath).toEqual(dateOfDeath)
+  })
+
+  it('should initialise session data when no session data exists', async () => {
+    process.env.NODE_ENV = 'production'
+    mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(overview('X000002'))
+
+    req = httpMocks.createRequest({
+      params: {
+        crn: 'X000002',
+      },
+      session: {}, // no data property on session
+    })
+
+    res = getRes()
+
+    await getPersonalDetails(
+      mockMasApiClient as unknown as MasApiClient,
+      mockArnsApiClient as unknown as ArnsApiClient,
+      mockTierApiClient as unknown as TierApiClient,
+    )(req, res, nextSpy)
+
+    const expected = {
+      personalDetails: {
+        X000002: mockSession('X000002'),
+      },
+    }
+
+    expect((req.session as any).data).toEqual(expected)
+
+    expect(mockMasApiClient.getPersonalDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
+    expect(mockTierApiClient.getCalculationDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
+    expect(mockArnsApiClient.getRisks).toHaveBeenCalledWith(req.params.crn, 'user-1')
+    expect(mockArnsApiClient.getPredictorsAll).toHaveBeenCalledWith(req.params.crn, 'user-1')
+
+    expect(res.locals.case).toEqual(overview('X000002'))
+    expect(res.locals.risksWidget).toEqual(toRoshWidget(mockRisks))
+    expect(res.locals.tierCalculation).toEqual(mockTierCalculation)
+    expect(res.locals.predictorScores).toEqual(toPredictors(mockPredictors))
+    expect(res.locals.headerPersonName).toEqual({ forename: 'Caroline', surname: 'Wolff' })
+    expect(res.locals.headerCRN).toEqual(req.params.crn)
+    expect(res.locals.headerDob).toEqual('1979-08-18')
+    expect(res.locals.headerTierLink).toEqual('https://tier-dev.hmpps.service.justice.gov.uk/case/X000002')
+
+    expect(nextSpy).toHaveBeenCalled()
   })
 })

@@ -1,0 +1,140 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/case"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "text/html"
+        },
+        "body": "<html><body><h1>Cases</h1><p>Mocked case page.</p></body></html>"
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/case/[^/]+/activity-log",
+        "queryParameters": {
+          "showSuccessBanner": {
+            "equalTo": "true"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "text/html"
+        },
+        "body": "<html><body><h1>Activity Log</h1><p>Mocked activity log with success banner.</p></body></html>"
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/mas-api/user/USER1/providers",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "defaultUserDetails": {
+            "username": "USER1",
+            "name": {
+              "forename": "User",
+              "surname": "Surname"
+            },
+            "homeArea": "London",
+            "team": "Automated Allocation Team",
+            "email": "user.surname@testemail.com"
+          },
+          "providers": [
+            {
+              "code": "N50",
+              "name": "Greater Manchester"
+            },
+            {
+              "code": "N07",
+              "name": "London"
+            },
+            {
+              "code": "N54",
+              "name": "North East Region"
+            }
+          ],
+          "teams": [
+            {
+              "description": "Automated Allocation Team",
+              "code": "N07AAT"
+            },
+            {
+              "description": "Automation SPG",
+              "code": "N07CHT"
+            },
+            {
+              "description": "Homelessness Prevention Team",
+              "code": "N07HPT"
+            }
+          ],
+          "users": [
+            {
+              "username": "andy-best",
+              "nameAndRole": "andy best (PS-PSO)",
+              "name": {
+                "forename": "Andy",
+                "surname": "Best"
+              },
+              "email": "andy.best@testemail.com"
+            },
+            {
+              "username": "user1",
+              "nameAndRole": "user surname (PS-PSO)",
+              "name": {
+                "forename": "user",
+                "surname": "surname"
+              },
+              "email": "user1.surname@testemail.com"
+            },
+            {
+              "username": "tony-pan",
+              "nameAndRole": "tony pan (PS-PSO)",
+              "name": {
+                "forename": "Tony",
+                "surname": "Pan"
+              },
+              "email": "tony.pan@testemail.com"
+            },
+            {
+              "username": "terry-jones",
+              "name": {
+                "forename": "Terry",
+                "surname": "Jones"
+              },
+              "nameAndRole": "terry jones (PS-PSO)",
+              "email": "terry.jones@testemail.com"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPattern": "/mas-api/contact/.+"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        },
+        "jsonBody": {
+          "id": 123456789
+        }
+      }
+    }
+  ]
+}
