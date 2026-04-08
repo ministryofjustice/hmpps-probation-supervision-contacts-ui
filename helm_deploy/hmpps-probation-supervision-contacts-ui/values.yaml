@@ -15,6 +15,9 @@ generic-service:
   ingress:
     enabled: true
     host: app-hostname.local # override per environment
+    modsecurity_enabled: true
+    modsecurity_audit_enabled: true
+    modsecurity_github_team: mpop-tech
     tlsSecretName: hmpps-probation-supervision-contacts-ui-cert
 
   livenessProbe:

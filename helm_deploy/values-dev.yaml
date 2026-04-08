@@ -7,6 +7,7 @@ generic-service:
 
   ingress:
     host: probation-supervision-contacts-ui-dev.hmpps.service.justice.gov.uk
+    className: modsec-non-prod
 
   env:
     INGRESS_URL: "https://probation-supervision-contacts-ui-dev.hmpps.service.justice.gov.uk"
