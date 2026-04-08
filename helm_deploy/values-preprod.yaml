@@ -13,7 +13,7 @@ generic-service:
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api-preprod.prison.service.justice.gov.uk"
     EXAMPLE_API_URL: 'https://template-kotlin-preprod.hmpps.service.justice.gov.uk'
     ENVIRONMENT_NAME: PRE-PRODUCTION
-    AUDIT_ENABLED: "false"
+    AUDIT_ENABLED: "true"
     PROBATION_FRONTEND_COMPONENTS_API_URL: 'https://probation-frontend-components-preprod.hmpps.service.justice.gov.uk'
     PROBATION_FRONTEND_COMPONENTS_CONNECT_SRC: 'https://probation-frontend-components-preprod.hmpps.service.justice.gov.uk'
     PROBATION_FRONTEND_COMPONENTS_FONT_SRC: 'https://probation-frontend-components-preprod.hmpps.service.justice.gov.uk'
