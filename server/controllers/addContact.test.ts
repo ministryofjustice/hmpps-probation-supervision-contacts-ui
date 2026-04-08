@@ -2,21 +2,13 @@ import type { Request, Response } from 'express'
 import MasApiClient from '../data/masApiClient'
 import ContactService from '../services/contactService'
 import addContactController from './addContact'
-import { ContactType } from '../data/model/contacts'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
-import { ContactTypeOptions } from '../data/model/contactTypes'
 
 jest.mock('../services/contactService')
 jest.mock('../middleware/sendAuditMessage')
 
 const MockContactService = ContactService as jest.MockedClass<typeof ContactService>
 const mockSendAuditMessage = sendAuditMessage as jest.Mock
-
-const mockContactTypes: ContactType[] = [
-  { code: 'CM3A', description: 'Community intervention', isPersonLevelContact: false },
-  { code: 'CMOB', description: 'Office visit', isPersonLevelContact: false },
-]
-
 function createRes(locals: Record<string, unknown> = {}): Response {
   return {
     locals: { user: { username: 'test-user' }, ...locals },
@@ -394,6 +386,64 @@ describe('addContactController', () => {
 
       expect(mockPatchDocuments).toHaveBeenCalledWith('X123456', '1', mockFile, 'test-user')
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('showSuccessBanner=true&uploadFailed=true'))
+    })
+  })
+
+  describe('postSearchByCategory', () => {
+    it('clears selections and results when action is clear', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        body: { action: 'clear' },
+      })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+
+      await addContactController.postSearchByCategory()(req, res, next)
+
+      expect(res.render).toHaveBeenCalledWith(
+        'pages/contacts/add-frequently-used-contact',
+        expect.objectContaining({
+          crn: 'X123456',
+          searchResults: null,
+          selectedCategories: [],
+          searchByCategoryTabActive: true,
+          lastCategories: '',
+        }),
+      )
+    })
+
+    it('renders validation error when no categories selected', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        body: { lastCategories: 'Referrals,Sentence management' },
+      })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+
+      await addContactController.postSearchByCategory()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.errorMessages).toEqual({ categories: 'Select a category' })
+      expect(renderArgs.searchByCategoryTabActive).toBe(true)
+      expect(renderArgs.lastCategories).toBe('Referrals,Sentence management')
+    })
+
+    it('renders results when categories are selected', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        body: { categories: ['Referrals', 'Sentence management'] },
+      })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+
+      await addContactController.postSearchByCategory()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.selectedCategories).toEqual(['Referrals', 'Sentence management'])
+      expect(renderArgs.searchResults).toEqual(
+        expect.objectContaining({
+          count: expect.any(Number),
+          categories: expect.any(Array),
+        }),
+      )
+      expect(renderArgs.searchByCategoryTabActive).toBe(true)
     })
   })
 })

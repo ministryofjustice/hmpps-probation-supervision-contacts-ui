@@ -1,10 +1,10 @@
 import type { RequestHandler } from 'express'
-import { ContactTypeOptions } from '../data/model/contactTypes'
+import { FrequentlyUsedContactTypeOptions } from '../data/model/contactTypes'
 
 export const populateContactTypes = (): RequestHandler => {
   return async (req, res, next) => {
     try {
-      const contactTypes = ContactTypeOptions
+      const contactTypes = FrequentlyUsedContactTypeOptions
 
       const radioItems: any[] = [
         {
