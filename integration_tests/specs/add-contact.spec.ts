@@ -85,14 +85,12 @@ test('navigates to the activity log page with a success banner after filling add
   await addContactPage.selectAlertResponsibleOfficerNo()
 
   await addContactPage.clickContinue()
+  /* eslint-disable no-console */
+  console.log('CURRENT URL AFTER SUBMIT:')
+  console.log(page.url())
 
-  const hasErrors = await page.locator('.govuk-error-summary').isVisible()
-
-  if (hasErrors) {
-    /* eslint-disable no-console */
-    console.log('VALIDATION ERROR SUMMARY:')
-    console.log(await page.locator('.govuk-error-summary').textContent())
-    /* eslint-enable no-console */
-  }
+  console.log('PAGE CONTENT AFTER SUBMIT:')
+  console.log(await page.locator('body').textContent())
+  /* eslint-enable no-console */
   await addContactPage.expectUrlToBe('case/X123456/activity-log?showSuccessBanner=true')
 })
