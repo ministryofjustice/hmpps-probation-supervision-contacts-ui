@@ -28,14 +28,14 @@ $low-score-colour__text: #485b10;
   }
 
   & .predictor-timeline-item__level {
-    @include govuk-font(14, "regular");
+    @include govuk-font(16, "regular");
 
     float: left;
     color: $text-colour;
   }
 
   & .predictor-timeline-item__score {
-    @include govuk-font(14, "bold");
+    @include govuk-font(16, "bold");
 
     float: right;
     color: govuk-colour("black");
