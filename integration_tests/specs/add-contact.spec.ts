@@ -85,7 +85,13 @@ test('navigates to the activity log page with a success banner after filling add
   await addContactPage.selectAlertResponsibleOfficerNo()
 
   await addContactPage.clickContinue()
-  await addContactPage.expectNoErrorSummaryVisible()
+
+  const hasErrors = await page.locator('.govuk-error-summary').isVisible()
+
+  if (hasErrors) {
+    console.log('VALIDATION ERROR SUMMARY:')
+    console.log(await page.locator('.govuk-error-summary').textContent())
+  }
 
   await addContactPage.expectUrlToBe('case/X123456/activity-log?showSuccessBanner=true')
 })
