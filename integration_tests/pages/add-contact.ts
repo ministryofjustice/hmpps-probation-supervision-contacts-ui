@@ -93,11 +93,11 @@ export default class AddContactPage {
   }
 
   async selectSensitivityNo() {
-    await this.page.getByLabel('No, it is not sensitive').check()
+    await this.page.locator('input[name="sensitivity"][value="No"]').check()
   }
 
   async selectAlertResponsibleOfficerNo() {
-    await this.page.getByLabel('No').last().check()
+    await this.page.locator('input[name="alertResponsibleOfficer"][value="No"]').check()
   }
 
   async expectNoErrorSummaryVisible() {
