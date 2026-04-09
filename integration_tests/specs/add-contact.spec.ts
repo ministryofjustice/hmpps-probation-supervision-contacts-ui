@@ -85,6 +85,7 @@ test('navigates to the activity log page with a success banner after filling add
   await addContactPage.selectAlertResponsibleOfficerNo()
 
   await addContactPage.clickContinue()
+  await addContactPage.expectNoErrorSummaryVisible()
 
   await addContactPage.expectUrlToBe('case/X123456/activity-log?showSuccessBanner=true')
 })

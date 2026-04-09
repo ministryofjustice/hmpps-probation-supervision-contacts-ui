@@ -100,6 +100,10 @@ export default class AddContactPage {
     await this.page.getByLabel('No').last().check()
   }
 
+  async expectNoErrorSummaryVisible() {
+    await expect(this.page.locator('.govuk-error-summary')).not.toBeVisible()
+  }
+
   async expectUrlToBe(url: string) {
     await expect(this.page.url()).toContain(url)
   }
