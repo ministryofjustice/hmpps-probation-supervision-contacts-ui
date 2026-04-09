@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/contact/X123456"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": 12345
+    }
+  }
+}
