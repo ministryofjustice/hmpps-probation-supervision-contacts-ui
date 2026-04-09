@@ -105,6 +105,6 @@ export default class AddContactPage {
   }
 
   async expectUrlToBe(url: string) {
-    await expect(this.page.url()).toContain(url)
+    await expect(this.page).toHaveURL(currentUrl => currentUrl.toString().includes(url))
   }
 }
