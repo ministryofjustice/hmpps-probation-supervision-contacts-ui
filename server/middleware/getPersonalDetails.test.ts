@@ -194,6 +194,19 @@ describe('/middleware/getPersonalDetails', () => {
     expect(nextSpy).toHaveBeenCalled()
   })
 
+  it('should call next with a 404 error if personal details are not found', async () => {
+    process.env.NODE_ENV = 'production'
+    mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(null)
+    req = getReq()
+    res = getRes()
+    await getPersonalDetails(
+      mockMasApiClient as unknown as MasApiClient,
+      mockArnsApiClient as unknown as ArnsApiClient,
+      mockTierApiClient as unknown as TierApiClient,
+    )(req, res, nextSpy)
+    expect(nextSpy).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }))
+  })
+
   it('should set the local variable if date of death is recorded', async () => {
     req = getReq()
     res = getRes()

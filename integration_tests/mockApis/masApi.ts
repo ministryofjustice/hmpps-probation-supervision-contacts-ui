@@ -34,6 +34,19 @@ export default {
       },
     }),
 
+  stubGetPersonalDetailsNotFound: (crn = 'X999999'): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        url: `/mas-api/personal-details/${crn}`,
+      },
+      response: {
+        status: 404,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {},
+      },
+    }),
+
   stubGetPersonalDetails: (crn = 'A000001'): SuperAgentRequest =>
     stubFor({
       request: {

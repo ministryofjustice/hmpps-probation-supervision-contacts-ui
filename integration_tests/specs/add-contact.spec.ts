@@ -1,4 +1,4 @@
-import { test } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import AddContactPage from '../pages/add-contact'
 import { login, resetStubs } from '../testUtils'
 import masApi from '../mockApis/masApi'
@@ -34,6 +34,14 @@ test('details and date fields are visible and writable', async ({ page }) => {
   await addContactPage.expectDateVisible()
   await addContactPage.enterDate('17/05/2024')
   await addContactPage.expectDateValue('17/05/2024')
+})
+
+test('shows 404 page when CRN is not found', async ({ page }) => {
+  await masApi.stubGetPersonalDetailsNotFound()
+
+  await page.goto('/case/X999999/contacts/add-internal-communications')
+
+  await expect(page.locator('h1')).toContainText('Page not found')
 })
 
 test('selected contact relation radio remains checked after validation error', async ({ page }) => {

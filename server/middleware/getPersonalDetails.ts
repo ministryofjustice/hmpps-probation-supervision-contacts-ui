@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express'
-
+import createError from 'http-errors'
 import MasApiClient from '../data/masApiClient'
 import ArnsApiClient from '../data/arnsApiClient'
 import TierApiClient from '../data/tierApiClient'
@@ -39,6 +39,10 @@ export const getPersonalDetails = (
         tierApiClient.getCalculationDetails(crn, username),
         arnsApiClient.getPredictorsAll(crn, username),
       ])
+
+      if (!overview) {
+        return next(createError(404, 'Not found'))
+      }
 
       data = {
         overview,
