@@ -60,3 +60,15 @@ test('clears selected contact when navigating away and returning', async ({ page
 
   await expect(page.locator('input[value="C326"]')).not.toBeChecked()
 })
+
+test('user can open NDelius in new tab and redirect back to activity log', async ({ page }) => {
+  await page.goto('/case/X123456/add-frequently-used-contact')
+
+  const [newTab] = await Promise.all([
+    page.waitForEvent('popup'),
+    page.getByRole('link', { name: 'use NDelius (opens in new tab)' }).click(),
+  ])
+
+  await expect(newTab).toBeTruthy()
+  await expect(page).toHaveURL(url => url.pathname.includes('/case/X123456/activity-log'))
+})
