@@ -27,6 +27,8 @@ test('details and date fields are visible and writable', async ({ page }) => {
 
   await page.goto('/case/X123456/contacts/add-internal-communications')
 
+  await expect(page.locator('[data-qa="alertResponsibleOfficer"]')).toContainText('Jane Doe')
+
   await addContactPage.expectDetailsVisible()
   await addContactPage.enterDetails('This is a simple test contact note')
   await addContactPage.expectDetailsValue('This is a simple test contact note')

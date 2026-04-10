@@ -3,6 +3,7 @@ import MasApiClient from '../data/masApiClient'
 import { slugify } from '../utils/slugify'
 import { deliusDeepLinkUrl } from '../utils/deliusDeepLinkUrl'
 import { formattedDate } from '../utils/formattedDate'
+import { convertToTitleCase } from '../utils/utils'
 import { CreateContactRequest } from '../data/model/contacts'
 import ContactService from '../services/contactService'
 import config from '../config'
@@ -176,8 +177,8 @@ const addContactController = {
         formValues: {},
         isVisor,
         responsibleOfficer: showResponsibleOfficer,
-        responsibleOfficerForename: res.locals.responsibleOfficerForename,
-        responsibleOfficerSurname: res.locals.responsibleOfficerSurname,
+        responsibleOfficerForename: convertToTitleCase(res.locals.responsibleOfficerForename),
+        responsibleOfficerSurname: convertToTitleCase(res.locals.responsibleOfficerSurname),
         sentences: res.locals.sentences,
       })
     }
