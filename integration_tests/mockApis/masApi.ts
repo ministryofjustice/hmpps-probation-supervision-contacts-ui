@@ -186,7 +186,7 @@ export default {
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
         jsonBody: {
           code: 'N01A001',
-          name: { forename: 'Jane', surname: 'Doe' },
+          name: { forename: 'jane', surname: 'doe' },
           provider: { code: 'N01', name: 'NPS North West' },
           team: { description: 'Team One', code: 'N01T01' },
           unallocated: false,
