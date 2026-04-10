@@ -84,18 +84,6 @@ test('navigates to the activity log page with a success banner after filling add
   await addContactPage.selectSensitivityNo()
   await addContactPage.selectAlertResponsibleOfficerNo()
 
-  page.on('request', request => {
-    // eslint-disable-next-line no-console
-    console.log('### SUBMIT REQUEST ###', request.method(), request.url())
-  })
-
-  page.on('response', async response => {
-    if (response.status() >= 400) {
-      // eslint-disable-next-line no-console
-      console.log('### SUBMIT FAILED RESPONSE ###', response.status(), response.url())
-    }
-  })
-
   await addContactPage.clickContinue()
 
   await addContactPage.expectUrlToBe('case/X123456/activity-log?showSuccessBanner=true')
