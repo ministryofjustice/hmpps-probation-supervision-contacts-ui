@@ -84,5 +84,5 @@ test('navigates to the activity log page with a success banner after filling add
 
   await addContactPage.clickContinue()
 
-  await expect(page).toHaveURL(/\/case\/X123456\/activity-log/)
+  await addContactPage.expectUrlToBe('case/X123456/activity-log?showSuccessBanner=true')
 })
