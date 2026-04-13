@@ -80,7 +80,8 @@ test('navigates to the activity log page with a success banner after filling add
   await addContactPage.selectSensitivityNo()
   await addContactPage.selectAlertResponsibleOfficerNo()
 
-  await addContactPage.clickContinue()
-
-  // await addContactPage.expectUrlToBe('case/X123456/activity-log?showSuccessBanner=true')
+  await Promise.all([
+    page.waitForURL(/\/case\/X123456\/activity-log\?showSuccessBanner=true/),
+    addContactPage.clickContinue(),
+  ])
 })
