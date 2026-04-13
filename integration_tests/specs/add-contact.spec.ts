@@ -14,6 +14,7 @@ test.beforeEach(async ({ page }) => {
     masApi.stubGetProbationPractitioner(),
     masApi.stubGetSentences(),
     masApi.stubGetOverview(),
+    masApi.stubCreateContact(),
   ])
   await login(page)
 })
@@ -81,9 +82,6 @@ test('navigates to the activity log page with a success banner after filling add
   await addContactPage.selectAlertResponsibleOfficerNo()
 
   await addContactPage.clickContinue()
-
-  // eslint-disable-next-line no-console
-  console.log('Current URL:', page.url())
 
   await expect(page).toHaveURL(/\/case\/X123456\/activity-log/)
 })
