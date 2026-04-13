@@ -1,5 +1,6 @@
 import httpMocks from 'node-mocks-http'
 import addFrequentlyUsedContact from './addFrequentlyUsedContact'
+import config from '../../config'
 
 function createRes(locals: Record<string, any> = {}): httpMocks.MockResponse<any> {
   return { locals, render: jest.fn() }
@@ -55,5 +56,20 @@ describe('middleware/validation/addFrequentlyUsedContact', () => {
 
     const renderData = (res.render as jest.Mock).mock.calls[0][1]
     expect(renderData.radioItems).toEqual(radioItems)
+  })
+
+  it('renders the absolute activity log redirect url for the NDelius flow', () => {
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456' },
+      body: {},
+    })
+
+    const res = createRes()
+
+    addFrequentlyUsedContact(req, res, next)
+
+    const renderData = (res.render as jest.Mock).mock.calls[0][1]
+
+    expect(renderData.contactLogUrl).toBe(`${config.manageProbationUrl}/case/X123456/activity-log`)
   })
 })

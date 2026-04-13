@@ -3,6 +3,7 @@ import { validateWithSpec } from '../../utils/validationUtils'
 import { addFrequentlyUsedContactValidation } from '../../properties/validation/addFrequentlyUsedContact'
 import { deliusDeepLinkUrl } from '../../utils/deliusDeepLinkUrl'
 import { slugify } from '../../utils/slugify'
+import config from '../../config'
 
 const addFrequentlyUsedContact: RequestHandler = (req, res, next) => {
   const { crn } = req.params
@@ -25,7 +26,7 @@ const addFrequentlyUsedContact: RequestHandler = (req, res, next) => {
       radioItems: res.locals.radioItems,
       frequentlyUsedContacts,
       ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn as string),
-      contactLogUrl: `/case/${crn}/activity-log/`,
+      contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
     })
   }
   return next()
