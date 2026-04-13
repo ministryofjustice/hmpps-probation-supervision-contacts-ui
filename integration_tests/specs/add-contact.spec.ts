@@ -18,10 +18,6 @@ test.beforeEach(async ({ page }) => {
   await login(page)
 })
 
-test.afterEach(async () => {
-  await resetStubs()
-})
-
 test('details and date fields are visible and writable', async ({ page }) => {
   const addContactPage = new AddContactPage(page)
 
