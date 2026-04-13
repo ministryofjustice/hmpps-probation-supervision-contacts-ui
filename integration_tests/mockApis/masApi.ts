@@ -153,7 +153,7 @@ export default {
     stubFor({
       request: {
         method: 'POST',
-        urlPattern: '/mas-api/contact/.+',
+        urlPattern: '/mas-api/contact.*',
       },
       response: {
         status: 200,
