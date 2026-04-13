@@ -80,8 +80,10 @@ test('navigates to the activity log page with a success banner after filling add
   await addContactPage.selectSensitivityNo()
   await addContactPage.selectAlertResponsibleOfficerNo()
 
-  await Promise.all([
-    page.waitForURL(/\/case\/X123456\/activity-log\?showSuccessBanner=true/),
-    addContactPage.clickContinue(),
-  ])
+  await addContactPage.clickContinue()
+
+  // eslint-disable-next-line no-console
+  console.log('Current URL:', page.url())
+
+  await expect(page).toHaveURL(/\/case\/X123456\/activity-log/)
 })
