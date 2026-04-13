@@ -14,6 +14,19 @@
       }
     },
     {
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/case/[^/]+/activity-log"
+    },
+    "response": {
+      "status": 200,
+      "headers": {
+        "Content-Type": "text/html"
+      },
+      "body": "<html><body><h1>Activity Log</h1><p>Mocked activity log page.</p></body></html>"
+    }
+    },
+    {
       "request": {
         "method": "GET",
         "urlPathPattern": "/case/[^/]+/activity-log",
