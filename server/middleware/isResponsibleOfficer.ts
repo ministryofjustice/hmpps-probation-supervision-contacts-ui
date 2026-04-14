@@ -8,6 +8,7 @@ export const isResponsibleOfficerMiddleware = (masApiClient: MasApiClient): Requ
       const { username } = res.locals.user
       const pp = await masApiClient.getProbationPractitioner(crn, username)
       res.locals.isResponsibleOfficer = pp?.username?.toUpperCase() === username.toUpperCase()
+      res.locals.responsibleOfficerUsername = pp?.username
       res.locals.responsibleOfficerForename = pp?.name?.forename
       res.locals.responsibleOfficerSurname = pp?.name?.surname
       next()
