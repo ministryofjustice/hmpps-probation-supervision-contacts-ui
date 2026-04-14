@@ -35,6 +35,7 @@ describe('isResponsibleOfficerMiddleware', () => {
 
     expect(mockMasApiClient.getProbationPractitioner).toHaveBeenCalledWith('X123456', 'user1')
     expect(res.locals.isResponsibleOfficer).toBe(true)
+    expect(res.locals.responsibleOfficerUsername).toBe('USER1')
     expect(res.locals.responsibleOfficerForename).toBe('John')
     expect(res.locals.responsibleOfficerSurname).toBe('Smith')
     expect(next).toHaveBeenCalledWith()
@@ -54,6 +55,7 @@ describe('isResponsibleOfficerMiddleware', () => {
     await isResponsibleOfficerMiddleware(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
     expect(res.locals.isResponsibleOfficer).toBe(false)
+    expect(res.locals.responsibleOfficerUsername).toBe('OTHER_USER')
     expect(next).toHaveBeenCalledWith()
   })
 

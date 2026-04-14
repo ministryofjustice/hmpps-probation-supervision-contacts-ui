@@ -29,7 +29,7 @@ function createReq(overrides: Partial<Request> = {}): Request {
 }
 
 describe('addContactController', () => {
-  let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getUserProviders' | 'getOverview'>>
+  let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getUserProviders' | 'getOverview' | 'getProbationPractitioner'>>
   let mockCreateContact: jest.Mock
   let mockPatchDocuments: jest.Mock
   let next: jest.Mock
@@ -39,10 +39,18 @@ describe('addContactController', () => {
     next = jest.fn()
     mockMasApiClient = {
       getUserProviders: jest.fn().mockResolvedValue({
-        defaultUserDetails: { staffCode: 'N01A001', username: 'test-user', homeArea: 'N01', team: 'Team One' },
-        teams: [{ description: 'Team One', code: 'N01T01' }],
+        defaultUserDetails: { staffCode: 'USER999', username: 'test-user', homeArea: 'N99', team: 'Team One' },
+        teams: [{ description: 'Uset Team', code: 'N99' }],
       }),
       getOverview: jest.fn().mockResolvedValue({ registrations: [] }),
+      getProbationPractitioner: jest.fn().mockResolvedValue({
+        code: 'N01A001',
+        name: { forename: 'jane', surname: 'doe' },
+        provider: { code: 'N01', name: 'NPS North West' },
+        team: { description: 'Team One', code: 'N01T01' },
+        unallocated: false,
+        username: 'PRACTITIONER1',
+      }),
     }
     mockCreateContact = jest.fn().mockResolvedValue({ id: 1 })
     mockPatchDocuments = jest.fn().mockResolvedValue(undefined)
@@ -356,8 +364,9 @@ describe('addContactController', () => {
       expect(res.redirect).not.toHaveBeenCalledWith(expect.stringContaining('uploadFailed=true'))
     })
 
-    it('redirects with showSuccessBanner only when file upload succeeds', async () => {
+    it('redirects with showSuccessBanner only when file upload succeeds and uses RO staff code', async () => {
       const mockFile = { buffer: Buffer.from('data'), originalname: 'test.pdf', mimetype: 'application/pdf' }
+
       const req = createReq({
         params: { crn: 'X123456', contactType: 'community-intervention' },
         body: validBody,
@@ -366,6 +375,14 @@ describe('addContactController', () => {
       const res = createRes()
 
       await addContactController.postAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+      expect(mockCreateContact).toHaveBeenCalledWith(
+        'X123456',
+        expect.objectContaining({
+          staffCode: 'N01A001',
+          teamCode: 'N01T01',
+        }),
+        'test-user',
+      )
 
       expect(mockPatchDocuments).toHaveBeenCalledWith('X123456', '1', mockFile, 'test-user')
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('showSuccessBanner=true'))
