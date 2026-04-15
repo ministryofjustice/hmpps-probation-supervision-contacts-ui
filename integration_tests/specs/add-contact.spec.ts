@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import AddContactPage from '../pages/add-contact'
+import AddFrequentContactPage from '../pages/add-frequently-contact'
 import { login, resetStubs } from '../testUtils'
 import masApi from '../mockApis/masApi'
 import arnsApi from '../mockApis/arnsApi'
@@ -70,10 +71,15 @@ test('all required validation errors are shown when fields are empty', async ({ 
   await addContactPage.expectAlertResponsibleOfficerErrorShown()
 })
 
-test('navigates to the activity log page with a success banner after filling add contacts form', async ({ page }) => {
-  const addContactPage = new AddContactPage(page)
+test('redirects to activity log with success banner after submitting a valid contact form', async ({ page }) => {
+  const addFrequentlyContactPage = new AddFrequentContactPage(page)
+  await page.goto('/case/X123456/add-frequently-used-contact')
 
-  await page.goto('/case/X123456/contacts/add-internal-communications')
+  await addFrequentlyContactPage.selectContact('CT3B')
+  await addFrequentlyContactPage.clickContinue()
+
+  await expect(page).toHaveURL('/case/X123456/contacts/add-telephone-contact-to-other')
+  const addContactPage = new AddContactPage(page)
 
   await addContactPage.selectPersonLevelContact()
   await addContactPage.enterDate('10/4/2026')
