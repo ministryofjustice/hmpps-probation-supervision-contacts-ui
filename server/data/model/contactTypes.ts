@@ -11,7 +11,7 @@ export const FrequentlyUsedContactTypeOptions: ContactTypeOption[] = [
   { code: 'CMOA', description: 'Email or text from person on probation' },
   { code: 'CMOB', description: 'Email or text to person on probation' },
   { code: 'C326', description: 'Internal communications' },
-  { code: 'C202', description: 'Police liaison' },
+  { code: 'C204', description: 'Police liaison' },
   { code: 'CT3A', description: 'Telephone contact from other' },
   { code: 'CT3B', description: 'Telephone contact to other' },
   { code: 'CTOA', description: 'Telephone contact from person on probation' },
