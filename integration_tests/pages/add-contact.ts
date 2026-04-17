@@ -11,11 +11,15 @@ export default class AddContactPage {
 
   readonly addGuidanceButton: Locator
 
+  readonly detailsGuidanceSummary: Locator
+
   readonly detailsLabel: Locator
 
   readonly personInsetText: Locator
 
   readonly relatesToHeading: Locator
+
+  readonly personLevelContactOption: Locator
 
   readonly continueButton: Locator
 
@@ -28,10 +32,12 @@ export default class AddContactPage {
     this.detailsField = page.locator('#details')
     this.dateField = page.locator('#date')
     this.detailsGuidance = page.locator('[data-qa="detailsGuidance"]')
+    this.detailsGuidanceSummary = this.detailsGuidance.locator('.govuk-details__summary')
     this.addGuidanceButton = page.locator('[data-qa="add-guidance-button"]')
     this.detailsLabel = page.locator('label[for="details"]')
     this.personInsetText = page.locator('.govuk-inset-text')
     this.relatesToHeading = page.getByText('What is the contact related to?')
+    this.personLevelContactOption = page.locator('[data-qa="personLevelContact"]')
     this.personLevelContactRadio = page.locator('#sentence')
     this.continueButton = page.getByRole('button', { name: 'Create contact' })
     this.errorSummary = page.locator('.govuk-error-summary')
@@ -90,6 +96,7 @@ export default class AddContactPage {
   }
 
   async addGuidanceToDetails(): Promise<void> {
+    await this.detailsGuidanceSummary.click()
     await this.addGuidanceButton.click()
   }
 
@@ -103,5 +110,9 @@ export default class AddContactPage {
 
   async expectRelatesToHidden(): Promise<void> {
     await expect(this.relatesToHeading).toHaveCount(0)
+  }
+
+  async expectPersonLevelContactHidden(): Promise<void> {
+    await expect(this.personLevelContactOption).toHaveCount(0)
   }
 }

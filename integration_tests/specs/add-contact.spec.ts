@@ -91,7 +91,7 @@ test('shows event sentence options and no guidance for event-only contacts', asy
 
   await addContactPage.expectRelatesToVisible()
   await expect(page.getByText('ORA Community Order')).toBeVisible()
-  await expect(page.getByText('John Smith')).toHaveCount(0)
+  await addContactPage.expectPersonLevelContactHidden()
   await addContactPage.expectGuidanceHidden()
   await addContactPage.expectDetailsLabel('Add details of the contact')
   await expect(page.getByText('Add further details (optional)')).toHaveCount(0)
