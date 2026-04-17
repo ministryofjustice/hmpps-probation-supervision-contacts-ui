@@ -236,7 +236,7 @@ describe('addContactController', () => {
         expect.objectContaining({
           crn: 'X123456',
           contactTypeName: 'Police liaison',
-          sentences: [],
+          relatesToOptions: expect.any(Array),
         }),
       )
     })
@@ -292,6 +292,48 @@ describe('addContactController', () => {
 
       const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
       expect(renderArgs.isVisor).toBeUndefined()
+    })
+
+    it('renders person-only contacts without relates-to options and normalises string values', async () => {
+      const req = createReq({
+        params: { crn: ['X123456'], contactType: ['accommodation-evidence'] } as any,
+      })
+      const res = createRes({
+        isResponsibleOfficer: false,
+        sentences: [],
+        csrfToken: ['csrf-token'],
+        responsibleOfficerForename: ['jane'],
+        responsibleOfficerSurname: ['doe'],
+      })
+
+      await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.crn).toBe('X123456')
+      expect(renderArgs.contactTypeName).toBe('Accommodation evidence')
+      expect(renderArgs.showRelatesToQuestion).toBe(false)
+      expect(renderArgs.formValues.sentence).toBe('PERSON_LEVEL_CONTACT')
+      expect(renderArgs.csrfToken).toBe('csrf-token')
+      expect(renderArgs.responsibleOfficerForename).toBe('Jane')
+      expect(renderArgs.responsibleOfficerSurname).toBe('Doe')
+    })
+
+    it('renders guidance for configured no outcome contacts', async () => {
+      const req = createReq({ params: { crn: 'X123456', contactType: 'mappa-level-setting-process' } })
+      const res = createRes({
+        isResponsibleOfficer: true,
+        sentences: [{ id: 1, order: { description: 'Community Order 1', startDate: '2024-06-15' } }],
+      })
+
+      await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.guidance).toEqual({
+        paragraphs: ['You must notify the prison of the MAPPA level, and record that you\'ve done this.'],
+        insertText: 'You must notify the prison of the MAPPA level, and record that you\'ve done this.',
+      })
+      expect(renderArgs.showPersonOption).toBe(false)
+      expect(renderArgs.showEventOptions).toBe(true)
     })
   })
 

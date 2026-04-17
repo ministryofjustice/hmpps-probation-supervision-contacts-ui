@@ -1,4 +1,5 @@
 import { ContactTypeCategoryEntries } from './contactCategories'
+import { NoOutcomeContactTypeDetails } from './noOutcomeContactTypes'
 
 export type ContactTypeOption = {
   code: string
@@ -18,15 +19,18 @@ export const FrequentlyUsedContactTypeOptions: ContactTypeOption[] = [
   { code: 'CTOB', description: 'Telephone contact to person on probation' },
 ]
 
-const uniqueContactTypes = new Map<string, ContactTypeOption>()
+const contactTypeByCode = new Map<string, ContactTypeOption>()
 
 ContactTypeCategoryEntries.forEach(entry => {
-  const key = `${entry.code}|${entry.displayName}`
-  if (!uniqueContactTypes.has(key)) {
-    uniqueContactTypes.set(key, { code: entry.code, description: entry.displayName })
+  if (!contactTypeByCode.has(entry.code)) {
+    contactTypeByCode.set(entry.code, { code: entry.code, description: entry.displayName })
   }
 })
 
-export const ContactTypeOptions: ContactTypeOption[] = Array.from(uniqueContactTypes.values()).sort((a, b) =>
+NoOutcomeContactTypeDetails.forEach(detail => {
+  contactTypeByCode.set(detail.code, { code: detail.code, description: detail.description })
+})
+
+export const ContactTypeOptions: ContactTypeOption[] = Array.from(contactTypeByCode.values()).sort((a, b) =>
   a.description.localeCompare(b.description),
 )

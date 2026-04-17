@@ -3,7 +3,6 @@ import MasApiClient from '../data/masApiClient'
 import { slugify } from '../utils/slugify'
 import { deliusDeepLinkUrl } from '../utils/deliusDeepLinkUrl'
 import { formattedDate } from '../utils/formattedDate'
-import { convertToTitleCase } from '../utils/utils'
 import { CreateContactRequest } from '../data/model/contacts'
 import ContactService from '../services/contactService'
 import config from '../config'
@@ -14,6 +13,15 @@ import {
   buildSearchResults,
   normaliseSelectedCategories,
 } from '../services/contactCategorySearch'
+import { buildAddContactViewModel } from '../services/addContactViewModel'
+
+const getStringValue = (value: unknown): string => {
+  if (Array.isArray(value)) {
+    return typeof value[0] === 'string' ? value[0] : ''
+  }
+
+  return typeof value === 'string' ? value : ''
+}
 
 const buildFrequentlyUsedContacts = (contactTypes: any[], crn: string) =>
   contactTypes
@@ -161,26 +169,30 @@ const addContactController = {
   },
   getAddContactType: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res, next) => {
-      const { crn, contactType } = req.params as Record<string, string>
-      await sendAuditMessage(res, AuditAction.VIEW_ADD_CONTACT, crn as string, SubjectType.CRN)
+      const crn = getStringValue(req.params?.crn)
+      const contactType = getStringValue(req.params?.contactType)
+
+      await sendAuditMessage(res, AuditAction.VIEW_ADD_CONTACT, crn, SubjectType.CRN)
       const { username } = res.locals.user
       const overview = await masApiClient.getOverview(crn, username)
-      const contactTypes = ContactTypeOptions
-      const selectedType = contactTypes.find((c: any) => slugify(c.description) === contactType)
       const hasVisorRegistration = overview?.registrations?.some(r => r.toLowerCase() === 'visor') ?? false
       const isVisor: string | undefined = hasVisorRegistration ? 'SHOW_VISOR' : undefined
       const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? 'SHOW_OFFICER' : undefined
-      return res.render('pages/contacts/add-contact-type', {
+      const headerName = res.locals.headerPersonName
+      const personName = `${headerName?.forename || ''} ${headerName?.surname || ''}`.trim()
+      const viewModel = buildAddContactViewModel({
         crn,
-        contactTypeName: selectedType?.description || 'Contact',
-        csrfToken: res.locals.csrfToken,
+        slug: contactType,
+        sentences: res.locals.sentences || [],
+        personName,
         formValues: {},
         isVisor,
         responsibleOfficer: showResponsibleOfficer,
-        responsibleOfficerForename: convertToTitleCase(res.locals.responsibleOfficerForename),
-        responsibleOfficerSurname: convertToTitleCase(res.locals.responsibleOfficerSurname),
-        sentences: res.locals.sentences,
+        responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
+        responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
+        csrfToken: getStringValue(res.locals.csrfToken),
       })
+      return res.render('pages/contacts/add-contact-type', viewModel)
     }
   },
   postAddContactType: (masApiClient: MasApiClient): RequestHandler => {

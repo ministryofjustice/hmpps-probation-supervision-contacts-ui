@@ -56,3 +56,41 @@ test('selected contact relation radio remains checked after validation error', a
   await addContactPage.expectErrorSummaryVisible()
   await addContactPage.expectPersonLevelContactChecked()
 })
+
+test('shows guidance and appends it to details for guidance-enabled contacts', async ({ page }) => {
+  const addContactPage = new AddContactPage(page)
+
+  await page.goto('/case/X123456/contacts/add-mappa-level-setting-process')
+
+  await addContactPage.expectRelatesToVisible()
+  await addContactPage.expectGuidanceVisible()
+  await addContactPage.expectDetailsLabel('Add further details (optional)')
+  await expect(page.getByText('Add details of the contact')).toHaveCount(0)
+
+  await addContactPage.addGuidanceToDetails()
+  await addContactPage.expectDetailsValue("You must notify the prison of the MAPPA level, and record that you've done this.")
+})
+
+test('shows the person inset and hides the relates to question for person-only contacts', async ({ page }) => {
+  const addContactPage = new AddContactPage(page)
+
+  await page.goto('/case/X123456/contacts/add-accommodation-evidence')
+
+  await addContactPage.expectRelatesToHidden()
+  await addContactPage.expectPersonInsetText('This contact will be logged against the person.')
+  await addContactPage.expectGuidanceHidden()
+  await addContactPage.expectDetailsLabel('Add details of the contact')
+})
+
+test('shows event sentence options and no guidance for event-only contacts', async ({ page }) => {
+  const addContactPage = new AddContactPage(page)
+
+  await page.goto('/case/X123456/contacts/add-case-discussion')
+
+  await addContactPage.expectRelatesToVisible()
+  await expect(page.getByText('ORA Community Order')).toBeVisible()
+  await expect(page.getByText('John Smith')).toHaveCount(0)
+  await addContactPage.expectGuidanceHidden()
+  await addContactPage.expectDetailsLabel('Add details of the contact')
+  await expect(page.getByText('Add further details (optional)')).toHaveCount(0)
+})

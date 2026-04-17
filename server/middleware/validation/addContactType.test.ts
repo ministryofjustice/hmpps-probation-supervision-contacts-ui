@@ -45,8 +45,8 @@ describe('middleware/validation/addContactType', () => {
     expect(renderData.errorMessages).toEqual({
       sentence: 'Select what the contact is related to',
       date: 'Enter or select a date',
-      time: 'Enter a time in the 24-hour format, for example 16:30',
-      sensitivity: 'Select if the contact includes sensitive information',
+      time: 'Enter a time',
+      sensitivity: 'Select if the contact contains sensitive information',
     })
   })
 
@@ -134,6 +134,21 @@ describe('middleware/validation/addContactType', () => {
     expect(renderData.errorMessages.visor).toBeDefined()
   })
 
+  it('renders with error when details exceed 12000 characters', () => {
+    const longText = 'a'.repeat(12005)
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactType: 'add-police-liaison' },
+      body: { ...validBody, details: longText },
+    })
+    const res = createRes()
+
+    addContactType(req, res, next)
+
+    expect(next).not.toHaveBeenCalled()
+    const renderData = (res.render as jest.Mock).mock.calls[0][1]
+    expect(renderData.errorMessages.details).toEqual('You have entered 5 characters too many')
+  })
+
   it('renders with the crn and form values on error', () => {
     const body = { date: '17/5/2024', time: '09:00', sensitivity: 'Yes' }
     const req = httpMocks.createRequest({ params: { crn: 'X123456', contactType: 'add-police-liaison' }, body })
@@ -145,5 +160,45 @@ describe('middleware/validation/addContactType', () => {
     expect(view).toBe('pages/contacts/add-contact-type')
     expect(renderData.crn).toBe('X123456')
     expect(renderData.formValues).toEqual(body)
+  })
+
+  it('normalises array values before rebuilding the error page view model', () => {
+    const req = httpMocks.createRequest({
+      params: { crn: ['X123456'], contactType: ['add-victim-liaison-contact'] },
+      body: {
+        sentence: '2',
+        date: '17/5/2024',
+        time: '09:00',
+        sensitivity: 'Yes',
+        responsibleOfficer: ['SHOW_OFFICER'],
+        responsibleOfficerForename: ['jane'],
+        responsibleOfficerSurname: ['doe'],
+      },
+    })
+    const res = createRes({
+      sentences: [
+        { id: 2, order: { description: 'Community Order 2', startDate: '2025-04-19' } },
+      ],
+      headerPersonName: { forename: 'Stuart', surname: 'Morrison' },
+      csrfToken: ['csrf-token'],
+    })
+
+    addContactType(req, res, next)
+
+    const renderData = (res.render as jest.Mock).mock.calls[0][1]
+    expect(renderData.crn).toBe('X123456')
+    expect(renderData.contactTypeName).toBe('Victim liaison contact')
+    expect(renderData.formValues).toEqual({
+      sentence: '2',
+      date: '17/5/2024',
+      time: '09:00',
+      sensitivity: 'Yes',
+      responsibleOfficer: 'SHOW_OFFICER',
+      responsibleOfficerForename: 'jane',
+      responsibleOfficerSurname: 'doe',
+    })
+    expect(renderData.responsibleOfficerForename).toBe('Jane')
+    expect(renderData.responsibleOfficerSurname).toBe('Doe')
+    expect(renderData.csrfToken).toBe('csrf-token')
   })
 })

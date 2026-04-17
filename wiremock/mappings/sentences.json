@@ -14,15 +14,22 @@
       "Content-Type": "application/json"
     },
     "jsonBody": {
-          "personSummary": {
-            "name": {
-              "forename": "Jane",
-              "surname": "Smith"
-            },
-            "crn": "X123456",
-            "dateOfBirth": "1990-01-01"
-          },
-          "sentenceSummaryList": []
+      "sentences": [
+        {
+          "id": 1,
+          "order": {
+            "description": "Community Order 1",
+            "startDate": "2024-06-15"
+          }
+        },
+        {
+          "id": 2,
+          "order": {
+            "description": "Community Order 2",
+            "startDate": "2025-04-19"
+          }
         }
+      ]
+    }
   }
 }
