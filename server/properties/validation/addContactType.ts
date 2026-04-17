@@ -42,7 +42,7 @@ export const addContactValidation = ({ responsibleOfficer, isVisor }: AddContact
     checks: [
       {
         validator: isNotEmpty,
-        msg: 'Enter a time in the 24-hour format, for example 16:30',
+        msg: 'Enter a time',
         log: 'Contact time not entered',
       },
       {
@@ -68,7 +68,7 @@ export const addContactValidation = ({ responsibleOfficer, isVisor }: AddContact
     checks: [
       {
         validator: isNotEmpty,
-        msg: 'Select if the contact includes sensitive information',
+        msg: 'Select if the contact contains sensitive information',
         log: 'Sensitivity selection not made',
       },
     ],

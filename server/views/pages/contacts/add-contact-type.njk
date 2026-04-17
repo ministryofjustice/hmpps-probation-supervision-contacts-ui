@@ -6,6 +6,7 @@
 {% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% set addContactType = 'Add ' + contactTypeName %}
 {% set backLink = '/case/' + crn + '/add-frequently-used-contact?from=step2' %}
 
@@ -49,63 +50,29 @@
 
             <form method="post" enctype="multipart/form-data" novalidate>
 
-                {% set allSentences = [] %}
-                {% set allSentences = (allSentences.push({
-                    text: headerPersonName.forename,
-                    value: 'PERSON_LEVEL_CONTACT',
-                    checked: true if formValues and formValues.sentence == 'PERSON_LEVEL_CONTACT',
-                    label: {
-                        classes: 'govuk-!-font-weight-bold',
-                        attributes: {
-                            'data-qa': 'personLevelContactLabel'
-                        }
-                    },
-                    hint: {
-                        text: 'Relates to the person.'
-                    },
-                    attributes: {
-                        'data-qa': 'personLevelContact',
-                        'data-sentence': 'true',
-                        'data-reset-conditional-radios': ''
-                    }
-                }), allSentences) %}
-
-                {% for sentence in sentences %}
-                    {% if sentence.order.description %}
-                        {% set hintText = '' %}
-                        {% if sentence.order.startDate %}
-                            {% set hintText = 'Sentence start date: ' + (sentence.order.startDate | dateWithYear) + '.' %}
-                        {% endif %}
-                        {% set allSentences = (allSentences.push({
-                            text: sentence.order.description,
-                            value: sentence.id,
-                            checked: true if formValues.sentence and sentence.id | string == formValues.sentence | string,
-                            label: {
-                                classes: 'govuk-!-font-weight-bold'
+                {% if showRelatesToQuestion %}
+                    {{ govukRadios({
+                        fieldset: {
+                            legend: {
+                                text: 'What is the contact related to?',
+                                isPageHeading: false,
+                                classes: "govuk-fieldset__legend--m"
                             },
-                            hint: {
-                                text: hintText
+                            attributes: {
+                                'data-qa': 'sentences'
                             }
-                        }), allSentences) %}
-                    {% endif %}
-                {% endfor %}
-
-                {{ govukRadios({
-                    fieldset: {
-                        legend: {
-                            text: 'What is the contact related to?',
-                            isPageHeading: false,
-                            classes: "govuk-fieldset__legend--m"
                         },
-                        attributes: {
-                            'data-qa': 'sentences'
-                        }
-                    },
-                    name: 'sentence',
-                    id: 'sentence',
-                    items: allSentences,
-                    errorMessage: { text: errorMessages.sentence } if errorMessages.sentence
-                }) }}
+                        name: 'sentence',
+                        id: 'sentence',
+                        items: relatesToOptions,
+                        errorMessage: { text: errorMessages.sentence } if errorMessages.sentence
+                    }) }}
+                {% else %}
+                    <input type="hidden" name="sentence" value="{{ formValues.sentence or 'PERSON_LEVEL_CONTACT' }}">
+                    {{ govukInsetText({
+                        text: "This contact will be logged against the person."
+                    }) }}
+                {% endif %}
 
                 {{ govukInput({
                     label: {
@@ -113,7 +80,7 @@
                         classes: "govuk-label--m"
                     },
                     hint: {
-                        text: "This will become the title of the contact on the Contacts page."
+                        text: "This will become the title of the contact in the contact list."
                     },
                     id: "title",
                     name: "title",
@@ -165,6 +132,27 @@
                     errorMessage: { text: errorMessages.time } if errorMessages.time
                 }) }}
 
+                {% if guidance %}
+                    <details class="govuk-details govuk-!-padding-bottom-4" data-module="govuk-details" data-qa="detailsGuidance">
+                        <summary class="govuk-details__summary">
+                            <span class="govuk-details__summary-text">What to include</span>
+                        </summary>
+                        <div class="govuk-details__text">
+                            {% for paragraph in guidance.paragraphs %}
+                                <p class="govuk-body">{{ paragraph }}</p>
+                            {% endfor %}
+                            {% if guidance.bullets %}
+                                <ul class="govuk-list govuk-list--bullet">
+                                    {% for item in guidance.bullets %}
+                                        <li>{{ item }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                            <button type="button" class="govuk-button govuk-button--secondary govuk-!-padding-bottom-3" data-qa="add-guidance-button" data-guidance-text="{{ guidance.insertText | escape }}">Add guidance to details box</button>
+                        </div>
+                    </details>
+                {% endif %}
+
                 {{ govukCharacterCount({
                     name: "details",
                     id: "details",
@@ -172,14 +160,18 @@
                     rows: '10',
                     value: formValues.details,
                     label: {
-                        text: "Add details of the contact",
+                        text: "Add further details (optional)" if guidance else "Add details of the contact",
                         classes: "govuk-label--m"
+                    },
+                    hint: {
+                        text: "Add in any new information"
                     },
                     formGroup: {
                         attributes: {
                             'data-qa': 'details'
                         }
-                    }
+                    },
+                    errorMessage: { text: errorMessages.details } if errorMessages.details
                 }) }}
 
                 <div class="govuk-form-group">
