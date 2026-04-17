@@ -108,8 +108,8 @@ describe('buildAddContactViewModel', () => {
     expect(result.relatesToOptions).toHaveLength(2)
     expect(result.formValues.sensitivity).toBe('Yes')
     expect(result.guidance).toEqual({
-      paragraphs: ['You must notify the prison of the MAPPA level, and record that you\'ve done this.'],
-      insertText: 'You must notify the prison of the MAPPA level, and record that you\'ve done this.',
+      paragraphs: ["You must notify the prison of the MAPPA level, and record that you've done this."],
+      insertText: "You must notify the prison of the MAPPA level, and record that you've done this.",
     })
   })
 })

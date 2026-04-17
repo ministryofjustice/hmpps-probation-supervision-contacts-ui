@@ -176,9 +176,7 @@ describe('middleware/validation/addContactType', () => {
       },
     })
     const res = createRes({
-      sentences: [
-        { id: 2, order: { description: 'Community Order 2', startDate: '2025-04-19' } },
-      ],
+      sentences: [{ id: 2, order: { description: 'Community Order 2', startDate: '2025-04-19' } }],
       headerPersonName: { forename: 'Stuart', surname: 'Morrison' },
       csrfToken: ['csrf-token'],
     })

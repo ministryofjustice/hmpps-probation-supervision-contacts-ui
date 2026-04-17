@@ -329,8 +329,8 @@ describe('addContactController', () => {
 
       const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
       expect(renderArgs.guidance).toEqual({
-        paragraphs: ['You must notify the prison of the MAPPA level, and record that you\'ve done this.'],
-        insertText: 'You must notify the prison of the MAPPA level, and record that you\'ve done this.',
+        paragraphs: ["You must notify the prison of the MAPPA level, and record that you've done this."],
+        insertText: "You must notify the prison of the MAPPA level, and record that you've done this.",
       })
       expect(renderArgs.showPersonOption).toBe(false)
       expect(renderArgs.showEventOptions).toBe(true)

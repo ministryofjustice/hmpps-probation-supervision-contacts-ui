@@ -68,7 +68,9 @@ test('shows guidance and appends it to details for guidance-enabled contacts', a
   await expect(page.getByText('Add details of the contact')).toHaveCount(0)
 
   await addContactPage.addGuidanceToDetails()
-  await addContactPage.expectDetailsValue("You must notify the prison of the MAPPA level, and record that you've done this.")
+  await addContactPage.expectDetailsValue(
+    "You must notify the prison of the MAPPA level, and record that you've done this.",
+  )
 })
 
 test('shows the person inset and hides the relates to question for person-only contacts', async ({ page }) => {
