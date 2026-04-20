@@ -76,4 +76,35 @@ const setupCategorySearch = () => {
   })
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  const links = document.querySelectorAll('.moj-sub-navigation__link')
+  const frequentPanel = document.getElementById('frequently-used-contacts')
+  const categoryPanel = document.getElementById('search-by-category')
+
+  links.forEach(link => {
+    link.addEventListener('click', event => {
+      const target = link.getAttribute('href')
+
+      if (target === '#frequently-used-contacts' || target === '#search-by-category') {
+        event.preventDefault()
+
+        frequentPanel.classList.add('govuk-tabs__panel--hidden')
+        categoryPanel.classList.add('govuk-tabs__panel--hidden')
+
+        links.forEach(item => item.removeAttribute('aria-current'))
+
+        if (target === '#frequently-used-contacts') {
+          frequentPanel.classList.remove('govuk-tabs__panel--hidden')
+        }
+
+        if (target === '#search-by-category') {
+          categoryPanel.classList.remove('govuk-tabs__panel--hidden')
+        }
+
+        link.setAttribute('aria-current', 'page')
+      }
+    })
+  })
+})
+
 export default setupCategorySearch
