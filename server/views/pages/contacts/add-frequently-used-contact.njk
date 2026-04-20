@@ -74,13 +74,22 @@
                 {% endif %}
 
             {% if flags and flags.searchContactsByCategory %}
-                <div class="govuk-tabs" data-module="govuk-tabs" data-scroll-top-on-change="true" data-active-tab="{% if searchByCategoryTabActive %}search-by-category{% endif %}">
-                    <ul class="govuk-tabs__list">
-                        <li class="govuk-tabs__list-item{% if not searchByCategoryTabActive %} govuk-tabs__list-item--selected{% endif %}">
-                            <a class="govuk-tabs__tab" href="#frequently-used-contacts">Frequently used contacts</a>
+                <nav class="moj-sub-navigation" aria-label="Sub navigation">
+                    <ul class="moj-sub-navigation__list">
+                        <li class="moj-sub-navigation__item">
+                            <a class="moj-sub-navigation__link govuk-link--no-visited-state"
+                            href="#frequently-used-contacts"
+                            {% if not searchByCategoryTabActive %}aria-current="page"{% endif %}>
+                            Frequently used contacts
+                            </a>
                         </li>
-                        <li class="govuk-tabs__list-item{% if searchByCategoryTabActive %} govuk-tabs__list-item--selected{% endif %}">
-                            <a class="govuk-tabs__tab" href="#search-by-category" data-qa="search-by-category-tab">Search by category</a>
+                        <li class="moj-sub-navigation__item">
+                            <a class="moj-sub-navigation__link govuk-link--no-visited-state"
+                                href="#search-by-category"
+                                data-qa="search-by-category-tab"
+                                {% if searchByCategoryTabActive %}aria-current="page"{% endif %}>
+                                Search by category
+                            </a>
                         </li>
                     </ul>
 
@@ -163,7 +172,7 @@
                             </div>
                         {% endif %}
                     </div>
-                </div>
+                </nav>
             {% else %}
                 <form method="post" action="/case/{{ crn }}/add-frequently-used-contact" id="choose-contact-form"
                       data-ndelius-url="{{ ndeliusDeepLinkUrl }}"
