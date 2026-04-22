@@ -96,9 +96,9 @@
 
                     <div class="govuk-tabs__panel{% if searchByCategoryTabActive %} govuk-tabs__panel--hidden{% endif %}" id="frequently-used-contacts">
                         <h3 class="govuk-heading-s">Select a frequently used contact</h3>
-                        <ul class="govuk-list app-contact-list" data-qa="frequentlyUsedContactList">
+                        <ul class="govuk-list app-contact-list govuk-grid-column-three-quarters" data-qa="frequentlyUsedContactList">
                             <li class="app-contact-list__item">
-                                <a class="govuk-link" href="/case/{{ crn }}/add-frequently-used-contact?contactType=APPOINTMENT">An appointment</a>
+                                <a class="govuk-link" href="/case/{{ crn }}/add-frequently-used-contact?contactType=APPOINTMENT">Appointments</a>
                             </li>
                             {% for contact in frequentlyUsedContacts %}
                                 <li class="app-contact-list__item">
