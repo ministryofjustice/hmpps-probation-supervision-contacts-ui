@@ -1,0 +1,39 @@
+.govuk-tabs__panel {
+  border: 0;
+  padding: 15px 0 0 0;
+  margin: 0;
+}
+
+
+.govuk-tabs__tab {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+
+.govuk-tabs__list-item {
+  border: 0 !;
+  background: transparent;
+}
+
+
+.govuk-tabs__list-item--selected {
+  border: 0 ;
+  background: transparent;
+}
+
+
+.govuk-tabs__tab {
+  color: #1d70b8;
+}
+
+
+.govuk-tabs__list-item--selected .govuk-tabs__tab {
+  color: #0b0c0c ;
+  text-decoration: none ;
+}
+
+.app-contact-list {
+  border-top: 0;
+}
