@@ -27,6 +27,10 @@ export default class AddContactPage {
 
   readonly errorSummary: Locator
 
+  readonly outcomeLegend: Locator
+
+  readonly outcomeOptions: Locator
+
   constructor(page: Page) {
     this.page = page
     this.detailsField = page.locator('#details')
@@ -41,6 +45,8 @@ export default class AddContactPage {
     this.personLevelContactRadio = page.locator('#sentence')
     this.continueButton = page.getByRole('button', { name: 'Create contact' })
     this.errorSummary = page.locator('.govuk-error-summary')
+    this.outcomeLegend = page.locator('legend').filter({ hasText: 'Select an outcome' })
+    this.outcomeOptions = page.locator('[data-qa="contactOutcome"]')
   }
 
   async expectDetailsVisible(): Promise<void> {
@@ -53,6 +59,10 @@ export default class AddContactPage {
 
   async expectDetailsValue(text: string): Promise<void> {
     await expect(this.detailsField).toHaveValue(text)
+  }
+
+  async expectDetailsContaining(text: string): Promise<void> {
+    await expect(this.detailsField).toHaveValue(new RegExp(text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
   }
 
   async expectDetailsLabel(text: string): Promise<void> {
@@ -114,5 +124,17 @@ export default class AddContactPage {
 
   async expectPersonLevelContactHidden(): Promise<void> {
     await expect(this.personLevelContactOption).toHaveCount(0)
+  }
+
+  async expectOutcomeLegend(text: string): Promise<void> {
+    await expect(this.outcomeLegend).toContainText(text)
+  }
+
+  async expectOutcomeOption(text: string): Promise<void> {
+    await expect(this.page.getByLabel(text)).toBeVisible()
+  }
+
+  async expectOutcomeOptionsCount(count: number): Promise<void> {
+    await expect(this.outcomeOptions).toHaveCount(count)
   }
 }

@@ -2,6 +2,7 @@ import type { RequestHandler } from 'express'
 import { validateWithSpec } from '../../utils/validationUtils'
 import { addContactValidation } from '../../properties/validation/addContactType'
 import { buildAddContactViewModel } from '../../services/addContactViewModel'
+import { getContactTypeDetailBySlug } from '../../services/contactTypeDetails'
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -25,8 +26,16 @@ const addContactType: RequestHandler = (req, res, next) => {
   const formValues = getFormValues(req.body as Record<string, unknown>)
   const rawSlug = getStringValue(req.params?.contactType)
   const slug = rawSlug.replace(/^add-/, '')
+  const detail = getContactTypeDetailBySlug(slug)
 
-  const errorMessages = validateWithSpec(req.body, addContactValidation({ responsibleOfficer, isVisor }))
+  const errorMessages = validateWithSpec(
+    req.body,
+    addContactValidation({
+      responsibleOfficer,
+      isVisor,
+      outcomeRequired: !!detail?.mandatoryOutcome,
+    }),
+  )
 
   const detailsValue = typeof req.body?.details === 'string' ? req.body.details : ''
   if (detailsValue.length > 12000) {

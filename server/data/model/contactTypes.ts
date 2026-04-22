@@ -1,5 +1,6 @@
 import { ContactTypeCategoryEntries } from './contactCategories'
 import { NoOutcomeContactTypeDetails } from './noOutcomeContactTypes'
+import { OutcomeContactTypeDetails } from './outcomeContactTypes'
 
 export type ContactTypeOption = {
   code: string
@@ -28,6 +29,10 @@ ContactTypeCategoryEntries.forEach(entry => {
 })
 
 NoOutcomeContactTypeDetails.forEach(detail => {
+  contactTypeByCode.set(detail.code, { code: detail.code, description: detail.description })
+})
+
+OutcomeContactTypeDetails.forEach(detail => {
   contactTypeByCode.set(detail.code, { code: detail.code, description: detail.description })
 })
 

@@ -37,6 +37,7 @@ export const buildAddContactViewModel = ({
   const contactTypeName = getContactTypeNameBySlug(slug)
   const relatesTo = detail?.relatesTo ?? ['Person', 'Pre-CJA Events', 'CJA/ORA Events']
   const isPersonOnly = !!detail && PERSON_ONLY_CONTACT_CODES.has(detail.code)
+  const outcomes = detail?.outcomes ?? []
   const showPersonOption = !isPersonOnly && relatesTo.includes('Person')
   const showEventOptions =
     !isPersonOnly && (relatesTo.includes('Pre-CJA Events') || relatesTo.includes('CJA/ORA Events'))
@@ -95,6 +96,27 @@ export const buildAddContactViewModel = ({
     })
   }
 
+  const outcomeItems =
+    outcomes.length === 1
+      ? [
+          {
+            text: `Set the outcome to '${outcomes[0].label}'`,
+            value: outcomes[0].value,
+            checked: updatedFormValues.outcome === outcomes[0].value,
+            attributes: {
+              'data-qa': 'contactOutcome',
+            },
+          },
+        ]
+      : outcomes.map(outcome => ({
+          text: outcome.label,
+          value: outcome.value,
+          checked: updatedFormValues.outcome === outcome.value,
+          attributes: {
+            'data-qa': 'contactOutcome',
+          },
+        }))
+
   return {
     crn,
     contactTypeName,
@@ -109,5 +131,13 @@ export const buildAddContactViewModel = ({
     showPersonOption,
     showEventOptions,
     guidance: buildGuidanceContent(detail),
+    outcomeSection:
+      outcomes.length > 0
+        ? {
+            legend: detail?.mandatoryOutcome ? 'Select an outcome' : 'Select an outcome (optional)',
+            type: outcomes.length === 1 ? 'checkbox' : 'radios',
+            items: outcomeItems,
+          }
+        : undefined,
   }
 }

@@ -201,7 +201,15 @@ const addContactController = {
       await sendAuditMessage(res, AuditAction.ADD_CONTACT, crn, SubjectType.CRN)
       const slug = req.params.contactType as string
       const { username } = res.locals.user
-      const { sentence, title, details, sensitivity, visor, alertResponsibleOfficer, date, time } = req.body
+      const sentence = getStringValue(req.body?.sentence)
+      const title = getStringValue(req.body?.title)
+      const details = getStringValue(req.body?.details)
+      const sensitivity = getStringValue(req.body?.sensitivity)
+      const visor = getStringValue(req.body?.visor)
+      const alertResponsibleOfficer = getStringValue(req.body?.alertResponsibleOfficer)
+      const date = getStringValue(req.body?.date)
+      const time = getStringValue(req.body?.time)
+      const outcome = getStringValue(req.body?.outcome)
       const contactTypes = ContactTypeOptions
       const selectedType = contactTypes.find(c => slugify(c.description) === slug)
       const contactService = new ContactService(masApiClient)
@@ -220,6 +228,7 @@ const addContactController = {
         requirementId: null,
         description: title || undefined,
         notes: details || '',
+        outcome: outcome || undefined,
         alert: alertResponsibleOfficer === 'Yes',
         sensitive: sensitivity === 'Yes',
         visorReport: visor === 'Yes',

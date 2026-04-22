@@ -1,5 +1,11 @@
 export type ContactRelatesTo = 'Person' | 'Pre-CJA Events' | 'CJA/ORA Events'
 
+export type ContactOutcome = {
+  label: string
+  value: string
+  systemLabel: string
+}
+
 export type ContactTypeDetail = {
   code: string
   description: string
@@ -7,6 +13,8 @@ export type ContactTypeDetail = {
   relatesTo: ContactRelatesTo[]
   defaultHeading?: string
   guidance?: string
+  mandatoryOutcome?: boolean
+  outcomes?: ContactOutcome[]
 }
 
 export const NoOutcomeContactTypeDetails: ContactTypeDetail[] = [

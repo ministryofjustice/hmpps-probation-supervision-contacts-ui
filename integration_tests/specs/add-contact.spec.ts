@@ -96,3 +96,40 @@ test('shows event sentence options and no guidance for event-only contacts', asy
   await addContactPage.expectDetailsLabel('Add details of the contact')
   await expect(page.getByText('Add further details (optional)')).toHaveCount(0)
 })
+
+test('shows mandatory outcome radios for management oversight', async ({ page }) => {
+  const addContactPage = new AddContactPage(page)
+
+  await page.goto('/case/X123456/contacts/add-management-oversight')
+
+  await addContactPage.expectRelatesToHidden()
+  await addContactPage.expectPersonInsetText('This contact will be logged against the person.')
+  await addContactPage.expectOutcomeLegend('Select an outcome')
+  await addContactPage.expectOutcomeOptionsCount(6)
+  await addContactPage.expectOutcomeOption('Management oversight decision')
+})
+
+test('shows optional checkbox outcome for arrest incident', async ({ page }) => {
+  const addContactPage = new AddContactPage(page)
+
+  await page.goto('/case/X123456/contacts/add-arrest-incident')
+
+  await addContactPage.expectRelatesToVisible()
+  await addContactPage.expectOutcomeLegend('Select an outcome (optional)')
+  await addContactPage.expectOutcomeOptionsCount(1)
+  await addContactPage.expectOutcomeOption("Set the outcome to 'Risk review'")
+})
+
+test('shows MO8 guidance and optional radio outcomes', async ({ page }) => {
+  const addContactPage = new AddContactPage(page)
+
+  await page.goto('/case/X123456/contacts/add-management-oversight-home-visit-risk-assessment')
+
+  await addContactPage.expectRelatesToHidden()
+  await addContactPage.expectGuidanceVisible()
+  await addContactPage.expectOutcomeLegend('Select an outcome (optional)')
+  await addContactPage.expectOutcomeOptionsCount(4)
+  await addContactPage.expectOutcomeOption('Home visit approved')
+  await addContactPage.addGuidanceToDetails()
+  await addContactPage.expectDetailsContaining('If you are the responsible officer, you must include:')
+})
