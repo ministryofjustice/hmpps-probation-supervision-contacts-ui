@@ -119,7 +119,7 @@
                                 classes: "govuk-checkboxes--small app-checkboxes--two-columns",
                                 fieldset: {
                                     legend: {
-                                        text: "Search by category",
+                                        html: '<h3 class="govuk-heading-m">Search by category</h3>',
                                         classes: "govuk-fieldset__legend--s"
                                     }
                                 },
@@ -155,7 +155,9 @@
                                     {% endif %}
 
                                     {% for subcategory in category.subcategories %}
-                                        <h4 class="govuk-heading-xs">{{ subcategory.name }}</h4>
+                                        <h4 class="govuk-heading-s govuk-!-font-size-16 govuk-!-margin-top-4 govuk-!-margin-bottom-1">
+  {{ subcategory.name }}
+</h4>
                                         <ul class="govuk-list app-contact-list">
                                             {% for item in subcategory.items %}
                                                 <li class="app-contact-list__item">
