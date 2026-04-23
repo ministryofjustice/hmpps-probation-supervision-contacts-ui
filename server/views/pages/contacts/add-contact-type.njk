@@ -133,41 +133,43 @@
                     errorMessage: { text: errorMessages.time } if errorMessages.time
                 }) }}
 
-                {% if guidance %}
-                    <details class="govuk-details govuk-!-padding-bottom-4" data-module="govuk-details" data-qa="detailsGuidance">
-                        <summary class="govuk-details__summary">
-                            <span class="govuk-details__summary-text">What to include</span>
-                        </summary>
-                        <div class="govuk-details__text">
-                            {% if guidance.sections %}
-                                {% for section in guidance.sections %}
-                                    {% if section.paragraph %}
-                                        <p class="govuk-body">{{ section.paragraph }}</p>
-                                    {% endif %}
-                                    {% if section.bullets %}
+                {% set detailsGuidanceHtml %}
+                    {% if guidance %}
+                        <details class="govuk-details govuk-!-padding-bottom-4" data-module="govuk-details" data-qa="detailsGuidance">
+                            <summary class="govuk-details__summary">
+                                <span class="govuk-details__summary-text">What to include</span>
+                            </summary>
+                            <div class="govuk-details__text">
+                                {% if guidance.sections %}
+                                    {% for section in guidance.sections %}
+                                        {% if section.paragraph %}
+                                            <p class="govuk-body">{{ section.paragraph }}</p>
+                                        {% endif %}
+                                        {% if section.bullets %}
+                                            <ul class="govuk-list govuk-list--bullet">
+                                                {% for item in section.bullets %}
+                                                    <li>{{ item }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    {% for paragraph in guidance.paragraphs %}
+                                        <p class="govuk-body">{{ paragraph }}</p>
+                                    {% endfor %}
+                                    {% if guidance.bullets %}
                                         <ul class="govuk-list govuk-list--bullet">
-                                            {% for item in section.bullets %}
+                                            {% for item in guidance.bullets %}
                                                 <li>{{ item }}</li>
                                             {% endfor %}
                                         </ul>
                                     {% endif %}
-                                {% endfor %}
-                            {% else %}
-                                {% for paragraph in guidance.paragraphs %}
-                                    <p class="govuk-body">{{ paragraph }}</p>
-                                {% endfor %}
-                                {% if guidance.bullets %}
-                                    <ul class="govuk-list govuk-list--bullet">
-                                        {% for item in guidance.bullets %}
-                                            <li>{{ item }}</li>
-                                        {% endfor %}
-                                    </ul>
                                 {% endif %}
-                            {% endif %}
-                            <button type="button" class="govuk-button govuk-button--secondary govuk-!-padding-bottom-3" data-qa="add-guidance-button" data-guidance-text="{{ guidance.insertText | escape }}">Add guidance to details box</button>
-                        </div>
-                    </details>
-                {% endif %}
+                                <button type="button" class="govuk-button govuk-button--secondary govuk-!-padding-bottom-3" data-qa="add-guidance-button" data-guidance-text="{{ guidance.insertText | escape }}">Add guidance to details box</button>
+                            </div>
+                        </details>
+                    {% endif %}
+                {% endset %}
 
                 {{ govukCharacterCount({
                     name: "details",
@@ -176,16 +178,16 @@
                     rows: '10',
                     value: formValues.details,
                     label: {
-                        text: "Add further details (optional)" if guidance else "Add details of the contact",
+                        text: "Add details of the contact",
                         classes: "govuk-label--m"
-                    },
-                    hint: {
-                        text: "Add in any new information"
                     },
                     formGroup: {
                         attributes: {
                             'data-qa': 'details'
-                        }
+                        },
+                        beforeInput: {
+                            html: detailsGuidanceHtml
+                        } if guidance
                     },
                     errorMessage: { text: errorMessages.details } if errorMessages.details
                 }) }}

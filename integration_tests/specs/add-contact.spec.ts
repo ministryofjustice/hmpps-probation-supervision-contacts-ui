@@ -64,8 +64,7 @@ test('shows guidance and appends it to details for guidance-enabled contacts', a
 
   await addContactPage.expectRelatesToVisible()
   await addContactPage.expectGuidanceVisible()
-  await addContactPage.expectDetailsLabel('Add further details (optional)')
-  await expect(page.getByText('Add details of the contact')).toHaveCount(0)
+  await addContactPage.expectDetailsLabel('Add details of the contact')
 
   await addContactPage.addGuidanceToDetails()
   await addContactPage.expectDetailsValue(
@@ -94,7 +93,6 @@ test('shows event sentence options and no guidance for event-only contacts', asy
   await addContactPage.expectPersonLevelContactHidden()
   await addContactPage.expectGuidanceHidden()
   await addContactPage.expectDetailsLabel('Add details of the contact')
-  await expect(page.getByText('Add further details (optional)')).toHaveCount(0)
 })
 
 test('shows mandatory outcome radios for management oversight', async ({ page }) => {
