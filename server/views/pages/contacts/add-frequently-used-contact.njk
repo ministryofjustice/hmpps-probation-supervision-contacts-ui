@@ -25,33 +25,10 @@
 {% block content %}
     {% include "../../partials/pop-header.njk" %}
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
 
-      {% if errorMessages %}
-        {% set errorList = [] %}
-
-        {% for field, message in errorMessages %}
-          {% set errorList = (errorList.push({
-            text: message,
-            href: "#" + field
-          }), errorList) %}
-        {% endfor %}
-
-        {{ govukErrorSummary({
-          titleText: "There is a problem",
-          classes: "govuk-!-margin-bottom-6",
-          attributes: { "data-qa": "errorList" },
-          errorList: errorList
-        }) }}
-
-      {% endif %}
-
-    </div>
-  </div>
 
     <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-grid-column-three-quarters">
 
             {% if flags and flags.searchContactsByCategory %}
                 <h2 class="govuk-heading-m">Find a contact to add</h2>
@@ -74,21 +51,54 @@
                 {% endif %}
 
             {% if flags and flags.searchContactsByCategory %}
-                <div class="govuk-tabs" data-module="govuk-tabs" data-scroll-top-on-change="true" data-active-tab="{% if searchByCategoryTabActive %}search-by-category{% endif %}">
-                    <ul class="govuk-tabs__list">
-                        <li class="govuk-tabs__list-item{% if not searchByCategoryTabActive %} govuk-tabs__list-item--selected{% endif %}">
-                            <a class="govuk-tabs__tab" href="#frequently-used-contacts">Frequently used contacts</a>
+                <nav class="moj-sub-navigation" aria-label="Sub navigation">
+                    <ul class="moj-sub-navigation__list">
+                        <li class="moj-sub-navigation__item">
+                            <a class="moj-sub-navigation__link govuk-link--no-visited-state"
+                            href="#frequently-used-contacts"
+                            {% if not searchByCategoryTabActive %}aria-current="page"{% endif %}>
+                            Frequently used contacts
+                            </a>
                         </li>
-                        <li class="govuk-tabs__list-item{% if searchByCategoryTabActive %} govuk-tabs__list-item--selected{% endif %}">
-                            <a class="govuk-tabs__tab" href="#search-by-category" data-qa="search-by-category-tab">Search by category</a>
+                        <li class="moj-sub-navigation__item">
+                            <a class="moj-sub-navigation__link govuk-link--no-visited-state"
+                                href="#search-by-category"
+                                data-qa="search-by-category-tab"
+                                {% if searchByCategoryTabActive %}aria-current="page"{% endif %}>
+                                Search by category
+                            </a>
                         </li>
                     </ul>
+                      <div class="govuk-grid-row">
+                        <div class="govuk-grid-column-two-thirds">
+
+                        {% if errorMessages %}
+                            {% set errorList = [] %}
+
+                            {% for field, message in errorMessages %}
+                            {% set errorList = (errorList.push({
+                                text: message,
+                                href: "#" + field
+                            }), errorList) %}
+                            {% endfor %}
+
+                            {{ govukErrorSummary({
+                            titleText: "There is a problem",
+                            classes: "govuk-!-margin-top-4 govuk-!-margin-bottom-6",
+                            attributes: { "data-qa": "errorList" },
+                            errorList: errorList
+                            }) }}
+
+                        {% endif %}
+
+                        </div>
+                    </div>
 
                     <div class="govuk-tabs__panel{% if searchByCategoryTabActive %} govuk-tabs__panel--hidden{% endif %}" id="frequently-used-contacts">
                         <h3 class="govuk-heading-s">Select a frequently used contact</h3>
-                        <ul class="govuk-list app-contact-list" data-qa="frequentlyUsedContactList">
+                        <ul class="govuk-list app-contact-list govuk-grid-column-three-quarters" data-qa="frequentlyUsedContactList">
                             <li class="app-contact-list__item">
-                                <a class="govuk-link" href="/case/{{ crn }}/add-frequently-used-contact?contactType=APPOINTMENT">An appointment</a>
+                                <a class="govuk-link" href="/case/{{ crn }}/add-frequently-used-contact?contactType=APPOINTMENT">Appointments</a>
                             </li>
                             {% for contact in frequentlyUsedContacts %}
                                 <li class="app-contact-list__item">
@@ -163,7 +173,7 @@
                             </div>
                         {% endif %}
                     </div>
-                </div>
+                </nav>
             {% else %}
                 <form method="post" action="/case/{{ crn }}/add-frequently-used-contact" id="choose-contact-form"
                       data-ndelius-url="{{ ndeliusDeepLinkUrl }}"

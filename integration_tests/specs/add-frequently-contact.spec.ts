@@ -4,6 +4,7 @@ import { login, resetStubs } from '../testUtils'
 import masApi from '../mockApis/masApi'
 import arnsApi from '../mockApis/arnsApi'
 import tierApi from '../mockApis/tierApi'
+import featureFlags from '../mockApis/fliptApi'
 
 test.beforeEach(async ({ page }) => {
   await Promise.all([
@@ -23,6 +24,7 @@ test.afterEach(async () => {
 })
 
 test('user can select appointment contact', async ({ page }) => {
+  await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: false }])
   const addContactPage = new AddFrequentContactPage(page)
 
   await page.goto('/case/X123456/add-frequently-used-contact')
@@ -34,6 +36,7 @@ test('user can select appointment contact', async ({ page }) => {
 })
 
 test('keeps selected contact when using browser back from step 2', async ({ page }) => {
+  await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: false }])
   const addContactPage = new AddFrequentContactPage(page)
 
   await page.goto('/case/X123456/add-frequently-used-contact')
@@ -47,6 +50,7 @@ test('keeps selected contact when using browser back from step 2', async ({ page
 })
 
 test('clears selected contact when navigating away and returning', async ({ page }) => {
+  await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: false }])
   const addContactPage = new AddFrequentContactPage(page)
 
   await page.goto('/case/X123456/add-frequently-used-contact')
@@ -62,6 +66,8 @@ test('clears selected contact when navigating away and returning', async ({ page
 })
 
 test('user can open NDelius in new tab and redirect back to activity log', async ({ page }) => {
+  await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: false }])
+
   await page.goto('/case/X123456/add-frequently-used-contact')
 
   const [newTab] = await Promise.all([
@@ -71,4 +77,14 @@ test('user can open NDelius in new tab and redirect back to activity log', async
 
   await expect(newTab).toBeTruthy()
   await expect(page).toHaveURL(url => url.pathname.includes('/case/X123456/activity-log'))
+})
+
+test('Selects correct contact when feature flag searchContactsByCategory is true', async ({ page }) => {
+  await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: true }])
+
+  await page.goto('/case/X123456/add-frequently-used-contact')
+
+  await page.locator('a[href*="add-internal-communications"]').click()
+
+  await expect(page.url()).toContain('add-internal-communications')
 })
