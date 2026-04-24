@@ -343,6 +343,29 @@ describe('addContactController', () => {
       expect(renderArgs.showPersonOption).toBe(false)
       expect(renderArgs.showEventOptions).toBe(true)
     })
+
+    it('renders an outcome section for outcome contacts', async () => {
+      const req = createReq({ params: { crn: 'X123456', contactType: 'management-oversight' } })
+      const res = createRes({
+        isResponsibleOfficer: false,
+        sentences: [],
+      })
+
+      await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.showRelatesToQuestion).toBe(false)
+      expect(renderArgs.outcomeSection).toEqual({
+        legend: 'Select an outcome',
+        type: 'radios',
+        items: expect.arrayContaining([
+          expect.objectContaining({
+            text: 'Management oversight decision',
+            value: 'MO27',
+          }),
+        ]),
+      })
+    })
   })
 
   describe('postAddContactType', () => {
@@ -355,6 +378,7 @@ describe('addContactController', () => {
       alertResponsibleOfficer: 'No',
       date: '17/5/2024',
       time: '09:00',
+      outcome: 'MO27',
     }
 
     it('creates a contact and redirects to activity log', async () => {
@@ -373,6 +397,7 @@ describe('addContactController', () => {
           teamCode: 'N01T01',
           type: 'CM3A',
           eventId: 1,
+          outcome: 'MO27',
           sensitive: true,
           visorReport: false,
           alert: false,

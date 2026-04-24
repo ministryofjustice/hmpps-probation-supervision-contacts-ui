@@ -162,6 +162,32 @@ describe('middleware/validation/addContactType', () => {
     expect(renderData.formValues).toEqual(body)
   })
 
+  it('requires outcome when the selected contact type has a mandatory outcome', () => {
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactType: 'add-management-oversight' },
+      body: { ...validBody },
+    })
+    const res = createRes()
+
+    addContactType(req, res, next)
+
+    expect(next).not.toHaveBeenCalled()
+    const renderData = (res.render as jest.Mock).mock.calls[0][1]
+    expect(renderData.errorMessages.outcome).toEqual('Select an outcome')
+  })
+
+  it('does not require outcome when the selected contact type has an optional outcome', () => {
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactType: 'add-arrest-incident' },
+      body: { ...validBody },
+    })
+    const res = createRes()
+
+    addContactType(req, res, next)
+
+    expect(next).toHaveBeenCalledWith()
+  })
+
   it('normalises array values before rebuilding the error page view model', () => {
     const req = httpMocks.createRequest({
       params: { crn: ['X123456'], contactType: ['add-victim-liaison-contact'] },

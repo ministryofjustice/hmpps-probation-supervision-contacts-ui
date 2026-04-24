@@ -4,9 +4,14 @@ import { ValidationSpec } from '../../models/Errors'
 export interface AddContactValidationArgs {
   responsibleOfficer: string
   isVisor: string
+  outcomeRequired: boolean
 }
 
-export const addContactValidation = ({ responsibleOfficer, isVisor }: AddContactValidationArgs): ValidationSpec => ({
+export const addContactValidation = ({
+  responsibleOfficer,
+  isVisor,
+  outcomeRequired,
+}: AddContactValidationArgs): ValidationSpec => ({
   sentence: {
     optional: false,
     checks: [
@@ -50,6 +55,16 @@ export const addContactValidation = ({ responsibleOfficer, isVisor }: AddContact
         msg: 'Enter a time in the 24-hour format, for example 16:30',
         log: 'Contact time format invalid',
         crossField: 'date',
+      },
+    ],
+  },
+  outcome: {
+    optional: !outcomeRequired,
+    checks: [
+      {
+        validator: isNotEmpty,
+        msg: 'Select an outcome',
+        log: 'Outcome not selected',
       },
     ],
   },

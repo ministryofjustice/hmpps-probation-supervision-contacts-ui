@@ -112,4 +112,81 @@ describe('buildAddContactViewModel', () => {
       insertText: "You must notify the prison of the MAPPA level, and record that you've done this.",
     })
   })
+
+  it('builds a mandatory radio outcome section for outcome contacts', () => {
+    const result = buildAddContactViewModel({
+      crn: 'X123456',
+      slug: 'management-oversight',
+      sentences,
+      personName: 'Stuart Morrison',
+      formValues: { outcome: 'MO27' },
+    })
+
+    expect(result.showRelatesToQuestion).toBe(false)
+    expect(result.outcomeSection).toEqual({
+      legend: 'Select an outcome',
+      type: 'radios',
+      items: expect.arrayContaining([
+        expect.objectContaining({
+          text: 'Management oversight decision',
+          value: 'MO27',
+          checked: true,
+        }),
+      ]),
+    })
+  })
+
+  it('builds an optional single checkbox outcome section for single-outcome contacts', () => {
+    const result = buildAddContactViewModel({
+      crn: 'X123456',
+      slug: 'arrest-incident',
+      sentences,
+      personName: 'Stuart Morrison',
+      formValues: {},
+    })
+
+    expect(result.outcomeSection).toEqual({
+      legend: 'Select an outcome (optional)',
+      type: 'checkbox',
+      items: [
+        expect.objectContaining({
+          text: "Set the outcome to 'Risk review'",
+          value: 'CO29',
+          checked: false,
+        }),
+      ],
+    })
+  })
+
+  it('builds MO8 guidance and optional radio outcomes for the HVRA contact', () => {
+    const result = buildAddContactViewModel({
+      crn: 'X123456',
+      slug: 'management-oversight-home-visit-risk-assessment',
+      sentences,
+      personName: 'Stuart Morrison',
+      formValues: { outcome: 'MO25' },
+    })
+
+    expect(result.showRelatesToQuestion).toBe(false)
+    expect(result.outcomeSection).toEqual({
+      legend: 'Select an outcome (optional)',
+      type: 'radios',
+      items: expect.arrayContaining([
+        expect.objectContaining({
+          text: 'Home visit approved',
+          value: 'MO25',
+          checked: true,
+        }),
+      ]),
+    })
+    expect(result.guidance).toEqual(
+      expect.objectContaining({
+        sections: expect.arrayContaining([
+          expect.objectContaining({
+            paragraph: 'If you are the responsible officer, you must include:',
+          }),
+        ]),
+      }),
+    )
+  })
 })
