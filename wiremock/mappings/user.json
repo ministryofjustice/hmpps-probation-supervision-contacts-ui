@@ -2,7 +2,7 @@
   "mappings": [
     {
       "request": {
-        "urlPattern": "/mas/user/USER1",
+        "urlPattern": "/mas-api/user/USER1",
         "method": "GET"
       },
       "response": {
