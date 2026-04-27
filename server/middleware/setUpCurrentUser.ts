@@ -2,11 +2,12 @@ import { jwtDecode } from 'jwt-decode'
 import express from 'express'
 import { convertToTitleCase } from '../utils/utils'
 import logger from '../../logger'
+import MasApiClient from '../data/masApiClient'
 
-export default function setUpCurrentUser() {
+export default function setUpCurrentUser(masClient: MasApiClient) {
   const router = express.Router()
 
-  router.use((req, res, next) => {
+  router.use(async (req, res, next) => {
     try {
       const {
         name,
@@ -25,6 +26,11 @@ export default function setUpCurrentUser() {
         displayName: convertToTitleCase(name),
         userRoles: roles.map(role => role.substring(role.indexOf('_') + 1)),
       }
+
+      console.log(res.locals.user)
+      const user = await masClient.getUserDetails(res.locals.user.username)
+      console.log(user)
+      res.locals.user.email = user.email
 
       if (res.locals.user.authSource === 'nomis') {
         res.locals.user.staffId = parseInt(userId, 10) || undefined

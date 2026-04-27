@@ -5,6 +5,7 @@ import logger from '../../logger'
 import { PersonalDetails } from './model/personalDetails'
 import { Overview } from './model/overview'
 import { ContactType, CreateContactRequest, CreateContactResponse, Sentence, UserProviders } from './model/contacts'
+import { HmppsUser } from '../interfaces/hmppsUser'
 
 interface UserAlerts {
   content: unknown[]
@@ -115,6 +116,19 @@ export default class MasApiClient extends RestClient {
     return this.get<PersonalDetails | null>(
       {
         path: `/personal-details/${crn}`,
+        errorHandler: (_path, _method, error) => {
+          if (error.responseStatus === 404) return null
+          throw error
+        },
+      },
+      asSystem(username),
+    )
+  }
+
+  async getUserDetails(username: string): Promise<HmppsUser | null> {
+    return this.get<HmppsUser | null>(
+      {
+        path: `/user/${username}`,
         errorHandler: (_path, _method, error) => {
           if (error.responseStatus === 404) return null
           throw error
