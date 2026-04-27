@@ -27,9 +27,7 @@ export default function setUpCurrentUser(masClient: MasApiClient) {
         userRoles: roles.map(role => role.substring(role.indexOf('_') + 1)),
       }
 
-      console.log(res.locals.user)
       const user = await masClient.getUserDetails(res.locals.user.username)
-      console.log(user)
       res.locals.user.email = user.email
 
       if (res.locals.user.authSource === 'nomis') {
