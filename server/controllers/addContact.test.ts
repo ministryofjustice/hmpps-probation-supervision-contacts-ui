@@ -473,7 +473,7 @@ describe('addContactController', () => {
     })
   })
 
-  describe('postSearchByCategory', () => {
+  describe('getSearchByCategory', () => {
     it('clears selections and results when action is clear', async () => {
       const req = createReq({
         params: { crn: 'X123456' },
@@ -481,7 +481,7 @@ describe('addContactController', () => {
       })
       const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
 
-      await addContactController.postSearchByCategory()(req, res, next)
+      await addContactController.getSearchByCategory()(req, res, next)
 
       expect(res.render).toHaveBeenCalledWith(
         'pages/contacts/add-frequently-used-contact',
@@ -498,11 +498,11 @@ describe('addContactController', () => {
     it('renders validation error when no categories selected', async () => {
       const req = createReq({
         params: { crn: 'X123456' },
-        body: { lastCategories: 'Referrals,Sentence management' },
+        query: { lastCategories: 'Referrals,Sentence management' },
       })
       const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
 
-      await addContactController.postSearchByCategory()(req, res, next)
+      await addContactController.getSearchByCategory()(req, res, next)
 
       const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
       expect(renderArgs.errorMessages).toEqual({ categories: 'Select a category' })
@@ -513,11 +513,11 @@ describe('addContactController', () => {
     it('renders results when categories are selected', async () => {
       const req = createReq({
         params: { crn: 'X123456' },
-        body: { categories: ['Referrals', 'Sentence management'] },
+        query: { categories: ['Referrals', 'Sentence management'] },
       })
       const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
 
-      await addContactController.postSearchByCategory()(req, res, next)
+      await addContactController.getSearchByCategory()(req, res, next)
 
       const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
       expect(renderArgs.selectedCategories).toEqual(['Referrals', 'Sentence management'])
