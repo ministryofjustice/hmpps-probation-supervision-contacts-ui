@@ -28,7 +28,7 @@ export default function setUpCurrentUser(masClient: MasApiClient) {
       }
 
       const user = await masClient.getUserDetails(res.locals.user.username)
-      res.locals.user.email = user.email
+      res.locals.user.email = user?.email
 
       if (res.locals.user.authSource === 'nomis') {
         res.locals.user.staffId = parseInt(userId, 10) || undefined
