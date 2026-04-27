@@ -109,8 +109,7 @@
                     </div>
 
                     <div class="govuk-tabs__panel{% if not searchByCategoryTabActive %} govuk-tabs__panel--hidden{% endif %}" id="search-by-category">
-                        <form method="post" action="/case/{{ crn }}/add-frequently-used-contact/search-by-category" id="category-search-form">
-                            <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                        <form method="get" action="/case/{{ crn }}/add-frequently-used-contact/search-by-category" id="category-search-form">
                             <input type="hidden" name="lastCategories" value="{{ lastCategories }}">
 
                             {{ govukCheckboxes({

@@ -38,11 +38,11 @@ export default function addContactRoutes(
     controllers.addContact.postFrequentlyUsedContact(masApiClient),
   )
 
-  router.post(
+  router.get(
     '/case/:crn/add-frequently-used-contact/search-by-category',
     loadPersonalDetails,
     populate,
-    controllers.addContact.postSearchByCategory(),
+    controllers.addContact.getSearchByCategory(),
   )
 
   router.get(

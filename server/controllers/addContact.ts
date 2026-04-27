@@ -75,19 +75,19 @@ const addContactController = {
       })
     }
   },
-  postSearchByCategory: (): RequestHandler => {
+  getSearchByCategory: (): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
-      const selectedCategories = normaliseSelectedCategories(req.body?.categories)
+      const selectedCategories = normaliseSelectedCategories(req.query?.categories as string | string[])
       const lastCategories = normaliseSelectedCategories(
-        typeof req.body?.lastCategories === 'string' && req.body.lastCategories.length
-          ? req.body.lastCategories
+        typeof req.query?.lastCategories === 'string' && req.query.lastCategories.length
+          ? req.query.lastCategories
               .split(',')
               .map((value: string) => value.trim())
               .filter(Boolean)
           : [],
       )
-      const action = req.body?.action
+      const action = req.query?.action
 
       const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
       const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
