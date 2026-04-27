@@ -1,9 +1,10 @@
 import { EvaluationRequest, EvaluationResponse, FliptEvaluationClient } from '@flipt-io/flipt-client'
 import config from '../config'
 import { FeatureFlags } from '../data/model/featureFlags'
+import logger from '../../logger'
 
 export default class FlagService {
-  async getFlags(): Promise<FeatureFlags> {
+  async getFlags(context: { email?: string }): Promise<FeatureFlags> {
     const namespace = 'probation-supervision-contacts-ui'
     const fliptEvaluationClient = await FliptEvaluationClient.init(namespace, {
       url: config.flipt.url,
@@ -18,24 +19,36 @@ export default class FlagService {
         flagList.push(key)
       }
     })
-    const requests = flagList.map(flag => {
-      const request: EvaluationRequest = { flagKey: flag, entityId: flag, context: {} }
-      return request
+
+    const buildRequest = (flag: string): EvaluationRequest => {
+      return {
+        flagKey: flag,
+        entityId: context?.email ? context.email.toLowerCase() || 'anonymous' : flag,
+        context: {
+          ...(context?.email ? { email: context.email.toLowerCase() } : {}),
+        },
+      }
+    }
+
+    const requests: EvaluationRequest[] = flagList.flatMap(flag => {
+      return [buildRequest(flag)]
     })
+
     const flags = fliptEvaluationClient.evaluateBatch(requests)
 
-    function result(results: EvaluationResponse[], key: string) {
-      const filtered = results.filter(flag => flag.booleanEvaluationResponse?.flagKey === key)
-      if (filtered.length === 1) {
-        return filtered[0].booleanEvaluationResponse.enabled
-      }
-      return false
+    function responsesFor(results: EvaluationResponse[], key: string) {
+      return results.filter(r => r.booleanEvaluationResponse?.flagKey === key)
     }
 
     flagList.forEach(f => {
-      featureFlags[f] = result(flags.responses, f)
+      const matching = responsesFor(flags.responses, f)
+      if (matching.length === 1) {
+        featureFlags[f] = matching[0].booleanEvaluationResponse.enabled === true
+      } else {
+        logger.warn(`Expected exactly 1 response for flag ${f}, got ${matching.length} — defaulting to false`)
+        featureFlags[f] = false
+      }
     })
-
     return featureFlags
   }
 }
