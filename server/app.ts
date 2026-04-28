@@ -40,7 +40,7 @@ export default function createApp(services: Services): express.Application {
   nunjucksSetup(app)
   app.use(setUpAuthentication())
   app.use(authorisationMiddleware())
-  app.use(setUpCurrentUser())
+  app.use(setUpCurrentUser(services.masApiClient))
   app.use(setUpFlags(services))
   app.use(getFrontendComponents(services.probationComponentsService))
   app.use(authorisationMiddleware(['ROLE_MANAGE_SUPERVISIONS']))
