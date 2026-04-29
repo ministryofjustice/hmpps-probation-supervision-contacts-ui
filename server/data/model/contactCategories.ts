@@ -290,7 +290,7 @@ export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
     category: 'Communication and information sharing with others',
     subcategory: 'Information sharing and requests',
     code: 'CI3B',
-    displayName: 'Information from third party',
+    displayName: 'Information to third party',
   },
   {
     category: 'Communication and information sharing with others',
