@@ -31,7 +31,7 @@
         <div class="govuk-grid-column-three-quarters">
 
             {% if flags and flags.searchContactsByCategory %}
-                <h2 class="govuk-heading-m">Find a contact to add</h2>
+                <h2 class="govuk-heading-l">Find a contact to add</h2>
             {% else %}
                 <h2 class="govuk-heading-m">Add a frequently used contact</h2>
             {% endif %}
@@ -95,7 +95,7 @@
                     </div>
 
                     <div class="govuk-tabs__panel{% if searchByCategoryTabActive %} govuk-tabs__panel--hidden{% endif %}" id="frequently-used-contacts">
-                        <h3 class="govuk-heading-s">Select a frequently used contact</h3>
+                        <h3 class="govuk-heading-m">Select a frequently used contact</h3>
                         <ul class="govuk-list app-contact-list govuk-grid-column-three-quarters" data-qa="frequentlyUsedContactList">
                             <li class="app-contact-list__item">
                                 <a class="govuk-link" href="/case/{{ crn }}/add-frequently-used-contact?contactType=APPOINTMENT">Appointments</a>
