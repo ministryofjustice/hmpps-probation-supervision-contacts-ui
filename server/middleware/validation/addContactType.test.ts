@@ -173,7 +173,7 @@ describe('middleware/validation/addContactType', () => {
 
     expect(next).not.toHaveBeenCalled()
     const renderData = (res.render as jest.Mock).mock.calls[0][1]
-    expect(renderData.errorMessages.outcome).toEqual('Select an outcome')
+    expect(renderData.errorMessages.outcomeCode).toEqual('Select an outcome')
   })
 
   it('does not require outcome when the selected contact type has an optional outcome', () => {

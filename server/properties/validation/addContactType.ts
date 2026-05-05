@@ -58,7 +58,7 @@ export const addContactValidation = ({
       },
     ],
   },
-  outcome: {
+  outcomeCode: {
     optional: !outcomeRequired,
     checks: [
       {

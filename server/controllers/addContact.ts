@@ -14,6 +14,7 @@ import {
   normaliseSelectedCategories,
 } from '../services/contactCategorySearch'
 import { buildAddContactViewModel } from '../services/addContactViewModel'
+import logger from '../../logger'
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -209,7 +210,8 @@ const addContactController = {
       const alertResponsibleOfficer = getStringValue(req.body?.alertResponsibleOfficer)
       const date = getStringValue(req.body?.date)
       const time = getStringValue(req.body?.time)
-      const outcome = getStringValue(req.body?.outcome)
+      const outcomeCode = getStringValue(req.body?.outcomeCode)
+      logger.info({ requestBody: req.body }, 'Create contact request body')
       const contactTypes = ContactTypeOptions
       const selectedType = contactTypes.find(c => slugify(c.description) === slug)
       const contactService = new ContactService(masApiClient)
@@ -228,7 +230,7 @@ const addContactController = {
         requirementId: null,
         description: title || undefined,
         notes: details || '',
-        outcome: outcome || undefined,
+        outcomeCode: outcomeCode || undefined,
         alert: alertResponsibleOfficer === 'Yes',
         sensitive: sensitivity === 'Yes',
         visorReport: visor === 'Yes',

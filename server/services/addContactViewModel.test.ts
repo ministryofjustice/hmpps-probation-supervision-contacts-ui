@@ -119,7 +119,7 @@ describe('buildAddContactViewModel', () => {
       slug: 'management-oversight',
       sentences,
       personName: 'Stuart Morrison',
-      formValues: { outcome: 'MO27' },
+      formValues: { outcomeCode: 'MO27' },
     })
 
     expect(result.showRelatesToQuestion).toBe(false)
@@ -164,7 +164,7 @@ describe('buildAddContactViewModel', () => {
       slug: 'management-oversight-home-visit-risk-assessment',
       sentences,
       personName: 'Stuart Morrison',
-      formValues: { outcome: 'MO25' },
+      formValues: { outcomeCode: 'MO25' },
     })
 
     expect(result.showRelatesToQuestion).toBe(false)

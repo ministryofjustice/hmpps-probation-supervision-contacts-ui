@@ -202,10 +202,10 @@
                                     isPageHeading: false
                                 }
                             },
-                            name: 'outcome',
-                            idPrefix: 'outcome',
+                            name: 'outcomeCode',
+                            idPrefix: 'outcomeCode',
                             items: outcomeSection.items,
-                            errorMessage: { text: errorMessages.outcome } if errorMessages.outcome
+                            errorMessage: { text: errorMessages.outcomeCode } if errorMessages.outcomeCode
                         }) }}
                     {% else %}
                         {{ govukRadios({
@@ -216,10 +216,10 @@
                                     isPageHeading: false
                                 }
                             },
-                            name: 'outcome',
-                            idPrefix: 'outcome',
+                            name: 'outcomeCode',
+                            idPrefix: 'outcomeCode',
                             items: outcomeSection.items,
-                            errorMessage: { text: errorMessages.outcome } if errorMessages.outcome
+                            errorMessage: { text: errorMessages.outcomeCode } if errorMessages.outcomeCode
                         }) }}
                     {% endif %}
                 {% endif %}
