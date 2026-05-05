@@ -62,7 +62,7 @@ export interface CreateContactRequest {
   requirementId?: number | null
   description?: string
   notes?: string
-  outcome?: string
+  outcomeCode?: string
   alert: boolean
   sensitive: boolean
   visorReport: boolean

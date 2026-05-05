@@ -102,7 +102,7 @@ export const buildAddContactViewModel = ({
           {
             text: `Set the outcome to '${outcomes[0].label}'`,
             value: outcomes[0].value,
-            checked: updatedFormValues.outcome === outcomes[0].value,
+            checked: updatedFormValues.outcomeCode === outcomes[0].value,
             attributes: {
               'data-qa': 'contactOutcome',
             },
@@ -111,7 +111,7 @@ export const buildAddContactViewModel = ({
       : outcomes.map(outcome => ({
           text: outcome.label,
           value: outcome.value,
-          checked: updatedFormValues.outcome === outcome.value,
+          checked: updatedFormValues.outcomeCode === outcome.value,
           attributes: {
             'data-qa': 'contactOutcome',
           },

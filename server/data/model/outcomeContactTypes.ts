@@ -376,8 +376,8 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
       'Before saving please check the "Sensitive" flag - these contacts should normally be marked as sensitive.',
     mandatoryOutcome: true,
     outcomes: [
-      { label: 'Referral decision - accepted', value: 'RPEN', systemLabel: 'Referral Decision - Accepted' },
-      { label: 'Referral decision - pending', value: 'RRJT', systemLabel: 'Referral Decision - Pending' },
+      { label: 'Referral decision - accepted', value: 'RACC', systemLabel: 'Referral Decision - Accepted' },
+      { label: 'Referral decision - pending', value: 'RPEN', systemLabel: 'Referral Decision - Pending' },
       { label: 'Rejected - remain at level 1', value: 'PIDA', systemLabel: 'Rejected - Remain at Level 1' },
     ],
   },

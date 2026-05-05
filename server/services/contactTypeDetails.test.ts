@@ -25,6 +25,17 @@ describe('contactTypeDetails', () => {
     )
   })
 
+  it('uses the correct accepted and pending outcome codes for MARAC referral', () => {
+    expect(getContactTypeDetailByCode('ERFM')).toEqual(
+      expect.objectContaining({
+        outcomes: expect.arrayContaining([
+          expect.objectContaining({ label: 'Referral decision - accepted', value: 'RACC' }),
+          expect.objectContaining({ label: 'Referral decision - pending', value: 'RPEN' }),
+        ]),
+      }),
+    )
+  })
+
   it('returns a contact type name from standard contact types when no no-outcome detail exists', () => {
     expect(getContactTypeNameBySlug('police-liaison')).toBe('Police liaison')
   })

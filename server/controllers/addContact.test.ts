@@ -378,7 +378,7 @@ describe('addContactController', () => {
       alertResponsibleOfficer: 'No',
       date: '17/5/2024',
       time: '09:00',
-      outcome: 'MO27',
+      outcomeCode: 'MO27',
     }
 
     it('creates a contact and redirects to activity log', async () => {
@@ -397,7 +397,7 @@ describe('addContactController', () => {
           teamCode: 'N01T01',
           type: 'CM3A',
           eventId: 1,
-          outcome: 'MO27',
+          outcomeCode: 'MO27',
           sensitive: true,
           visorReport: false,
           alert: false,
