@@ -15,8 +15,6 @@ const updateContactController = {
 
         const isOutcome = !NoOutcomeContactTypeDetails.some(item => item.description === displayName)
 
-        console.log(isOutcome)
-
         return res.render('pages/contacts/update-contact', {
           crn,
           contactId,
