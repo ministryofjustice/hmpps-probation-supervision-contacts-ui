@@ -4,8 +4,16 @@ import config from '../config'
 import logger from '../../logger'
 import { PersonalDetails } from './model/personalDetails'
 import { Overview } from './model/overview'
-import { ContactType, CreateContactRequest, CreateContactResponse, Sentence, UserProviders } from './model/contacts'
+import {
+  ContactType,
+  CreateContactRequest,
+  CreateContactResponse,
+  Sentence,
+  UserProviders,
+  PersonContact,
+} from './model/contacts'
 import { HmppsUser } from '../interfaces/hmppsUser'
+import { mapPersonAppointmentWithApprovedContactDisplayNames } from '../utils/contactDisplayNames'
 
 interface UserAlerts {
   content: unknown[]
@@ -136,5 +144,16 @@ export default class MasApiClient extends RestClient {
       },
       asSystem(username),
     )
+  }
+
+  async getPersonContact(crn: string, appointmentId: string, username: string): Promise<PersonContact | null> {
+    const personContact = (await this.get(
+      {
+        path: `/schedule/${crn}/appointment/${appointmentId}`,
+      },
+      asSystem(username),
+    )) as PersonContact | null
+
+    return personContact ? mapPersonAppointmentWithApprovedContactDisplayNames(personContact) : personContact
   }
 }
