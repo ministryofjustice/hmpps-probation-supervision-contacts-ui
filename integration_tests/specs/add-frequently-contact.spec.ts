@@ -44,7 +44,10 @@ test('adds analytics event names to the select frequent contact controls', async
     'data-analytics-event',
     'freq_used_continue',
   )
-  await expect(page.getByRole('link', { name: 'Back' })).toHaveAttribute('data-analytics-event', 'select_contact_back')
+  await expect(page.getByRole('link', { name: 'Contacts' })).toHaveAttribute(
+    'data-analytics-event',
+    'select_contact_back',
+  )
 })
 
 test('keeps selected contact when using browser back from step 2', async ({ page }) => {
