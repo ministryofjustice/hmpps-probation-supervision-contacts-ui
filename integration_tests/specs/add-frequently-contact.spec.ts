@@ -35,6 +35,18 @@ test('user can select appointment contact', async ({ page }) => {
   await expect(page).toHaveURL('/case/X123456/contacts/add-internal-communications')
 })
 
+test('adds analytics event names to the select frequent contact controls', async ({ page }) => {
+  await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: false }])
+
+  await page.goto('/case/X123456/add-frequently-used-contact')
+
+  await expect(page.getByRole('button', { name: 'Continue' })).toHaveAttribute(
+    'data-analytics-event',
+    'freq_used_continue',
+  )
+  await expect(page.getByRole('link', { name: 'Back' })).toHaveAttribute('data-analytics-event', 'select_contact_back')
+})
+
 test('keeps selected contact when using browser back from step 2', async ({ page }) => {
   await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: false }])
   const addContactPage = new AddFrequentContactPage(page)

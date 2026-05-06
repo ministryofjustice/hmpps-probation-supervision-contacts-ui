@@ -9,7 +9,13 @@
   {% set breadcrumbItems = [
     { title: "Cases", href: manageProbationUrl + "/case" },
     { title: headerPersonName.forename + " " + headerPersonName.surname, href: manageProbationUrl + "/case/" + crn },
-    { title: "Contacts", href: manageProbationUrl + "/case/" + crn + "/activity-log" }
+    {
+      title: "Contacts",
+      href: manageProbationUrl + "/case/" + crn + "/activity-log",
+      attributes: {
+        "data-analytics-event": "select_contact_back"
+      }
+    }
   ] %}
   {{ breadcrumb("Add a contact", breadcrumbItems) }}
 {% endblock %}
@@ -196,7 +202,10 @@
 
                     {{ govukButton({
                         text: "Continue",
-                        attributes: { "data-qa": "continue-button" }
+                        attributes: {
+                          "data-qa": "continue-button",
+                          "data-analytics-event": "freq_used_continue"
+                        }
                     }) }}
                 </form>
             {% endif %}

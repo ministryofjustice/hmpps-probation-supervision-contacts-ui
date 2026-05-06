@@ -30,7 +30,8 @@
 {% block beforeContent %}
   {% if backLink %}
     {{ govukBackLink({
-      href: backLink
+      href: backLink,
+      attributes: backLinkAttributes
     }) }}
   {% endif %}
 {% endblock %}

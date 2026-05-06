@@ -119,6 +119,7 @@ export const buildAddContactViewModel = ({
 
   return {
     crn,
+    contactTypeCode: detail?.code || slug.toUpperCase(),
     contactTypeName,
     csrfToken,
     formValues: updatedFormValues,

@@ -28,6 +28,7 @@ describe('buildAddContactViewModel', () => {
       formValues: {},
     })
 
+    expect(result.contactTypeCode).toBe('ACOM1')
     expect(result.contactTypeName).toBe('Accommodation evidence')
     expect(result.showRelatesToQuestion).toBe(false)
     expect(result.showPersonOption).toBe(false)
@@ -53,6 +54,7 @@ describe('buildAddContactViewModel', () => {
       csrfToken: 'csrf-token',
     })
 
+    expect(result.contactTypeCode).toBe('CVIC')
     expect(result.contactTypeName).toBe('Victim liaison contact')
     expect(result.showRelatesToQuestion).toBe(true)
     expect(result.showPersonOption).toBe(true)
@@ -101,6 +103,7 @@ describe('buildAddContactViewModel', () => {
       formValues: {},
     })
 
+    expect(result.contactTypeCode).toBe('MAPLS')
     expect(result.contactTypeName).toBe('MAPPA level setting process')
     expect(result.showRelatesToQuestion).toBe(true)
     expect(result.showPersonOption).toBe(false)
@@ -122,6 +125,7 @@ describe('buildAddContactViewModel', () => {
       formValues: { outcome: 'MO27' },
     })
 
+    expect(result.contactTypeCode).toBe('MO1')
     expect(result.showRelatesToQuestion).toBe(false)
     expect(result.outcomeSection).toEqual({
       legend: 'Select an outcome',
@@ -145,6 +149,7 @@ describe('buildAddContactViewModel', () => {
       formValues: {},
     })
 
+    expect(result.contactTypeCode).toBe('CARR')
     expect(result.outcomeSection).toEqual({
       legend: 'Select an outcome (optional)',
       type: 'checkbox',
@@ -167,6 +172,7 @@ describe('buildAddContactViewModel', () => {
       formValues: { outcome: 'MO25' },
     })
 
+    expect(result.contactTypeCode).toBe('MO8')
     expect(result.showRelatesToQuestion).toBe(false)
     expect(result.outcomeSection).toEqual({
       legend: 'Select an outcome (optional)',

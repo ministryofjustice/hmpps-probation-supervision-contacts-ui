@@ -10,6 +10,9 @@
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% set addContactType = 'Add ' + contactTypeName %}
 {% set backLink = '/case/' + crn + '/add-frequently-used-contact?from=step2' %}
+{% set backLinkAttributes = {
+    "data-analytics-event": "create_contact_back"
+} %}
 
 {% block pageTitle %}
     {{ addContactType }} - {{ headerPersonName.forename }} {{ headerPersonName.surname }}
@@ -348,7 +351,10 @@
 
                 {{ govukButton({
                     text: "Create contact",
-                    attributes: { "data-qa": "create-contact-button" }
+                    attributes: {
+                        "data-qa": "create-contact-button",
+                        "data-analytics-event": "create_contact_" + contactTypeCode
+                    }
                 }) }}
             </form>
         </div>

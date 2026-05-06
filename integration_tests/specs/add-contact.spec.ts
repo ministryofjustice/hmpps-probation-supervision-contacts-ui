@@ -38,6 +38,16 @@ test('details and date fields are visible and writable', async ({ page }) => {
   await addContactPage.expectDateValue('17/05/2024')
 })
 
+test('adds analytics event names to the create contact controls', async ({ page }) => {
+  await page.goto('/case/X123456/contacts/add-internal-communications')
+
+  await expect(page.getByRole('button', { name: 'Create contact' })).toHaveAttribute(
+    'data-analytics-event',
+    'create_contact_C326',
+  )
+  await expect(page.getByRole('link', { name: 'Back' })).toHaveAttribute('data-analytics-event', 'create_contact_back')
+})
+
 test('shows 404 page when CRN is not found', async ({ page }) => {
   await masApi.stubGetPersonalDetailsNotFound()
 

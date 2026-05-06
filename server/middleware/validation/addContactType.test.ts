@@ -159,6 +159,7 @@ describe('middleware/validation/addContactType', () => {
     const [view, renderData] = (res.render as jest.Mock).mock.calls[0]
     expect(view).toBe('pages/contacts/add-contact-type')
     expect(renderData.crn).toBe('X123456')
+    expect(renderData.contactTypeCode).toBe('C204')
     expect(renderData.formValues).toEqual(body)
   })
 
