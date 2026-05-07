@@ -34,7 +34,10 @@ generic-service:
          ctl:ruleRemoveTargetById=932231;ARGS:details,\
          ctl:ruleRemoveTargetById=932236;ARGS:details,\
          ctl:ruleRemoveTargetById=942430;ARGS:details,\
-         ctl:ruleRemoveTargetById=942200;ARGS:details"
+         ctl:ruleRemoveTargetById=942200;ARGS:details,\
+         ctl:ruleRemoveTargetById=942360;ARGS:details,\
+         ctl:ruleRemoveTargetById=942131;ARGS:details,\
+         ctl:ruleRemoveTargetById=942370;ARGS:details"
 
   env:
     INGRESS_URL: "https://probation-supervision-contacts-ui-preprod.hmpps.service.justice.gov.uk"
