@@ -22,6 +22,7 @@ import setUpFlags from './middleware/setUpFlags'
 
 import addContactRoutes from './routes/addContact'
 import type { Services } from './services'
+import addUpdateContactRoutes from './routes/updateContact'
 
 export default function createApp(services: Services): express.Application {
   const app = express()
@@ -49,6 +50,7 @@ export default function createApp(services: Services): express.Application {
   // Routes that use multer for multipart upload must be registered before csrf executes
   const router = Router()
   addContactRoutes(router, services)
+  addUpdateContactRoutes(router, services)
   app.use(router)
 
   app.use(setUpCsrf())

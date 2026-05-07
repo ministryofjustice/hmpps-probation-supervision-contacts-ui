@@ -294,4 +294,19 @@ describe('MasApiClient', () => {
       expect(result).toEqual(null)
     })
   })
+
+  describe('getPersonContact', () => {
+    it('returns the contact for a given crn and appointmentId', async () => {
+      const contact = { id: 'ABC123', type: 'TEST_CONTACT' }
+
+      nock(config.apis.masApi.url)
+        .get('/schedule/X123456/appointment/ABC123')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, contact)
+
+      const result = await masApiClient.getPersonContact('X123456', 'ABC123', 'test-user')
+
+      expect(result).toEqual(contact)
+    })
+  })
 })
