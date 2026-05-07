@@ -5,16 +5,19 @@ import { PersonContact } from '../data/model/contacts'
 export const getExistingContact = (masApiClient: MasApiClient): RequestHandler => {
   return async (req, res, next) => {
     try {
-      const crn = req.params.crn as string
-      const contactId = req.params.contactId as string
+      const { crn, contactId } = req.params
+      if (typeof crn !== 'string' || typeof contactId !== 'string') {
+        return next(new Error('Invalid CRN or contact ID'))
+      }
+
       const { username } = res.locals.user
 
       const contact: PersonContact | null = await masApiClient.getPersonContact(crn, contactId, username)
       res.locals.contact = contact
 
-      next()
+      return next()
     } catch (error) {
-      next(error)
+      return next(error)
     }
   }
 }

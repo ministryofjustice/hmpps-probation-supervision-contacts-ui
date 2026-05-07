@@ -7,8 +7,6 @@ import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAu
 jest.mock('../services/contactService')
 jest.mock('../middleware/sendAuditMessage')
 
-const MockContactService = ContactService as jest.MockedClass<typeof ContactService>
-const mockSendAuditMessage = sendAuditMessage as jest.Mock
 function createRes(locals: Record<string, unknown> = {}): Response {
   return {
     locals: { user: { username: 'test-user' }, ...locals },

@@ -9,9 +9,7 @@ const updateContactController = {
 
         const { contact } = res.locals
 
-        const { appointment } = res.locals.contact
-
-        const displayName = appointment?.displayName
+        const displayName = contact.appointment?.displayName
 
         const isOutcome = !NoOutcomeContactTypeDetails.some(item => item.description === displayName)
 
