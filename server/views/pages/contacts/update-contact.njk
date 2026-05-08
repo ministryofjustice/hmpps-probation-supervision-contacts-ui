@@ -1,1 +1,176 @@
-<h1>Update Contact Page</h1>
+{% extends "../../partials/layout.njk" %}
+{% from "_components/summary-card/macro.njk" import appSummaryCard %}
+{%- from "moj/components/date-picker/macro.njk" import mojDatePicker -%}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/character-count/macro.njk" import govukCharacterCount %}
+{% from "govuk/components/file-upload/macro.njk" import govukFileUpload %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% set dateParts = contact.appointment.startDateTime.split('T')[0].split('-') %}
+{% set appointmentDate =
+  (dateParts[2] | int) + '/' +
+  (dateParts[1] | int) + '/' +
+  dateParts[0]
+%}
+{% set appointmentTime = contact.appointment.startDateTime.split('T')[1].substring(0,5) %}
+{% set contactDetails %}
+  {% include "./_contact-details.njk" %}
+{% endset %}
+
+{% block pageTitle %}
+  My page title
+{% endblock %}
+
+{% block content %}
+
+  {% include "../../partials/pop-header.njk" %}
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+
+      <h1 class="govuk-heading-l">
+        Update contact about {{contact.appointment.displayName}}
+      </h1>
+
+
+        {{ appSummaryCard({
+          attributes: {'data-qa': 'contactDetailsCard'},
+          titleText: 'Contact details',
+          headingLevel: '3',
+          classes: 'govuk-!-margin-bottom-6 app-summary-card--large-title',
+          html: contactDetails
+        }) }}
+
+<div class="govuk-grid-row">
+     <div class="govuk-grid-column-three-quarters">
+
+        <form method="post" enctype="multipart/form-data" novalidate>
+
+            <h3 class="govuk-heading-m">Update the date and time of the communication</h3>
+
+                {{ mojDatePicker({
+                    label: {
+                        text: "Date"
+                    },
+                    hint: {
+                        text: "For example, 17/5/2024."
+                    },
+                    id: "date",
+                    name: "date",
+                    value: appointmentDate,
+                    errorMessage: { text: errorMessages.date } if errorMessages.date
+                }) }}
+
+                {{ govukInput({
+                    label: {
+                        text: "Time",
+                        classes: "govuk-label--s govuk-!-font-weight-regular"
+                    },
+                    hint: {
+                        text: "Use the 24-hour format, for example 09:30 or 16:30."
+                    },
+                    id: "time",
+                    name: "time",
+                    value: appointmentTime,
+                    attributes: {
+                        size: 5,
+                        maxlength: 5
+                    },
+                    formGroup: {
+                        attributes: {
+                            'data-qa': 'time'
+                        }
+                    },
+                    classes: "govuk-input--width-5",
+                    errorMessage: { text: errorMessages.time } if errorMessages.time
+                }) }}
+
+             {{ govukCharacterCount({
+                    name: "details",
+                    id: "details",
+                    maxlength: 12000,
+                    rows: '10',
+                    value: contact.appointment.appointmentNotes[0].note,
+                    label: {
+                        text: "Add further details (optional)",
+                        classes: "govuk-label--m"
+                    },
+                    formGroup: {
+                        attributes: {
+                            'data-qa': 'details'
+                        },
+                        beforeInput: {
+                            html: detailsGuidanceHtml
+                        } if guidance
+                    },
+                    errorMessage: { text: errorMessages.details } if errorMessages.details
+                }) }}
+
+
+                <div class="govuk-form-group">
+                    <label class="govuk-label govuk-label--m" for="fileUpload">
+                        Upload a file (optional)
+                    </label>
+                    <div class="govuk-drop-zone" data-module="govuk-file-upload">
+                        {{ govukFileUpload({
+                            id: "fileUpload",
+                            name: "fileUpload",
+                            classes: "govuk-file-upload",
+                            attributes: {
+                                accept: "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            }
+                        }) }}
+                    </div>
+                </div>
+
+                {% if  not contact.appointment.isSensitive %}
+                  {{ govukRadios({
+                    fieldset: {
+                        legend: {
+                            text: 'Does this contact include sensitive information?',
+                            classes: "govuk-fieldset__legend--m",
+                            isPageHeading: false
+                        }
+                    },
+                    formGroup: {
+                        attributes: {
+                            'data-qa': 'sensitiveInformation'
+                        }
+                    },
+                    hint: {
+                        text: 'This is information that you believe must be recorded but not shared with a person on probation. If they make a request for their record, the Data Protection Team will decide whether the information can be shared.'
+                    },
+                    name: 'sensitivity',
+                    id: 'sensitivity',
+                    items: [
+                        {
+                            value: 'Yes',
+                            text: "Yes, it includes sensitive information",
+                            checked: false
+                        },
+                        {
+                            value: 'No',
+                            text: "No, it is not sensitive",
+                            checked: true
+                        }
+                    ],
+                    errorMessage: { text: errorMessages.sensitivity } if errorMessages.sensitivity
+                }) }}
+
+                {% endif %}
+
+                {{ govukButton({
+                    text: "Save update",
+                    attributes: { "data-qa": "create-contact-button" }
+                }) }}
+
+        </form>
+
+     </div>
+
+</div>
+
+{% endblock %}
