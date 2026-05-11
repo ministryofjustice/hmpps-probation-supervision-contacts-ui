@@ -25,6 +25,12 @@ const updateContactController = {
       }
     }
   },
+
+  postupdateContact: (): RequestHandler => {
+    return async (req, res, next) => {
+      // Placeholder
+    }
+  },
 }
 
 export default updateContactController

@@ -60,7 +60,7 @@
                     },
                     id: "date",
                     name: "date",
-                    value: appointmentDate,
+                    value: formValues.date if formValues is defined and 'date' in formValues else appointmentDate,
                     errorMessage: { text: errorMessages.date } if errorMessages.date
                 }) }}
 
@@ -74,7 +74,7 @@
                     },
                     id: "time",
                     name: "time",
-                    value: appointmentTime,
+                    value: formValues.time if formValues is defined and 'time' in formValues else appointmentTime,
                     attributes: {
                         size: 5,
                         maxlength: 5
@@ -93,7 +93,7 @@
                     id: "details",
                     maxlength: 12000,
                     rows: '10',
-                    value: contact.appointment.appointmentNotes[0].note,
+                    value: formValues.details if formValues and 'details' in formValues else contact.appointment.appointmentNotes[0].note,
                     label: {
                         text: "Add further details (optional)",
                         classes: "govuk-label--m"
