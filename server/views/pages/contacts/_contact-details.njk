@@ -11,7 +11,8 @@
 {% endif %}
 
 {% set appointmentDate = appointment.startDateTime or 'Not provided' %}
-{% set appointmentTime = appointment.startDateTime or 'Not provided' %}
+{% set appointmentFormattedTime = appointment.startDateTime or 'Not provided' %}
+{% set appointmentTime = contact.appointment.startDateTime.split('T')[1].substring(0,5) %}
 
 {% set rarActivity = 'Not provided' %}
 {% if appointment.isRarRelated == true %}
@@ -50,7 +51,7 @@
         text: 'Date'
       },
       value: {
-        text: appointmentDate
+        text: appointmentDate | dateWithDayAndWithYear
       }
     },
 

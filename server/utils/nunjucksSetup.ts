@@ -6,6 +6,7 @@ import fs from 'fs'
 import { initialiseName } from './utils'
 import { dateWithYear } from './dateWithYear'
 import { yearsSince } from './yearsSince'
+import { dateWithDayAndWithYear } from './dateWithDayAndWithYear'
 import config from '../config'
 import logger from '../../logger'
 
@@ -49,4 +50,5 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('assetMap', (url: string) => assetManifest[url] || url)
   njkEnv.addFilter('dateWithYear', dateWithYear)
   njkEnv.addFilter('yearsSince', yearsSince)
+  njkEnv.addFilter('dateWithDayAndWithYear', dateWithDayAndWithYear)
 }

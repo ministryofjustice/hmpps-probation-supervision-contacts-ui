@@ -36,7 +36,6 @@ const updateContact: RequestHandler = (req, res, next) => {
 
   if (Object.keys(errorMessages).length) {
     res.locals.errorMessages = errorMessages
-    console.log(errorMessages)
     return res.render('pages/contacts/update-contact', {
       ...res.locals,
       errorMessages,
