@@ -3,12 +3,6 @@ import 'applicationinsights'
 
 import { app, metricsApp } from './server/index'
 import logger from './logger'
-import { buildAppInsightsClient, initialiseAppInsights } from './server/utils/azureAppInsights'
-import applicationInfoSupplier from './server/applicationInfo'
-
-const applicationInfo = applicationInfoSupplier()
-initialiseAppInsights()
-buildAppInsightsClient(applicationInfo)
 
 const validatePort = (port: number) => {
   if (port >= 0 && port <= 65535) {

@@ -43,4 +43,12 @@
   {% if not feComponents.header %}
     <script type="module" src="{{ '/assets/js/fallback_prob_fe_app.js' | assetMap }}" nonce="{{ cspNonce }}"></script>
   {% endif %}
+  <script nonce="{{ cspNonce }}">
+    window.csrfToken = "{{ csrfToken }}";
+  </script>
+  <script nonce="{{ cspNonce }}">
+    document.addEventListener('DOMContentLoaded', function () {
+      document.initialiseTelemetry('{{ applicationInsightsConnectionString | default(' ') }}', '{{ applicationInsightsRoleName }}', '{{ user.username }}')
+    })
+  </script>
 {% endblock %}
