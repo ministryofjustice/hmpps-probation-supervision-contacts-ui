@@ -211,7 +211,6 @@ const addContactController = {
       const date = getStringValue(req.body?.date)
       const time = getStringValue(req.body?.time)
       const outcomeCode = getStringValue(req.body?.outcomeCode)
-      logger.info({ requestBody: req.body }, 'Create contact request body')
       const contactTypes = ContactTypeOptions
       const selectedType = contactTypes.find(c => slugify(c.description) === slug)
       const contactService = new ContactService(masApiClient)
