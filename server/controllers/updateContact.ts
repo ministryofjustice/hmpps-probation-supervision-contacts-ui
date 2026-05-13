@@ -1,5 +1,14 @@
 import type { RequestHandler } from 'express'
 import { NoOutcomeContactTypeDetails } from '../data/model/noOutcomeContactTypes'
+import { toIsoDateTime } from '../utils/toDateandTime'
+
+const getStringValue = (value: unknown): string => {
+  if (Array.isArray(value)) {
+    return typeof value[0] === 'string' ? value[0] : ''
+  }
+
+  return typeof value === 'string' ? value : ''
+}
 
 const updateContactController = {
   getUpdateContact: (): RequestHandler => {
@@ -28,7 +37,20 @@ const updateContactController = {
 
   postupdateContact: (): RequestHandler => {
     return async (req, res, next) => {
-      // Placeholder
+      try {
+        console.log('hit post controller')
+
+        const { crn } = req.params as Record<string, string>
+
+        const date = getStringValue(req.body?.date)
+        const time = getStringValue(req.body?.time)
+        const contactType = res.locals.contact.appointment?.displayName
+        const formattedDateandTime = toIsoDateTime(date, time)
+
+        return res.sendStatus(200)
+      } catch (e) {
+        return next(e)
+      }
     }
   },
 }

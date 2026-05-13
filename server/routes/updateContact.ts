@@ -32,6 +32,6 @@ export default function addUpdateContactRoutes(
     multerErrorHandler('fileUpload'),
     ...loadEditContactDeps,
     updateContact,
-    controllers.updateContact.postupdateContact,
+    controllers.updateContact.postupdateContact(),
   )
 }
