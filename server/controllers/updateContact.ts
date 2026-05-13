@@ -38,8 +38,6 @@ const updateContactController = {
   postupdateContact: (): RequestHandler => {
     return async (req, res, next) => {
       try {
-        console.log('hit post controller')
-
         const { crn } = req.params as Record<string, string>
 
         const date = getStringValue(req.body?.date)
