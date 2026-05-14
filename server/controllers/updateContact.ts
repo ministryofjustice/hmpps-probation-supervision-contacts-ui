@@ -1,6 +1,10 @@
 import type { RequestHandler } from 'express'
 import { NoOutcomeContactTypeDetails } from '../data/model/noOutcomeContactTypes'
 import { toIsoDateTime } from '../utils/toDateandTime'
+import { UpdateContactWithNoOutcome } from '../data/model/contacts'
+import MasApiClient from '../data/masApiClient'
+import config from '../config'
+import ContactService from '../services/contactService'
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -35,17 +39,33 @@ const updateContactController = {
     }
   },
 
-  postupdateContact: (): RequestHandler => {
+  postupdateContact: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res, next) => {
       try {
-        const { crn } = req.params as Record<string, string>
+        const { crn, contactId } = req.params as Record<string, string>
+        const { username } = res.locals.user
 
         const date = getStringValue(req.body?.date)
         const time = getStringValue(req.body?.time)
+        const notes = getStringValue(req.body?.details)
+        const sensitivity = getStringValue(req.body?.sensitivity)
         const contactType = res.locals.contact.appointment?.displayName
-        const formattedDateandTime = toIsoDateTime(date, time)
 
-        return res.sendStatus(200)
+        const isOutcome = !NoOutcomeContactTypeDetails.some(item => item.description === contactType)
+        const contactService = new ContactService(masApiClient)
+
+        if (!isOutcome) {
+          // Placeholder for no outcome
+        }
+        const formattedDateandTime = toIsoDateTime(date, time)
+        const payload: UpdateContactWithNoOutcome = {
+          dateTime: formattedDateandTime,
+          notes: notes || '',
+          sensitiveFlag: sensitivity === 'Yes',
+        }
+
+        await contactService.updateContactWithNoOutcome(contactId, payload, username)
+        return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity/${contactId}?showSuccessBanner=true`)
       } catch (e) {
         return next(e)
       }

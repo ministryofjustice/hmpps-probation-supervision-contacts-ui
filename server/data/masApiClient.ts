@@ -11,6 +11,7 @@ import {
   Sentence,
   UserProviders,
   PersonContact,
+  UpdateContactWithNoOutcome,
 } from './model/contacts'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { mapPersonAppointmentWithApprovedContactDisplayNames } from '../utils/contactDisplayNames'
@@ -93,6 +94,17 @@ export default class MasApiClient extends RestClient {
   async createContact(crn: string, payload: CreateContactRequest, username: string): Promise<CreateContactResponse> {
     return this.post(
       { path: `/contact/${crn}`, data: payload as unknown as Record<string, unknown> },
+      asSystem(username),
+    )
+  }
+
+  async updateContactWithNoOutcome(
+    contactId: string,
+    payload: UpdateContactWithNoOutcome,
+    username: string,
+  ): Promise<void> {
+    return this.patch(
+      { path: `/contact/${contactId}`, data: payload as unknown as Record<string, unknown> },
       asSystem(username),
     )
   }
