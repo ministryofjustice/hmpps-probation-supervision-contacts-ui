@@ -10,6 +10,7 @@ import { Request, RequestHandler } from 'express'
 import { CorrelationContext } from 'applicationinsights/out/AutoCollection/CorrelationContextManager'
 import { EnvelopeTelemetry } from 'applicationinsights/out/Declarations/Contracts'
 import type { ApplicationInfo } from '../applicationInfo'
+import applicationInfo from '../applicationInfo'
 
 const requestPrefixesToIgnore = ['GET /assets/', 'GET /health', 'GET /ping', 'GET /info']
 const dependencyPrefixesToIgnore = ['sqs']
@@ -17,6 +18,11 @@ const dependencyPrefixesToIgnore = ['sqs']
 export type ContextObject = {
   ['http.ServerRequest']?: Request
   correlationContext?: CorrelationContext
+}
+
+export function defaultName(): string {
+  const { applicationName: name } = applicationInfo()
+  return name
 }
 
 export function initialiseAppInsights(): void {

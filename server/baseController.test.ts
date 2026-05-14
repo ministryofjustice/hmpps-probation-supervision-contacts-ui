@@ -1,11 +1,23 @@
 import type { Request, Response } from 'express'
 import baseController from './baseController'
+import { defaultName } from './utils/azureAppInsights'
+import config from './config'
+
+jest.mock('./utils/azureAppInsights')
+jest.mock('./config', () => ({
+  appInsights: {
+    connectionString: 'test-connection-string',
+  },
+}))
+
+const defaultNameMock = defaultName as jest.Mock
 
 describe('baseController', () => {
   let next: jest.Mock
 
   beforeEach(() => {
     next = jest.fn()
+    defaultNameMock.mockReturnValue('test-app-name')
   })
 
   function createReqRes(url: string): { req: Request; res: Response } {
@@ -19,6 +31,8 @@ describe('baseController', () => {
 
     baseController()(req, res, next)
 
+    expect(res.locals.applicationInsightsConnectionString).toEqual(config.appInsights.connectionString)
+    expect(res.locals.applicationInsightsRoleName).toEqual('test-app-name')
     expect(res.locals.home).toEqual(true)
     expect(res.locals.cases).toEqual(false)
     expect(res.locals.search).toEqual(false)
@@ -30,6 +44,8 @@ describe('baseController', () => {
 
     baseController()(req, res, next)
 
+    expect(res.locals.applicationInsightsConnectionString).toEqual(config.appInsights.connectionString)
+    expect(res.locals.applicationInsightsRoleName).toEqual('test-app-name')
     expect(res.locals.home).toEqual(false)
     expect(res.locals.cases).toEqual(true)
     expect(res.locals.search).toEqual(false)
@@ -41,6 +57,8 @@ describe('baseController', () => {
 
     baseController()(req, res, next)
 
+    expect(res.locals.applicationInsightsConnectionString).toEqual(config.appInsights.connectionString)
+    expect(res.locals.applicationInsightsRoleName).toEqual('test-app-name')
     expect(res.locals.home).toEqual(false)
     expect(res.locals.cases).toEqual(false)
     expect(res.locals.search).toEqual(true)
@@ -52,6 +70,8 @@ describe('baseController', () => {
 
     baseController()(req, res, next)
 
+    expect(res.locals.applicationInsightsConnectionString).toEqual(config.appInsights.connectionString)
+    expect(res.locals.applicationInsightsRoleName).toEqual('test-app-name')
     expect(res.locals.home).toEqual(false)
     expect(res.locals.cases).toEqual(false)
     expect(res.locals.search).toEqual(false)

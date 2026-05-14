@@ -95,6 +95,9 @@ export default {
       agent: new AgentConfig(Number(get('TIER_API_TIMEOUT_RESPONSE', 10000))),
     },
   },
+  appInsights: {
+    connectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', null, requiredInProduction),
+  },
   probationFrontendComponents: {
     connectSrc: get(
       'PROBATION_FRONTEND_COMPONENTS_CONNECT_SRC',
