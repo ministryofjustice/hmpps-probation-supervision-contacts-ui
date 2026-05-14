@@ -152,6 +152,11 @@ describe('postupdateContact', () => {
       contact: {
         appointment: {
           displayName: 'Test contact',
+          appointmentNotes: [
+            {
+              note: 'Existing note',
+            },
+          ],
         },
       },
     })

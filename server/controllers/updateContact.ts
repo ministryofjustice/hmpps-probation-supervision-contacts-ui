@@ -47,23 +47,24 @@ const updateContactController = {
 
         const date = getStringValue(req.body?.date)
         const time = getStringValue(req.body?.time)
-        const notes = getStringValue(req.body?.details)
+        let notes = getStringValue(req.body?.details)
         const sensitivity = getStringValue(req.body?.sensitivity)
         const contactType = res.locals.contact.appointment?.displayName
+        const existingNotes = res.locals.contact.appointment.appointmentNotes[0]?.note
 
+        const normaliseText = (value: string) => value.replace(/\r\n/g, '\n').trim()
+        if (normaliseText(existingNotes) === normaliseText(notes)) {
+          notes = ''
+        }
         const isOutcome = !NoOutcomeContactTypeDetails.some(item => item.description === contactType)
         const contactService = new ContactService(masApiClient)
 
-        if (!isOutcome) {
-          // Placeholder for no outcome
-        }
         const formattedDateandTime = toIsoDateTime(date, time)
         const payload: UpdateContactWithNoOutcome = {
           dateTime: formattedDateandTime,
           notes: notes || '',
           sensitiveFlag: sensitivity === 'Yes',
         }
-
         await contactService.updateContactWithNoOutcome(contactId, payload, username)
         return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity/${contactId}?showSuccessBanner=true`)
       } catch (e) {
