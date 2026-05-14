@@ -46,6 +46,7 @@ document.initialiseTelemetry = (applicationInsightsConnectionString, application
     config: {
       disableXhr: true,
       connectionString: applicationInsightsConnectionString,
+      disablePageUnloadEvents: ['unload'],
       autoTrackPageVisitTime: true,
       extensions: [clickPluginInstance],
       extensionConfig: {
