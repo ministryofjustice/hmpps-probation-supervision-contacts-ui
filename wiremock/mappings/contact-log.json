@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/case/X123456/activity/00001"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/html"
+    },
+    "body": "<!DOCTYPE html><html><head></head><body><h1>Contact updated successfully</h1></body></html>"
+  }
+}

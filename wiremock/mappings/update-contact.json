@@ -1,0 +1,12 @@
+{
+  "request": {
+    "method": "PATCH",
+    "urlPattern": "/mas-api/contact/.+"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
