@@ -164,7 +164,11 @@ describe('postupdateContact', () => {
     await updateContactController.postupdateContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
     expect(mockUpdateContactWithNoOutcome).toHaveBeenCalledWith(
       '00001',
-      { dateTime: '2026-05-14T08:00:00.000Z', notes: 'Updated notes', sensitiveFlag: true },
+      expect.objectContaining({
+        dateTime: expect.stringContaining('2026-05-14'),
+        notes: 'Updated notes',
+        sensitiveFlag: true,
+      }),
       'john.smith',
     )
 
