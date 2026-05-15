@@ -7,6 +7,7 @@ import { multerErrorHandler } from '../middleware/validation/multerErrorHandler'
 import controllers from '../controllers'
 import validateCrnParam from '../middleware/validateCrnParam'
 import { getExistingContact } from '../middleware/getContact'
+import updateContact from '../middleware/validation/updateContact'
 
 export default function addUpdateContactRoutes(
   router: Router,
@@ -25,5 +26,12 @@ export default function addUpdateContactRoutes(
     '/case/:crn/:contactId/update-contact',
     ...loadEditContactDeps,
     controllers.updateContact.getUpdateContact(),
+  )
+  router.post(
+    '/case/:crn/:contactId/update-contact',
+    multerErrorHandler('fileUpload'),
+    ...loadEditContactDeps,
+    updateContact,
+    controllers.updateContact.postupdateContact(masApiClient),
   )
 }

@@ -175,6 +175,72 @@ export default {
       },
     }),
 
+  stubGetContact: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/mas-api/schedule/X123456/appointment/00001',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          appointment: {
+            id: 2533,
+            type: 'eMail/Text to PoP',
+            startDateTime: '2026-05-06T09:28:01+01:00',
+            appointmentNotes: [
+              {
+                id: 0,
+                createdBy: 'J dsd',
+                createdByDate: '2026-05-06',
+                note: '[DEV] Mocked notes',
+                hasNoteBeenTruncated: false,
+              },
+            ],
+            isSensitive: false,
+            wasAbsent: false,
+            officer: {
+              code: 'N56A174',
+              name: {
+                forename: 'Jane',
+                surname: 'Smith',
+              },
+              teamCode: 'N11',
+              providerCode: 'N12',
+              username: 'J20',
+            },
+            isInitial: false,
+            isNationalStandard: false,
+            rescheduled: false,
+            rescheduledStaff: false,
+            rescheduledPop: false,
+            absentWaitingEvidence: false,
+            documents: [],
+            isRarRelated: false,
+            acceptableAbsence: false,
+            isAppointment: false,
+            isCommunication: true,
+            isSystemContact: false,
+            isEmailOrTextFromPop: false,
+            isPhoneCallFromPop: false,
+            isEmailOrTextToPop: true,
+            isPhoneCallToPop: false,
+            isInPast: true,
+            isPastAppointment: false,
+            lastUpdated: '2026-05-06T09:28:01+01:00',
+            lastUpdatedBy: {
+              forename: 'Manage People on Probation',
+              surname: 'Service',
+            },
+            deliusManaged: true,
+            isVisor: false,
+            displayName: 'Email or text to person on probation',
+          },
+        },
+      },
+    }),
+
   stubGetProbationPractitioner: (): SuperAgentRequest =>
     stubFor({
       request: {

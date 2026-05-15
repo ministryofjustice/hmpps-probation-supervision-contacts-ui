@@ -68,6 +68,12 @@ export interface CreateContactRequest {
   visorReport: boolean
 }
 
+export interface UpdateContactWithNoOutcome {
+  dateTime: string
+  notes?: string
+  sensitiveFlag: boolean
+}
+
 export interface CreateContactResponse {
   id: number
 }

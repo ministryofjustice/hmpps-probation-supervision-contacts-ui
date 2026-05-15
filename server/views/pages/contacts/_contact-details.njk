@@ -1,0 +1,106 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+{% set appointment = contact.appointment %}
+{% set contactDisplayName = appointment.displayName or appointment.type or 'Not provided' %}
+{% set appointmentNotes = appointment.appointmentNotes or [] %}
+{% set documents = appointment.documents or [] %}
+
+{% set notes = 'Not provided' %}
+{% if appointmentNotes.length > 0 and appointmentNotes[0].note %}
+  {% set notes = appointmentNotes[0].note %}
+{% endif %}
+
+{% set appointmentDate = appointment.startDateTime or 'Not provided' %}
+{% set appointmentTime = 'Not provided' %}
+{% if contact.appointment.startDateTime and ('T' in contact.appointment.startDateTime) %}
+  {% set appointmentTime = contact.appointment.startDateTime.split('T')[1].substring(0,5) %}
+{% endif %}
+
+{% set rarActivity = 'Not provided' %}
+{% if appointment.isRarRelated == true %}
+  {% set rarActivity = 'Yes' %}
+{% elseif appointment.isRarRelated == false %}
+  {% set rarActivity = 'No' %}
+{% endif %}
+
+{% set sensitive = 'Not provided' %}
+{% if appointment.isSensitive == true %}
+  {% set sensitive = 'Yes' %}
+{% elseif appointment.isSensitive == false %}
+  {% set sensitive = 'No' %}
+{% endif %}
+
+{% set relatedDocuments = 'Not provided' %}
+{% if documents.length > 0 %}
+  {% set relatedDocuments = documents.length + ' document(s)' %}
+{% endif %}
+
+{{ govukSummaryList({
+  classes: 'govuk-!-margin-bottom-0',
+  rows: [
+
+    {
+      key: {
+        text: 'Type'
+      },
+      value: {
+        text: contactDisplayName
+      }
+    },
+
+    {
+      key: {
+        text: 'Date'
+      },
+      value: {
+        text: appointmentDate | dateWithDayAndWithYear
+      }
+    },
+
+    {
+      key: {
+        text: 'Time'
+      },
+      value: {
+        text: appointmentTime
+      }
+    },
+
+    {
+      key: {
+        text: 'RAR Activity'
+      },
+      value: {
+        text: rarActivity
+      }
+    },
+
+    {
+      key: {
+        text: 'Details'
+      },
+      value: {
+        text: notes
+      }
+    },
+
+    {
+      key: {
+        text: 'Sensitive'
+      },
+      value: {
+        text: sensitive
+      }
+    },
+
+    {
+      key: {
+        text: 'Related documents'
+      },
+      value: {
+        text: relatedDocuments
+      }
+    }
+
+  ]
+}) }}
