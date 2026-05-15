@@ -8,6 +8,8 @@ import ContactService from '../services/contactService'
 import config from '../config'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
 import { ContactTypeOptions } from '../data/model/contactTypes'
+
+const allContactTypeNamesJson = JSON.stringify(ContactTypeOptions.map(t => t.description))
 import {
   buildCategoryCheckboxItems,
   buildSearchResults,
@@ -69,6 +71,7 @@ const addContactController = {
         selectedCategories: [],
         searchResults: null,
         searchByCategoryTabActive: false,
+        contactTypeNamesJson: allContactTypeNamesJson,
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -134,6 +137,84 @@ const addContactController = {
         searchResults,
         searchByCategoryTabActive: true,
         lastCategories: selectedCategories.join(','),
+        csrfToken: res.locals.csrfToken,
+        contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
+        ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
+      })
+    }
+  },
+  getSearchByKeyword: (): RequestHandler => {
+    return async (req, res, next) => {
+      const { crn } = req.params as Record<string, string>
+      const keyword = typeof req.query?.keyword === 'string' ? req.query.keyword : ''
+      const action = req.query?.action
+
+      const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
+      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
+
+      if (action === 'clear') {
+        return res.render('pages/contacts/add-frequently-used-contact', {
+          crn,
+          frequentlyUsedContacts,
+          categoryCheckboxItems: buildCategoryCheckboxItems([]),
+          searchByCategoryTabActive: false,
+          searchByKeywordTabActive: true,
+          keywordSearch: '',
+          keywordSearchResults: null,
+          contactTypeNamesJson: allContactTypeNamesJson,
+          lastCategories: '',
+          csrfToken: res.locals.csrfToken,
+          contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
+          ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
+        })
+      }
+
+      if (!keyword.trim()) {
+        return res.render('pages/contacts/add-frequently-used-contact', {
+          crn,
+          frequentlyUsedContacts,
+          categoryCheckboxItems: buildCategoryCheckboxItems([]),
+          errorMessages: { keyword: 'Enter a keyword or phrase' },
+          searchByCategoryTabActive: false,
+          searchByKeywordTabActive: true,
+          keywordSearch: keyword,
+          keywordSearchResults: null,
+          contactTypeNamesJson: allContactTypeNamesJson,
+          lastCategories: '',
+          csrfToken: res.locals.csrfToken,
+          contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
+          ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
+        })
+      }
+
+      if (/[^a-zA-Z0-9\- ]/.test(keyword)) {
+        return res.render('pages/contacts/add-frequently-used-contact', {
+          crn,
+          frequentlyUsedContacts,
+          categoryCheckboxItems: buildCategoryCheckboxItems([]),
+          errorMessages: { keyword: 'You can only search using letters, numbers or hyphens' },
+          searchByCategoryTabActive: false,
+          searchByKeywordTabActive: true,
+          keywordSearch: keyword,
+          keywordSearchResults: null,
+          contactTypeNamesJson: allContactTypeNamesJson,
+          lastCategories: '',
+          csrfToken: res.locals.csrfToken,
+          contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
+          ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
+        })
+      }
+
+      return res.render('pages/contacts/add-frequently-used-contact', {
+        crn,
+        frequentlyUsedContacts,
+        categoryCheckboxItems: buildCategoryCheckboxItems([]),
+        searchByCategoryTabActive: false,
+        searchByKeywordTabActive: true,
+        keywordSearch: keyword,
+        keywordSearchResults: null,
+        contactTypeNamesJson: allContactTypeNamesJson,
+        lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
         ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),

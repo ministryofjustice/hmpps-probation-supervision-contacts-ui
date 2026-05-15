@@ -28,10 +28,18 @@ const setupCategorySearch = () => {
   }
 
   const tabsContainer = document.querySelector('[data-active-tab]')
-  if (tabsContainer && tabsContainer.getAttribute('data-active-tab') === 'search-by-category') {
-    const searchTab = document.querySelector('[href="#search-by-category"]')
-    if (searchTab) {
-      searchTab.click()
+  if (tabsContainer) {
+    const activeTab = tabsContainer.getAttribute('data-active-tab')
+    if (activeTab === 'search-by-category') {
+      const searchTab = document.querySelector('[href="#search-by-category"]')
+      if (searchTab) {
+        searchTab.click()
+      }
+    } else if (activeTab === 'search-by-keyword') {
+      const keywordTab = document.querySelector('[href="#search-by-keyword"]')
+      if (keywordTab) {
+        keywordTab.click()
+      }
     }
   }
 
@@ -80,25 +88,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const links = document.querySelectorAll('.moj-sub-navigation__link')
   const frequentPanel = document.getElementById('frequently-used-contacts')
   const categoryPanel = document.getElementById('search-by-category')
+  const keywordPanel = document.getElementById('search-by-keyword')
+
+  const allPanels = [frequentPanel, categoryPanel, keywordPanel].filter(Boolean)
 
   links.forEach(link => {
     link.addEventListener('click', event => {
       const target = link.getAttribute('href')
 
-      if (target === '#frequently-used-contacts' || target === '#search-by-category') {
+      if (target === '#frequently-used-contacts' || target === '#search-by-category' || target === '#search-by-keyword') {
         event.preventDefault()
 
-        frequentPanel.classList.add('govuk-tabs__panel--hidden')
-        categoryPanel.classList.add('govuk-tabs__panel--hidden')
-
+        allPanels.forEach(panel => panel.classList.add('govuk-tabs__panel--hidden'))
         links.forEach(item => item.removeAttribute('aria-current'))
 
-        if (target === '#frequently-used-contacts') {
-          frequentPanel.classList.remove('govuk-tabs__panel--hidden')
-        }
-
-        if (target === '#search-by-category') {
-          categoryPanel.classList.remove('govuk-tabs__panel--hidden')
+        const targetPanel = document.getElementById(target.slice(1))
+        if (targetPanel) {
+          targetPanel.classList.remove('govuk-tabs__panel--hidden')
         }
 
         link.setAttribute('aria-current', 'page')
