@@ -50,7 +50,7 @@ const updateContactController = {
       if (normaliseText(existingNotes) === normaliseText(notes)) {
         notes = ''
       }
-      const isOutcome = !NoOutcomeContactTypeDetails.some(item => item.description === contactType)
+      // const isOutcome = !NoOutcomeContactTypeDetails.some(item => item.description === contactType)
       const contactService = new ContactService(masApiClient)
 
       const formattedDateandTime = toIsoDateTime(date, time)
