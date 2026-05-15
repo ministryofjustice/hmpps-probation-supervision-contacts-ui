@@ -45,7 +45,7 @@ const updateContactController = {
       let notes = getStringValue(req.body?.details)
       const sensitivity = getStringValue(req.body?.sensitivity)
       const contactType = res.locals.contact.appointment?.displayName
-      const existingNotes = res.locals.contact.appointment.appointmentNotes[0]?.note
+      const existingNotes = res.locals.contact.appointment?.appointmentNotes[0]?.note
       const normaliseText = (value: string) => value.replace(/\r\n/g, '\n').trim()
       if (normaliseText(existingNotes) === normaliseText(notes)) {
         notes = ''

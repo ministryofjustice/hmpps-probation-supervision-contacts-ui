@@ -11,8 +11,10 @@
 {% endif %}
 
 {% set appointmentDate = appointment.startDateTime or 'Not provided' %}
-{% set appointmentFormattedTime = appointment.startDateTime or 'Not provided' %}
-{% set appointmentTime = contact.appointment.startDateTime.split('T')[1].substring(0,5) %}
+{% set appointmentTime = 'Not provided' %}
+{% if contact.appointment.startDateTime and ('T' in contact.appointment.startDateTime) %}
+  {% set appointmentTime = contact.appointment.startDateTime.split('T')[1].substring(0,5) %}
+{% endif %}
 
 {% set rarActivity = 'Not provided' %}
 {% if appointment.isRarRelated == true %}

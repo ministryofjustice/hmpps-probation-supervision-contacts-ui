@@ -135,7 +135,7 @@ describe('postupdateContact', () => {
     const req = createReq({
       params: {
         crn: 'X123456',
-        contactId: 'X00001',
+        contactId: '00001',
       },
       body: {
         date: '14/05/2026',
@@ -162,9 +162,14 @@ describe('postupdateContact', () => {
     })
 
     await updateContactController.postupdateContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+    expect(mockUpdateContactWithNoOutcome).toHaveBeenCalledWith(
+      '00001',
+      { dateTime: '2026-05-14T08:00:00.000Z', notes: 'Updated notes', sensitiveFlag: true },
+      'john.smith',
+    )
 
     expect(res.redirect).toHaveBeenCalledWith(
-      `${config.manageProbationUrl}/case/X123456/activity/X00001?showSuccessBanner=true`,
+      `${config.manageProbationUrl}/case/X123456/activity/00001?showSuccessBanner=true`,
     )
   })
 })

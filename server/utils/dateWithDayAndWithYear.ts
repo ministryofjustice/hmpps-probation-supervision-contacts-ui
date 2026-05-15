@@ -3,5 +3,7 @@ import { isBlank } from './isBlank'
 
 export const dateWithDayAndWithYear = (datetimeString: string): string | null => {
   if (!datetimeString || isBlank(datetimeString)) return null
-  return DateTime.fromISO(datetimeString).toFormat('cccc d MMMM yyyy')
+  const dateTime = DateTime.fromISO(datetimeString)
+  if (!dateTime.isValid) return null
+  return dateTime.toFormat('cccc d MMMM yyyy')
 }
