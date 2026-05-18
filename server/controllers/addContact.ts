@@ -15,6 +15,7 @@ import {
   normaliseSelectedCategories,
 } from '../services/contactCategorySearch'
 import { buildAddContactViewModel } from '../services/addContactViewModel'
+import { isBlank } from '../utils/isBlank'
 import logger from '../../logger'
 
 const allContactTypeNamesJson = JSON.stringify(ContactTypeOptions.map(t => t.description))
@@ -148,77 +149,42 @@ const addContactController = {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
       const keyword = typeof req.query?.keyword === 'string' ? req.query.keyword : ''
-      const action = req.query?.action
 
       const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
       const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
 
-      if (action === 'clear') {
-        return res.render('pages/contacts/add-frequently-used-contact', {
-          crn,
-          frequentlyUsedContacts,
-          categoryCheckboxItems: buildCategoryCheckboxItems([]),
-          searchByCategoryTabActive: false,
-          searchByKeywordTabActive: true,
-          keywordSearch: '',
-          keywordSearchResults: null,
-          contactTypeNamesJson: allContactTypeNamesJson,
-          lastCategories: '',
-          csrfToken: res.locals.csrfToken,
-          contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
-          ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
-        })
-      }
-
-      if (!keyword.trim()) {
-        return res.render('pages/contacts/add-frequently-used-contact', {
-          crn,
-          frequentlyUsedContacts,
-          categoryCheckboxItems: buildCategoryCheckboxItems([]),
-          errorMessages: { keyword: 'Enter a keyword or phrase' },
-          searchByCategoryTabActive: false,
-          searchByKeywordTabActive: true,
-          keywordSearch: keyword,
-          keywordSearchResults: null,
-          contactTypeNamesJson: allContactTypeNamesJson,
-          lastCategories: '',
-          csrfToken: res.locals.csrfToken,
-          contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
-          ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
-        })
-      }
-
-      if (/[^a-zA-Z0-9\- ]/.test(keyword)) {
-        return res.render('pages/contacts/add-frequently-used-contact', {
-          crn,
-          frequentlyUsedContacts,
-          categoryCheckboxItems: buildCategoryCheckboxItems([]),
-          errorMessages: { keyword: 'You can only search using letters, numbers or hyphens' },
-          searchByCategoryTabActive: false,
-          searchByKeywordTabActive: true,
-          keywordSearch: keyword,
-          keywordSearchResults: null,
-          contactTypeNamesJson: allContactTypeNamesJson,
-          lastCategories: '',
-          csrfToken: res.locals.csrfToken,
-          contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
-          ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
-        })
-      }
-
-      return res.render('pages/contacts/add-frequently-used-contact', {
+      const baseLocals = {
         crn,
         frequentlyUsedContacts,
         categoryCheckboxItems: buildCategoryCheckboxItems([]),
         searchByCategoryTabActive: false,
         searchByKeywordTabActive: true,
         keywordSearch: keyword,
-        keywordSearchResults: buildKeywordSearchResults(keyword, crn),
+        keywordSearchResults: null as ReturnType<typeof buildKeywordSearchResults> | null,
         contactTypeNamesJson: allContactTypeNamesJson,
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
         ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
+      }
+
+      if (isBlank(keyword)) {
+        return res.render('pages/contacts/add-frequently-used-contact', {
+          ...baseLocals,
+          errorMessages: { keyword: 'Enter a keyword or phrase' },
+        })
+      }
+
+      if (/[^a-zA-Z0-9\- ]/.test(keyword)) {
+        return res.render('pages/contacts/add-frequently-used-contact', {
+          ...baseLocals,
+          errorMessages: { keyword: 'You can only search using letters, numbers or hyphens' },
+        })
+      }
+
+      return res.render('pages/contacts/add-frequently-used-contact', {
+        ...baseLocals,
+        keywordSearchResults: buildKeywordSearchResults(keyword, crn),
       })
     }
   },

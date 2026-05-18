@@ -536,14 +536,6 @@ describe('addContactController', () => {
       return (res.render as jest.Mock).mock.calls[0][1]
     }
 
-    it('clears keyword and results when action is clear', async () => {
-      const renderArgs = await invokeKeyword({ action: 'clear', keyword: 'police' })
-
-      expect(renderArgs.keywordSearch).toBe('')
-      expect(renderArgs.keywordSearchResults).toBeNull()
-      expect(renderArgs.searchByKeywordTabActive).toBe(true)
-    })
-
     it('renders validation error when keyword is empty', async () => {
       const renderArgs = await invokeKeyword({ keyword: '' })
 
