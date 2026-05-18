@@ -28,7 +28,7 @@ const setupKeywordSearch = () => {
     defaultValue,
     source: fuzzySearch,
     minLength: 2,
-    showNoOptionsFound: false,
+    showNoOptionsFound: true,
   })
 }
 
