@@ -553,7 +553,9 @@ describe('addContactController', () => {
     it('renders validation error for invalid characters', async () => {
       const renderArgs = await invokeKeyword({ keyword: 'police!' })
 
-      expect(renderArgs.errorMessages).toEqual({ keyword: 'You can only search using letters, numbers, hyphens or dashes' })
+      expect(renderArgs.errorMessages).toEqual({
+        keyword: 'You can only search using letters, numbers, hyphens or dashes',
+      })
       expect(renderArgs.keywordSearch).toBe('police!')
       expect(renderArgs.keywordSearchResults).toBeNull()
     })
