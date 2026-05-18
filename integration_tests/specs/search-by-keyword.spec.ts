@@ -6,11 +6,12 @@ import masApi from '../mockApis/masApi'
 import arnsApi from '../mockApis/arnsApi'
 import tierApi from '../mockApis/tierApi'
 
+const crn = 'X123456'
 const flagConfig = [{ key: 'searchContactsByCategory', enabled: true }]
 
 test.beforeEach(async ({ page }) => {
   await Promise.all([
-    masApi.stubGetPersonalDetails('X123456'),
+    masApi.stubGetPersonalDetails(crn),
     arnsApi.stubGetRisks(),
     tierApi.stubGetCalculationDetails(),
     arnsApi.stubGetPredictorsAll(),
@@ -25,65 +26,54 @@ test.afterEach(async () => {
   await resetStubs()
 })
 
-test('user can open the search by keyword tab', async ({ page }) => {
-  const keywordPage = new SearchByKeywordPage(page)
+test.describe('search by keyword tab', () => {
+  let keywordPage: SearchByKeywordPage
 
-  await page.goto('/case/X123456/add-frequently-used-contact')
-  await keywordPage.openSearchByKeywordTab()
+  test.beforeEach(async ({ page }) => {
+    keywordPage = new SearchByKeywordPage(page)
+    await page.goto(`/case/${crn}/add-frequently-used-contact`)
+    await keywordPage.openSearchByKeywordTab()
+  })
 
-  await expect(page.locator('#search-by-keyword')).not.toHaveClass(/govuk-tabs__panel--hidden/)
-  await expect(page.locator('[data-qa="keyword-search-button"]')).toBeVisible()
-})
+  test('tab is visible after clicking', async ({ page }) => {
+    await expect(page.locator('#search-by-keyword')).not.toHaveClass(/govuk-tabs__panel--hidden/)
+    await expect(keywordPage.searchButton).toBeVisible()
+  })
 
-test('submitting an empty keyword shows a validation error', async ({ page }) => {
-  const keywordPage = new SearchByKeywordPage(page)
+  test('submitting an empty keyword shows a validation error', async ({ page }) => {
+    await keywordPage.clickSearch()
 
-  await page.goto('/case/X123456/add-frequently-used-contact')
-  await keywordPage.openSearchByKeywordTab()
-  await keywordPage.clickSearch()
+    await expect(page.locator('#keyword-error')).toBeVisible()
+    await expect(page.locator('#keyword-error')).toContainText('Enter a keyword or phrase')
+  })
 
-  await expect(page.getByText('There is a problem')).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Enter a keyword or phrase' })).toBeVisible()
-})
+  test('submitting an invalid character shows a validation error', async ({ page }) => {
+    await keywordPage.search('police!')
 
-test('submitting an invalid character shows a validation error', async ({ page }) => {
-  const keywordPage = new SearchByKeywordPage(page)
+    await expect(page.locator('#keyword-error')).toBeVisible()
+    await expect(page.locator('#keyword-error')).toContainText('You can only search using letters, numbers or hyphens')
+  })
 
-  await page.goto('/case/X123456/add-frequently-used-contact')
-  await keywordPage.openSearchByKeywordTab()
-  await keywordPage.search('police!')
+  test('valid keyword search returns results', async ({ page }) => {
+    await keywordPage.search('police liaison')
 
-  await expect(page.getByText('There is a problem')).toBeVisible()
-  await expect(page.getByRole('link', { name: 'You can only search using letters, numbers or hyphens' })).toBeVisible()
-})
+    await expect(page.locator('[data-qa="keywordResultList"]')).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Police liaison' })).toBeVisible()
+  })
 
-test('valid keyword search returns results', async ({ page }) => {
-  const keywordPage = new SearchByKeywordPage(page)
+  test('keyword search with no matches shows zero results', async ({ page }) => {
+    await keywordPage.search('zzznomatch')
 
-  await page.goto('/case/X123456/add-frequently-used-contact')
-  await keywordPage.openSearchByKeywordTab()
-  await keywordPage.search('police liaison')
-
-  await expect(page.locator('[data-qa="keywordResultList"]')).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Police liaison' })).toBeVisible()
-})
-
-test('keyword search with no matches shows no results message', async ({ page }) => {
-  const keywordPage = new SearchByKeywordPage(page)
-
-  await page.goto('/case/X123456/add-frequently-used-contact')
-  await keywordPage.openSearchByKeywordTab()
-  await keywordPage.search('zzznomatch')
-
-  await expect(page.locator('[data-qa="keywordResultList"]')).toBeVisible()
-  await expect(page.getByText('0 results')).toBeVisible()
+    await expect(page.locator('[data-qa="keywordSearchResults"]')).toContainText('Showing 0 results')
+    await expect(page.locator('[data-qa="keywordResultList"]')).toHaveCount(0)
+  })
 })
 
 test('category tab error does not show on keyword tab', async ({ page }) => {
   const categoryPage = new SearchByCategoryPage(page)
   const keywordPage = new SearchByKeywordPage(page)
 
-  await page.goto('/case/X123456/add-frequently-used-contact')
+  await page.goto(`/case/${crn}/add-frequently-used-contact`)
   await categoryPage.openSearchByCategoryTab()
   await categoryPage.clickSearch()
 
