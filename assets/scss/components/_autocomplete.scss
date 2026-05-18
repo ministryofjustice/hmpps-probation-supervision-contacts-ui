@@ -19,7 +19,6 @@
   box-sizing: border-box;
   flex-shrink: 0;
   height: 2.5rem;
-  padding: 0 govuk-spacing(3);
 
   &:hover {
     background-color: darken(govuk-colour("green"), 5%);
