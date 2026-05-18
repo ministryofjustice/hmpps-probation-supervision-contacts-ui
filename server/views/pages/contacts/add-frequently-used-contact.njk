@@ -173,11 +173,11 @@
                     </div>
 
                     <div class="govuk-tabs__panel{% if not searchByKeywordTabActive %} govuk-tabs__panel--hidden{% endif %}" id="search-by-keyword">
-                      <div class="govuk-!-width-two-thirds">
+                      <div class="govuk-!-width-three-quarters">
                         <form method="get" action="/case/{{ crn }}/add-frequently-used-contact/search-by-keyword" id="keyword-search-form">
                             <div class="govuk-form-group{% if errorMessages.keyword %} govuk-form-group--error{% endif %}">
                                 <h3 class="govuk-heading-m govuk-!-margin-bottom-1" id="keyword-label">Search by keyword or phrase</h3>
-                                <div class="govuk-hint">For example email, safeguarding or CMS. You can select an answer or search for keyword.</div>
+                                <div class="govuk-hint">For example email, safeguarding or CMS. You can select an answer as it appears or click the search icon to see a list of results.</div>
                                 {% if errorMessages.keyword %}
                                     <p class="govuk-error-message" id="keyword-error">
                                         <span class="govuk-visually-hidden">Error:</span> {{ errorMessages.keyword }}
@@ -200,15 +200,15 @@
                       </div>
 
                         {% if keywordSearchResults %}
-                            <div data-qa="keywordSearchResults">
+                            <div data-qa="keywordSearchResults" class="govuk-!-width-three-quarters">
                                 <h3 class="govuk-heading-m">Search results</h3>
-                                <p class="govuk-body">
-                                    Showing <strong>{{ keywordSearchResults.count }}</strong>
-                                    result{{ "s" if keywordSearchResults.count != 1 }} matching
-                                    '<strong>{{ keywordSearchResults.keyword }}</strong>'
-                                </p>
 
                                 {% if keywordSearchResults.count %}
+                                    <p class="govuk-body">
+                                        Showing <strong>{{ keywordSearchResults.count }}</strong>
+                                        result{{ "s" if keywordSearchResults.count != 1 }} matching
+                                        '<strong>{{ keywordSearchResults.keyword }}</strong>'
+                                    </p>
                                     <ul class="govuk-list app-contact-list" data-qa="keywordResultList">
                                         {% for item in keywordSearchResults.items %}
                                             <li class="app-contact-list__item">
@@ -218,8 +218,9 @@
                                     </ul>
                                 {% else %}
                                     <p class="govuk-body govuk-!-margin-top-4">
-                                        If you can't find the contact you need, try
-                                        <a class="govuk-link" href="{{ ndeliusDeepLinkUrl }}" target="_blank" data-ndelius-link="true" data-back-url="{{ contactLogUrl }}">using NDelius (opens in new tab)</a>.
+                                        No results match your search. Try searching for something else or
+                                        <a class="govuk-link" href="{{ ndeliusDeepLinkUrl }}" target="_blank" data-ndelius-link="true" data-back-url="{{ contactLogUrl }}">use NDelius (opens in new tab)</a>
+                                        to add a contact.
                                     </p>
                                 {% endif %}
                             </div>

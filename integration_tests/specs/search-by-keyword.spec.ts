@@ -51,7 +51,7 @@ test.describe('search by keyword tab', () => {
     await keywordPage.search('police!')
 
     await expect(page.locator('#keyword-error')).toBeVisible()
-    await expect(page.locator('#keyword-error')).toContainText('You can only search using letters, numbers or hyphens')
+    await expect(page.locator('#keyword-error')).toContainText('You can only search using letters, numbers, hyphens or dashes')
   })
 
   test('valid keyword search returns results', async ({ page }) => {
