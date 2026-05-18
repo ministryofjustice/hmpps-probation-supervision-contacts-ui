@@ -1,4 +1,9 @@
-import { buildCategoryCheckboxItems, buildSearchResults, normaliseSelectedCategories } from './contactCategorySearch'
+import {
+  buildCategoryCheckboxItems,
+  buildKeywordSearchResults,
+  buildSearchResults,
+  normaliseSelectedCategories,
+} from './contactCategorySearch'
 
 const crn = 'X123456'
 
@@ -54,6 +59,61 @@ describe('contactCategorySearch', () => {
       const directNames = category.items.map(item => item.displayName)
       const directNamesSorted = [...directNames].sort((a, b) => a.localeCompare(b))
       expect(directNames).toEqual(directNamesSorted)
+    })
+  })
+
+  describe('buildKeywordSearchResults', () => {
+    it('returns matching items for a keyword', () => {
+      const results = buildKeywordSearchResults('police liaison', crn)
+
+      expect(results.count).toBeGreaterThan(0)
+      expect(results.items.some(item => item.displayName === 'Police liaison')).toBe(true)
+    })
+
+    it('returns empty results when no items match', () => {
+      const results = buildKeywordSearchResults('zzznomatch', crn)
+
+      expect(results.count).toBe(0)
+      expect(results.items).toEqual([])
+    })
+
+    it('matches case-insensitively', () => {
+      const lower = buildKeywordSearchResults('case conference', crn)
+      const upper = buildKeywordSearchResults('CASE CONFERENCE', crn)
+
+      expect(lower.count).toBe(upper.count)
+      expect(lower.items.map(i => i.displayName)).toEqual(upper.items.map(i => i.displayName))
+    })
+
+    it('returns items sorted alphabetically by displayName', () => {
+      const results = buildKeywordSearchResults('case', crn)
+
+      expect(results.count).toBeGreaterThan(1)
+      const names = results.items.map(i => i.displayName)
+      expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)))
+    })
+
+    it('deduplicates items when the same contact code appears in multiple categories', () => {
+      // 'PS recall decision' has code CNPS which appears in 3 different categories
+      const results = buildKeywordSearchResults('PS recall decision', crn)
+
+      const displayNames = results.items.map(i => i.displayName)
+      const uniqueNames = [...new Set(displayNames)]
+      expect(displayNames).toEqual(uniqueNames)
+      expect(results.count).toBe(uniqueNames.length)
+    })
+
+    it('generates correct href for each result', () => {
+      const results = buildKeywordSearchResults('police liaison', crn)
+
+      const policeItem = results.items.find(i => i.displayName === 'Police liaison')
+      expect(policeItem?.href).toBe(`/case/${crn}/contacts/add-police-liaison`)
+    })
+
+    it('echoes the keyword in the returned object', () => {
+      const results = buildKeywordSearchResults('liaison', crn)
+
+      expect(results.keyword).toBe('liaison')
     })
   })
 })

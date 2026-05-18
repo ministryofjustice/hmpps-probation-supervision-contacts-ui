@@ -530,4 +530,157 @@ describe('addContactController', () => {
       expect(renderArgs.searchByCategoryTabActive).toBe(true)
     })
   })
+
+  describe('getFrequentlyUsedContact contactTypeNamesJson', () => {
+    it('passes contactTypeNamesJson as a JSON string of contact type descriptions', async () => {
+      const req = createReq({ params: { crn: 'X123456' } })
+      const res = createRes()
+
+      await addContactController.getFrequentlyUsedContact()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(typeof renderArgs.contactTypeNamesJson).toBe('string')
+      const parsed = JSON.parse(renderArgs.contactTypeNamesJson)
+      expect(Array.isArray(parsed)).toBe(true)
+      expect(parsed.length).toBeGreaterThan(0)
+      expect(typeof parsed[0]).toBe('string')
+    })
+  })
+
+  describe('getSearchByKeyword', () => {
+    it('clears keyword and results when action is clear', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        query: { action: 'clear', keyword: 'police' },
+      })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+
+      await addContactController.getSearchByKeyword()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.keywordSearch).toBe('')
+      expect(renderArgs.keywordSearchResults).toBeNull()
+      expect(renderArgs.searchByKeywordTabActive).toBe(true)
+    })
+
+    it('renders validation error when keyword is empty', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        query: { keyword: '' },
+      })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+
+      await addContactController.getSearchByKeyword()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.errorMessages).toEqual({ keyword: 'Enter a keyword or phrase' })
+      expect(renderArgs.keywordSearchResults).toBeNull()
+      expect(renderArgs.searchByKeywordTabActive).toBe(true)
+    })
+
+    it('renders validation error when keyword is whitespace only', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        query: { keyword: '   ' },
+      })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+
+      await addContactController.getSearchByKeyword()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.errorMessages).toEqual({ keyword: 'Enter a keyword or phrase' })
+    })
+
+    it('renders validation error for invalid characters', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        query: { keyword: 'police!' },
+      })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+
+      await addContactController.getSearchByKeyword()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.errorMessages).toEqual({ keyword: 'You can only search using letters, numbers or hyphens' })
+      expect(renderArgs.keywordSearch).toBe('police!')
+      expect(renderArgs.keywordSearchResults).toBeNull()
+    })
+
+    it('accepts keywords with hyphens and spaces', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        query: { keyword: 'police-liaison' },
+      })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+
+      await addContactController.getSearchByKeyword()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.errorMessages).toBeUndefined()
+      expect(renderArgs.keywordSearchResults).not.toBeNull()
+    })
+
+    it('renders results for a valid keyword that matches contacts', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        query: { keyword: 'police liaison' },
+      })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+
+      await addContactController.getSearchByKeyword()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.keywordSearchResults).toEqual(
+        expect.objectContaining({
+          keyword: 'police liaison',
+          count: expect.any(Number),
+          items: expect.any(Array),
+        }),
+      )
+      expect(renderArgs.keywordSearchResults.count).toBeGreaterThan(0)
+      expect(renderArgs.searchByKeywordTabActive).toBe(true)
+    })
+
+    it('renders zero results for a valid keyword that matches nothing', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        query: { keyword: 'zzznomatch' },
+      })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+
+      await addContactController.getSearchByKeyword()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.keywordSearchResults.count).toBe(0)
+      expect(renderArgs.keywordSearchResults.items).toEqual([])
+    })
+
+    it('passes contactTypeNamesJson to all rendered responses', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        query: { keyword: 'police' },
+      })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+
+      await addContactController.getSearchByKeyword()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(typeof renderArgs.contactTypeNamesJson).toBe('string')
+      const parsed = JSON.parse(renderArgs.contactTypeNamesJson)
+      expect(Array.isArray(parsed)).toBe(true)
+    })
+
+    it('treats non-string keyword query param as empty', async () => {
+      const req = createReq({
+        params: { crn: 'X123456' },
+        query: { keyword: ['police', 'liaison'] as any },
+      })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+
+      await addContactController.getSearchByKeyword()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(renderArgs.errorMessages).toEqual({ keyword: 'Enter a keyword or phrase' })
+    })
+  })
 })
