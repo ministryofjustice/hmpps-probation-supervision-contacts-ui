@@ -12,6 +12,7 @@ import { ContactTypeOptions } from '../data/model/contactTypes'
 const allContactTypeNamesJson = JSON.stringify(ContactTypeOptions.map(t => t.description))
 import {
   buildCategoryCheckboxItems,
+  buildKeywordSearchResults,
   buildSearchResults,
   normaliseSelectedCategories,
 } from '../services/contactCategorySearch'
@@ -212,7 +213,7 @@ const addContactController = {
         searchByCategoryTabActive: false,
         searchByKeywordTabActive: true,
         keywordSearch: keyword,
-        keywordSearchResults: null,
+        keywordSearchResults: buildKeywordSearchResults(keyword, crn),
         contactTypeNamesJson: allContactTypeNamesJson,
         lastCategories: '',
         csrfToken: res.locals.csrfToken,

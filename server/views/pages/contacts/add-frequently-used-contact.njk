@@ -202,39 +202,26 @@
                         {% if keywordSearchResults %}
                             <div data-qa="keywordSearchResults">
                                 <h3 class="govuk-heading-m">Search results</h3>
-                                <p class="govuk-body">Showing {{ keywordSearchResults.count }} results</p>
-
-                                {% for category in keywordSearchResults.categories %}
-                                    <h3 class="govuk-heading-m">{{ category.name }}</h3>
-
-                                    {% if category.items and category.items.length %}
-                                        <ul class="govuk-list app-contact-list">
-                                            {% for item in category.items %}
-                                                <li class="app-contact-list__item">
-                                                    <a class="govuk-link" href="{{ item.href }}">{{ item.displayName }}</a>
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    {% endif %}
-
-                                    {% for subcategory in category.subcategories %}
-                                        <h4 class="govuk-heading-s govuk-!-font-size-19 govuk-!-margin-top-4 govuk-!-margin-bottom-1">
-                                            {{ subcategory.name }}
-                                        </h4>
-                                        <ul class="govuk-list app-contact-list">
-                                            {% for item in subcategory.items %}
-                                                <li class="app-contact-list__item">
-                                                    <a class="govuk-link" href="{{ item.href }}">{{ item.displayName }}</a>
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    {% endfor %}
-                                {% endfor %}
-
-                                <p class="govuk-body govuk-!-margin-top-4">
-                                    If you can't find the contact you need, try
-                                    <a class="govuk-link" href="{{ ndeliusDeepLinkUrl }}" target="_blank" data-ndelius-link="true" data-back-url="{{ contactLogUrl }}">using NDelius (opens in new tab)</a>.
+                                <p class="govuk-body">
+                                    Showing <strong>{{ keywordSearchResults.count }}</strong>
+                                    result{{ "s" if keywordSearchResults.count != 1 }} matching
+                                    '<strong>{{ keywordSearchResults.keyword }}</strong>'
                                 </p>
+
+                                {% if keywordSearchResults.count %}
+                                    <ul class="govuk-list app-contact-list" data-qa="keywordResultList">
+                                        {% for item in keywordSearchResults.items %}
+                                            <li class="app-contact-list__item">
+                                                <a class="govuk-link" href="{{ item.href }}">{{ item.displayName }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="govuk-body govuk-!-margin-top-4">
+                                        If you can't find the contact you need, try
+                                        <a class="govuk-link" href="{{ ndeliusDeepLinkUrl }}" target="_blank" data-ndelius-link="true" data-back-url="{{ contactLogUrl }}">using NDelius (opens in new tab)</a>.
+                                    </p>
+                                {% endif %}
                             </div>
                         {% endif %}
                     </div>
