@@ -35,6 +35,17 @@
   position: relative;
 }
 
+.govuk-form-group--error {
+  .autocomplete__hint,
+  .autocomplete__input {
+    border-color: govuk-colour("red");
+  }
+
+  .keyword-search__button {
+    border-color: govuk-colour("red");
+  }
+}
+
 .autocomplete__hint,
 .autocomplete__input {
   -webkit-appearance: none;

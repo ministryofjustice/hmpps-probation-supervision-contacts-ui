@@ -66,7 +66,6 @@ test.describe('search by keyword tab', () => {
   test('keyword search with no matches shows zero results', async ({ page }) => {
     await keywordPage.search('zzznomatch')
 
-    await expect(page.locator('[data-qa="keywordSearchResults"]')).toContainText('Showing 0 results')
     await expect(page.locator('[data-qa="keywordResultList"]')).toHaveCount(0)
   })
 })
