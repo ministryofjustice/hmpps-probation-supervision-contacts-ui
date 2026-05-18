@@ -8,8 +8,6 @@ import ContactService from '../services/contactService'
 import config from '../config'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
 import { ContactTypeOptions } from '../data/model/contactTypes'
-
-const allContactTypeNamesJson = JSON.stringify(ContactTypeOptions.map(t => t.description))
 import {
   buildCategoryCheckboxItems,
   buildKeywordSearchResults,
@@ -18,6 +16,8 @@ import {
 } from '../services/contactCategorySearch'
 import { buildAddContactViewModel } from '../services/addContactViewModel'
 import logger from '../../logger'
+
+const allContactTypeNamesJson = JSON.stringify(ContactTypeOptions.map(t => t.description))
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {

@@ -16,7 +16,10 @@ const setupKeywordSearch = () => {
   })
 
   function fuzzySearch(query, populateResults) {
-    if (!query) return populateResults([])
+    if (!query) {
+      populateResults([])
+      return
+    }
     const results = fuse.search(query)
     populateResults(results.map(r => r.item))
   }

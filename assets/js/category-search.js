@@ -96,7 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
     link.addEventListener('click', event => {
       const target = link.getAttribute('href')
 
-      if (target === '#frequently-used-contacts' || target === '#search-by-category' || target === '#search-by-keyword') {
+      if (
+        target === '#frequently-used-contacts' ||
+        target === '#search-by-category' ||
+        target === '#search-by-keyword'
+      ) {
         event.preventDefault()
 
         allPanels.forEach(panel => panel.classList.add('govuk-tabs__panel--hidden'))
