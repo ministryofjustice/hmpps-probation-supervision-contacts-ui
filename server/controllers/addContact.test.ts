@@ -529,7 +529,7 @@ describe('addContactController', () => {
   })
 
   describe('getSearchByKeyword', () => {
-    async function invokeKeyword(query: Record<string, unknown> = {}) {
+    async function invokeKeyword(query: Record<string, string | string[]> = {}) {
       const req = createReq({ params: { crn: 'X123456' }, query })
       const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
       await addContactController.getSearchByKeyword()(req, res, next)
