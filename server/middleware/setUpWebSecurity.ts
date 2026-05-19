@@ -17,7 +17,7 @@ export default function setUpWebSecurity(): Router {
     helmet({
       contentSecurityPolicy: {
         directives: {
-          defaultSrc: ["'self'", 'js.monitor.azure.com', '*.applicationinsights.azure.com/v2/track'],
+          defaultSrc: ["'self'"],
           // This nonce allows us to use scripts with the use of the `cspNonce` local, e.g (in a Nunjucks template):
           // <script nonce="{{ cspNonce }}">
           // or
@@ -26,8 +26,6 @@ export default function setUpWebSecurity(): Router {
           // page by an attacker.
           scriptSrc: [
             "'self'",
-            'js.monitor.azure.com',
-            '*.applicationinsights.azure.com/v2/track',
             (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`,
           ],
           connectSrc: [
@@ -38,8 +36,6 @@ export default function setUpWebSecurity(): Router {
           ],
           styleSrc: [
             "'self'",
-            'js.monitor.azure.com',
-            '*.applicationinsights.azure.com/v2/track',
             (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`,
           ],
           fontSrc: ["'self'", config.probationFrontendComponents.fontSrc],
