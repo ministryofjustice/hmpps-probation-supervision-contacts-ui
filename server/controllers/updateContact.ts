@@ -1,5 +1,6 @@
 import type { RequestHandler } from 'express'
 import { NoOutcomeContactTypeDetails } from '../data/model/noOutcomeContactTypes'
+import { OutcomeContactTypeDetails } from '../data/model/outcomeContactTypes'
 import { toIsoDateTime } from '../utils/toDateandTime'
 import { UpdateContactWithNoOutcome } from '../data/model/contacts'
 import MasApiClient from '../data/masApiClient'
@@ -21,9 +22,19 @@ const updateContactController = {
 
       const { contact } = res.locals
 
+      console.log(contact)
+
       const displayName = contact.appointment?.displayName
 
-      const isOutcome = !NoOutcomeContactTypeDetails.some(item => item.description === displayName)
+      const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
+
+      const isNoOutcome = NoOutcomeContactTypeDetails.some(item => item.description === displayName)
+
+      if (!isOutcome && !isNoOutcome) {
+        return next(new Error(`Unknown contact type: ${displayName}`))
+      }
+
+      console.log(isOutcome)
 
       return res.render('pages/contacts/update-contact', {
         crn,

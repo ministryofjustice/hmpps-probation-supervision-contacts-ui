@@ -113,6 +113,40 @@
                     errorMessage: { text: errorMessages.time } if errorMessages.time
                 }) }}
 
+                  {% if isOutcome %}
+                    {% if isOutcome %}
+                        {{ govukCheckboxes({
+                            fieldset: {
+                                legend: {
+                                    text: outcomeSection.legend,
+                                    classes: "govuk-fieldset__legend--m",
+                                    isPageHeading: false
+                                }
+                            },
+                            name: 'outcomeCode',
+                            idPrefix: 'outcomeCode',
+                            items: outcomeSection.items,
+                            errorMessage: { text: errorMessages.outcomeCode } if errorMessages.outcomeCode
+                        }) }}
+                    {% else %}
+                        {{ govukRadios({
+                            fieldset: {
+                                legend: {
+                                    text: outcomeSection.legend,
+                                    classes: "govuk-fieldset__legend--m",
+                                    isPageHeading: false
+                                }
+                            },
+                            name: 'outcomeCode',
+                            idPrefix: 'outcomeCode',
+                            items: outcomeSection.items,
+                            errorMessage: { text: errorMessages.outcomeCode } if errorMessages.outcomeCode
+                        }) }}
+                    {% endif %}
+                {% endif %}
+
+
+
              {{ govukCharacterCount({
                     name: "details",
                     id: "details",

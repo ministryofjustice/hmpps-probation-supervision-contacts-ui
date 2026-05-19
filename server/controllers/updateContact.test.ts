@@ -41,7 +41,7 @@ describe('getUpdateContact', () => {
       contact: {
         appointment: {
           id: 'ABC123',
-          displayName: 'Tes contact',
+          displayName: 'Death under supervision category and notification',
         },
       },
       csrfToken: 'token',
@@ -71,7 +71,7 @@ describe('getUpdateContact', () => {
       contact: {
         appointment: {
           id: 'ABC123',
-          displayName: 'Information from person on probation',
+          displayName: 'Case consultation',
         },
       },
       csrfToken: 'token',
