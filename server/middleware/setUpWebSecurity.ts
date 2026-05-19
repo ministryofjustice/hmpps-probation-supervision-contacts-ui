@@ -24,20 +24,14 @@ export default function setUpWebSecurity(): Router {
           // <link href="http://example.com/" rel="stylesheet" nonce="{{ cspNonce }}">
           // This ensures only scripts we trust are loaded, and not anything injected into the
           // page by an attacker.
-          scriptSrc: [
-            "'self'",
-            (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`,
-          ],
+          scriptSrc: ["'self'", (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`],
           connectSrc: [
             "'self'",
             'js.monitor.azure.com',
             '*.applicationinsights.azure.com/v2/track',
             config.probationFrontendComponents.connectSrc,
           ],
-          styleSrc: [
-            "'self'",
-            (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`,
-          ],
+          styleSrc: ["'self'", (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`],
           fontSrc: ["'self'", config.probationFrontendComponents.fontSrc],
           formAction: [`'self' ${config.apis.hmppsAuth.externalUrl} ${config.manageProbationUrl}`],
           ...(config.production ? {} : { upgradeInsecureRequests: null }),
