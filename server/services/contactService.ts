@@ -4,6 +4,7 @@ import {
   CreateContactRequest,
   CreateContactResponse,
   UpdateContactWithNoOutcome,
+  UpdateContactWithOutcome,
 } from '../data/model/contacts'
 
 export default class ContactService {
@@ -31,6 +32,14 @@ export default class ContactService {
     username: string,
   ): Promise<void> {
     return this.masApiClient.updateContactWithNoOutcome(contactId, payload, username)
+  }
+
+  async updateContactWithOutcome(
+    contactId: string,
+    payload: UpdateContactWithOutcome,
+    username: string,
+  ): Promise<void> {
+    return this.masApiClient.updateContactWithOutcome(contactId, payload, username)
   }
 
   async patchDocuments(crn: string, contactId: string, file: Express.Multer.File, username: string): Promise<void> {

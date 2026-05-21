@@ -74,6 +74,14 @@ export interface UpdateContactWithNoOutcome {
   sensitiveFlag: boolean
 }
 
+export interface UpdateContactWithOutcome {
+  date: string
+  time: string
+  notes?: string
+  sensitive: boolean
+  outcomeCode: string
+}
+
 export interface CreateContactResponse {
   id: number
 }

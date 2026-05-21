@@ -42,7 +42,7 @@ export const updateContactValidation = (): ValidationSpec => ({
   },
 
   sensitivity: {
-    optional: false,
+    optional: true,
     checks: [
       {
         validator: isNotEmpty,
