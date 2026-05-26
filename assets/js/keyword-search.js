@@ -7,6 +7,20 @@ const setupKeywordSearch = () => {
     return
   }
 
+  const fallback = document.getElementById('keyword-fallback')
+  if (fallback) {
+    fallback.disabled = true
+    fallback.hidden = true
+  }
+
+  const hint = document.getElementById('keyword-hint')
+  if (hint) {
+    hint.textContent =
+      'For example email, safeguarding or CMS. You can select an answer as it appears or click the search icon to see a list of results.'
+  }
+
+  container.style.display = ''
+
   const suggestions = JSON.parse(container.getAttribute('data-suggestions') || '[]')
   const defaultValue = container.getAttribute('data-default-value') || ''
 

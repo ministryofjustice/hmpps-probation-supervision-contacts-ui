@@ -495,8 +495,17 @@ describe('addContactController', () => {
       return (res.render as jest.Mock).mock.calls[0][1]
     }
 
+    it('renders empty form when navigating to tab with no action', async () => {
+      const renderArgs = await invokeCategory({})
+
+      expect(renderArgs.searchResults).toBeNull()
+      expect(renderArgs.selectedCategories).toEqual([])
+      expect(renderArgs.errorMessages).toBeUndefined()
+      expect(renderArgs.searchByCategoryTabActive).toBe(true)
+    })
+
     it('clears selections and results when action is clear', async () => {
-      const renderArgs = await invokeCategory({ body: { action: 'clear' } })
+      const renderArgs = await invokeCategory({ query: { action: 'clear' } })
 
       expect(renderArgs).toEqual(
         expect.objectContaining({
@@ -509,8 +518,10 @@ describe('addContactController', () => {
       )
     })
 
-    it('renders validation error when no categories selected', async () => {
-      const renderArgs = await invokeCategory({ query: { lastCategories: 'Referrals,Sentence management' } })
+    it('renders validation error when form submitted with no categories selected', async () => {
+      const renderArgs = await invokeCategory({
+        query: { action: 'search', lastCategories: 'Referrals,Sentence management' },
+      })
 
       expect(renderArgs.errorMessages).toEqual({ categories: 'Select a category' })
       expect(renderArgs.searchByCategoryTabActive).toBe(true)
@@ -518,7 +529,9 @@ describe('addContactController', () => {
     })
 
     it('renders results when categories are selected', async () => {
-      const renderArgs = await invokeCategory({ query: { categories: ['Referrals', 'Sentence management'] } })
+      const renderArgs = await invokeCategory({
+        query: { action: 'search', categories: ['Referrals', 'Sentence management'] },
+      })
 
       expect(renderArgs.selectedCategories).toEqual(['Referrals', 'Sentence management'])
       expect(renderArgs.searchResults).toEqual(
@@ -536,8 +549,16 @@ describe('addContactController', () => {
       return (res.render as jest.Mock).mock.calls[0][1]
     }
 
+    it('renders empty form when navigating to tab with no action', async () => {
+      const renderArgs = await invokeKeyword({})
+
+      expect(renderArgs.errorMessages).toBeUndefined()
+      expect(renderArgs.keywordSearchResults).toBeNull()
+      expect(renderArgs.searchByKeywordTabActive).toBe(true)
+    })
+
     it('renders validation error when keyword is empty', async () => {
-      const renderArgs = await invokeKeyword({ keyword: '' })
+      const renderArgs = await invokeKeyword({ keyword: '', action: 'search' })
 
       expect(renderArgs.errorMessages).toEqual({ keyword: 'Enter a keyword or phrase' })
       expect(renderArgs.keywordSearchResults).toBeNull()
@@ -545,13 +566,13 @@ describe('addContactController', () => {
     })
 
     it('renders validation error when keyword is whitespace only', async () => {
-      const renderArgs = await invokeKeyword({ keyword: '   ' })
+      const renderArgs = await invokeKeyword({ keyword: '   ', action: 'search' })
 
       expect(renderArgs.errorMessages).toEqual({ keyword: 'Enter a keyword or phrase' })
     })
 
     it('renders validation error for invalid characters', async () => {
-      const renderArgs = await invokeKeyword({ keyword: 'police!' })
+      const renderArgs = await invokeKeyword({ keyword: 'police!', action: 'search' })
 
       expect(renderArgs.errorMessages).toEqual({
         keyword: 'You can only search using letters, numbers, hyphens or dashes',
@@ -561,14 +582,14 @@ describe('addContactController', () => {
     })
 
     it('accepts keywords with hyphens and spaces', async () => {
-      const renderArgs = await invokeKeyword({ keyword: 'police-liaison' })
+      const renderArgs = await invokeKeyword({ keyword: 'police-liaison', action: 'search' })
 
       expect(renderArgs.errorMessages).toBeUndefined()
       expect(renderArgs.keywordSearchResults).not.toBeNull()
     })
 
     it('renders results for a valid keyword that matches contacts', async () => {
-      const renderArgs = await invokeKeyword({ keyword: 'police liaison' })
+      const renderArgs = await invokeKeyword({ keyword: 'police liaison', action: 'search' })
 
       expect(renderArgs.keywordSearchResults).toEqual(
         expect.objectContaining({ keyword: 'police liaison', count: expect.any(Number), items: expect.any(Array) }),
@@ -578,14 +599,14 @@ describe('addContactController', () => {
     })
 
     it('renders zero results for a valid keyword that matches nothing', async () => {
-      const renderArgs = await invokeKeyword({ keyword: 'zzznomatch' })
+      const renderArgs = await invokeKeyword({ keyword: 'zzznomatch', action: 'search' })
 
       expect(renderArgs.keywordSearchResults.count).toBe(0)
       expect(renderArgs.keywordSearchResults.items).toEqual([])
     })
 
     it('passes contactTypeNamesJson as a JSON array of strings', async () => {
-      const renderArgs = await invokeKeyword({ keyword: 'police' })
+      const renderArgs = await invokeKeyword({ keyword: 'police', action: 'search' })
 
       expect(typeof renderArgs.contactTypeNamesJson).toBe('string')
       const parsed = JSON.parse(renderArgs.contactTypeNamesJson)
@@ -593,7 +614,7 @@ describe('addContactController', () => {
     })
 
     it('treats non-string keyword query param as empty', async () => {
-      const renderArgs = await invokeKeyword({ keyword: ['police', 'liaison'] as any })
+      const renderArgs = await invokeKeyword({ keyword: ['police', 'liaison'] as any, action: 'search' })
 
       expect(renderArgs.errorMessages).toEqual({ keyword: 'Enter a keyword or phrase' })
     })

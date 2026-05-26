@@ -7,6 +7,13 @@
   flex: 1;
 }
 
+.keyword-search__fallback-input {
+  border-right: 0;
+  flex-grow: 1;
+  height: 2.5rem;
+  margin-bottom: 0;
+}
+
 .keyword-search__button {
   background-color: govuk-colour("green");
   border: 2px solid #0b0c0c;
@@ -36,7 +43,8 @@
 
 .govuk-form-group--error {
   .autocomplete__hint,
-  .autocomplete__input {
+  .autocomplete__input,
+  .keyword-search__fallback-input {
     border-color: govuk-colour("red");
   }
 
