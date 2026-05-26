@@ -141,7 +141,7 @@ const addContactController = {
   getSearchByKeyword: (): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
-      const keyword = typeof req.query?.keyword === 'string' ? req.query.keyword : ''
+      const keyword = typeof req.query?.keyword === 'string' ? req.query.keyword.trim() : ''
       const action = req.query?.action
 
       const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []

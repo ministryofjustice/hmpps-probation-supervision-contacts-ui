@@ -581,6 +581,14 @@ describe('addContactController', () => {
       expect(renderArgs.keywordSearchResults).toBeNull()
     })
 
+    it('trims leading and trailing whitespace before searching', async () => {
+      const withSpaces = await invokeKeyword({ keyword: '  police liaison  ', action: 'search' })
+      const withoutSpaces = await invokeKeyword({ keyword: 'police liaison', action: 'search' })
+
+      expect(withSpaces.keywordSearch).toBe('police liaison')
+      expect(withSpaces.keywordSearchResults?.count).toBe(withoutSpaces.keywordSearchResults?.count)
+    })
+
     it('accepts keywords with hyphens and spaces', async () => {
       const renderArgs = await invokeKeyword({ keyword: 'police-liaison', action: 'search' })
 
