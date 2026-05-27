@@ -18,7 +18,13 @@ import { buildAddContactViewModel } from '../services/addContactViewModel'
 import { isBlank } from '../utils/isBlank'
 import logger from '../../logger'
 
-const allContactTypeNamesJson = JSON.stringify(ContactTypeOptions.map(t => t.description))
+const buildContactTypeLinksJson = (crn: string) =>
+  JSON.stringify(
+    ContactTypeOptions.map(t => ({
+      text: t.description,
+      href: `/case/${crn}/contacts/add-${slugify(t.description)}`,
+    })),
+  )
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -73,7 +79,7 @@ const addContactController = {
         selectedCategories: [],
         searchResults: null,
         searchByCategoryTabActive: false,
-        contactTypeNamesJson: allContactTypeNamesJson,
+        contactTypeLinksJson: buildContactTypeLinksJson(crn),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -155,7 +161,7 @@ const addContactController = {
         searchByKeywordTabActive: true,
         keywordSearch: keyword,
         keywordSearchResults: null as ReturnType<typeof buildKeywordSearchResults> | null,
-        contactTypeNamesJson: allContactTypeNamesJson,
+        contactTypeLinksJson: buildContactTypeLinksJson(crn),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,

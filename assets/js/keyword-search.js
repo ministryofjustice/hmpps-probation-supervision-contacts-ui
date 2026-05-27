@@ -25,6 +25,7 @@ const setupKeywordSearch = () => {
   const defaultValue = container.getAttribute('data-default-value') || ''
 
   const fuse = new Fuse(suggestions, {
+    keys: ['text'],
     threshold: 0.35,
     includeScore: true,
   })
@@ -46,6 +47,21 @@ const setupKeywordSearch = () => {
     source: fuzzySearch,
     minLength: 2,
     showNoOptionsFound: true,
+    templates: {
+      inputValue: item => {
+        if (!item) return ''
+        return typeof item === 'string' ? item : item.text
+      },
+      suggestion: item => {
+        if (!item) return ''
+        return typeof item === 'string' ? item : item.text
+      },
+    },
+    onConfirm: item => {
+      if (item && item.href) {
+        window.location.href = item.href
+      }
+    },
   })
 }
 

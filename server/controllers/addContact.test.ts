@@ -175,18 +175,18 @@ describe('addContactController', () => {
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('test-uuid'))
     })
 
-    it('passes contactTypeNamesJson as a JSON array of contact type description strings', async () => {
+    it('passes contactTypeLinksJson as a JSON array of {text, href} objects', async () => {
       const req = createReq({ params: { crn: 'X123456' } })
       const res = createRes()
 
       await addContactController.getFrequentlyUsedContact()(req, res, next)
 
       const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
-      expect(typeof renderArgs.contactTypeNamesJson).toBe('string')
-      const parsed = JSON.parse(renderArgs.contactTypeNamesJson)
+      expect(typeof renderArgs.contactTypeLinksJson).toBe('string')
+      const parsed = JSON.parse(renderArgs.contactTypeLinksJson)
       expect(Array.isArray(parsed)).toBe(true)
       expect(parsed.length).toBeGreaterThan(0)
-      expect(typeof parsed[0]).toBe('string')
+      expect(parsed[0]).toMatchObject({ text: expect.any(String), href: expect.stringContaining('/case/X123456/contacts/add-') })
     })
   })
 
@@ -613,12 +613,13 @@ describe('addContactController', () => {
       expect(renderArgs.keywordSearchResults.items).toEqual([])
     })
 
-    it('passes contactTypeNamesJson as a JSON array of strings', async () => {
+    it('passes contactTypeLinksJson as a JSON array of {text, href} objects for the autocomplete', async () => {
       const renderArgs = await invokeKeyword({ keyword: 'police', action: 'search' })
 
-      expect(typeof renderArgs.contactTypeNamesJson).toBe('string')
-      const parsed = JSON.parse(renderArgs.contactTypeNamesJson)
+      expect(typeof renderArgs.contactTypeLinksJson).toBe('string')
+      const parsed = JSON.parse(renderArgs.contactTypeLinksJson)
       expect(Array.isArray(parsed)).toBe(true)
+      expect(parsed[0]).toMatchObject({ text: expect.any(String), href: expect.stringContaining('/case/X123456/contacts/add-') })
     })
 
     it('treats non-string keyword query param as empty', async () => {
