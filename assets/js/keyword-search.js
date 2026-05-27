@@ -36,7 +36,7 @@ const setupKeywordSearch = () => {
       return
     }
     const results = fuse.search(query)
-    populateResults(results.map(r => r.item))
+    populateResults(results.map(r => r.item).sort((a, b) => a.text.localeCompare(b.text)))
   }
 
   accessibleAutocomplete({
@@ -45,7 +45,7 @@ const setupKeywordSearch = () => {
     name: 'keyword',
     defaultValue,
     source: fuzzySearch,
-    minLength: 2,
+    minLength: 1,
     showNoOptionsFound: true,
     templates: {
       inputValue: item => {
