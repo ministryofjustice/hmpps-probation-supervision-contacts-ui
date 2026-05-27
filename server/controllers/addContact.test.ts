@@ -186,7 +186,10 @@ describe('addContactController', () => {
       const parsed = JSON.parse(renderArgs.contactTypeLinksJson)
       expect(Array.isArray(parsed)).toBe(true)
       expect(parsed.length).toBeGreaterThan(0)
-      expect(parsed[0]).toMatchObject({ text: expect.any(String), href: expect.stringContaining('/case/X123456/contacts/add-') })
+      expect(parsed[0]).toMatchObject({
+        text: expect.any(String),
+        href: expect.stringContaining('/case/X123456/contacts/add-'),
+      })
     })
   })
 
@@ -619,7 +622,10 @@ describe('addContactController', () => {
       expect(typeof renderArgs.contactTypeLinksJson).toBe('string')
       const parsed = JSON.parse(renderArgs.contactTypeLinksJson)
       expect(Array.isArray(parsed)).toBe(true)
-      expect(parsed[0]).toMatchObject({ text: expect.any(String), href: expect.stringContaining('/case/X123456/contacts/add-') })
+      expect(parsed[0]).toMatchObject({
+        text: expect.any(String),
+        href: expect.stringContaining('/case/X123456/contacts/add-'),
+      })
     })
 
     it('treats non-string keyword query param as empty', async () => {
