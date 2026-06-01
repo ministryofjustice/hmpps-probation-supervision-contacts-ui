@@ -2,7 +2,7 @@ import type { RequestHandler } from 'express'
 import { NoOutcomeContactTypeDetails } from '../data/model/noOutcomeContactTypes'
 import { OutcomeContactTypeDetails } from '../data/model/outcomeContactTypes'
 import { toIsoDateTime } from '../utils/toDateandTime'
-import { UpdateContactWithNoOutcome } from '../data/model/contacts'
+import { UpdateContactWithNoOutcome, UpdateContactWithOutcome } from '../data/model/contacts'
 import MasApiClient from '../data/masApiClient'
 import config from '../config'
 import ContactService from '../services/contactService'
@@ -23,6 +23,7 @@ const updateContactController = {
       const { crn, contactId } = req.params as Record<string, string>
 
       const { contact } = res.locals
+      const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? 'SHOW_OFFICER' : undefined
 
       const displayName = contact.appointment?.displayName
 
@@ -47,6 +48,9 @@ const updateContactController = {
         isOutcome,
         csrfToken: res.locals.csrfToken,
         outcomeSection,
+        responsibleOfficer: showResponsibleOfficer,
+        responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
+        responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
       })
     }
   },
@@ -58,6 +62,7 @@ const updateContactController = {
       const date = getStringValue(req.body?.date)
       const time = getStringValue(req.body?.time)
       let notes = getStringValue(req.body?.details)
+      const alertResponsibleOfficer = getStringValue(req.body?.alertResponsibleOfficer)
       const sensitivity = res.locals.contact.appointment?.isSensitive || getStringValue(req.body?.sensitivity) === 'Yes'
       const contactType = res.locals.contact.appointment?.displayName
       const existingNotes = res.locals.contact.appointment?.appointmentNotes[0]?.note
@@ -74,41 +79,40 @@ const updateContactController = {
       if (!isOutcome && !isNoOutcome) {
         throw new Error(`Unknown contact type: ${contactType}`)
       }
+      const contactService = new ContactService(masApiClient)
 
       const formattedDateandTime = toIsoDateTime(date, time)
 
       if (isOutcome) {
-        const outcomeContactService = new ContactService(masApiClient)
-        const payload = {
+        const outcomeCode = req.body?.outcomeCode || ''
+        const payload: UpdateContactWithOutcome = {
           date: convertDateToIso(date),
           time,
           notes: notes || '',
           sensitive: sensitivity,
-          outcomeCode: getStringValue(req.body?.outcomeCode),
+          outcomeCode,
+          alert: alertResponsibleOfficer === 'Yes',
         }
-
-        await outcomeContactService.updateContactWithOutcome(contactId, payload, username)
+        await contactService.updateContactWithOutcome(contactId, payload, username)
       } else {
-        const contactService = new ContactService(masApiClient)
-
         const payload: UpdateContactWithNoOutcome = {
           dateTime: formattedDateandTime,
-          notes: notes || '',
+          notes: notes || null,
           sensitiveFlag: sensitivity,
         }
 
         await contactService.updateContactWithNoOutcome(contactId, payload, username)
+      }
 
-        if (req.file) {
-          try {
-            await contactService.patchDocuments(crn, contactId.toString(), req.file, username)
+      if (req.file) {
+        try {
+          await contactService.patchDocuments(crn, contactId.toString(), req.file, username)
 
-            return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity/${contactId}?showSuccessBanner=true`)
-          } catch {
-            return res.redirect(
-              `${config.manageProbationUrl}/case/${crn}/activity/${contactId}?showSuccessBanner=true&uploadFailed=true`,
-            )
-          }
+          return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity/${contactId}?showSuccessBanner=true`)
+        } catch {
+          return res.redirect(
+            `${config.manageProbationUrl}/case/${crn}/activity/${contactId}?showSuccessBanner=true&uploadFailed=true`,
+          )
         }
       }
 

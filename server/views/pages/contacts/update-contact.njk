@@ -225,6 +225,38 @@
 
                 {% endif %}
 
+                {% if responsibleOfficer %}
+                    {{ govukRadios({
+                        fieldset: {
+                            legend: {
+                                text: "Do you want to alert " + responsibleOfficerForename + ' ' + responsibleOfficerSurname + " (the responsible officer) about this contact?",
+                                classes: "govuk-fieldset__legend--m",
+                                isPageHeading: false
+                            }
+                        },
+                        formGroup: {
+                            attributes: {
+                                'data-qa': 'alertResponsibleOfficer'
+                            }
+                        },
+                        name: 'alertResponsibleOfficer',
+                        id: 'alertResponsibleOfficer',
+                        items: [
+                            {
+                                value: 'Yes',
+                                text: "Yes",
+                                checked: contact.appointment.isAlert
+                            },
+                            {
+                                value: 'No',
+                                text: "No",
+                                checked: not contact.appointment.isAlert
+                            }
+                        ],
+                        errorMessage: { text: errorMessages.alertResponsibleOfficer } if errorMessages.alertResponsibleOfficer
+                    }) }}
+                {% endif %}
+
                 {{ govukButton({
                     text: "Save update",
                     attributes: { "data-qa": "create-contact-button" }
