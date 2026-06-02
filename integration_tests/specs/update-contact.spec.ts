@@ -15,6 +15,7 @@ test.beforeEach(async ({ page }) => {
     masApi.stubGetSentences(),
     masApi.stubGetOverview(),
     masApi.stubGetContact(),
+    masApi.stubGetContactOutome(),
   ])
   await login(page)
 })
