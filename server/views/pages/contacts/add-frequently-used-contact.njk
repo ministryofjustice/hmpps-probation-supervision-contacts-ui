@@ -15,11 +15,13 @@
 {% endblock %}
 
 {% block pageTitle %}
-    {% if flags and flags.searchContactsByCategory %}
-        Find a contact to add - {{ headerPersonName.forename }} {{ headerPersonName.surname }}
-    {% else %}
-        Add a frequently used contact - {{ headerPersonName.forename }} {{ headerPersonName.surname }}
-    {% endif %}
+  {% if searchByKeywordTabActive %}
+    Find a contact to add - search by keyword
+  {% elif searchByCategoryTabActive %}
+    Find a contact to add
+  {% else %}
+    Add a frequently used contact
+  {% endif %}
 {% endblock %}
 
 {% block content %}

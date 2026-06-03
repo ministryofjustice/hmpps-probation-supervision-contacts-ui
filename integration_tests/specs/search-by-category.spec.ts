@@ -24,6 +24,15 @@ test.afterEach(async () => {
   await resetStubs()
 })
 
+test('has the correct page title', async ({ page }) => {
+  const searchPage = new SearchByCategoryPage(page)
+
+  await page.goto('/case/X123456/add-frequently-used-contact')
+  await searchPage.openSearchByCategoryTab()
+
+  await expect(page).toHaveTitle('Find a contact to add')
+})
+
 test('user can search by category and see results', async ({ page }) => {
   const searchPage = new SearchByCategoryPage(page)
 
