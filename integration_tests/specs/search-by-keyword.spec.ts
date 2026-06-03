@@ -31,7 +31,7 @@ test.describe('search by keyword tab', () => {
 
   test.beforeEach(async ({ page }) => {
     keywordPage = new SearchByKeywordPage(page)
-    await page.goto(`/case/${crn}/add-frequently-used-contact`)
+    await page.goto(`/case/${crn}/contacts/add-a-frequently-used-contact`)
     await keywordPage.openSearchByKeywordTab()
   })
 
@@ -78,7 +78,7 @@ test('category tab error does not show on keyword tab', async ({ page }) => {
   const categoryPage = new SearchByCategoryPage(page)
   const keywordPage = new SearchByKeywordPage(page)
 
-  await page.goto(`/case/${crn}/add-frequently-used-contact`)
+  await page.goto(`/case/${crn}/contacts/add-a-frequently-used-contact`)
   await categoryPage.openSearchByCategoryTab()
   await categoryPage.clickSearch()
 

@@ -9,7 +9,7 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% set addContactType = 'Add ' + contactTypeName %}
-{% set backLink = '/case/' + crn + '/add-frequently-used-contact?from=step2' %}
+{% set backLink = '/case/' + crn + '/contacts/add-a-frequently-used-contact?from=step2' %}
 
 {% block pageTitle %}
     {{ addContactType }} - {{ headerPersonName.forename }} {{ headerPersonName.surname }}

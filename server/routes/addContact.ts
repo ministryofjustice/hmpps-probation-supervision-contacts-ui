@@ -24,14 +24,14 @@ export default function addContactRoutes(
   ]
 
   router.get(
-    '/case/:crn/add-frequently-used-contact',
+    '/case/:crn/contacts/add-a-frequently-used-contact',
     loadPersonalDetails,
     populate,
     controllers.addContact.getFrequentlyUsedContact(),
   )
 
   router.post(
-    '/case/:crn/add-frequently-used-contact',
+    '/case/:crn/contacts/add-a-frequently-used-contact',
     loadPersonalDetails,
     populate,
     addFrequentlyUsedContact,
@@ -39,14 +39,14 @@ export default function addContactRoutes(
   )
 
   router.get(
-    '/case/:crn/add-frequently-used-contact/search-by-category',
+    '/case/:crn/contacts/find-contact-to-add',
     loadPersonalDetails,
     populate,
     controllers.addContact.getSearchByCategory(),
   )
 
   router.get(
-    '/case/:crn/add-frequently-used-contact/search-by-keyword',
+    '/case/:crn/contacts/search-keyword',
     loadPersonalDetails,
     populate,
     controllers.addContact.getSearchByKeyword(),

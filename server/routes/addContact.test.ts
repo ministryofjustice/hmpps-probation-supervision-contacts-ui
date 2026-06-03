@@ -55,20 +55,20 @@ describe('addContactRoutes', () => {
     addContactRoutes(router, mockServices as any)
   })
 
-  it('registers GET /case/:crn/add-frequently-used-contact', () => {
-    expect(getSpy.mock.calls[0][0]).toBe('/case/:crn/add-frequently-used-contact')
+  it('registers GET /case/:crn/contacts/add-a-frequently-used-contact', () => {
+    expect(getSpy.mock.calls[0][0]).toBe('/case/:crn/contacts/add-a-frequently-used-contact')
   })
 
-  it('registers POST /case/:crn/add-frequently-used-contact', () => {
-    expect(postSpy.mock.calls[0][0]).toBe('/case/:crn/add-frequently-used-contact')
+  it('registers POST /case/:crn/contacts/add-a-frequently-used-contact', () => {
+    expect(postSpy.mock.calls[0][0]).toBe('/case/:crn/contacts/add-a-frequently-used-contact')
   })
 
-  it('registers GET /case/:crn/add-frequently-used-contact/search-by-category', () => {
-    expect(getSpy.mock.calls[1][0]).toBe('/case/:crn/add-frequently-used-contact/search-by-category')
+  it('registers GET /case/:crn/contacts/find-contact-to-add', () => {
+    expect(getSpy.mock.calls[1][0]).toBe('/case/:crn/contacts/find-contact-to-add')
   })
 
-  it('registers GET /case/:crn/add-frequently-used-contact/search-by-keyword', () => {
-    expect(getSpy.mock.calls[2][0]).toBe('/case/:crn/add-frequently-used-contact/search-by-keyword')
+  it('registers GET /case/:crn/contacts/search-keyword', () => {
+    expect(getSpy.mock.calls[2][0]).toBe('/case/:crn/contacts/search-keyword')
   })
 
   it('registers GET /case/:crn/contacts/add-:contactType', () => {
