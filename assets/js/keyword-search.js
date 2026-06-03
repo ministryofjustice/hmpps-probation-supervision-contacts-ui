@@ -26,7 +26,8 @@ const setupKeywordSearch = () => {
 
   const fuse = new Fuse(suggestions, {
     keys: ['text'],
-    threshold: 0.35,
+    threshold: 0,
+    ignoreLocation: true,
     includeScore: true,
   })
 
