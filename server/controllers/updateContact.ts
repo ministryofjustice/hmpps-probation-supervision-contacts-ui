@@ -91,6 +91,7 @@ const updateContactController = {
           notes: notes || '',
           sensitive: sensitivity,
           outcomeCode,
+          enforcementActionCode: null,
           alert: alertResponsibleOfficer === 'Yes',
         }
         await contactService.updateContactWithOutcome(contactId, payload, username)

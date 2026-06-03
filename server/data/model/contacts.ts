@@ -80,7 +80,8 @@ export interface UpdateContactWithOutcome {
   notes?: string
   sensitive: boolean
   outcomeCode: string
-  alert: boolean | null
+  alert: boolean
+  enforcementActionCode: null
 }
 
 export interface CreateContactResponse {

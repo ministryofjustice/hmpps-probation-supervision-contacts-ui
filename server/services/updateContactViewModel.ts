@@ -18,9 +18,9 @@ export const buildUpdateContactViewModelWithOutcome = ({
   const contactDetails = OutcomeContactTypeDetails.find(item => item.description === displayName)
 
   const outcomeSection = {
-    legend: contactDetails.mandatoryOutcome ? 'Select an outcome' : 'Select an outcome (optional)',
+    legend: 'Select an outcome',
 
-    type: contactDetails.mandatoryOutcome ? 'radios' : 'checkbox',
+    type: 'radios',
 
     items: contactDetails.outcomes.map(outcome => ({
       text: outcome.label,
