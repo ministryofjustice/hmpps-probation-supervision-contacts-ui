@@ -144,7 +144,7 @@
                                 <p class="govuk-body">Showing {{ searchResults.count }} results</p>
 
                                 {% for category in searchResults.categories %}
-                                    <h3 class="govuk-heading-m">{{ category.name }}</h3>
+                                    <h4 class="govuk-heading-m">{{ category.name }}</h4>
 
                                     {% if category.items and category.items.length %}
                                         <ul class="govuk-list app-contact-list">
@@ -157,9 +157,9 @@
                                     {% endif %}
 
                                     {% for subcategory in category.subcategories %}
-                                        <h4 class="govuk-heading-s govuk-!-font-size-19 govuk-!-margin-top-4 govuk-!-margin-bottom-1">
+                                        <h5 class="govuk-heading-s govuk-!-font-size-19 govuk-!-margin-top-4 govuk-!-margin-bottom-1">
                                             {{ subcategory.name }}
-                                        </h4>
+                                        </h5>
                                         <ul class="govuk-list app-contact-list">
                                             {% for item in subcategory.items %}
                                                 <li class="app-contact-list__item">
