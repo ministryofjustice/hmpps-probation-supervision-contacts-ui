@@ -35,6 +35,10 @@ test.describe('search by keyword tab', () => {
     await keywordPage.openSearchByKeywordTab()
   })
 
+  test('has the correct page title', async ({ page }) => {
+    await expect(page).toHaveTitle('Find a contact to add - search by keyword')
+  })
+
   test('tab is visible after clicking', async ({ page }) => {
     await expect(page.locator('#search-by-keyword')).not.toHaveClass(/govuk-tabs__panel--hidden/)
     await expect(keywordPage.searchButton).toBeVisible()
