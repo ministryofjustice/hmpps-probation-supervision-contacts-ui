@@ -64,7 +64,7 @@
                         </li>
                         <li class="moj-sub-navigation__item">
                             <a class="moj-sub-navigation__link govuk-link--no-visited-state"
-                                href="/case/{{ crn }}/add-frequently-used-contact/search-by-category"
+                                href="/case/{{ crn }}/contacts/find-contact-to-add"
                                 data-qa="search-by-category-tab"
                                 {% if searchByCategoryTabActive %}aria-current="page"{% endif %}>
                                 Search by category
@@ -72,7 +72,7 @@
                         </li>
                         <li class="moj-sub-navigation__item">
                             <a class="moj-sub-navigation__link govuk-link--no-visited-state"
-                                href="/case/{{ crn }}/add-frequently-used-contact/search-by-keyword"
+                                href="/case/{{ crn }}/contacts/search-keyword"
                                 data-qa="search-by-keyword-tab"
                                 {% if searchByKeywordTabActive %}aria-current="page"{% endif %}>
                                 Search by keyword
@@ -110,7 +110,7 @@
                                 errorList: errorList
                             }) }}
                         {% endif %}
-                        <form method="get" action="/case/{{ crn }}/add-frequently-used-contact/search-by-category" id="category-search-form">
+                        <form method="get" action="/case/{{ crn }}/contacts/find-contact-to-add" id="category-search-form">
                             <input type="hidden" name="lastCategories" value="{{ lastCategories }}">
 
                             {{ govukCheckboxes({
@@ -181,7 +181,7 @@
                 {% elif searchByKeywordTabActive %}
                     <div class="govuk-tabs__panel" id="search-by-keyword">
                         <div class="govuk-!-width-three-quarters">
-                            <form method="get" action="/case/{{ crn }}/add-frequently-used-contact/search-by-keyword" id="keyword-search-form">
+                            <form method="get" action="/case/{{ crn }}/contacts/search-keyword" id="keyword-search-form">
                                 <div class="govuk-form-group{% if errorMessages.keyword %} govuk-form-group--error{% endif %}">
                                     <h3 class="govuk-heading-m govuk-!-margin-bottom-1" id="keyword-label">Search by keyword or phrase</h3>
                                     <div class="govuk-hint" id="keyword-hint">For example email, safeguarding or CMS. Click the search icon to see a list of results.</div>
