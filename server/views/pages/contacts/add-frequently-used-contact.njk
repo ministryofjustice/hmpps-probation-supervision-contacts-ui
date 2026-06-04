@@ -57,7 +57,7 @@
                     <ul class="moj-sub-navigation__list">
                         <li class="moj-sub-navigation__item">
                             <a class="moj-sub-navigation__link govuk-link--no-visited-state"
-                                href="/case/{{ crn }}/contacts/add-a-frequently-used-contact"
+                                href="/case/{{ crn }}/add-frequently-used-contact"
                                 {% if not searchByCategoryTabActive and not searchByKeywordTabActive %}aria-current="page"{% endif %}>
                                 Frequently used contacts
                             </a>
@@ -86,7 +86,7 @@
                         <h3 class="govuk-heading-m">Select a frequently used contact</h3>
                         <ul class="govuk-list app-contact-list govuk-grid-column-three-quarters" data-qa="frequentlyUsedContactList">
                             <li class="app-contact-list__item">
-                                <a class="govuk-link" href="/case/{{ crn }}/contacts/add-a-frequently-used-contact?contactType=APPOINTMENT">Appointments</a>
+                                <a class="govuk-link" href="/case/{{ crn }}/add-frequently-used-contact?contactType=APPOINTMENT">Appointments</a>
                             </li>
                             {% for contact in frequentlyUsedContacts %}
                                 <li class="app-contact-list__item">
@@ -245,7 +245,7 @@
                 {% endif %}
 
             {% else %}
-                <form method="post" action="/case/{{ crn }}/contacts/add-a-frequently-used-contact" id="choose-contact-form"
+                <form method="post" action="/case/{{ crn }}/add-frequently-used-contact" id="choose-contact-form"
                       data-ndelius-url="{{ ndeliusDeepLinkUrl }}"
                       data-back-url="{{ contactLogUrl }}">
                     <input type="hidden" name="_csrf" value="{{ csrfToken }}">

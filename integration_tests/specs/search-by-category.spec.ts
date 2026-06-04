@@ -27,7 +27,7 @@ test.afterEach(async () => {
 test('has the correct page title', async ({ page }) => {
   const searchPage = new SearchByCategoryPage(page)
 
-  await page.goto('/case/X123456/contacts/add-a-frequently-used-contact')
+  await page.goto('/case/X123456/add-frequently-used-contact')
   await searchPage.openSearchByCategoryTab()
 
   await expect(page).toHaveTitle('Find a contact to add')
@@ -36,7 +36,7 @@ test('has the correct page title', async ({ page }) => {
 test('user can search by category and see results', async ({ page }) => {
   const searchPage = new SearchByCategoryPage(page)
 
-  await page.goto('/case/X123456/contacts/add-a-frequently-used-contact')
+  await page.goto('/case/X123456/add-frequently-used-contact')
   await searchPage.openSearchByCategoryTab()
 
   await searchPage.selectCategory('Referrals')
@@ -49,7 +49,7 @@ test('user can search by category and see results', async ({ page }) => {
 test('clear removes results and resets selections', async ({ page }) => {
   const searchPage = new SearchByCategoryPage(page)
 
-  await page.goto('/case/X123456/contacts/add-a-frequently-used-contact')
+  await page.goto('/case/X123456/add-frequently-used-contact')
   await searchPage.openSearchByCategoryTab()
 
   await searchPage.selectCategory('Referrals')
@@ -66,7 +66,7 @@ test('clear removes results and resets selections', async ({ page }) => {
 test('search without selection shows error summary', async ({ page }) => {
   const searchPage = new SearchByCategoryPage(page)
 
-  await page.goto('/case/X123456/contacts/add-a-frequently-used-contact')
+  await page.goto('/case/X123456/add-frequently-used-contact')
   await searchPage.openSearchByCategoryTab()
 
   await searchPage.clickSearch()

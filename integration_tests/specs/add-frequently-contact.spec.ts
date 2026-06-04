@@ -26,7 +26,7 @@ test.afterEach(async () => {
 test('has the correct page title', async ({ page }) => {
   await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: false }])
 
-  await page.goto('/case/X123456/contacts/add-a-frequently-used-contact')
+  await page.goto('/case/X123456/add-frequently-used-contact')
 
   await expect(page).toHaveTitle('Add a frequently used contact')
 })
@@ -35,7 +35,7 @@ test('user can select appointment contact', async ({ page }) => {
   await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: false }])
   const addContactPage = new AddFrequentContactPage(page)
 
-  await page.goto('/case/X123456/contacts/add-a-frequently-used-contact')
+  await page.goto('/case/X123456/add-frequently-used-contact')
 
   await addContactPage.selectContact('C326')
   await addContactPage.clickContinue()
@@ -47,7 +47,7 @@ test('keeps selected contact when using browser back from step 2', async ({ page
   await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: false }])
   const addContactPage = new AddFrequentContactPage(page)
 
-  await page.goto('/case/X123456/contacts/add-a-frequently-used-contact')
+  await page.goto('/case/X123456/add-frequently-used-contact')
 
   await addContactPage.selectContact('C326')
   await addContactPage.clickContinue()
@@ -61,14 +61,14 @@ test('clears selected contact when navigating away and returning', async ({ page
   await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: false }])
   const addContactPage = new AddFrequentContactPage(page)
 
-  await page.goto('/case/X123456/contacts/add-a-frequently-used-contact')
+  await page.goto('/case/X123456/add-frequently-used-contact')
 
   await addContactPage.selectContact('C326')
   await addContactPage.clickContinue()
 
   await page.goto('/case/X123456')
 
-  await page.goto('/case/X123456/contacts/add-a-frequently-used-contact')
+  await page.goto('/case/X123456/add-frequently-used-contact')
 
   await expect(page.locator('input[value="C326"]')).not.toBeChecked()
 })
@@ -76,7 +76,7 @@ test('clears selected contact when navigating away and returning', async ({ page
 test('user can open NDelius in new tab and redirect back to activity log', async ({ page }) => {
   await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: false }])
 
-  await page.goto('/case/X123456/contacts/add-a-frequently-used-contact')
+  await page.goto('/case/X123456/add-frequently-used-contact')
 
   const [newTab] = await Promise.all([
     page.waitForEvent('popup'),
@@ -90,7 +90,7 @@ test('user can open NDelius in new tab and redirect back to activity log', async
 test('Selects correct contact when feature flag searchContactsByCategory is true', async ({ page }) => {
   await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: true }])
 
-  await page.goto('/case/X123456/contacts/add-a-frequently-used-contact')
+  await page.goto('/case/X123456/add-frequently-used-contact')
 
   await page.locator('a[href*="add-internal-communications"]').click()
 

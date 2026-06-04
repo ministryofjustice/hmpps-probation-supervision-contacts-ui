@@ -55,12 +55,12 @@ describe('addContactRoutes', () => {
     addContactRoutes(router, mockServices as any)
   })
 
-  it('registers GET /case/:crn/contacts/add-a-frequently-used-contact', () => {
-    expect(getSpy.mock.calls[0][0]).toBe('/case/:crn/contacts/add-a-frequently-used-contact')
+  it('registers GET /case/:crn/add-frequently-used-contact', () => {
+    expect(getSpy.mock.calls[0][0]).toBe('/case/:crn/add-frequently-used-contact')
   })
 
-  it('registers POST /case/:crn/contacts/add-a-frequently-used-contact', () => {
-    expect(postSpy.mock.calls[0][0]).toBe('/case/:crn/contacts/add-a-frequently-used-contact')
+  it('registers POST /case/:crn/add-frequently-used-contact', () => {
+    expect(postSpy.mock.calls[0][0]).toBe('/case/:crn/add-frequently-used-contact')
   })
 
   it('registers GET /case/:crn/contacts/find-contact-to-add', () => {
