@@ -3,11 +3,9 @@ import { OutcomeContactTypeDetails } from '../data/model/outcomeContactTypes'
 const normalise = (value?: string) => value?.replace(/\s+/g, '').toLowerCase() ?? ''
 
 export const buildUpdateContactViewModelWithOutcome = ({
-  crn,
   displayName,
   contact,
 }: {
-  crn: string
   displayName: string
   contact: {
     appointment: {
@@ -16,6 +14,10 @@ export const buildUpdateContactViewModelWithOutcome = ({
   }
 }) => {
   const contactDetails = OutcomeContactTypeDetails.find(item => item.description === displayName)
+
+  if (contactDetails?.outcomes?.length === 1) {
+    return false
+  }
 
   const outcomeSection = {
     legend: 'Select an outcome',

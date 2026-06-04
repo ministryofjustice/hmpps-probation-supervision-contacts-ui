@@ -25,7 +25,11 @@ const updateContactController = {
       const { contact } = res.locals
       const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? 'SHOW_OFFICER' : undefined
 
-      const displayName = contact.appointment?.displayName
+      let displayName = contact.appointment?.displayName
+
+      if (!displayName) {
+        displayName = contact?.appointment?.type
+      }
 
       const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
       const isNoOutcome = NoOutcomeContactTypeDetails.some(item => item.description === displayName)
@@ -33,7 +37,6 @@ const updateContactController = {
 
       if (isOutcome) {
         outcomeSection = buildUpdateContactViewModelWithOutcome({
-          crn,
           displayName,
           contact,
         })
@@ -43,6 +46,7 @@ const updateContactController = {
 
       return res.render('pages/contacts/update-contact', {
         crn,
+        displayName,
         contactId,
         contact,
         isOutcome,
@@ -64,7 +68,13 @@ const updateContactController = {
       let notes = getStringValue(req.body?.details)
       const alertResponsibleOfficer = getStringValue(req.body?.alertResponsibleOfficer)
       const sensitivity = res.locals.contact.appointment?.isSensitive || getStringValue(req.body?.sensitivity) === 'Yes'
-      const contactType = res.locals.contact.appointment?.displayName
+
+      let displayName = res.locals.contact.appointment?.displayName
+
+      if (!displayName) {
+        displayName = res.locals.contact?.appointment?.type
+      }
+
       const existingNotes = res.locals.contact.appointment?.appointmentNotes[0]?.note
       const normaliseText = (value: string) => value.replace(/\r\n/g, '\n').trim()
 
@@ -72,12 +82,12 @@ const updateContactController = {
         notes = ''
       }
 
-      const isOutcome = OutcomeContactTypeDetails.some(item => item.description === contactType)
+      const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
 
-      const isNoOutcome = NoOutcomeContactTypeDetails.some(item => item.description === contactType)
+      const isNoOutcome = NoOutcomeContactTypeDetails.some(item => item.description === displayName)
 
       if (!isOutcome && !isNoOutcome) {
-        throw new Error(`Unknown contact type: ${contactType}`)
+        throw new Error(`Unknown contact type: ${displayName}`)
       }
       const contactService = new ContactService(masApiClient)
 

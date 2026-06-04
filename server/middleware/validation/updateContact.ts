@@ -1,6 +1,9 @@
 import type { RequestHandler } from 'express'
 import { validateWithSpec } from '../../utils/validationUtils'
 import { updateContactValidation } from '../../properties/validation/updateContact'
+import { OutcomeContactTypeDetails } from '../../data/model/outcomeContactTypes'
+import { NoOutcomeContactTypeDetails } from '../../data/model/noOutcomeContactTypes'
+import { buildUpdateContactViewModelWithOutcome } from '../../services/updateContactViewModel'
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -18,16 +21,41 @@ const getFormValues = (body: Record<string, unknown>): Record<string, string> =>
 
 const updateContact: RequestHandler = (req, res, next) => {
   const body = (req.body || {}) as Record<string, string | boolean>
-
+  const { crn, contactId } = req.params as Record<string, string>
   const formValues = getFormValues(body)
 
   body.date = formValues.date
   body.time = formValues.time
   body.sensitivity = formValues.sensitivity
+  const { contact } = res.locals
 
-  const errorMessages = validateWithSpec(body, updateContactValidation())
+  let displayName = res.locals?.contact.appointment?.displayName
+
+  if (!displayName) {
+    displayName = res.locals?.contact?.appointment?.type
+  }
+
+  const contactDetails = OutcomeContactTypeDetails.find(item => item.description === displayName)
+
+  const outcomeRequired = contactDetails?.outcomes?.length !== 1
+
+  const errorMessages = validateWithSpec(body, updateContactValidation(outcomeRequired))
 
   const detailsValue = getStringValue(body.details)
+
+  const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
+  const isNoOutcome = NoOutcomeContactTypeDetails.some(item => item.description === displayName)
+  let outcomeSection = {}
+  const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? 'SHOW_OFFICER' : undefined
+
+  if (isOutcome) {
+    outcomeSection = buildUpdateContactViewModelWithOutcome({
+      displayName,
+      contact,
+    })
+  } else if (!isNoOutcome) {
+    return next(new Error(`Unknown contact type: ${displayName}`))
+  }
 
   if (detailsValue.length > 12000) {
     const excess = detailsValue.length - 12000
@@ -40,6 +68,15 @@ const updateContact: RequestHandler = (req, res, next) => {
       ...res.locals,
       errorMessages,
       formValues,
+      crn,
+      displayName,
+      contactId,
+      isOutcome,
+      csrfToken: res.locals.csrfToken,
+      outcomeSection,
+      responsibleOfficer: showResponsibleOfficer,
+      responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
+      responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
     })
   }
 

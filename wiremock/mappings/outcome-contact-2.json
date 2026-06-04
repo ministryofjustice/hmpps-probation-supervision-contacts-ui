@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPathPattern": "/mas-api/schedule/X123456/appointment/00002"
+    "urlPathPattern": "/mas-api/schedule/X123456/appointment/00003"
   },
   "response": {
     "status": 200,
@@ -24,12 +24,12 @@
   "appointment": {
     "id": 2510648859,
     "eventNumber": "3",
-    "type": "Arrest Incident",
+    "type": "Police intelligence enquiries - response received",
     "startDateTime": "2026-05-28T12:35:00+01:00",
     "appointmentNotes": [
       {
         "id": 0,
-        "createdBy": "A Ramchurn",
+        "createdBy": "J Doe",
         "createdByDate": "2026-05-21",
         "note": "optional outcome testing\n\nThis contact was created in the Manage people on probation service.",
         "hasNoteBeenTruncated": false
@@ -72,11 +72,11 @@
       "surname": "Doe"
     },
     "description": "optional outcome",
-    "outcome": "Risk Review",
+    "outcome": "",
     "deliusManaged": true,
     "isVisor": false,
     "eventId": 2501068142,
-    "displayName": "Arrest incident"
+    "displayName": "Police intelligence enquiries - response received"
   },
   "documents": []
 }
