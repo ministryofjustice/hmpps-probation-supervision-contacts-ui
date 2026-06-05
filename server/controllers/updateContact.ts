@@ -6,7 +6,7 @@ import { UpdateContactWithNoOutcome, UpdateContactWithOutcome } from '../data/mo
 import MasApiClient from '../data/masApiClient'
 import config from '../config'
 import ContactService from '../services/contactService'
-import { buildUpdateContactViewModelWithOutcome } from '../services/updateContactViewModel'
+import { buildUpdateContactViewModelWithOutcome, updateContactOutcomeCode } from '../services/updateContactViewModel'
 import { convertDateToIso } from '../utils/toDateOnly'
 
 const getStringValue = (value: unknown): string => {
@@ -94,7 +94,8 @@ const updateContactController = {
       const formattedDateandTime = toIsoDateTime(date, time)
 
       if (isOutcome) {
-        const outcomeCode = req.body?.outcomeCode || ''
+        const outcomeCode = updateContactOutcomeCode(displayName, req.body?.outcomeCode)
+
         const payload: UpdateContactWithOutcome = {
           date: convertDateToIso(date),
           time,
@@ -104,6 +105,8 @@ const updateContactController = {
           enforcementActionCode: null,
           alert: alertResponsibleOfficer === 'Yes',
         }
+        console.log('payload')
+        console.log(payload)
         await contactService.updateContactWithOutcome(contactId, payload, username)
       } else {
         const payload: UpdateContactWithNoOutcome = {

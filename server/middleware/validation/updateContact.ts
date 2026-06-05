@@ -37,7 +37,7 @@ const updateContact: RequestHandler = (req, res, next) => {
 
   const contactDetails = OutcomeContactTypeDetails.find(item => item.description === displayName)
 
-  const outcomeRequired = contactDetails?.outcomes?.length !== 1
+  const outcomeRequired = contactDetails?.outcomes?.length > 1
 
   const errorMessages = validateWithSpec(body, updateContactValidation(outcomeRequired))
 
@@ -45,7 +45,7 @@ const updateContact: RequestHandler = (req, res, next) => {
 
   const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
   const isNoOutcome = NoOutcomeContactTypeDetails.some(item => item.description === displayName)
-  let outcomeSection = {}
+  let outcomeSection
   const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? 'SHOW_OFFICER' : undefined
 
   if (isOutcome) {

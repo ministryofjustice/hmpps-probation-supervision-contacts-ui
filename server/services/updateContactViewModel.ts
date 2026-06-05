@@ -34,3 +34,13 @@ export const buildUpdateContactViewModelWithOutcome = ({
 
   return outcomeSection
 }
+
+export const updateContactOutcomeCode = (displayName: string, outcomeCode: string) => {
+  const contactDetails = OutcomeContactTypeDetails.find(item => item.description === displayName)
+  const hasSingleOutcome = contactDetails?.outcomes?.length === 1
+  if (hasSingleOutcome) {
+    return contactDetails.outcomes[0].value
+  }
+
+  return outcomeCode
+}
