@@ -30,7 +30,7 @@ test('has the correct page title', async ({ page }) => {
   await page.goto('/case/X123456/add-frequently-used-contact')
   await searchPage.openSearchByCategoryTab()
 
-  await expect(page).toHaveTitle('Find a contact to add')
+  await expect(page).toHaveTitle('Find a contact to add - search by category')
 })
 
 test('user can search by category and see results', async ({ page }) => {

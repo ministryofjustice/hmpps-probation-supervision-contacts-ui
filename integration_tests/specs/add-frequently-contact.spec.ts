@@ -28,7 +28,7 @@ test('has the correct page title', async ({ page }) => {
 
   await page.goto('/case/X123456/add-frequently-used-contact')
 
-  await expect(page).toHaveTitle('Add a frequently used contact')
+  await expect(page).toHaveTitle('Find a contact to add - frequently used contacts')
 })
 
 test('user can select appointment contact', async ({ page }) => {
