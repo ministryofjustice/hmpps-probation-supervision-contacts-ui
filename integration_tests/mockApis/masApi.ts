@@ -245,16 +245,28 @@ export default {
     stubFor({
       request: {
         method: 'GET',
-        urlPattern: '/mas-api/schedule/X123456/appointment/00002',
+        urlPattern: '/mas-api/schedule/X123456/appointment/00003',
       },
       response: {
         status: 200,
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
         jsonBody: {
+          personSummary: {
+            name: {
+              forename: 'Marianne',
+              middleName: 'S',
+              surname: 'DuBuque-Predovic',
+            },
+            crn: 'X793504',
+            offenderId: 2501225867,
+            pnc: '1974/3498172L',
+            noms: 'A6087EA',
+            dateOfBirth: '1974-09-19',
+          },
           appointment: {
-            id: 2,
+            id: 2510648859,
             eventNumber: '3',
-            type: 'Arrest Incident',
+            type: 'Police intelligence enquiries - response received',
             startDateTime: '2026-05-28T12:35:00+01:00',
             appointmentNotes: [
               {
@@ -302,11 +314,11 @@ export default {
               surname: 'Doe',
             },
             description: 'optional outcome',
-            outcome: 'Risk Review',
+            outcome: '',
             deliusManaged: true,
             isVisor: false,
             eventId: 2501068142,
-            displayName: 'Arrest incident',
+            displayName: 'Police intelligence enquiries - response received',
           },
           documents: [],
         },
