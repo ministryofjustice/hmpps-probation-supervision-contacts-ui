@@ -105,8 +105,6 @@ const updateContactController = {
           enforcementActionCode: null,
           alert: alertResponsibleOfficer === 'Yes',
         }
-        console.log('payload')
-        console.log(payload)
         await contactService.updateContactWithOutcome(contactId, payload, username)
       } else {
         const payload: UpdateContactWithNoOutcome = {
