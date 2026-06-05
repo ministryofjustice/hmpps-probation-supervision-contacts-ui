@@ -68,7 +68,7 @@ test('shows validation errors when mandatory fields are empty', async ({ page })
 test('shows additional questions for a contact with outcomes', async ({ page }) => {
   const updateContactPage = new UpdateContactPage(page)
 
-  await page.goto('/case/X123456/00002/update-contact')
+  await page.goto('/case/X123456/00003/update-contact')
 
   await updateContactPage.expectAlertResponsibleQuestionVisible()
 
