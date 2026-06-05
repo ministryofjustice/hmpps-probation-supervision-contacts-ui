@@ -119,7 +119,7 @@ describe('buildAddContactViewModel', () => {
       slug: 'management-oversight',
       sentences,
       personName: 'Stuart Morrison',
-      formValues: { outcomeCode: 'MO27' },
+      formValues: { outcomeCode: 'MO3' },
     })
 
     expect(result.showRelatesToQuestion).toBe(false)
@@ -129,7 +129,7 @@ describe('buildAddContactViewModel', () => {
       items: expect.arrayContaining([
         expect.objectContaining({
           text: 'Management oversight decision',
-          value: 'MO27',
+          value: 'MO3',
           checked: true,
         }),
       ]),
@@ -164,7 +164,7 @@ describe('buildAddContactViewModel', () => {
       slug: 'management-oversight-home-visit-risk-assessment',
       sentences,
       personName: 'Stuart Morrison',
-      formValues: { outcomeCode: 'MO25' },
+      formValues: { outcomeCode: 'MO23' },
     })
 
     expect(result.showRelatesToQuestion).toBe(false)
@@ -174,7 +174,7 @@ describe('buildAddContactViewModel', () => {
       items: expect.arrayContaining([
         expect.objectContaining({
           text: 'Home visit approved',
-          value: 'MO25',
+          value: 'MO23',
           checked: true,
         }),
       ]),

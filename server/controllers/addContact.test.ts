@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express'
+import { render } from 'nunjucks'
 import MasApiClient from '../data/masApiClient'
 import ContactService from '../services/contactService'
 import addContactController from './addContact'
@@ -361,7 +362,7 @@ describe('addContactController', () => {
         items: expect.arrayContaining([
           expect.objectContaining({
             text: 'Management oversight decision',
-            value: 'MO27',
+            value: 'MO3',
           }),
         ]),
       })
