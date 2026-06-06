@@ -23,7 +23,6 @@ const updateContactController = {
       const { crn, contactId } = req.params as Record<string, string>
 
       const { contact } = res.locals
-      const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? 'SHOW_OFFICER' : undefined
 
       let displayName = contact.appointment?.displayName
 
@@ -33,7 +32,7 @@ const updateContactController = {
 
       const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
       const isNoOutcome = NoOutcomeContactTypeDetails.some(item => item.description === displayName)
-      let outcomeSection = {}
+      let outcomeSection
 
       if (isOutcome) {
         outcomeSection = buildUpdateContactViewModelWithOutcome({
@@ -52,7 +51,7 @@ const updateContactController = {
         isOutcome,
         csrfToken: res.locals.csrfToken,
         outcomeSection,
-        responsibleOfficer: showResponsibleOfficer,
+        responsibleOfficer: true,
         responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
         responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
       })
