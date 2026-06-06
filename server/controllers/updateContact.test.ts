@@ -226,7 +226,7 @@ describe('postupdateContact', () => {
         details: 'Updated notes',
         sensitivity: 'Yes',
         outcomeCode: 'SFG3',
-        alert: 'Yes',
+        alertResponsibleOfficer: 'Yes',
       },
     })
 
@@ -250,7 +250,7 @@ describe('postupdateContact', () => {
     expect(mockUpdateContactWithOutcome).toHaveBeenCalledWith(
       '00002',
       {
-        alert: false,
+        alert: true,
         date: '2026-05-14',
         enforcementActionCode: null,
         notes: 'Updated notes',

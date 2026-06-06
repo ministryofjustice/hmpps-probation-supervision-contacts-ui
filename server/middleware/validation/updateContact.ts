@@ -46,7 +46,6 @@ const updateContact: RequestHandler = (req, res, next) => {
   const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
   const isNoOutcome = NoOutcomeContactTypeDetails.some(item => item.description === displayName)
   let outcomeSection
-  const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? 'SHOW_OFFICER' : undefined
 
   if (isOutcome) {
     outcomeSection = buildUpdateContactViewModelWithOutcome({
@@ -74,7 +73,7 @@ const updateContact: RequestHandler = (req, res, next) => {
       isOutcome,
       csrfToken: res.locals.csrfToken,
       outcomeSection,
-      responsibleOfficer: showResponsibleOfficer,
+      responsibleOfficer: true,
       responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
       responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
     })
