@@ -24,11 +24,7 @@ const updateContactController = {
 
       const { contact } = res.locals
 
-      let displayName = contact.appointment?.displayName
-
-      if (!displayName) {
-        displayName = contact?.appointment?.type
-      }
+      const displayName = contact.appointment?.displayName ?? contact.appointment?.type
 
       const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
       const isNoOutcome = NoOutcomeContactTypeDetails.some(item => item.description === displayName)
@@ -68,11 +64,9 @@ const updateContactController = {
       const alertResponsibleOfficer = getStringValue(req.body?.alertResponsibleOfficer)
       const sensitivity = res.locals.contact.appointment?.isSensitive || getStringValue(req.body?.sensitivity) === 'Yes'
 
-      let displayName = res.locals.contact.appointment?.displayName
+      const { contact } = res.locals
 
-      if (!displayName) {
-        displayName = res.locals.contact?.appointment?.type
-      }
+      const displayName = contact.appointment?.displayName ?? contact.appointment?.type
 
       const existingNotes = res.locals.contact.appointment?.appointmentNotes[0]?.note
       const normaliseText = (value: string) => value.replace(/\r\n/g, '\n').trim()
