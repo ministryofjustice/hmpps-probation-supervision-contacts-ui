@@ -15,6 +15,7 @@ export type ContactTypeDetail = {
   guidance?: string
   mandatoryOutcome?: boolean
   outcomes?: ContactOutcome[]
+  showOutcomeBanner?: boolean
 }
 
 export const NoOutcomeContactTypeDetails: ContactTypeDetail[] = [

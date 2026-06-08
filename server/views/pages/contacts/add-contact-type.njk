@@ -1,5 +1,6 @@
 {% extends "../../partials/layout.njk" %}
 {%- from "moj/components/date-picker/macro.njk" import mojDatePicker -%}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
@@ -193,7 +194,20 @@
                 }) }}
 
                 {% if outcomeSection %}
-                    {% if outcomeSection.type == 'checkbox' %}
+                    {% if showOutcomeBanner and outcomeSection.type != 'inset' %}
+                        {{ mojBanner({
+                            type: 'information',
+                            text: 'You should select an outcome and add notes for this contact.'
+                        }) }}
+                    {% endif %}
+                    {% if outcomeSection.type == 'inset' %}
+                        <h2 class="govuk-heading-m">Outcome</h2>
+                        {{ govukInsetText({
+                            text: outcomeSection.insetText,
+                            attributes: { 'data-qa': 'outcomeInsetText' }
+                        }) }}
+                        <input type="hidden" name="outcomeCode" value="{{ formValues.outcomeCode }}">
+                    {% elif outcomeSection.type == 'checkbox' %}
                         {{ govukCheckboxes({
                             fieldset: {
                                 legend: {

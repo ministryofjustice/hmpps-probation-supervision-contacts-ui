@@ -96,6 +96,14 @@ export const buildAddContactViewModel = ({
     })
   }
 
+  const isInsetOutcome = !!detail?.showOutcomeBanner && outcomes.length === 1
+  // eslint-disable-next-line no-nested-ternary
+  const outcomeType = isInsetOutcome ? 'inset' : outcomes.length === 1 ? 'checkbox' : 'radios'
+
+  if (isInsetOutcome) {
+    updatedFormValues.outcomeCode = outcomes[0].value
+  }
+
   const outcomeItems =
     outcomes.length === 1
       ? [
@@ -131,12 +139,19 @@ export const buildAddContactViewModel = ({
     showPersonOption,
     showEventOptions,
     guidance: buildGuidanceContent(detail),
+    showOutcomeBanner: detail?.showOutcomeBanner ?? false,
     outcomeSection:
       outcomes.length > 0
         ? {
-            legend: detail?.mandatoryOutcome ? 'Select an outcome' : 'Select an outcome (optional)',
-            type: outcomes.length === 1 ? 'checkbox' : 'radios',
+            legend:
+              detail?.mandatoryOutcome || detail?.showOutcomeBanner
+                ? 'Select an outcome'
+                : 'Select an outcome (optional)',
+            type: outcomeType,
             items: outcomeItems,
+            insetText: isInsetOutcome
+              ? `The outcome for this contact will be set to '${outcomes[0].label}'.`
+              : undefined,
           }
         : undefined,
   }

@@ -31,6 +31,7 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: false,
+    showOutcomeBanner: true,
     outcomes: [
       {
         label: 'Risk review',
@@ -309,6 +310,7 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     defaultHeading:
       'TO BE COMPLETED BY PP:\n- Specify RoSH level and nature of any risk to probation staff\n- Any known or relevant information regarding the address or area\n- Name of probation practitioner(s) undertaking visit\n- Specify type of visit (initial or repeat)\n- Duration of home visit (minutes)\n\nNOTE:\nWhere home visit is approved, all of the following must be completed.\n- Office home visit itinerary diary is completed, and car registration recorded\n- Personal safety device will be used\n- Nominated contact point will be contacted immediately before the visit to provide the estimated length of visit, and upon completion of visit\n- Mobile phone will be carried at all times\n- Individual has been advised to secure any pets, where required\n\nA further Management Oversight – HVRA entry is only required where there has been a significant change in circumstance or risk level which impacts safe facilitation of a home visit.\n\nTO BE COMPLETED BY SPO:\n- SPO rationale for decision',
     mandatoryOutcome: false,
+    showOutcomeBanner: true,
     outcomes: [
       {
         label: 'Home visit - referred for SPO decision',
@@ -387,6 +389,7 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: false,
+    showOutcomeBanner: true,
     outcomes: [
       { label: 'Domestic abuse', value: 'PIDO', systemLabel: 'Domestic Abuse' },
       { label: 'Domestic abuse and other check', value: 'PICO', systemLabel: 'Domestic Abuse and Other Check' },
@@ -404,6 +407,7 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: false,
+    showOutcomeBanner: true,
     outcomes: [
       { label: 'Domestic abuse', value: 'PIDO', systemLabel: 'Domestic Abuse' },
       { label: 'Domestic abuse and other check', value: 'PICO', systemLabel: 'Domestic Abuse and Other Check' },
@@ -416,6 +420,7 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: false,
+    showOutcomeBanner: true,
     outcomes: [{ label: 'Accepted absence - medical', value: 'CO28', systemLabel: 'Accepted Absence - medical' }],
   },
   {
@@ -483,6 +488,7 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: false,
+    showOutcomeBanner: true,
     outcomes: [
       {
         label: 'Response received - known to social services',
