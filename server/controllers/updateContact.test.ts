@@ -61,7 +61,7 @@ describe('getUpdateContact', () => {
     )
   })
 
-  it('renders the update-contact page with the  no outcome contact data', async () => {
+  it('renders the update-contact page with the outcome contact data', async () => {
     const next = jest.fn()
     const req = createReq({
       params: { crn: 'X123456', contactId: 'ABC123' },
@@ -71,7 +71,7 @@ describe('getUpdateContact', () => {
       contact: {
         appointment: {
           id: 'ABC123',
-          displayName: 'Case consultation',
+          displayName: 'Alcohol consumption',
         },
       },
       csrfToken: 'token',
@@ -85,10 +85,31 @@ describe('getUpdateContact', () => {
         crn: 'X123456',
         contactId: 'ABC123',
         contact: res.locals.contact,
-        isOutcome: false,
+        isOutcome: true,
         csrfToken: 'token',
       }),
     )
+  })
+
+  it('redirects to the contact log page when user is not updating a contact', async () => {
+    const next = jest.fn()
+    const req = createReq({
+      params: { crn: 'X123456', contactId: 'ABC123' },
+    })
+
+    const res = createRes({
+      contact: {
+        appointment: {
+          id: 'ABC123',
+          displayName: 'appointment',
+          type: 'appointment',
+        },
+      },
+      csrfToken: 'token',
+    })
+
+    await updateContactController.getUpdateContact()(req, res, next)
+    expect(res.redirect).toHaveBeenCalledWith(`${config.manageProbationUrl}/case/X123456/activity/ABC123`)
   })
 })
 

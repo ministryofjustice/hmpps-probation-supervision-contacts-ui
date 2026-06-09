@@ -36,7 +36,7 @@ const updateContactController = {
           contact,
         })
       } else if (!isNoOutcome) {
-        return next(new Error(`Unknown contact type: ${displayName}`))
+        return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity/${contactId}`)
       }
 
       return res.render('pages/contacts/update-contact', {
@@ -80,7 +80,7 @@ const updateContactController = {
       const isNoOutcome = NoOutcomeContactTypeDetails.some(item => item.description === displayName)
 
       if (!isOutcome && !isNoOutcome) {
-        throw new Error(`Unknown contact type: ${displayName}`)
+        return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity/${contactId}`)
       }
       const contactService = new ContactService(masApiClient)
 
