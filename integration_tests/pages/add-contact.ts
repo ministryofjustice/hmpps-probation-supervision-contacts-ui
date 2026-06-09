@@ -31,6 +31,8 @@ export default class AddContactPage {
 
   readonly outcomeOptions: Locator
 
+  readonly outcomeInsetText: Locator
+
   constructor(page: Page) {
     this.page = page
     this.detailsField = page.locator('#details')
@@ -47,6 +49,7 @@ export default class AddContactPage {
     this.errorSummary = page.locator('.govuk-error-summary')
     this.outcomeLegend = page.locator('legend').filter({ hasText: 'Select an outcome' })
     this.outcomeOptions = page.locator('[data-qa="contactOutcome"]')
+    this.outcomeInsetText = page.locator('[data-qa="outcomeInsetText"]')
   }
 
   async expectDetailsVisible(): Promise<void> {
@@ -136,5 +139,9 @@ export default class AddContactPage {
 
   async expectOutcomeOptionsCount(count: number): Promise<void> {
     await expect(this.outcomeOptions).toHaveCount(count)
+  }
+
+  async expectOutcomeInsetText(text: string): Promise<void> {
+    await expect(this.outcomeInsetText).toContainText(text)
   }
 }

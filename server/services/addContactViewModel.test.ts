@@ -136,7 +136,7 @@ describe('buildAddContactViewModel', () => {
     })
   })
 
-  it('builds an optional single checkbox outcome section for single-outcome contacts', () => {
+  it('builds an inset outcome section with auto-selected value for single-outcome showOutcomeBanner contacts', () => {
     const result = buildAddContactViewModel({
       crn: 'X123456',
       slug: 'arrest-incident',
@@ -145,20 +145,22 @@ describe('buildAddContactViewModel', () => {
       formValues: {},
     })
 
+    expect(result.formValues.outcomeCode).toBe('CO29')
     expect(result.outcomeSection).toEqual({
-      legend: 'Select an outcome (optional)',
-      type: 'checkbox',
+      legend: 'Select an outcome',
+      type: 'inset',
+      insetText: "The outcome for this contact will be set to 'Risk review'.",
       items: [
         expect.objectContaining({
           text: "Set the outcome to 'Risk review'",
           value: 'CO29',
-          checked: false,
+          checked: true,
         }),
       ],
     })
   })
 
-  it('builds MO8 guidance and optional radio outcomes for the HVRA contact', () => {
+  it('builds MO8 guidance and mandatory radio outcomes for the HVRA contact', () => {
     const result = buildAddContactViewModel({
       crn: 'X123456',
       slug: 'management-oversight-home-visit-risk-assessment',
@@ -169,7 +171,7 @@ describe('buildAddContactViewModel', () => {
 
     expect(result.showRelatesToQuestion).toBe(false)
     expect(result.outcomeSection).toEqual({
-      legend: 'Select an outcome (optional)',
+      legend: 'Select an outcome',
       type: 'radios',
       items: expect.arrayContaining([
         expect.objectContaining({
