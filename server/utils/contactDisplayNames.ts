@@ -113,7 +113,6 @@ const approvedContactDisplayNames: Record<string, string> = {
   'Substance Use Screening Tool': 'Substance misuse screening tool',
   'Suicide/Self Harm Information': 'Suicide or self harm information',
   'Text Message to Send': 'Text message to send',
-  'Unplanned Contact from Person on Probation': 'Unplanned contact from person on probation',
   'Use of Video Link / Teleconference': 'Use of video link or teleconference',
   'Victim Liaison Contact': 'Victim liaison contact',
   'ViSOR Information Contact': 'ViSOR information contact',
