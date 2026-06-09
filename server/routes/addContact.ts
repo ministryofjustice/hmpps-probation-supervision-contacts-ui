@@ -39,10 +39,17 @@ export default function addContactRoutes(
   )
 
   router.get(
-    '/case/:crn/add-frequently-used-contact/search-by-category',
+    '/case/:crn/contacts/find-contact-to-add',
     loadPersonalDetails,
     populate,
     controllers.addContact.getSearchByCategory(),
+  )
+
+  router.get(
+    '/case/:crn/contacts/search-keyword',
+    loadPersonalDetails,
+    populate,
+    controllers.addContact.getSearchByKeyword(),
   )
 
   router.get(

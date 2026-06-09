@@ -15,11 +15,13 @@
 {% endblock %}
 
 {% block pageTitle %}
-    {% if flags and flags.searchContactsByCategory %}
-        Find a contact to add - {{ headerPersonName.forename }} {{ headerPersonName.surname }}
-    {% else %}
-        Add a frequently used contact - {{ headerPersonName.forename }} {{ headerPersonName.surname }}
-    {% endif %}
+  {% if searchByKeywordTabActive %}
+    Find a contact to add - search by keyword
+  {% elif searchByCategoryTabActive %}
+    Find a contact to add - search by category
+  {% else %}
+    Find a contact to add - frequently used contacts
+  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -55,46 +57,32 @@
                     <ul class="moj-sub-navigation__list">
                         <li class="moj-sub-navigation__item">
                             <a class="moj-sub-navigation__link govuk-link--no-visited-state"
-                            href="#frequently-used-contacts"
-                            {% if not searchByCategoryTabActive %}aria-current="page"{% endif %}>
-                            Frequently used contacts
+                                href="/case/{{ crn }}/add-frequently-used-contact"
+                                {% if not searchByCategoryTabActive and not searchByKeywordTabActive %}aria-current="page"{% endif %}>
+                                Frequently used contacts
                             </a>
                         </li>
                         <li class="moj-sub-navigation__item">
                             <a class="moj-sub-navigation__link govuk-link--no-visited-state"
-                                href="#search-by-category"
+                                href="/case/{{ crn }}/contacts/find-contact-to-add"
                                 data-qa="search-by-category-tab"
                                 {% if searchByCategoryTabActive %}aria-current="page"{% endif %}>
                                 Search by category
                             </a>
                         </li>
+                        <li class="moj-sub-navigation__item">
+                            <a class="moj-sub-navigation__link govuk-link--no-visited-state"
+                                href="/case/{{ crn }}/contacts/search-keyword"
+                                data-qa="search-by-keyword-tab"
+                                {% if searchByKeywordTabActive %}aria-current="page"{% endif %}>
+                                Search by keyword
+                            </a>
+                        </li>
                     </ul>
-                      <div class="govuk-grid-row">
-                        <div class="govuk-grid-column-two-thirds">
+                </nav>
 
-                        {% if errorMessages %}
-                            {% set errorList = [] %}
-
-                            {% for field, message in errorMessages %}
-                            {% set errorList = (errorList.push({
-                                text: message,
-                                href: "#" + field
-                            }), errorList) %}
-                            {% endfor %}
-
-                            {{ govukErrorSummary({
-                            titleText: "There is a problem",
-                            classes: "govuk-!-margin-top-4 govuk-!-margin-bottom-6",
-                            attributes: { "data-qa": "errorList" },
-                            errorList: errorList
-                            }) }}
-
-                        {% endif %}
-
-                        </div>
-                    </div>
-
-                    <div class="govuk-tabs__panel{% if searchByCategoryTabActive %} govuk-tabs__panel--hidden{% endif %}" id="frequently-used-contacts">
+                {% if not searchByCategoryTabActive and not searchByKeywordTabActive %}
+                    <div class="govuk-tabs__panel" id="frequently-used-contacts">
                         <h3 class="govuk-heading-m">Select a frequently used contact</h3>
                         <ul class="govuk-list app-contact-list govuk-grid-column-three-quarters" data-qa="frequentlyUsedContactList">
                             <li class="app-contact-list__item">
@@ -108,8 +96,21 @@
                         </ul>
                     </div>
 
-                    <div class="govuk-tabs__panel{% if not searchByCategoryTabActive %} govuk-tabs__panel--hidden{% endif %}" id="search-by-category">
-                        <form method="get" action="/case/{{ crn }}/add-frequently-used-contact/search-by-category" id="category-search-form">
+                {% elif searchByCategoryTabActive %}
+                    <div class="govuk-tabs__panel" id="search-by-category">
+                        {% if errorMessages and errorMessages.categories %}
+                            {% set errorList = [] %}
+                            {% for field, message in errorMessages %}
+                                {% set errorList = (errorList.push({ text: message, href: "#" + field }), errorList) %}
+                            {% endfor %}
+                            {{ govukErrorSummary({
+                                titleText: "There is a problem",
+                                classes: "govuk-!-margin-top-4 govuk-!-margin-bottom-6",
+                                attributes: { "data-qa": "errorList" },
+                                errorList: errorList
+                            }) }}
+                        {% endif %}
+                        <form method="get" action="/case/{{ crn }}/contacts/find-contact-to-add" id="category-search-form">
                             <input type="hidden" name="lastCategories" value="{{ lastCategories }}">
 
                             {{ govukCheckboxes({
@@ -129,6 +130,8 @@
                             <div class="govuk-button-group">
                                 {{ govukButton({
                                     text: "Search",
+                                    name: "action",
+                                    value: "search",
                                     attributes: { "data-qa": "category-search-button" }
                                 }) }}
                                 <button class="govuk-button govuk-button--secondary" type="submit" name="action" value="clear" data-qa="category-clear-button">Clear</button>
@@ -141,7 +144,7 @@
                                 <p class="govuk-body">Showing {{ searchResults.count }} results</p>
 
                                 {% for category in searchResults.categories %}
-                                    <h3 class="govuk-heading-m">{{ category.name }}</h3>
+                                    <h4 class="govuk-heading-m">{{ category.name }}</h4>
 
                                     {% if category.items and category.items.length %}
                                         <ul class="govuk-list app-contact-list">
@@ -154,9 +157,9 @@
                                     {% endif %}
 
                                     {% for subcategory in category.subcategories %}
-                                        <h4 class="govuk-heading-s govuk-!-font-size-19 govuk-!-margin-top-4 govuk-!-margin-bottom-1">
+                                        <h5 class="govuk-heading-s govuk-!-font-size-19 govuk-!-margin-top-4 govuk-!-margin-bottom-1">
                                             {{ subcategory.name }}
-                                        </h4>
+                                        </h5>
                                         <ul class="govuk-list app-contact-list">
                                             {% for item in subcategory.items %}
                                                 <li class="app-contact-list__item">
@@ -174,7 +177,73 @@
                             </div>
                         {% endif %}
                     </div>
-                </nav>
+
+                {% elif searchByKeywordTabActive %}
+                    <div class="govuk-tabs__panel" id="search-by-keyword">
+                        <div class="govuk-!-width-three-quarters">
+                            <form method="get" action="/case/{{ crn }}/contacts/search-keyword" id="keyword-search-form">
+                                <div class="govuk-form-group{% if errorMessages.keyword %} govuk-form-group--error{% endif %}">
+                                    <h3 class="govuk-heading-m govuk-!-margin-bottom-1" id="keyword-label">Search by keyword or phrase</h3>
+                                    <div class="govuk-hint" id="keyword-hint">For example email, safeguarding or CMS. Click the search icon to see a list of results.</div>
+                                    {% if errorMessages.keyword %}
+                                        <p class="govuk-error-message" id="keyword-error">
+                                            <span class="govuk-visually-hidden">Error:</span> {{ errorMessages.keyword }}
+                                        </p>
+                                    {% endif %}
+                                    <div class="keyword-search__input-wrapper">
+                                        <input type="text"
+                                            id="keyword-fallback"
+                                            name="keyword"
+                                            class="govuk-input keyword-search__fallback-input{% if errorMessages.keyword %} govuk-input--error{% endif %}"
+                                            value="{{ keywordSearch }}"
+                                            aria-labelledby="keyword-label"
+                                            aria-describedby="keyword-hint{% if errorMessages.keyword %} keyword-error{% endif %}">
+                                        <div id="keyword-autocomplete-container"
+                                            class="keyword-search__autocomplete"
+                                            style="display: none"
+                                            data-suggestions="{{ contactTypeLinksJson }}"
+                                            data-default-value="{{ keywordSearch }}">
+                                        </div>
+                                        <button type="submit" name="action" value="search" class="keyword-search__button" data-qa="keyword-search-button" aria-label="Search">
+                                            <svg width="32" height="32" viewBox="16 13 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
+                                                <circle cx="32" cy="29" r="8" stroke="white" stroke-width="2"/>
+                                                <rect x="34.6064" y="36.0781" width="3" height="12" rx="1.5" transform="rotate(-38.2778 34.6064 36.0781)" fill="white"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        {% if keywordSearchResults %}
+                            <div data-qa="keywordSearchResults" class="govuk-!-width-three-quarters">
+                                <h3 class="govuk-heading-m">Search results</h3>
+
+                                {% if keywordSearchResults.count %}
+                                    <p class="govuk-body">
+                                        Showing <strong>{{ keywordSearchResults.count }}</strong>
+                                        result{{ "s" if keywordSearchResults.count != 1 }} matching
+                                        '<strong>{{ keywordSearchResults.keyword }}</strong>'
+                                    </p>
+                                    <ul class="govuk-list app-contact-list" data-qa="keywordResultList">
+                                        {% for item in keywordSearchResults.items %}
+                                            <li class="app-contact-list__item">
+                                                <a class="govuk-link" href="{{ item.href }}">{{ item.displayName }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="govuk-body govuk-!-margin-top-4">
+                                        No results match your search. Try searching for something else or
+                                        <a class="govuk-link" href="{{ ndeliusDeepLinkUrl }}" target="_blank" data-ndelius-link="true" data-back-url="{{ contactLogUrl }}">use NDelius (opens in new tab)</a>
+                                        to add a contact.
+                                    </p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
             {% else %}
                 <form method="post" action="/case/{{ crn }}/add-frequently-used-contact" id="choose-contact-form"
                       data-ndelius-url="{{ ndeliusDeepLinkUrl }}"

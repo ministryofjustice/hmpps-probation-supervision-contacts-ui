@@ -79,3 +79,21 @@ export const buildSearchResults = (categories: string[], crn: string) => {
     categories: categoriesSorted,
   }
 }
+
+export const buildKeywordSearchResults = (keyword: string, crn: string) => {
+  const lowerKeyword = keyword.toLowerCase()
+  const seen = new Set<string>()
+
+  const items = ContactTypeCategoryEntries.filter(entry => {
+    if (seen.has(entry.code)) return false
+    seen.add(entry.code)
+    return entry.displayName.toLowerCase().includes(lowerKeyword)
+  })
+    .sort((a, b) => a.displayName.localeCompare(b.displayName))
+    .map(entry => ({
+      displayName: entry.displayName,
+      href: `/case/${crn}/contacts/add-${slugify(entry.displayName)}`,
+    }))
+
+  return { keyword, count: items.length, items }
+}

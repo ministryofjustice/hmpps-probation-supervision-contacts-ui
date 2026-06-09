@@ -27,6 +27,7 @@ jest.mock('../controllers', () => ({
       getFrequentlyUsedContact: jest.fn().mockReturnValue(jest.fn()),
       postFrequentlyUsedContact: jest.fn().mockReturnValue(jest.fn()),
       getSearchByCategory: jest.fn().mockReturnValue(jest.fn()),
+      getSearchByKeyword: jest.fn().mockReturnValue(jest.fn()),
       getAddContactType: jest.fn().mockReturnValue(jest.fn()),
       postAddContactType: jest.fn().mockReturnValue(jest.fn()),
     },
@@ -62,20 +63,24 @@ describe('addContactRoutes', () => {
     expect(postSpy.mock.calls[0][0]).toBe('/case/:crn/add-frequently-used-contact')
   })
 
-  it('registers GET /case/:crn/add-frequently-used-contact/search-by-category', () => {
-    expect(getSpy.mock.calls[1][0]).toBe('/case/:crn/add-frequently-used-contact/search-by-category')
+  it('registers GET /case/:crn/contacts/find-contact-to-add', () => {
+    expect(getSpy.mock.calls[1][0]).toBe('/case/:crn/contacts/find-contact-to-add')
+  })
+
+  it('registers GET /case/:crn/contacts/search-keyword', () => {
+    expect(getSpy.mock.calls[2][0]).toBe('/case/:crn/contacts/search-keyword')
   })
 
   it('registers GET /case/:crn/contacts/add-:contactType', () => {
-    expect(getSpy.mock.calls[2][0]).toBe('/case/:crn/contacts/add-:contactType')
+    expect(getSpy.mock.calls[3][0]).toBe('/case/:crn/contacts/add-:contactType')
   })
 
   it('registers POST /case/:crn/contacts/add-:contactType', () => {
     expect(postSpy.mock.calls[1][0]).toBe('/case/:crn/contacts/add-:contactType')
   })
 
-  it('registers exactly 2 GET routes and 3 POST routes', () => {
-    expect(getSpy).toHaveBeenCalledTimes(3)
+  it('registers exactly 4 GET routes and 2 POST routes', () => {
+    expect(getSpy).toHaveBeenCalledTimes(4)
     expect(postSpy).toHaveBeenCalledTimes(2)
   })
 

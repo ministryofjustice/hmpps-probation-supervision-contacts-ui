@@ -10,11 +10,21 @@ import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAu
 import { ContactTypeOptions } from '../data/model/contactTypes'
 import {
   buildCategoryCheckboxItems,
+  buildKeywordSearchResults,
   buildSearchResults,
   normaliseSelectedCategories,
 } from '../services/contactCategorySearch'
 import { buildAddContactViewModel } from '../services/addContactViewModel'
+import { isBlank } from '../utils/isBlank'
 import logger from '../../logger'
+
+const buildContactTypeLinksJson = (crn: string) =>
+  JSON.stringify(
+    ContactTypeOptions.map(t => ({
+      text: t.description,
+      href: `/case/${crn}/contacts/add-${slugify(t.description)}`,
+    })),
+  )
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -69,6 +79,7 @@ const addContactController = {
         selectedCategories: [],
         searchResults: null,
         searchByCategoryTabActive: false,
+        contactTypeLinksJson: buildContactTypeLinksJson(crn),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -93,35 +104,28 @@ const addContactController = {
       const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
       const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
 
-      if (action === 'clear') {
-        return res.render('pages/contacts/add-frequently-used-contact', {
-          crn,
-          frequentlyUsedContacts,
-          categoryCheckboxItems: buildCategoryCheckboxItems([]),
-          selectedCategories: [],
-          searchResults: null,
-          searchByCategoryTabActive: true,
-          lastCategories: '',
-          csrfToken: res.locals.csrfToken,
-          contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
-          ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
-        })
+      const baseLocals = {
+        crn,
+        frequentlyUsedContacts,
+        categoryCheckboxItems: buildCategoryCheckboxItems([]),
+        selectedCategories: [] as string[],
+        searchResults: null as ReturnType<typeof buildSearchResults> | null,
+        searchByCategoryTabActive: true,
+        lastCategories: '',
+        csrfToken: res.locals.csrfToken,
+        contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
+        ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
+      }
+
+      if (!action || action === 'clear') {
+        return res.render('pages/contacts/add-frequently-used-contact', baseLocals)
       }
 
       if (!selectedCategories.length) {
-        const searchResults = lastCategories.length ? buildSearchResults(lastCategories, crn) : null
         return res.render('pages/contacts/add-frequently-used-contact', {
-          crn,
+          ...baseLocals,
           errorMessages: { categories: 'Select a category' },
-          frequentlyUsedContacts,
-          categoryCheckboxItems: buildCategoryCheckboxItems([]),
-          selectedCategories: [],
-          searchResults,
-          searchByCategoryTabActive: true,
           lastCategories: lastCategories.join(','),
-          csrfToken: res.locals.csrfToken,
-          contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
-          ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
         })
       }
 
@@ -137,6 +141,54 @@ const addContactController = {
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
         ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
+      })
+    }
+  },
+  getSearchByKeyword: (): RequestHandler => {
+    return async (req, res, next) => {
+      const { crn } = req.params as Record<string, string>
+      const keyword = typeof req.query?.keyword === 'string' ? req.query.keyword.trim() : ''
+      const action = req.query?.action
+
+      const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
+      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
+
+      const baseLocals = {
+        crn,
+        frequentlyUsedContacts,
+        categoryCheckboxItems: buildCategoryCheckboxItems([]),
+        searchByCategoryTabActive: false,
+        searchByKeywordTabActive: true,
+        keywordSearch: keyword,
+        keywordSearchResults: null as ReturnType<typeof buildKeywordSearchResults> | null,
+        contactTypeLinksJson: buildContactTypeLinksJson(crn),
+        lastCategories: '',
+        csrfToken: res.locals.csrfToken,
+        contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
+        ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
+      }
+
+      if (!action) {
+        return res.render('pages/contacts/add-frequently-used-contact', baseLocals)
+      }
+
+      if (isBlank(keyword)) {
+        return res.render('pages/contacts/add-frequently-used-contact', {
+          ...baseLocals,
+          errorMessages: { keyword: 'Enter a keyword or phrase' },
+        })
+      }
+
+      if (/[^a-zA-Z0-9\- ]/.test(keyword)) {
+        return res.render('pages/contacts/add-frequently-used-contact', {
+          ...baseLocals,
+          errorMessages: { keyword: 'You can only search using letters, numbers, hyphens or dashes' },
+        })
+      }
+
+      return res.render('pages/contacts/add-frequently-used-contact', {
+        ...baseLocals,
+        keywordSearchResults: buildKeywordSearchResults(keyword, crn),
       })
     }
   },

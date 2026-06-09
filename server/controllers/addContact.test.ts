@@ -174,6 +174,23 @@ describe('addContactController', () => {
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('/case/X123456/arrange-appointment/'))
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('test-uuid'))
     })
+
+    it('passes contactTypeLinksJson as a JSON array of {text, href} objects', async () => {
+      const req = createReq({ params: { crn: 'X123456' } })
+      const res = createRes()
+
+      await addContactController.getFrequentlyUsedContact()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      expect(typeof renderArgs.contactTypeLinksJson).toBe('string')
+      const parsed = JSON.parse(renderArgs.contactTypeLinksJson)
+      expect(Array.isArray(parsed)).toBe(true)
+      expect(parsed.length).toBeGreaterThan(0)
+      expect(parsed[0]).toMatchObject({
+        text: expect.any(String),
+        href: expect.stringContaining('/case/X123456/contacts/add-'),
+      })
+    })
   })
 
   describe('postFrequentlyUsedContact', () => {
@@ -474,17 +491,26 @@ describe('addContactController', () => {
   })
 
   describe('getSearchByCategory', () => {
-    it('clears selections and results when action is clear', async () => {
-      const req = createReq({
-        params: { crn: 'X123456' },
-        body: { action: 'clear' },
-      })
+    async function invokeCategory(reqOverrides: Partial<Parameters<typeof createReq>[0]> = {}) {
+      const req = createReq({ params: { crn: 'X123456' }, ...reqOverrides })
       const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
-
       await addContactController.getSearchByCategory()(req, res, next)
+      return (res.render as jest.Mock).mock.calls[0][1]
+    }
 
-      expect(res.render).toHaveBeenCalledWith(
-        'pages/contacts/add-frequently-used-contact',
+    it('renders empty form when navigating to tab with no action', async () => {
+      const renderArgs = await invokeCategory({})
+
+      expect(renderArgs.searchResults).toBeNull()
+      expect(renderArgs.selectedCategories).toEqual([])
+      expect(renderArgs.errorMessages).toBeUndefined()
+      expect(renderArgs.searchByCategoryTabActive).toBe(true)
+    })
+
+    it('clears selections and results when action is clear', async () => {
+      const renderArgs = await invokeCategory({ query: { action: 'clear' } })
+
+      expect(renderArgs).toEqual(
         expect.objectContaining({
           crn: 'X123456',
           searchResults: null,
@@ -495,39 +521,117 @@ describe('addContactController', () => {
       )
     })
 
-    it('renders validation error when no categories selected', async () => {
-      const req = createReq({
-        params: { crn: 'X123456' },
-        query: { lastCategories: 'Referrals,Sentence management' },
+    it('renders validation error when form submitted with no categories selected', async () => {
+      const renderArgs = await invokeCategory({
+        query: { action: 'search', lastCategories: 'Referrals,Sentence management' },
       })
-      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
 
-      await addContactController.getSearchByCategory()(req, res, next)
-
-      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
       expect(renderArgs.errorMessages).toEqual({ categories: 'Select a category' })
       expect(renderArgs.searchByCategoryTabActive).toBe(true)
       expect(renderArgs.lastCategories).toBe('Referrals,Sentence management')
     })
 
     it('renders results when categories are selected', async () => {
-      const req = createReq({
-        params: { crn: 'X123456' },
-        query: { categories: ['Referrals', 'Sentence management'] },
+      const renderArgs = await invokeCategory({
+        query: { action: 'search', categories: ['Referrals', 'Sentence management'] },
       })
-      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
 
-      await addContactController.getSearchByCategory()(req, res, next)
-
-      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
       expect(renderArgs.selectedCategories).toEqual(['Referrals', 'Sentence management'])
       expect(renderArgs.searchResults).toEqual(
-        expect.objectContaining({
-          count: expect.any(Number),
-          categories: expect.any(Array),
-        }),
+        expect.objectContaining({ count: expect.any(Number), categories: expect.any(Array) }),
       )
       expect(renderArgs.searchByCategoryTabActive).toBe(true)
+    })
+  })
+
+  describe('getSearchByKeyword', () => {
+    async function invokeKeyword(query: Record<string, string | string[]> = {}) {
+      const req = createReq({ params: { crn: 'X123456' }, query })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+      await addContactController.getSearchByKeyword()(req, res, next)
+      return (res.render as jest.Mock).mock.calls[0][1]
+    }
+
+    it('renders empty form when navigating to tab with no action', async () => {
+      const renderArgs = await invokeKeyword({})
+
+      expect(renderArgs.errorMessages).toBeUndefined()
+      expect(renderArgs.keywordSearchResults).toBeNull()
+      expect(renderArgs.searchByKeywordTabActive).toBe(true)
+    })
+
+    it('renders validation error when keyword is empty', async () => {
+      const renderArgs = await invokeKeyword({ keyword: '', action: 'search' })
+
+      expect(renderArgs.errorMessages).toEqual({ keyword: 'Enter a keyword or phrase' })
+      expect(renderArgs.keywordSearchResults).toBeNull()
+      expect(renderArgs.searchByKeywordTabActive).toBe(true)
+    })
+
+    it('renders validation error when keyword is whitespace only', async () => {
+      const renderArgs = await invokeKeyword({ keyword: '   ', action: 'search' })
+
+      expect(renderArgs.errorMessages).toEqual({ keyword: 'Enter a keyword or phrase' })
+    })
+
+    it('renders validation error for invalid characters', async () => {
+      const renderArgs = await invokeKeyword({ keyword: 'police!', action: 'search' })
+
+      expect(renderArgs.errorMessages).toEqual({
+        keyword: 'You can only search using letters, numbers, hyphens or dashes',
+      })
+      expect(renderArgs.keywordSearch).toBe('police!')
+      expect(renderArgs.keywordSearchResults).toBeNull()
+    })
+
+    it('trims leading and trailing whitespace before searching', async () => {
+      const withSpaces = await invokeKeyword({ keyword: '  police liaison  ', action: 'search' })
+      const withoutSpaces = await invokeKeyword({ keyword: 'police liaison', action: 'search' })
+
+      expect(withSpaces.keywordSearch).toBe('police liaison')
+      expect(withSpaces.keywordSearchResults?.count).toBe(withoutSpaces.keywordSearchResults?.count)
+    })
+
+    it('accepts keywords with hyphens and spaces', async () => {
+      const renderArgs = await invokeKeyword({ keyword: 'police-liaison', action: 'search' })
+
+      expect(renderArgs.errorMessages).toBeUndefined()
+      expect(renderArgs.keywordSearchResults).not.toBeNull()
+    })
+
+    it('renders results for a valid keyword that matches contacts', async () => {
+      const renderArgs = await invokeKeyword({ keyword: 'police liaison', action: 'search' })
+
+      expect(renderArgs.keywordSearchResults).toEqual(
+        expect.objectContaining({ keyword: 'police liaison', count: expect.any(Number), items: expect.any(Array) }),
+      )
+      expect(renderArgs.keywordSearchResults.count).toBeGreaterThan(0)
+      expect(renderArgs.searchByKeywordTabActive).toBe(true)
+    })
+
+    it('renders zero results for a valid keyword that matches nothing', async () => {
+      const renderArgs = await invokeKeyword({ keyword: 'zzznomatch', action: 'search' })
+
+      expect(renderArgs.keywordSearchResults.count).toBe(0)
+      expect(renderArgs.keywordSearchResults.items).toEqual([])
+    })
+
+    it('passes contactTypeLinksJson as a JSON array of {text, href} objects for the autocomplete', async () => {
+      const renderArgs = await invokeKeyword({ keyword: 'police', action: 'search' })
+
+      expect(typeof renderArgs.contactTypeLinksJson).toBe('string')
+      const parsed = JSON.parse(renderArgs.contactTypeLinksJson)
+      expect(Array.isArray(parsed)).toBe(true)
+      expect(parsed[0]).toMatchObject({
+        text: expect.any(String),
+        href: expect.stringContaining('/case/X123456/contacts/add-'),
+      })
+    })
+
+    it('treats non-string keyword query param as empty', async () => {
+      const renderArgs = await invokeKeyword({ keyword: ['police', 'liaison'] as any, action: 'search' })
+
+      expect(renderArgs.errorMessages).toEqual({ keyword: 'Enter a keyword or phrase' })
     })
   })
 })
