@@ -521,24 +521,4 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
       },
     ],
   },
-  {
-    code: 'COUP',
-    description: 'Unplanned contact from person on probation',
-    sensitive: false,
-    relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
-    mandatoryOutcome: true,
-    outcomes: [
-      {
-        label: 'Failed to comply with other instruction',
-        value: 'CO22',
-        systemLabel: 'Failed to Comply with other Instruction',
-      },
-      { label: 'No action required', value: 'UBHV', systemLabel: 'No Action Required' },
-      {
-        label: 'Unacceptable behaviour',
-        value: 'Unacceptable Behaviour',
-        systemLabel: 'Unacceptable Behaviour',
-      },
-    ],
-  },
 ]
