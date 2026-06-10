@@ -22,7 +22,7 @@ export const FrequentlyUsedContactTypeOptions: ContactTypeOption[] = [
 
 const contactTypeByCode = new Map<string, ContactTypeOption>()
 
-ContactTypeCategoryEntries.forEach(entry => {
+ContactTypeCategoryEntries().forEach(entry => {
   if (!contactTypeByCode.has(entry.code)) {
     contactTypeByCode.set(entry.code, { code: entry.code, description: entry.displayName })
   }

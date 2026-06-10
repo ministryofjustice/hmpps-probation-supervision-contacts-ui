@@ -5,7 +5,21 @@ export type ContactTypeCategoryEntry = {
   displayName: string
 }
 
-export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
+export const ContactTypeCategoryEntries = (enableEnforcementContacts = false): ContactTypeCategoryEntry[] => [
+  ...(enableEnforcementContacts
+    ? [
+        {
+          category: 'Safeguarding and victim liaison' as const,
+          code: 'C280',
+          displayName: 'Suicide or self harm information',
+        },
+        {
+          category: 'Non-compliance and enforcement' as const,
+          code: 'AAM1',
+          displayName: 'Alcohol consumption',
+        },
+      ]
+    : []),
   {
     category: 'Case management and meetings',
     subcategory: 'Case meetings',
@@ -568,11 +582,6 @@ export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
   },
   {
     category: 'Non-compliance and enforcement',
-    code: 'AAM1',
-    displayName: 'Alcohol consumption',
-  },
-  {
-    category: 'Non-compliance and enforcement',
     code: 'LCL',
     displayName: 'Licence compliance letter',
   },
@@ -680,11 +689,6 @@ export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
     category: 'Safeguarding and victim liaison',
     code: 'SFGC',
     displayName: 'Safeguarding enquiries requested',
-  },
-  {
-    category: 'Safeguarding and victim liaison',
-    code: 'C280',
-    displayName: 'Suicide or self harm information',
   },
   {
     category: 'Safeguarding and victim liaison',

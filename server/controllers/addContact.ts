@@ -129,7 +129,7 @@ const addContactController = {
         })
       }
 
-      const searchResults = buildSearchResults(selectedCategories, crn)
+      const searchResults = buildSearchResults(selectedCategories, crn, res.locals.flags?.enableEnforcementContacts === true)
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
@@ -188,7 +188,7 @@ const addContactController = {
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         ...baseLocals,
-        keywordSearchResults: buildKeywordSearchResults(keyword, crn),
+        keywordSearchResults: buildKeywordSearchResults(keyword, crn, res.locals.flags?.enableEnforcementContacts),
       })
     }
   },
