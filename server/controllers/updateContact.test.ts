@@ -90,27 +90,6 @@ describe('getUpdateContact', () => {
       }),
     )
   })
-
-  it('redirects to the contact log page when user is not updating a contact', async () => {
-    const next = jest.fn()
-    const req = createReq({
-      params: { crn: 'X123456', contactId: 'ABC123' },
-    })
-
-    const res = createRes({
-      contact: {
-        appointment: {
-          id: 'ABC123',
-          displayName: 'appointment',
-          type: 'appointment',
-        },
-      },
-      csrfToken: 'token',
-    })
-
-    await updateContactController.getUpdateContact()(req, res, next)
-    expect(res.redirect).toHaveBeenCalledWith(`${config.manageProbationUrl}/case/X123456/activity/ABC123`)
-  })
 })
 
 describe('postupdateContact', () => {

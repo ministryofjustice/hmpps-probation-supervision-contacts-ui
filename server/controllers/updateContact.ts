@@ -1,5 +1,4 @@
 import type { RequestHandler } from 'express'
-import { NoOutcomeContactTypeDetails } from '../data/model/noOutcomeContactTypes'
 import { OutcomeContactTypeDetails } from '../data/model/outcomeContactTypes'
 import { toIsoDateTime } from '../utils/toDateandTime'
 import { UpdateContactWithNoOutcome, UpdateContactWithOutcome } from '../data/model/contacts'
@@ -27,7 +26,6 @@ const updateContactController = {
       const displayName = contact.appointment?.displayName ?? contact.appointment?.type
 
       const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
-      const isNoOutcome = NoOutcomeContactTypeDetails.some(item => item.description === displayName)
       let outcomeSection
 
       if (isOutcome) {
@@ -35,8 +33,6 @@ const updateContactController = {
           displayName,
           contact,
         })
-      } else if (!isNoOutcome) {
-        return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity/${contactId}`)
       }
 
       return res.render('pages/contacts/update-contact', {
@@ -77,11 +73,6 @@ const updateContactController = {
 
       const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
 
-      const isNoOutcome = NoOutcomeContactTypeDetails.some(item => item.description === displayName)
-
-      if (!isOutcome && !isNoOutcome) {
-        return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity/${contactId}`)
-      }
       const contactService = new ContactService(masApiClient)
 
       const formattedDateandTime = toIsoDateTime(date, time)
