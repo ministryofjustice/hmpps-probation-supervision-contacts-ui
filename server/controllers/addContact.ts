@@ -129,7 +129,11 @@ const addContactController = {
         })
       }
 
-      const searchResults = buildSearchResults(selectedCategories, crn, res.locals.flags?.enableEnforcementContacts === true)
+      const searchResults = buildSearchResults(
+        selectedCategories,
+        crn,
+        res.locals.flags?.enableEnforcementContacts === true,
+      )
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,

@@ -85,7 +85,8 @@ export const buildSearchResults = (categories: string[], crn: string, enableEnfo
 export const buildKeywordSearchResults = (keyword: string, crn: string, enableEnforcementContacts = false) => {
   const lowerKeyword = keyword.toLowerCase()
   const seen = new Set<string>()
-  const items = ContactTypeCategoryEntries(enableEnforcementContacts).filter(entry => {
+  const items = ContactTypeCategoryEntries(enableEnforcementContacts)
+    .filter(entry => {
       if (seen.has(entry.code)) return false
       seen.add(entry.code)
       return entry.displayName.toLowerCase().includes(lowerKeyword)

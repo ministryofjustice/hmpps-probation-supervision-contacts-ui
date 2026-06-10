@@ -40,10 +40,7 @@ describe('contactCategorySearch', () => {
       crn,
       true,
     )
-    const withoutFlag = buildSearchResults(
-      ['Safeguarding and victim liaison', 'Non-compliance and enforcement'],
-      crn,
-    )
+    const withoutFlag = buildSearchResults(['Safeguarding and victim liaison', 'Non-compliance and enforcement'], crn)
 
     const allCodes = (r: ReturnType<typeof buildSearchResults>) =>
       r.categories.flatMap(c => [...c.items, ...c.subcategories.flatMap(s => s.items)]).map(i => i.code)
