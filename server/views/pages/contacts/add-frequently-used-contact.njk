@@ -15,13 +15,7 @@
 {% endblock %}
 
 {% block pageTitle %}
-  {% if searchByKeywordTabActive %}
-    Find a contact to add - search by keyword
-  {% elif searchByCategoryTabActive %}
-    Find a contact to add - search by category
-  {% else %}
-    Find a contact to add - frequently used contacts
-  {% endif %}
+  {% if clearedAnnouncement %}Search results cleared - {% endif %}{% if searchByKeywordTabActive %}Find a contact to add - search by keyword{% elif searchByCategoryTabActive %}Find a contact to add - search by category{% else %}Find a contact to add - frequently used contacts{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -98,6 +92,9 @@
 
                 {% elif searchByCategoryTabActive %}
                     <div class="govuk-tabs__panel" id="search-by-category">
+                        {% if clearedAnnouncement %}
+                            <p class="govuk-visually-hidden">Search results have been cleared.</p>
+                        {% endif %}
                         {% if errorMessages and errorMessages.categories %}
                             {% set errorList = [] %}
                             {% for field, message in errorMessages %}

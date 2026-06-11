@@ -118,7 +118,10 @@ const addContactController = {
       }
 
       if (!action || action === 'clear') {
-        return res.render('pages/contacts/add-frequently-used-contact', baseLocals)
+        return res.render('pages/contacts/add-frequently-used-contact', {
+          ...baseLocals,
+          clearedAnnouncement: action === 'clear',
+        })
       }
 
       if (!selectedCategories.length) {
