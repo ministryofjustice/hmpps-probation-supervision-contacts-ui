@@ -463,12 +463,6 @@ export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
   {
     category: 'Communication with person on probation',
     subcategory: 'Other communications',
-    code: 'COUP',
-    displayName: 'Unplanned contact from person on probation',
-  },
-  {
-    category: 'Communication with person on probation',
-    subcategory: 'Other communications',
     code: 'C129',
     displayName: 'Use of video link or teleconference',
   },
