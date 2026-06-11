@@ -25,6 +25,10 @@ export default class UpdateContactPage {
 
   readonly errorSummary: Locator
 
+  readonly alertResponsibleQuestion: Locator
+
+  readonly outcomeSection: Locator
+
   constructor(page: Page) {
     this.page = page
 
@@ -53,6 +57,10 @@ export default class UpdateContactPage {
     })
 
     this.errorSummary = page.locator('.govuk-error-summary')
+
+    this.alertResponsibleQuestion = page.locator('[data-qa="alertResponsibleOfficer"]')
+
+    this.outcomeSection = page.getByRole('group', { name: /outcome/i })
   }
 
   async expectPageVisible(): Promise<void> {
@@ -117,5 +125,13 @@ export default class UpdateContactPage {
 
   async expectErrorSummaryVisible(): Promise<void> {
     await expect(this.errorSummary).toBeVisible()
+  }
+
+  async expectAlertResponsibleQuestionVisible(): Promise<void> {
+    await expect(this.alertResponsibleQuestion).toBeVisible()
+  }
+
+  async expectOutcomeSectionVisible(): Promise<void> {
+    await expect(this.outcomeSection).toBeVisible()
   }
 }

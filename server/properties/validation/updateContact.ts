@@ -2,7 +2,7 @@ import { isNotEmpty, isValidDate, isValidDateFormat, timeIsValid24HourFormat } f
 
 import { ValidationSpec } from '../../models/Errors'
 
-export const updateContactValidation = (): ValidationSpec => ({
+export const updateContactValidation = (outcomeRequired: boolean): ValidationSpec => ({
   date: {
     optional: false,
     checks: [
@@ -40,14 +40,34 @@ export const updateContactValidation = (): ValidationSpec => ({
       },
     ],
   },
+  outcomeCode: {
+    optional: !outcomeRequired,
+    checks: [
+      {
+        validator: isNotEmpty,
+        msg: 'Select an outcome',
+        log: 'Outcome not selected',
+      },
+    ],
+  },
 
   sensitivity: {
-    optional: false,
+    optional: true,
     checks: [
       {
         validator: isNotEmpty,
         msg: 'Select if the contact contains sensitive information',
         log: 'Sensitivity selection not made',
+      },
+    ],
+  },
+  alertResponsibleOfficer: {
+    optional: false,
+    checks: [
+      {
+        validator: isNotEmpty,
+        msg: 'Select if you want to alert the responsible officer',
+        log: 'Select if you want to alert the responsible officer',
       },
     ],
   },

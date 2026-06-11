@@ -9,6 +9,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "_components/compliance-tag/macro.njk" import appComplianceTag %}
 {% set dateParts = contact.appointment.startDateTime.split('T')[0].split('-') %}
 {% set appointmentDate =
   (dateParts[2] | int) + '/' +
@@ -57,8 +58,11 @@
     <div class="govuk-grid-column-three-quarters">
 
       <h1 class="govuk-heading-l">
-        Update contact about {{contact.appointment.displayName}}
+        Update contact about {{displayName}}
       </h1>
+      <div class="govuk-!-margin-top-1 govuk-!-margin-bottom-6" data-qa="complianceTag">
+        {{ appComplianceTag({ entry: contact.appointment }) }}
+      </div>
 
 
         {{ appSummaryCard({
@@ -113,12 +117,47 @@
                     errorMessage: { text: errorMessages.time } if errorMessages.time
                 }) }}
 
+                    {% if outcomeSection %}
+                    {% if outcomeSection.type == 'checkbox' %}
+                        {{ govukCheckboxes({
+                            fieldset: {
+                                legend: {
+                                    text: outcomeSection.legend,
+                                    classes: "govuk-fieldset__legend--m",
+                                    isPageHeading: false
+                                }
+                            },
+                            name: 'outcomeCode',
+                            idPrefix: 'outcomeCode',
+                            items: outcomeSection.items,
+                            errorMessage: { text: errorMessages.outcomeCode } if errorMessages.outcomeCode
+                        }) }}
+                    {% else %}
+                        {{ govukRadios({
+                            fieldset: {
+                                legend: {
+                                    text: outcomeSection.legend,
+                                    classes: "govuk-fieldset__legend--m",
+                                    isPageHeading: false
+                                }
+                            },
+                            name: 'outcomeCode',
+                            idPrefix: 'outcomeCode',
+                            items: outcomeSection.items,
+                            errorMessage: { text: errorMessages.outcomeCode } if errorMessages.outcomeCode
+                        }) }}
+                    {% endif %}
+                {% endif %}
+
+
+
+
              {{ govukCharacterCount({
                     name: "details",
                     id: "details",
                     maxlength: 12000,
                     rows: '10',
-                    value: formValues.details if formValues and 'details' in formValues else contact.appointment.appointmentNotes[0].note,
+                    value : formValues.details,
                     label: {
                         text: "Add further details (optional)",
                         classes: "govuk-label--m"
@@ -185,6 +224,38 @@
                     errorMessage: { text: errorMessages.sensitivity } if errorMessages.sensitivity
                 }) }}
 
+                {% endif %}
+
+                {% if responsibleOfficer %}
+                    {{ govukRadios({
+                        fieldset: {
+                            legend: {
+                                text: "Do you want to alert " + responsibleOfficerForename + ' ' + responsibleOfficerSurname + " (the responsible officer) about this contact?",
+                                classes: "govuk-fieldset__legend--m",
+                                isPageHeading: false
+                            }
+                        },
+                        formGroup: {
+                            attributes: {
+                                'data-qa': 'alertResponsibleOfficer'
+                            }
+                        },
+                        name: 'alertResponsibleOfficer',
+                        id: 'alertResponsibleOfficer',
+                        items: [
+                            {
+                                value: 'Yes',
+                                text: "Yes",
+                                checked: true if formValues is defined and formValues.alertResponsibleOfficer == 'Yes' else contact.appointment.isAlert
+                            },
+                            {
+                                value: 'No',
+                                text: "No",
+                                checked: true if formValues is defined and formValues.alertResponsibleOfficer == 'No' else false
+                            }
+                        ],
+                        errorMessage: { text: errorMessages.alertResponsibleOfficer } if errorMessages.alertResponsibleOfficer
+                    }) }}
                 {% endif %}
 
                 {{ govukButton({

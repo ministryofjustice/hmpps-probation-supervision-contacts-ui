@@ -287,7 +287,6 @@ const addContactController = {
         visorReport: visor === 'Yes',
       }
       const { id: contactId } = await contactService.createContact(crn, payload, username)
-
       if (req.file) {
         try {
           await contactService.patchDocuments(crn, contactId.toString(), req.file, username)

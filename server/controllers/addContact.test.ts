@@ -378,7 +378,7 @@ describe('addContactController', () => {
         items: expect.arrayContaining([
           expect.objectContaining({
             text: 'Management oversight decision',
-            value: 'MO27',
+            value: 'MO3',
           }),
         ]),
       })

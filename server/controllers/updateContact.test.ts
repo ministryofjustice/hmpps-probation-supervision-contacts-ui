@@ -41,7 +41,7 @@ describe('getUpdateContact', () => {
       contact: {
         appointment: {
           id: 'ABC123',
-          displayName: 'Tes contact',
+          displayName: 'Alcohol consumption',
         },
       },
       csrfToken: 'token',
@@ -61,7 +61,7 @@ describe('getUpdateContact', () => {
     )
   })
 
-  it('renders the update-contact page with the  no outcome contact data', async () => {
+  it('renders the update-contact page with the outcome contact data', async () => {
     const next = jest.fn()
     const req = createReq({
       params: { crn: 'X123456', contactId: 'ABC123' },
@@ -71,7 +71,7 @@ describe('getUpdateContact', () => {
       contact: {
         appointment: {
           id: 'ABC123',
-          displayName: 'Information from person on probation',
+          displayName: 'Alcohol consumption',
         },
       },
       csrfToken: 'token',
@@ -85,7 +85,7 @@ describe('getUpdateContact', () => {
         crn: 'X123456',
         contactId: 'ABC123',
         contact: res.locals.contact,
-        isOutcome: false,
+        isOutcome: true,
         csrfToken: 'token',
       }),
     )
@@ -151,7 +151,7 @@ describe('postupdateContact', () => {
       },
       contact: {
         appointment: {
-          displayName: 'Test contact',
+          displayName: 'Case consultation',
           appointmentNotes: [
             {
               note: 'Existing note',
@@ -174,6 +174,95 @@ describe('postupdateContact', () => {
 
     expect(res.redirect).toHaveBeenCalledWith(
       `${config.manageProbationUrl}/case/X123456/activity/00001?showSuccessBanner=true`,
+    )
+  })
+  it('updates the outcome type contact and redirects to the contact card page', async () => {
+    jest.resetAllMocks()
+
+    const next = jest.fn()
+
+    const mockMasApiClient: jest.Mocked<
+      Pick<MasApiClient, 'getUserProviders' | 'getOverview' | 'getProbationPractitioner'>
+    > = {
+      getUserProviders: jest.fn().mockResolvedValue({
+        defaultUserDetails: {
+          staffCode: 'USER999',
+          username: 'test-user',
+          homeArea: 'N99',
+          team: 'Team One',
+        },
+        teams: [{ description: 'Uset Team', code: 'N99' }],
+      }),
+
+      getOverview: jest.fn().mockResolvedValue({ registrations: [] }),
+
+      getProbationPractitioner: jest.fn().mockResolvedValue({
+        code: 'N01A001',
+        name: { forename: 'jane', surname: 'doe' },
+        provider: { code: 'N01', name: 'NPS North West' },
+        team: { description: 'Team One', code: 'N01T01' },
+        unallocated: false,
+        username: 'PRACTITIONER1',
+      }),
+    }
+
+    const mockUpdateContactWithOutcome = jest.fn().mockResolvedValue({})
+
+    MockContactService.mockImplementation(
+      () =>
+        ({
+          updateContactWithOutcome: mockUpdateContactWithOutcome,
+        }) as any,
+    )
+
+    const req = createReq({
+      params: {
+        crn: 'X123456',
+        contactId: '00002',
+      },
+      body: {
+        date: '14/05/2026',
+        time: '09:00',
+        details: 'Updated notes',
+        sensitivity: 'Yes',
+        outcomeCode: 'SFG3',
+        alertResponsibleOfficer: 'Yes',
+      },
+    })
+
+    const res = createRes({
+      user: {
+        username: 'john.smith',
+      },
+      contact: {
+        appointment: {
+          displayName: 'Safeguarding enquiries requested',
+          appointmentNotes: [
+            {
+              note: 'Existing note',
+            },
+          ],
+        },
+      },
+    })
+
+    await updateContactController.postupdateContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+    expect(mockUpdateContactWithOutcome).toHaveBeenCalledWith(
+      '00002',
+      {
+        alert: true,
+        date: '2026-05-14',
+        enforcementActionCode: null,
+        notes: 'Updated notes',
+        outcomeCode: 'SFG3',
+        sensitive: true,
+        time: '09:00',
+      },
+      'john.smith',
+    )
+
+    expect(res.redirect).toHaveBeenCalledWith(
+      `${config.manageProbationUrl}/case/X123456/activity/00002?showSuccessBanner=true`,
     )
   })
 })

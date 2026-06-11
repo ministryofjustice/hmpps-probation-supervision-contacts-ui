@@ -1,10 +1,12 @@
 import type { RequestHandler } from 'express'
-import { NoOutcomeContactTypeDetails } from '../data/model/noOutcomeContactTypes'
+import { OutcomeContactTypeDetails } from '../data/model/outcomeContactTypes'
 import { toIsoDateTime } from '../utils/toDateandTime'
-import { UpdateContactWithNoOutcome } from '../data/model/contacts'
+import { UpdateContactWithNoOutcome, UpdateContactWithOutcome } from '../data/model/contacts'
 import MasApiClient from '../data/masApiClient'
 import config from '../config'
 import ContactService from '../services/contactService'
+import { buildUpdateContactViewModelWithOutcome, updateContactOutcomeCode } from '../services/updateContactViewModel'
+import { convertDateToIso } from '../utils/toDateOnly'
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -21,16 +23,29 @@ const updateContactController = {
 
       const { contact } = res.locals
 
-      const displayName = contact.appointment?.displayName
+      const displayName = contact.appointment?.displayName ?? contact.appointment?.type
 
-      const isOutcome = !NoOutcomeContactTypeDetails.some(item => item.description === displayName)
+      const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
+      let outcomeSection
+
+      if (isOutcome) {
+        outcomeSection = buildUpdateContactViewModelWithOutcome({
+          displayName,
+          contact,
+        })
+      }
 
       return res.render('pages/contacts/update-contact', {
         crn,
+        displayName,
         contactId,
         contact,
         isOutcome,
         csrfToken: res.locals.csrfToken,
+        outcomeSection,
+        responsibleOfficer: true,
+        responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
+        responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
       })
     }
   },
@@ -39,30 +54,56 @@ const updateContactController = {
     return async (req, res, next) => {
       const { crn, contactId } = req.params as Record<string, string>
       const { username } = res.locals.user
-
       const date = getStringValue(req.body?.date)
       const time = getStringValue(req.body?.time)
       let notes = getStringValue(req.body?.details)
-      const sensitivity = getStringValue(req.body?.sensitivity)
-      const contactType = res.locals.contact.appointment?.displayName
+      const alertResponsibleOfficer = getStringValue(req.body?.alertResponsibleOfficer)
+      const sensitivity = res.locals.contact.appointment?.isSensitive || getStringValue(req.body?.sensitivity) === 'Yes'
+
+      const { contact } = res.locals
+
+      const displayName = contact.appointment?.displayName ?? contact.appointment?.type
+
       const existingNotes = res.locals.contact.appointment?.appointmentNotes[0]?.note
       const normaliseText = (value: string) => value.replace(/\r\n/g, '\n').trim()
+
       if (normaliseText(existingNotes) === normaliseText(notes)) {
         notes = ''
       }
-      // const isOutcome = !NoOutcomeContactTypeDetails.some(item => item.description === contactType)
+
+      const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
+
       const contactService = new ContactService(masApiClient)
 
       const formattedDateandTime = toIsoDateTime(date, time)
-      const payload: UpdateContactWithNoOutcome = {
-        dateTime: formattedDateandTime,
-        notes: notes || '',
-        sensitiveFlag: sensitivity === 'Yes',
+
+      if (isOutcome) {
+        const outcomeCode = updateContactOutcomeCode(displayName, req.body?.outcomeCode)
+
+        const payload: UpdateContactWithOutcome = {
+          date: convertDateToIso(date),
+          time,
+          notes: notes || '',
+          sensitive: sensitivity,
+          outcomeCode,
+          enforcementActionCode: null,
+          alert: alertResponsibleOfficer === 'Yes',
+        }
+        await contactService.updateContactWithOutcome(contactId, payload, username)
+      } else {
+        const payload: UpdateContactWithNoOutcome = {
+          dateTime: formattedDateandTime,
+          notes: notes || null,
+          sensitiveFlag: sensitivity,
+        }
+
+        await contactService.updateContactWithNoOutcome(contactId, payload, username)
       }
-      await contactService.updateContactWithNoOutcome(contactId, payload, username)
+
       if (req.file) {
         try {
           await contactService.patchDocuments(crn, contactId.toString(), req.file, username)
+
           return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity/${contactId}?showSuccessBanner=true`)
         } catch {
           return res.redirect(
@@ -70,6 +111,7 @@ const updateContactController = {
           )
         }
       }
+
       return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity/${contactId}?showSuccessBanner=true`)
     }
   },
