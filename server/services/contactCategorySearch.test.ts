@@ -35,20 +35,23 @@ describe('contactCategorySearch', () => {
   })
 
   it('includes flagged entries only when enableEnforcementContacts is true', () => {
-    const withFlag = buildSearchResults(
-      ['Safeguarding and victim liaison', 'Non-compliance and enforcement'],
-      crn,
-      true,
-    )
-    const withoutFlag = buildSearchResults(['Safeguarding and victim liaison', 'Non-compliance and enforcement'], crn)
+    const categories = [
+      'Safeguarding and victim liaison',
+      'Non-compliance and enforcement',
+      'Communication and information sharing with others',
+    ]
+    const withFlag = buildSearchResults(categories, crn, true)
+    const withoutFlag = buildSearchResults(categories, crn)
 
     const allCodes = (r: ReturnType<typeof buildSearchResults>) =>
       r.categories.flatMap(c => [...c.items, ...c.subcategories.flatMap(s => s.items)]).map(i => i.code)
 
     expect(allCodes(withFlag)).toContain('C280')
     expect(allCodes(withFlag)).toContain('AAM1')
-    expect(allCodes(withoutFlag)).not.toContain('C280')
+    expect(allCodes(withFlag)).toContain('AAM10')
+    expect(allCodes(withoutFlag)).toContain('C280')
     expect(allCodes(withoutFlag)).not.toContain('AAM1')
+    expect(allCodes(withoutFlag)).not.toContain('AAM10')
     expect(withoutFlag.count).toBe(withFlag.count - 2)
   })
 

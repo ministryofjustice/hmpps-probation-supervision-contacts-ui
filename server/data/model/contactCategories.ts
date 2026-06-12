@@ -6,8 +6,12 @@ export type ContactTypeCategoryEntry = {
 }
 
 const ENFORCEMENT_ENTRIES: ContactTypeCategoryEntry[] = [
-  { category: 'Safeguarding and victim liaison', code: 'C280', displayName: 'Suicide or self harm information' },
   { category: 'Non-compliance and enforcement', code: 'AAM1', displayName: 'Alcohol consumption' },
+  {
+    category: 'Communication and information sharing with others',
+    code: 'AAM10',
+    displayName: 'Critical communications',
+  },
 ]
 
 const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
@@ -148,11 +152,6 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     subcategory: 'Management oversight',
     code: 'MO8',
     displayName: 'Management oversight – home visit risk assessment',
-  },
-  {
-    category: 'Communication and information sharing with others',
-    code: 'AAM10',
-    displayName: 'Critical communications',
   },
   {
     category: 'Communication and information sharing with others',
@@ -680,6 +679,11 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     category: 'Safeguarding and victim liaison',
     code: 'SFGC',
     displayName: 'Safeguarding enquiries requested',
+  },
+  {
+    category: 'Safeguarding and victim liaison',
+    code: 'C280',
+    displayName: 'Suicide or self harm information',
   },
   {
     category: 'Safeguarding and victim liaison',

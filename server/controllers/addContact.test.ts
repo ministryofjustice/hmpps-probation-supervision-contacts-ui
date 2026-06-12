@@ -200,8 +200,9 @@ describe('addContactController', () => {
 
       const parsed = JSON.parse((res.render as jest.Mock).mock.calls[0][1].contactTypeLinksJson)
       const texts = parsed.map((t: { text: string }) => t.text)
-      expect(texts).not.toContain('Suicide or self harm information')
+      expect(texts).toContain('Suicide or self harm information')
       expect(texts).not.toContain('Alcohol consumption')
+      expect(texts).not.toContain('Critical communications')
     })
 
     it('includes enforcement contact types in contactTypeLinksJson when flag is enabled', async () => {
@@ -214,6 +215,7 @@ describe('addContactController', () => {
       const texts = parsed.map((t: { text: string }) => t.text)
       expect(texts).toContain('Suicide or self harm information')
       expect(texts).toContain('Alcohol consumption')
+      expect(texts).toContain('Critical communications')
     })
   })
 
@@ -659,8 +661,9 @@ describe('addContactController', () => {
 
       const parsed = JSON.parse((res.render as jest.Mock).mock.calls[0][1].contactTypeLinksJson)
       const texts = parsed.map((t: { text: string }) => t.text)
-      expect(texts).not.toContain('Suicide or self harm information')
+      expect(texts).toContain('Suicide or self harm information')
       expect(texts).not.toContain('Alcohol consumption')
+      expect(texts).not.toContain('Critical communications')
     })
 
     it('includes enforcement contact types in autocomplete suggestions when flag is enabled', async () => {
@@ -672,6 +675,7 @@ describe('addContactController', () => {
       const texts = parsed.map((t: { text: string }) => t.text)
       expect(texts).toContain('Suicide or self harm information')
       expect(texts).toContain('Alcohol consumption')
+      expect(texts).toContain('Critical communications')
     })
 
     it('treats non-string keyword query param as empty', async () => {
