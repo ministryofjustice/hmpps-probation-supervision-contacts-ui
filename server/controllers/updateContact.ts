@@ -27,14 +27,16 @@ const updateContactController = {
 
       const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
       let outcomeSection
+      let outcomeLabel
 
       if (isOutcome) {
-        outcomeSection = buildUpdateContactViewModelWithOutcome({
+        const result = buildUpdateContactViewModelWithOutcome({
           displayName,
           contact,
         })
+        outcomeSection = result.outcomeSection
+        outcomeLabel = result.outcomeLabel
       }
-
       return res.render('pages/contacts/update-contact', {
         crn,
         displayName,
@@ -43,6 +45,7 @@ const updateContactController = {
         isOutcome,
         csrfToken: res.locals.csrfToken,
         outcomeSection,
+        outcomeLabel,
         responsibleOfficer: true,
         responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
         responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),

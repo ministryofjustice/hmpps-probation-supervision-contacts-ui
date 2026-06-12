@@ -11,7 +11,22 @@ describe('buildUpdateContactViewModelWithOutcome', () => {
       },
     })
 
-    expect(result).toBe(false)
+    expect(result.outcomeSection).toBe(false)
+  })
+
+  it('sets outcomeLabel from the matching systemLabel', () => {
+    const contact = {
+      appointment: {
+        outcome: 'Delay of home visit',
+      },
+    }
+
+    const result = buildUpdateContactViewModelWithOutcome({
+      displayName: 'Management oversight',
+      contact,
+    })
+
+    expect(result.outcomeLabel).toBe('Home visit delayed')
   })
 
   it('returns an outcome section when the contact type has multiple outcomes', () => {
@@ -23,7 +38,7 @@ describe('buildUpdateContactViewModelWithOutcome', () => {
         },
       },
     })
-    expect(result).toEqual(
+    expect(result.outcomeSection).toEqual(
       expect.objectContaining({
         legend: 'Select an outcome',
         type: 'radios',
