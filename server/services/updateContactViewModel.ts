@@ -10,7 +10,6 @@ export const buildUpdateContactViewModelWithOutcome = ({
   contact: {
     appointment: {
       outcome: string
-      outcomeLabel?: string
     }
   }
 }) => {
