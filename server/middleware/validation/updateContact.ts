@@ -72,6 +72,7 @@ const updateContact: RequestHandler = (req, res, next) => {
       isOutcome,
       csrfToken: res.locals.csrfToken,
       outcomeSection,
+      outcomeLabel,
       responsibleOfficer: true,
       responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
       responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
