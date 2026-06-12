@@ -26,11 +26,7 @@
 {% set outcome = null %}
 
 {% if appointment.outcome is defined %}
-  {% set outcome = appointment.outcome %}
-
-  {% if outcome == '' %}
-    {% set outcome = 'No outcome selected' %}
-  {% endif %}
+{% set outcome = outcomeLabel or appointment.outcome or 'No outcome selected' %}
 {% endif %}
 
 

@@ -1,3 +1,4 @@
+import { console } from 'inspector'
 import { OutcomeContactTypeDetails } from '../data/model/outcomeContactTypes'
 
 const normalise = (value?: string) => value?.replace(/\s+/g, '').toLowerCase() ?? ''
@@ -10,13 +11,23 @@ export const buildUpdateContactViewModelWithOutcome = ({
   contact: {
     appointment: {
       outcome: string
+      outcomeLabel?: string
     }
   }
 }) => {
   const contactDetails = OutcomeContactTypeDetails.find(item => item.description === displayName)
+  const selectedOutcome = contactDetails?.outcomes?.find(
+    outcome =>
+      normalise(outcome.label) === normalise(contact.appointment.outcome) ||
+      normalise(outcome.systemLabel) === normalise(contact.appointment.outcome),
+  )
+  const outcomeLabel = selectedOutcome?.label ?? contact.appointment.outcome
 
   if (contactDetails?.outcomes?.length === 1) {
-    return false
+    return {
+      outcomeSection: false,
+      outcomeLabel,
+    }
   }
 
   const outcomeSection = {
@@ -28,11 +39,15 @@ export const buildUpdateContactViewModelWithOutcome = ({
       text: outcome.label,
       value: outcome.value,
 
-      checked: normalise(outcome.label) === normalise(contact.appointment.outcome),
+      checked:
+        normalise(outcome.label) === normalise(contact.appointment.outcome) ||
+        normalise(outcome.systemLabel) === normalise(contact.appointment.outcome),
     })),
   }
-
-  return outcomeSection
+  return {
+    outcomeSection,
+    outcomeLabel,
+  }
 }
 
 export const updateContactOutcomeCode = (displayName: string, outcomeCode: string) => {

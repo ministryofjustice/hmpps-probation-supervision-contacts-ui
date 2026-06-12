@@ -263,7 +263,7 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
         systemLabel: 'Following Negative Parole Outcome',
       },
       { label: 'Following recall', value: 'PNL16', systemLabel: 'Following Recall' },
-      { label: 'Following recategorisation', value: 'PNL17', systemLabel: 'Following Recategoristation' },
+      { label: 'Following recategorisation', value: 'PNL17', systemLabel: 'Following Recategorisation' },
       {
         label: 'Following remission from secure hospital',
         value: 'PNL12',
@@ -293,7 +293,7 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
       { label: 'Home visit delayed', value: 'MO13', systemLabel: 'Delay of home visit' },
       { label: 'Follow-up action required', value: 'MO1', systemLabel: 'Follow-up Action Required' },
       { label: 'Follow-up action completed', value: 'MO28', systemLabel: 'Follow-up Action Completed' },
-      { label: 'Home visit not carried out', value: 'MO12', systemLabel: 'Home Visit Not Undetaken' },
+      { label: 'Home visit not carried out', value: 'MO12', systemLabel: 'Home Visit Not Undertaken' },
       { label: 'Management oversight decision', value: 'MO3', systemLabel: 'Management Oversight Decision' },
       {
         label: 'Probation practitioner recommendation endorsed',
