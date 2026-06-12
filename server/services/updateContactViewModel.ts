@@ -1,4 +1,3 @@
-import { console } from 'inspector'
 import { OutcomeContactTypeDetails } from '../data/model/outcomeContactTypes'
 
 const normalise = (value?: string) => value?.replace(/\s+/g, '').toLowerCase() ?? ''

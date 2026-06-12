@@ -2,7 +2,6 @@ import type { RequestHandler } from 'express'
 import { validateWithSpec } from '../../utils/validationUtils'
 import { updateContactValidation } from '../../properties/validation/updateContact'
 import { OutcomeContactTypeDetails } from '../../data/model/outcomeContactTypes'
-import { NoOutcomeContactTypeDetails } from '../../data/model/noOutcomeContactTypes'
 import { buildUpdateContactViewModelWithOutcome } from '../../services/updateContactViewModel'
 
 const getStringValue = (value: unknown): string => {
@@ -44,16 +43,16 @@ const updateContact: RequestHandler = (req, res, next) => {
   const detailsValue = getStringValue(body.details)
 
   const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
-  const isNoOutcome = NoOutcomeContactTypeDetails.some(item => item.description === displayName)
   let outcomeSection
+  let outcomeLabel
 
   if (isOutcome) {
-    outcomeSection = buildUpdateContactViewModelWithOutcome({
+    const result = buildUpdateContactViewModelWithOutcome({
       displayName,
       contact,
     })
-  } else if (!isNoOutcome) {
-    return next(new Error(`Unknown contact type: ${displayName}`))
+    outcomeSection = result.outcomeSection
+    outcomeLabel = result.outcomeLabel
   }
 
   if (detailsValue.length > 12000) {
