@@ -187,7 +187,7 @@ const addContactController = {
         })
       }
 
-      if (/[^a-zA-Z0-9\- ]/.test(keyword)) {
+      if (/[^a-zA-Z0-9\-–+ ]/.test(keyword)) {
         return res.render('pages/contacts/add-frequently-used-contact', {
           ...baseLocals,
           errorMessages: { keyword: 'You can only search using letters, numbers, hyphens or dashes' },
