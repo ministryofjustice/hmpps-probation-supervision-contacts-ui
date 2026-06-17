@@ -415,14 +415,6 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     ],
   },
   {
-    code: 'DPRE',
-    description: 'Pre-cons received',
-    sensitive: false,
-    relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
-    mandatoryOutcome: false,
-    outcomes: [{ label: 'Accepted absence - medical', value: 'AAME', systemLabel: 'Accepted Absence - medical' }],
-  },
-  {
     code: 'CTPJ',
     description: 'Professional judgement',
     sensitive: false,
