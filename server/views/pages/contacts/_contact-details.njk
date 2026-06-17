@@ -1,9 +1,14 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "_components/document/macro.njk" import appDocument %}
 
 {% set appointment = contact.appointment %}
 {% set contactDisplayName = appointment.displayName or appointment.type or 'Not provided' %}
 {% set appointmentNotes = appointment.appointmentNotes or [] %}
 {% set documents = appointment.documents or [] %}
+{% set documentsHtml = '' %}
+{% for document in documents %}
+  {% set documentsHtml = documentsHtml ~ appDocument(document, crn, manageProbationUrl) %}
+{% endfor %}
 
 {% set notes = 'Not provided' %}
 {% if appointmentNotes.length > 0 and appointmentNotes[0].note %}
@@ -37,10 +42,6 @@
   {% set sensitive = 'No' %}
 {% endif %}
 
-{% set relatedDocuments = 'Not provided' %}
-{% if documents.length > 0 %}
-  {% set relatedDocuments = documents.length + ' document(s)' %}
-{% endif %}
 
 {% set rows = [
   {
@@ -85,13 +86,9 @@
   },
   { key: { text: 'Sensitive' }, value: { text: sensitive } },
   {
-    key: {
-      text: 'Related documents'
-  },
-    value: {
-      text: relatedDocuments
+    key: { text: 'Related documents' },
+    value: { html: documentsHtml if documentsHtml else 'Not provided' }
   }
-}
 ] %}
 
 {% if outcome != null %}

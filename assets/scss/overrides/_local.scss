@@ -2,6 +2,10 @@
   min-height: 600px;
 }
 
+.secondary-text {
+  color: $govuk-secondary-text-colour;
+}
+
 .inline-list-from-tablet {
   > li {
     @include govuk-media-query($from: tablet) {
