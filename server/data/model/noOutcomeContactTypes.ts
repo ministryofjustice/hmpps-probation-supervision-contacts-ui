@@ -52,6 +52,12 @@ export const NoOutcomeContactTypeDetails: ContactTypeDetail[] = [
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
   {
+    code: 'DPRE',
+    description: 'Pre-cons received',
+    sensitive: false,
+    relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
+  },
+  {
     code: 'CMS40',
     description: 'CMS - Assistance with assessments',
     sensitive: false,
