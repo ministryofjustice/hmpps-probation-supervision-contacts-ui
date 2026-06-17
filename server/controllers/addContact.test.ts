@@ -625,6 +625,24 @@ describe('addContactController', () => {
       expect(renderArgs.keywordSearchResults).not.toBeNull()
     })
 
+    it('accepts keywords with en dash', async () => {
+      const renderArgs = await invokeKeyword({ keyword: 'Management oversight – home visit', action: 'search' })
+
+      expect(renderArgs.errorMessages).toBeUndefined()
+    })
+
+    it('accepts keywords with em dash', async () => {
+      const renderArgs = await invokeKeyword({ keyword: 'something — something', action: 'search' })
+
+      expect(renderArgs.errorMessages).toBeUndefined()
+    })
+
+    it('accepts keywords with plus sign', async () => {
+      const renderArgs = await invokeKeyword({ keyword: 'Job Centre+', action: 'search' })
+
+      expect(renderArgs.errorMessages).toBeUndefined()
+    })
+
     it('renders results for a valid keyword that matches contacts', async () => {
       const renderArgs = await invokeKeyword({ keyword: 'police liaison', action: 'search' })
 
