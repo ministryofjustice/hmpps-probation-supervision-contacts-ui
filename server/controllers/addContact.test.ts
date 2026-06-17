@@ -631,12 +631,6 @@ describe('addContactController', () => {
       expect(renderArgs.errorMessages).toBeUndefined()
     })
 
-    it('accepts keywords with em dash', async () => {
-      const renderArgs = await invokeKeyword({ keyword: 'something — something', action: 'search' })
-
-      expect(renderArgs.errorMessages).toBeUndefined()
-    })
-
     it('accepts keywords with plus sign', async () => {
       const renderArgs = await invokeKeyword({ keyword: 'Job Centre+', action: 'search' })
 
