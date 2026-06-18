@@ -37,9 +37,11 @@ const addContactType: RequestHandler = (req, res, next) => {
     }),
   )
 
-  const detailsValue = typeof req.body?.details === 'string' ? req.body.details : ''
-  if (detailsValue.length > 12000) {
-    const excess = detailsValue.length - 12000
+  const detailsRaw = typeof req.body?.details === 'string' ? req.body.details : ''
+  const lineBreaks = detailsRaw.split('\r\n').length - 1
+  const detailsLength = detailsRaw.split('\r\n').join('').length + lineBreaks
+  if (detailsLength > 12000) {
+    const excess = detailsLength - 12000
     errorMessages.details = `You have entered ${excess} characters too many`
   }
 
