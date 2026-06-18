@@ -23,6 +23,8 @@ export const timeIsValid24HourFormat = (args: any[]): boolean => {
   return regex.test(timeStr)
 }
 
+export const CONTACT_DETAILS_MAX_LENGTH = 12000
+
 export const countTextareaChars = (value: string): number => {
   const lineBreaks = value.split('\r\n').length - 1
   return value.split('\r\n').join('').length + lineBreaks

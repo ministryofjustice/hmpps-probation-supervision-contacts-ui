@@ -1,6 +1,7 @@
 import { Sentence } from '../data/model/contacts'
 import { convertToTitleCase } from '../utils/utils'
 import { dateWithYear } from '../utils/dateWithYear'
+import { CONTACT_DETAILS_MAX_LENGTH } from '../utils/validationUtils'
 import {
   buildGuidanceContent,
   getContactTypeDetailBySlug,
@@ -143,6 +144,7 @@ export const buildAddContactViewModel = ({
     showPersonOption,
     showEventOptions,
     guidance: buildGuidanceContent(detail),
+    detailsMaxLength: CONTACT_DETAILS_MAX_LENGTH,
     showOutcomeBanner: detail?.showOutcomeBanner ?? false,
     outcomeSection:
       outcomes.length > 0
