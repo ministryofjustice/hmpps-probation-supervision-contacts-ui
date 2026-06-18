@@ -150,3 +150,31 @@ test('shows an error when a future date and time are entered', async ({ page }) 
     'The time of the contact must be the current time or in the past',
   )
 })
+
+test('shows an error on the time field only when today is selected and the time is in the future', async ({ page }) => {
+  const addContactPage = new AddContactPage(page)
+
+  await page.goto('/case/X123456/contacts/add-internal-communications')
+
+  const now = new Date()
+
+  const today = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`
+
+  const futureTime = new Date(now.getTime() + 60 * 60 * 1000)
+
+  const hours = String(futureTime.getHours()).padStart(2, '0')
+  const minutes = String(futureTime.getMinutes()).padStart(2, '0')
+
+  await addContactPage.enterDate(today)
+  await page.locator('#time').fill(`${hours}:${minutes}`)
+
+  await page.getByRole('button', { name: 'Create contact' }).click()
+
+  await expect(page.locator('.govuk-error-summary')).toContainText(
+    'The time of the contact must be the current time or in the past',
+  )
+
+  await expect(page.locator('.govuk-error-summary')).not.toContainText(
+    'The date of the contact must be today or in the past',
+  )
+})

@@ -6,6 +6,7 @@ import {
   timeIsValid24HourFormat,
   validateWithSpec,
   dateTimeIsNotInFuture,
+  dateIsTodayOrPast,
 } from './validationUtils'
 
 describe('isNotEmpty', () => {
@@ -194,5 +195,27 @@ describe('dateTimeIsNotInFuture', () => {
 
   it('returns false when the datetime is in the future', () => {
     expect(dateTimeIsNotInFuture(['19/6/2026', '14:00'])).toBe(false)
+  })
+})
+
+describe('dateIsTodayOrPast', () => {
+  beforeEach(() => {
+    jest.spyOn(DateTime, 'now').mockReturnValue(DateTime.fromISO('2026-06-18T14:00:00') as DateTime<true>)
+  })
+
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
+  it('returns true when the date is yesterday', () => {
+    expect(dateIsTodayOrPast(['17/6/2026'])).toBe(true)
+  })
+
+  it('returns true when the date is today', () => {
+    expect(dateIsTodayOrPast(['18/6/2026'])).toBe(true)
+  })
+
+  it('returns false when the date is in the future', () => {
+    expect(dateIsTodayOrPast(['19/6/2026'])).toBe(false)
   })
 })
