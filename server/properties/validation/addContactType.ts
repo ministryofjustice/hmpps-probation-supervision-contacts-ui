@@ -4,6 +4,7 @@ import {
   isValidDateFormat,
   timeIsValid24HourFormat,
   dateTimeIsNotInFuture,
+  dateIsTodayOrPast,
 } from '../../utils/validationUtils'
 import { ValidationSpec } from '../../models/Errors'
 
@@ -47,10 +48,9 @@ export const addContactValidation = ({
         log: 'Contact date invalid',
       },
       {
-        validator: dateTimeIsNotInFuture,
+        validator: dateIsTodayOrPast,
         msg: 'The date of the contact must be today or in the past',
         log: 'Contact date in future',
-        crossField: 'time',
       },
     ],
   },

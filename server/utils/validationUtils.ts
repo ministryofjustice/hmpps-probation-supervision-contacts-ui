@@ -81,3 +81,19 @@ export const dateTimeIsNotInFuture = (args: any[]): boolean => {
 
   return dateTime.toFormat('yyyyMMddHHmm') <= DateTime.now().toFormat('yyyyMMddHHmm')
 }
+
+export const dateIsTodayOrPast = (args: any[]): boolean => {
+  const dateStr = args[0]
+
+  if (!dateStr) {
+    return true
+  }
+
+  const date = DateTime.fromFormat(dateStr, 'd/M/yyyy')
+
+  if (!date.isValid) {
+    return true
+  }
+
+  return date.startOf('day') <= DateTime.now().startOf('day')
+}
