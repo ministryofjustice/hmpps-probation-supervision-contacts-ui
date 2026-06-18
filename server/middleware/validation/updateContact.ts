@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express'
-import { validateWithSpec } from '../../utils/validationUtils'
+import { validateWithSpec, countTextareaChars } from '../../utils/validationUtils'
 import { updateContactValidation } from '../../properties/validation/updateContact'
 import { OutcomeContactTypeDetails } from '../../data/model/outcomeContactTypes'
 import { buildUpdateContactViewModelWithOutcome } from '../../services/updateContactViewModel'
@@ -41,8 +41,7 @@ const updateContact: RequestHandler = (req, res, next) => {
   const errorMessages = validateWithSpec(body, updateContactValidation(outcomeRequired))
 
   const detailsRaw = getStringValue(body.details)
-  const lineBreaks = detailsRaw.split('\r\n').length - 1
-  const detailsLength = detailsRaw.split('\r\n').join('').length + lineBreaks
+  const detailsLength = countTextareaChars(detailsRaw)
 
   const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
   let outcomeSection

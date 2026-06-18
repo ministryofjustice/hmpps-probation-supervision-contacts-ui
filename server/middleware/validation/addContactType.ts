@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express'
-import { validateWithSpec } from '../../utils/validationUtils'
+import { validateWithSpec, countTextareaChars } from '../../utils/validationUtils'
 import { addContactValidation } from '../../properties/validation/addContactType'
 import { buildAddContactViewModel } from '../../services/addContactViewModel'
 import { getContactTypeDetailBySlug } from '../../services/contactTypeDetails'
@@ -38,8 +38,7 @@ const addContactType: RequestHandler = (req, res, next) => {
   )
 
   const detailsRaw = typeof req.body?.details === 'string' ? req.body.details : ''
-  const lineBreaks = detailsRaw.split('\r\n').length - 1
-  const detailsLength = detailsRaw.split('\r\n').join('').length + lineBreaks
+  const detailsLength = countTextareaChars(detailsRaw)
   if (detailsLength > 12000) {
     const excess = detailsLength - 12000
     errorMessages.details = `You have entered ${excess} characters too many`
