@@ -1,9 +1,11 @@
+import { DateTime } from 'luxon'
 import {
   isNotEmpty,
   isValidDate,
   isValidDateFormat,
   timeIsValid24HourFormat,
   validateWithSpec,
+  dateTimeIsNotInFuture,
 } from './validationUtils'
 
 describe('isNotEmpty', () => {
@@ -170,5 +172,27 @@ describe('validateWithSpec', () => {
     const errors = validateWithSpec(request, spec)
     expect(errors).toEqual({ name: 'First error' })
     expect(validatorAlwaysFalse).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('dateTimeIsNotInFuture', () => {
+  beforeEach(() => {
+    jest.spyOn(DateTime, 'now').mockReturnValue(DateTime.fromISO('2026-06-18T14:00:00') as DateTime<true>)
+  })
+
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
+  it('returns true when the datetime is yesterday', () => {
+    expect(dateTimeIsNotInFuture(['17/6/2026', '14:00'])).toBe(true)
+  })
+
+  it('returns true when the datetime is today', () => {
+    expect(dateTimeIsNotInFuture(['18/6/2026', '14:00'])).toBe(true)
+  })
+
+  it('returns false when the datetime is in the future', () => {
+    expect(dateTimeIsNotInFuture(['19/6/2026', '14:00'])).toBe(false)
   })
 })

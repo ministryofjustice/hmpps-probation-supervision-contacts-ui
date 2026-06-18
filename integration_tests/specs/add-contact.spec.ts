@@ -130,3 +130,23 @@ test('shows MO8 guidance and radio outcomes', async ({ page }) => {
   await addContactPage.addGuidanceToDetails()
   await addContactPage.expectDetailsContaining('If you are the responsible officer, you must include:')
 })
+
+test('shows an error when a future date and time are entered', async ({ page }) => {
+  const addContactPage = new AddContactPage(page)
+
+  await page.goto('/case/X123456/contacts/add-internal-communications')
+
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+
+  const futureDate = tomorrow.toLocaleDateString('en-GB')
+
+  await addContactPage.enterDate(futureDate)
+  await page.locator('#time').fill('13:00')
+
+  await page.getByRole('button', { name: 'Create contact' }).click()
+
+  await expect(page.locator('.govuk-error-summary')).toContainText(
+    'The time of the contact must be the current time or in the past',
+  )
+})
