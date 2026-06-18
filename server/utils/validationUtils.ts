@@ -54,3 +54,20 @@ function executeValidator(checks: ErrorCheck[], fieldName: string, request: Vali
   }
   return null
 }
+
+export const dateTimeIsNotInFuture = (args: any[]): boolean => {
+  const dateStr = args[0]
+  const timeStr = args[1]
+
+  if (!dateStr || !timeStr) {
+    return true
+  }
+
+  const dateTime = DateTime.fromFormat(`${dateStr} ${timeStr}`, 'd/M/yyyy HH:mm')
+
+  if (!dateTime.isValid) {
+    return true
+  }
+
+  return dateTime <= DateTime.now()
+}

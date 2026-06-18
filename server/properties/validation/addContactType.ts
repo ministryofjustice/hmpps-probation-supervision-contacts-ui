@@ -1,4 +1,10 @@
-import { isNotEmpty, isValidDate, isValidDateFormat, timeIsValid24HourFormat } from '../../utils/validationUtils'
+import {
+  isNotEmpty,
+  isValidDate,
+  isValidDateFormat,
+  timeIsValid24HourFormat,
+  dateTimeIsNotInFuture,
+} from '../../utils/validationUtils'
 import { ValidationSpec } from '../../models/Errors'
 
 export interface AddContactValidationArgs {
@@ -54,6 +60,12 @@ export const addContactValidation = ({
         validator: timeIsValid24HourFormat,
         msg: 'Enter a time in the 24-hour format, for example 16:30',
         log: 'Contact time format invalid',
+        crossField: 'date',
+      },
+      {
+        validator: dateTimeIsNotInFuture,
+        msg: 'The contact date and time must not be in the future',
+        log: 'Contact date and time in future',
         crossField: 'date',
       },
     ],

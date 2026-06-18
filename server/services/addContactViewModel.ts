@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon'
 import { Sentence } from '../data/model/contacts'
 import { convertToTitleCase } from '../utils/utils'
 import { dateWithYear } from '../utils/dateWithYear'
@@ -129,6 +130,8 @@ export const buildAddContactViewModel = ({
           },
         }))
 
+  const dateToday = DateTime.now().toFormat('d/M/yyyy')
+
   return {
     crn,
     contactTypeName,
@@ -144,6 +147,7 @@ export const buildAddContactViewModel = ({
     showEventOptions,
     guidance: buildGuidanceContent(detail),
     showOutcomeBanner: detail?.showOutcomeBanner ?? false,
+    dateToday,
     outcomeSection:
       outcomes.length > 0
         ? {
