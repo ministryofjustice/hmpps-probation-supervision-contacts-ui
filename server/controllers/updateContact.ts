@@ -7,6 +7,7 @@ import config from '../config'
 import ContactService from '../services/contactService'
 import { buildUpdateContactViewModelWithOutcome, updateContactOutcomeCode } from '../services/updateContactViewModel'
 import { convertDateToIso } from '../utils/toDateOnly'
+import { CONTACT_DETAILS_MAX_LENGTH } from '../utils/validationUtils'
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -46,6 +47,7 @@ const updateContactController = {
         csrfToken: res.locals.csrfToken,
         outcomeSection,
         outcomeLabel,
+        detailsMaxLength: CONTACT_DETAILS_MAX_LENGTH,
         responsibleOfficer: true,
         responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
         responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),

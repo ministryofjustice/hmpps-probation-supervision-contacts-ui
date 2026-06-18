@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express'
-import { validateWithSpec } from '../../utils/validationUtils'
+import { validateWithSpec, countTextareaChars, CONTACT_DETAILS_MAX_LENGTH } from '../../utils/validationUtils'
 import { updateContactValidation } from '../../properties/validation/updateContact'
 import { OutcomeContactTypeDetails } from '../../data/model/outcomeContactTypes'
 import { buildUpdateContactViewModelWithOutcome } from '../../services/updateContactViewModel'
@@ -40,7 +40,8 @@ const updateContact: RequestHandler = (req, res, next) => {
 
   const errorMessages = validateWithSpec(body, updateContactValidation(outcomeRequired))
 
-  const detailsValue = getStringValue(body.details)
+  const detailsRaw = getStringValue(body.details)
+  const detailsLength = countTextareaChars(detailsRaw)
 
   const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
   let outcomeSection
@@ -55,8 +56,8 @@ const updateContact: RequestHandler = (req, res, next) => {
     outcomeLabel = result.outcomeLabel
   }
 
-  if (detailsValue.length > 12000) {
-    const excess = detailsValue.length - 12000
+  if (detailsLength > CONTACT_DETAILS_MAX_LENGTH) {
+    const excess = detailsLength - CONTACT_DETAILS_MAX_LENGTH
     errorMessages.details = `You have entered ${excess} characters too many`
   }
 
@@ -73,6 +74,7 @@ const updateContact: RequestHandler = (req, res, next) => {
       csrfToken: res.locals.csrfToken,
       outcomeSection,
       outcomeLabel,
+      detailsMaxLength: CONTACT_DETAILS_MAX_LENGTH,
       responsibleOfficer: true,
       responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
       responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
