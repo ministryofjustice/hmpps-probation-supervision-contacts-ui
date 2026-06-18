@@ -46,6 +46,12 @@ export const addContactValidation = ({
         msg: 'Enter a date in the correct format, for example 17/5/2024',
         log: 'Contact date invalid',
       },
+      {
+        validator: dateTimeIsNotInFuture,
+        msg: 'The date of the contact must be today or in the past',
+        log: 'Contact date in future',
+        crossField: 'time',
+      },
     ],
   },
   time: {
@@ -64,7 +70,7 @@ export const addContactValidation = ({
       },
       {
         validator: dateTimeIsNotInFuture,
-        msg: 'The contact date and time must not be in the future',
+        msg: 'The time of the contact must be the current time or in the past',
         log: 'Contact date and time in future',
         crossField: 'date',
       },

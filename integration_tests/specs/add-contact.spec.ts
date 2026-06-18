@@ -147,6 +147,6 @@ test('shows an error when a future date and time are entered', async ({ page }) 
   await page.getByRole('button', { name: 'Create contact' }).click()
 
   await expect(page.locator('.govuk-error-summary')).toContainText(
-    'The contact date and time must not be in the future',
+    'The time of the contact must be the current time or in the past',
   )
 })
