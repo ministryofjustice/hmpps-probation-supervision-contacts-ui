@@ -1,12 +1,8 @@
 import httpMocks from 'node-mocks-http'
 import updateContact from './updateContact'
 
-const today = new Date()
-const pad = (n: number) => String(n).padStart(2, '0')
-const todayStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`
-const tomorrowStr = `${today.getDate() + 1}/${today.getMonth() + 1}/${today.getFullYear()}`
-const pastHour = `${pad(today.getHours() === 0 ? 23 : today.getHours() - 1)}:00`
-const futureHour = `${pad(today.getHours() === 23 ? 0 : today.getHours() + 1)}:00`
+// Fixed to noon on a mid-month day: avoids midnight/hour-0 and month-end edge cases
+const FIXED_NOW = new Date('2024-06-15T12:00:00')
 
 const validBody = {
   date: '17/5/2024',
@@ -27,6 +23,15 @@ function createRes(locals: Record<string, unknown> = {}) {
 
 describe('middleware/validation/updateContact', () => {
   let next: jest.Mock
+
+  beforeAll(() => {
+    jest.useFakeTimers()
+    jest.setSystemTime(FIXED_NOW)
+  })
+
+  afterAll(() => {
+    jest.useRealTimers()
+  })
 
   beforeEach(() => {
     next = jest.fn()
@@ -63,7 +68,7 @@ describe('middleware/validation/updateContact', () => {
   it('renders with error when date is in the future', () => {
     const req = httpMocks.createRequest({
       params: { crn: 'X123456', contactId: 'ABC123' },
-      body: { ...validBody, date: tomorrowStr, time: '09:00' },
+      body: { ...validBody, date: '16/6/2024', time: '09:00' },
     })
     const res = createRes()
 
@@ -77,7 +82,7 @@ describe('middleware/validation/updateContact', () => {
   it('renders with error when time is in the future for today', () => {
     const req = httpMocks.createRequest({
       params: { crn: 'X123456', contactId: 'ABC123' },
-      body: { ...validBody, date: todayStr, time: futureHour },
+      body: { ...validBody, date: '15/6/2024', time: '13:00' },
     })
     const res = createRes()
 
@@ -91,7 +96,7 @@ describe('middleware/validation/updateContact', () => {
   it('calls next when date is today and time is in the past', () => {
     const req = httpMocks.createRequest({
       params: { crn: 'X123456', contactId: 'ABC123' },
-      body: { ...validBody, date: todayStr, time: pastHour },
+      body: { ...validBody, date: '15/6/2024', time: '11:00' },
     })
     const res = createRes()
 
