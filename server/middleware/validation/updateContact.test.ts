@@ -1,6 +1,13 @@
 import httpMocks from 'node-mocks-http'
 import updateContact from './updateContact'
 
+const today = new Date()
+const pad = (n: number) => String(n).padStart(2, '0')
+const todayStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`
+const tomorrowStr = `${today.getDate() + 1}/${today.getMonth() + 1}/${today.getFullYear()}`
+const pastHour = `${pad(today.getHours() === 0 ? 23 : today.getHours() - 1)}:00`
+const futureHour = `${pad(today.getHours() === 23 ? 0 : today.getHours() + 1)}:00`
+
 const validBody = {
   date: '17/5/2024',
   time: '09:00',
@@ -51,6 +58,47 @@ describe('middleware/validation/updateContact', () => {
     const renderData = (res.render as jest.Mock).mock.calls[0][1]
     expect(renderData.errorMessages.date).toBeDefined()
     expect(renderData.errorMessages.time).toBeDefined()
+  })
+
+  it('renders with error when date is in the future', () => {
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactId: 'ABC123' },
+      body: { ...validBody, date: tomorrowStr, time: '09:00' },
+    })
+    const res = createRes()
+
+    updateContact(req, res, next)
+
+    expect(next).not.toHaveBeenCalled()
+    const renderData = (res.render as jest.Mock).mock.calls[0][1]
+    expect(renderData.errorMessages.date).toEqual('The date of the contact must be today or in the past')
+  })
+
+  it('renders with error when time is in the future for today', () => {
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactId: 'ABC123' },
+      body: { ...validBody, date: todayStr, time: futureHour },
+    })
+    const res = createRes()
+
+    updateContact(req, res, next)
+
+    expect(next).not.toHaveBeenCalled()
+    const renderData = (res.render as jest.Mock).mock.calls[0][1]
+    expect(renderData.errorMessages.time).toEqual('The time of the contact must be the current time or in the past')
+  })
+
+  it('calls next when date is today and time is in the past', () => {
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactId: 'ABC123' },
+      body: { ...validBody, date: todayStr, time: pastHour },
+    })
+    const res = createRes()
+
+    updateContact(req, res, next)
+
+    expect(next).toHaveBeenCalledWith()
+    expect(res.render).not.toHaveBeenCalled()
   })
 
   it('renders with error when details exceed 12000 characters', () => {

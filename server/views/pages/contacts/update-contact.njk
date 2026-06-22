@@ -90,6 +90,8 @@
 
             <h3 class="govuk-heading-m">Update the date and time of the communication</h3>
 
+            <p class="govuk-body">You can only update contacts for the current date or time or in the past.</p>
+
                 {{ mojDatePicker({
                     label: {
                         text: "Date"
@@ -99,6 +101,7 @@
                     },
                     id: "date",
                     name: "date",
+                    maxDate: dateToday,
                     value: formValues.date if formValues is defined and 'date' in formValues else appointmentDate,
                     errorMessage: { text: errorMessages.date } if errorMessages.date
                 }) }}

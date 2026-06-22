@@ -1,4 +1,5 @@
 import type { RequestHandler } from 'express'
+import { DateTime } from 'luxon'
 import { validateWithSpec, countTextareaChars, CONTACT_DETAILS_MAX_LENGTH } from '../../utils/validationUtils'
 import { updateContactValidation } from '../../properties/validation/updateContact'
 import { OutcomeContactTypeDetails } from '../../data/model/outcomeContactTypes'
@@ -78,6 +79,7 @@ const updateContact: RequestHandler = (req, res, next) => {
       responsibleOfficer: true,
       responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
       responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
+      dateToday: DateTime.now().toFormat('d/M/yyyy'),
     })
   }
 
