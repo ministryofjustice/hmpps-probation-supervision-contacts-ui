@@ -7,6 +7,7 @@ import {
   dateIsTodayOrPast,
 } from '../../utils/validationUtils'
 import { ValidationSpec } from '../../models/Errors'
+import { showOfficer } from '../../data/model/contants'
 
 export interface AddContactValidationArgs {
   responsibleOfficer: string
@@ -107,7 +108,7 @@ export const addContactValidation = ({
     ],
   },
   alertResponsibleOfficer: {
-    optional: responsibleOfficer !== 'SHOW_OFFICER',
+    optional: responsibleOfficer !== showOfficer,
     checks: [
       {
         validator: isNotEmpty,

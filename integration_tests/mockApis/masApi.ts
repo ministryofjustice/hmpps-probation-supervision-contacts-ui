@@ -234,6 +234,7 @@ export default {
             isEmailOrTextToPop: true,
             isPhoneCallToPop: false,
             isInPast: true,
+            alert: true,
             isPastAppointment: false,
             lastUpdated: '2026-05-06T09:28:01+01:00',
             lastUpdatedBy: {

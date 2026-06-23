@@ -9,7 +9,7 @@ import {
 
 import { ValidationSpec } from '../../models/Errors'
 
-export const updateContactValidation = (outcomeRequired: boolean): ValidationSpec => ({
+export const updateContactValidation = (outcomeRequired: boolean, responsibleOfficer: string): ValidationSpec => ({
   date: {
     optional: false,
     checks: [
@@ -80,7 +80,7 @@ export const updateContactValidation = (outcomeRequired: boolean): ValidationSpe
     ],
   },
   alertResponsibleOfficer: {
-    optional: false,
+    optional: responsibleOfficer !== 'SHOW_OFFICER',
     checks: [
       {
         validator: isNotEmpty,

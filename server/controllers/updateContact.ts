@@ -9,6 +9,7 @@ import ContactService from '../services/contactService'
 import { buildUpdateContactViewModelWithOutcome, updateContactOutcomeCode } from '../services/updateContactViewModel'
 import { convertDateToIso } from '../utils/toDateOnly'
 import { CONTACT_DETAILS_MAX_LENGTH } from '../utils/validationUtils'
+import { showOfficer } from '../data/model/contants'
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -30,6 +31,7 @@ const updateContactController = {
       const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
       let outcomeSection
       let outcomeLabel
+      const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
 
       if (isOutcome) {
         const result = buildUpdateContactViewModelWithOutcome({
@@ -49,7 +51,7 @@ const updateContactController = {
         outcomeSection,
         outcomeLabel,
         detailsMaxLength: CONTACT_DETAILS_MAX_LENGTH,
-        responsibleOfficer: true,
+        responsibleOfficer: showResponsibleOfficer,
         responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
         responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
         dateToday: DateTime.now().toFormat('d/M/yyyy'),
@@ -102,6 +104,7 @@ const updateContactController = {
           dateTime: formattedDateandTime,
           notes: notes || null,
           sensitiveFlag: sensitivity,
+          alert: alertResponsibleOfficer === 'Yes',
         }
 
         await contactService.updateContactWithNoOutcome(contactId, payload, username)

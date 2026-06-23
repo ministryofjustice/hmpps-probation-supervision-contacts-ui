@@ -29,6 +29,10 @@ export default class UpdateContactPage {
 
   readonly outcomeSection: Locator
 
+  readonly alertResponsibleYesRadio: Locator
+
+  readonly alertResponsibleNoRadio: Locator
+
   constructor(page: Page) {
     this.page = page
 
@@ -59,6 +63,10 @@ export default class UpdateContactPage {
     this.errorSummary = page.locator('.govuk-error-summary')
 
     this.alertResponsibleQuestion = page.locator('[data-qa="alertResponsibleOfficer"]')
+
+    this.alertResponsibleYesRadio = page.locator('input[name="alertResponsibleOfficer"][value="Yes"]')
+
+    this.alertResponsibleNoRadio = page.locator('input[name="alertResponsibleOfficer"][value="No"]')
 
     this.outcomeSection = page.getByRole('group', { name: /outcome/i })
   }
@@ -129,6 +137,11 @@ export default class UpdateContactPage {
 
   async expectAlertResponsibleQuestionVisible(): Promise<void> {
     await expect(this.alertResponsibleQuestion).toBeVisible()
+  }
+
+  async expectAlertResponsibleYesSelected(): Promise<void> {
+    await expect(this.alertResponsibleYesRadio).toBeChecked()
+    await expect(this.alertResponsibleNoRadio).not.toBeChecked()
   }
 
   async expectOutcomeSectionVisible(): Promise<void> {

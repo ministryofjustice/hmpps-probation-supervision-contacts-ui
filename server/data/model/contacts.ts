@@ -72,6 +72,7 @@ export interface UpdateContactWithNoOutcome {
   dateTime: string
   notes?: string
   sensitiveFlag: boolean
+  alert: boolean
 }
 
 export interface UpdateContactWithOutcome {

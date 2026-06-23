@@ -259,12 +259,12 @@
                             {
                                 value: 'Yes',
                                 text: "Yes",
-                                checked: true if formValues is defined and formValues.alertResponsibleOfficer == 'Yes' else contact.appointment.isAlert
+                                checked: true if formValues is defined and formValues.alertResponsibleOfficer == 'Yes' else contact.appointment.alert
                             },
                             {
                                 value: 'No',
                                 text: "No",
-                                checked: true if formValues is defined and formValues.alertResponsibleOfficer == 'No' else false
+                                checked: true if formValues is defined and formValues.alertResponsibleOfficer == 'No' else not contact.appointment.alert
                             }
                         ],
                         errorMessage: { text: errorMessages.alertResponsibleOfficer } if errorMessages.alertResponsibleOfficer

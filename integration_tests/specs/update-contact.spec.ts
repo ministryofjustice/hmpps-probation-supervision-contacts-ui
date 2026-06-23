@@ -49,6 +49,10 @@ test('date, time and details fields are visible and writable', async ({ page }) 
 
   await updateContactPage.selectSensitiveInformationYes()
 
+  await updateContactPage.expectAlertResponsibleQuestionVisible()
+
+  await updateContactPage.expectAlertResponsibleYesSelected()
+
   await expect(updateContactPage.saveUpdateButton).toBeVisible()
 })
 
