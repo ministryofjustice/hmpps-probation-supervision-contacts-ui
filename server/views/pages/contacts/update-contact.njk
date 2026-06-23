@@ -19,7 +19,7 @@
 %}
 {% set appointmentTime = contact.appointment.startDateTime.split('T')[1].substring(0,5) %}
 {% set contactDetails %}
-  {% include "./_contact-details.njk" %}
+  {% include "./_contact-details.njk" %}
 {% endset %}
 
 {% block pageTitle %}
@@ -76,11 +76,11 @@
 
 
         {{ appSummaryCard({
-          attributes: {'data-qa': 'contactDetailsCard'},
-          titleText: 'Contact details',
-          headingLevel: '3',
-          classes: 'govuk-!-margin-bottom-6 app-summary-card--large-title',
-          html: contactDetails
+          attributes: {'data-qa': 'contactDetailsCard'},
+          titleText: 'Contact details',
+          headingLevel: '3',
+          classes: 'govuk-!-margin-bottom-6 app-summary-card--large-title',
+          html: contactDetails
         }) }}
 
 <div class="govuk-grid-row">

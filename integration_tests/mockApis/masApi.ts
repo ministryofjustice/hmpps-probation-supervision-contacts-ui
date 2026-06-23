@@ -216,7 +216,14 @@ export default {
             rescheduledStaff: false,
             rescheduledPop: false,
             absentWaitingEvidence: false,
-            documents: [],
+            documents: [
+              {
+                id: 'doc-001',
+                name: 'This is a sample pdf.pdf',
+                createdAt: '2026-06-16T19:06:38+01:00',
+                lastUpdated: '2026-06-16T19:06:38+01:00',
+              },
+            ],
             isRarRelated: false,
             acceptableAbsence: false,
             isAppointment: false,
@@ -237,6 +244,15 @@ export default {
             isVisor: false,
             displayName: 'Email or text to person on probation',
           },
+          documents: [
+            {
+              id: 'doc-001',
+              name: 'This is a sample pdf.pdf',
+              createdAt: '2026-06-16T19:06:38+01:00',
+              lastUpdated: '2026-06-16T19:06:38+01:00',
+              author: { forename: 'Shilpa', surname: 'basu' },
+            },
+          ],
         },
       },
     }),
