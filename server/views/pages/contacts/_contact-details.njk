@@ -32,10 +32,10 @@
 
 {% set detailsHtml %}
   {% if appointmentNotes.length > 0 and appointmentNotes[0].note %}
-    <span class="govuk-body line-break" data-qa="notesValue">{{ appointmentNotes[0].note }}</span>
+    <span class="govuk-body line-break" data-qa="notesValue">{{ appointmentNotes[0].note | escape }}</span>
     {% if appointmentNotes[0].createdBy %}
       <p class="govuk-body-s secondary-text app-note__author govuk-!-margin-bottom-0">
-        Comment added by {{ appointmentNotes[0].createdBy }}{% if appointmentNotes[0].createdByDate %} on {{ appointmentNotes[0].createdByDate | dateWithYear }}{% endif %}
+        Comment added by {{ appointmentNotes[0].createdBy | escape }}{% if appointmentNotes[0].createdByDate %} on {{ appointmentNotes[0].createdByDate | dateWithYear }}{% endif %}
       </p>
     {% endif %}
   {% else %}
@@ -46,20 +46,20 @@
 {% set rows = [
   {
     key: { html: '<span data-qa="typeLabel">Type</span>' },
-    value: { html: '<span data-qa="typeValue">' + contactDisplayName + '</span>' }
+    value: { html: '<span data-qa="typeValue">' + (contactDisplayName | escape) + '</span>' }
   },
   {
     key: { html: '<span data-qa="dateLabel">Date</span>' },
-    value: { html: '<span data-qa="dateValue">' + (appointmentDate | dateWithDayAndWithYear) + '</span>' }
+    value: { html: '<span data-qa="dateValue">' + (appointmentDate | dateWithDayAndWithYear | escape) + '</span>' }
   },
   {
     key: { html: '<span data-qa="timeLabel">Time</span>' },
-    value: { html: '<span data-qa="timeValue">' + appointmentTime + '</span>' }
+    value: { html: '<span data-qa="timeValue">' + (appointmentTime | escape) + '</span>' }
   },
   {
     key: { html: '<span data-qa="rarActivityLabel">RAR activity</span>' },
-    value: { html: '<span data-qa="rarActivityValue">' + rarActivity + '</span>' }
-  },
+    value: { html: '<span data-qa="rarActivityValue">' + (rarActivity | escape) + '</span>' }
+  } if not outcome,
   {
     key: { html: '<span data-qa="detailsLabel">Details</span>' },
     value: { html: '<div data-qa="detailsValue">' + detailsHtml + '</div>' }
@@ -69,11 +69,11 @@
 {% if outcome != null %}
   {% set _ = rows.push({
     key: { html: '<span data-qa="outcomeLabel">Outcome</span>' },
-    value: { html: '<span data-qa="outcomeValue">' + outcome + '</span>' }
+    value: { html: '<span data-qa="outcomeValue">' + (outcome | escape) + '</span>' }
   }) %}
 {% endif %}
 
-{% set _ = rows.push({ key: { html: '<span data-qa="sensitiveLabel">Sensitive</span>' }, value: { html: '<span data-qa="sensitiveValue">' + sensitive + '</span>' } }) %}
+{% set _ = rows.push({ key: { html: '<span data-qa="sensitiveLabel">Sensitive</span>' }, value: { html: '<span data-qa="sensitiveValue">' + (sensitive | escape) + '</span>' } }) %}
 
 {% set _ = rows.push({
   key: { html: '<span data-qa="relatedDocumentsLabel">Related documents</span>' },
