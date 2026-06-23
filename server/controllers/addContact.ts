@@ -18,6 +18,7 @@ import {
 import { buildAddContactViewModel } from '../services/addContactViewModel'
 import { isBlank } from '../utils/isBlank'
 import logger from '../../logger'
+import { showOfficer } from '../data/model/contants'
 
 const buildContactTypeLinksJson = (crn: string, enableEnforcementContacts = false) =>
   JSON.stringify(
@@ -238,7 +239,7 @@ const addContactController = {
       const overview = await masApiClient.getOverview(crn, username)
       const hasVisorRegistration = overview?.registrations?.some(r => r.toLowerCase() === 'visor') ?? false
       const isVisor: string | undefined = hasVisorRegistration ? 'SHOW_VISOR' : undefined
-      const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? 'SHOW_OFFICER' : undefined
+      const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
       const headerName = res.locals.headerPersonName
       const personName = `${headerName?.forename || ''} ${headerName?.surname || ''}`.trim()
       const viewModel = buildAddContactViewModel({

@@ -4,6 +4,7 @@ import { validateWithSpec, countTextareaChars, CONTACT_DETAILS_MAX_LENGTH } from
 import { updateContactValidation } from '../../properties/validation/updateContact'
 import { OutcomeContactTypeDetails } from '../../data/model/outcomeContactTypes'
 import { buildUpdateContactViewModelWithOutcome } from '../../services/updateContactViewModel'
+import { showOfficer } from '../../data/model/contants'
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -38,7 +39,7 @@ const updateContact: RequestHandler = (req, res, next) => {
   const contactDetails = OutcomeContactTypeDetails.find(item => item.description === displayName)
 
   const outcomeRequired = contactDetails?.outcomes?.length > 1
-  const responsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? 'SHOW_OFFICER' : undefined
+  const responsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
 
   const errorMessages = validateWithSpec(body, updateContactValidation(outcomeRequired, responsibleOfficer))
 
