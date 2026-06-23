@@ -38,8 +38,9 @@ const updateContact: RequestHandler = (req, res, next) => {
   const contactDetails = OutcomeContactTypeDetails.find(item => item.description === displayName)
 
   const outcomeRequired = contactDetails?.outcomes?.length > 1
+  const responsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? 'SHOW_OFFICER' : undefined
 
-  const errorMessages = validateWithSpec(body, updateContactValidation(outcomeRequired))
+  const errorMessages = validateWithSpec(body, updateContactValidation(outcomeRequired, responsibleOfficer))
 
   const detailsRaw = getStringValue(body.details)
   const detailsLength = countTextareaChars(detailsRaw)
@@ -76,7 +77,7 @@ const updateContact: RequestHandler = (req, res, next) => {
       outcomeSection,
       outcomeLabel,
       detailsMaxLength: CONTACT_DETAILS_MAX_LENGTH,
-      responsibleOfficer: true,
+      responsibleOfficer,
       responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
       responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
       dateToday: DateTime.now().toFormat('d/M/yyyy'),
