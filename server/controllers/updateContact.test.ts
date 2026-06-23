@@ -169,6 +169,7 @@ describe('postupdateContact', () => {
         dateTime: expect.stringContaining('2026-05-14'),
         notes: 'Updated notes',
         sensitiveFlag: true,
+        alert: true,
       }),
       'john.smith',
     )
