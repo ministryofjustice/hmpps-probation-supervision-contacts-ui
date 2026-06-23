@@ -142,6 +142,7 @@ describe('postupdateContact', () => {
         time: '09:00',
         details: 'Updated notes',
         sensitivity: 'Yes',
+        alertResponsibleOfficer: 'Yes',
       },
     })
 
