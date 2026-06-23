@@ -130,6 +130,8 @@ export interface Document {
   id: string
   name: string
   lastUpdated?: string
+  lastUpdatedBy?: Name
+  author?: Name
   createdAt?: string
 }
 
@@ -205,6 +207,7 @@ export interface Activity {
 export interface PersonContact {
   personSummary: PersonSummary
   appointment: Activity
+  documents?: Document[]
 }
 export interface PersonSchedule {
   size: number
