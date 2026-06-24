@@ -19,3 +19,11 @@
     display: none;
   }
 }
+
+.line-break {
+  white-space: pre-line;
+}
+
+.app-note__author {
+  margin-bottom: govuk-spacing(1);
+}
