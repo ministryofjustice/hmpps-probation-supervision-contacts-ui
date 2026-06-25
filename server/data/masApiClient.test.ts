@@ -309,4 +309,34 @@ describe('MasApiClient', () => {
       expect(result).toEqual(contact)
     })
   })
+
+  describe('getFullContactNotes', () => {
+    it('returns the full notes contact for a given crn, contact id and note id', async () => {
+      const fullContact = {
+        personSummary: {
+          crn: 'X123456',
+        },
+        appointment: {
+          id: 2510721443,
+          type: 'MAPPA J Form - Job Centre+ Notification',
+          displayName: 'MAPPA J Form - Job Centre+ notification',
+          appointmentNote: {
+            id: 0,
+            note: 'FULL NOTE LONGER THAN EXISTING',
+            createdBy: 'A User',
+            createdByDate: '2026-06-18',
+          },
+        },
+      }
+
+      nock(config.apis.masApi.url)
+        .get('/schedule/X123456/appointment/ABC123/note/0')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, fullContact)
+
+      const result = await masApiClient.getFullContactNote('X123456', 'ABC123', '0', 'test-user')
+
+      expect(result).toEqual(fullContact)
+    })
+  })
 })
