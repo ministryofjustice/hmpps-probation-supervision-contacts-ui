@@ -1,5 +1,11 @@
 import MasApiClient from '../data/masApiClient'
-import { ContactType, CreateContactRequest, CreateContactResponse } from '../data/model/contacts'
+import {
+  ContactType,
+  CreateContactRequest,
+  CreateContactResponse,
+  UpdateContactWithNoOutcome,
+  UpdateContactWithOutcome,
+} from '../data/model/contacts'
 
 export default class ContactService {
   constructor(private readonly masApiClient: MasApiClient) {}
@@ -18,6 +24,22 @@ export default class ContactService {
 
   async createContact(crn: string, payload: CreateContactRequest, username: string): Promise<CreateContactResponse> {
     return this.masApiClient.createContact(crn, payload, username)
+  }
+
+  async updateContactWithNoOutcome(
+    contactId: string,
+    payload: UpdateContactWithNoOutcome,
+    username: string,
+  ): Promise<void> {
+    return this.masApiClient.updateContactWithNoOutcome(contactId, payload, username)
+  }
+
+  async updateContactWithOutcome(
+    contactId: string,
+    payload: UpdateContactWithOutcome,
+    username: string,
+  ): Promise<void> {
+    return this.masApiClient.updateContactWithOutcome(contactId, payload, username)
   }
 
   async patchDocuments(crn: string, contactId: string, file: Express.Multer.File, username: string): Promise<void> {

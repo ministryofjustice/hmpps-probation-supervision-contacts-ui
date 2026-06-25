@@ -149,6 +149,38 @@ describe('middleware/validation/addContactType', () => {
     expect(renderData.errorMessages.details).toEqual('You have entered 5 characters too many')
   })
 
+  it('does not error when \\r\\n newlines keep details within 12000 characters', () => {
+    // Browser submits \r\n (2 chars) per newline; govuk counter counts each as 1.
+    // 11999 'a' chars + 1 \r\n = 12000 by govuk count — should pass.
+    const textWithNewline = `${'a'.repeat(11999)}\r\n`
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactType: 'add-police-liaison' },
+      body: { ...validBody, details: textWithNewline },
+    })
+    const res = createRes()
+
+    addContactType(req, res, next)
+
+    expect(next).toHaveBeenCalledWith()
+    expect(res.render).not.toHaveBeenCalled()
+  })
+
+  it('renders with error when \\r\\n newlines push details over 12000 characters', () => {
+    // 12000 'a' chars + 1 \r\n = 12001 by govuk count — should fail.
+    const textWithNewline = `${'a'.repeat(12000)}\r\n`
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactType: 'add-police-liaison' },
+      body: { ...validBody, details: textWithNewline },
+    })
+    const res = createRes()
+
+    addContactType(req, res, next)
+
+    expect(next).not.toHaveBeenCalled()
+    const renderData = (res.render as jest.Mock).mock.calls[0][1]
+    expect(renderData.errorMessages.details).toEqual('You have entered 1 characters too many')
+  })
+
   it('renders with the crn and form values on error', () => {
     const body = { date: '17/5/2024', time: '09:00', sensitivity: 'Yes' }
     const req = httpMocks.createRequest({ params: { crn: 'X123456', contactType: 'add-police-liaison' }, body })
@@ -173,7 +205,7 @@ describe('middleware/validation/addContactType', () => {
 
     expect(next).not.toHaveBeenCalled()
     const renderData = (res.render as jest.Mock).mock.calls[0][1]
-    expect(renderData.errorMessages.outcome).toEqual('Select an outcome')
+    expect(renderData.errorMessages.outcomeCode).toEqual('Select an outcome')
   })
 
   it('does not require outcome when the selected contact type has an optional outcome', () => {

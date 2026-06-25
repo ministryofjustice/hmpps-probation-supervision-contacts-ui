@@ -23,6 +23,14 @@ test.afterEach(async () => {
   await resetStubs()
 })
 
+test('has the correct page title', async ({ page }) => {
+  await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: false }])
+
+  await page.goto('/case/X123456/add-frequently-used-contact')
+
+  await expect(page).toHaveTitle('Find a contact to add - frequently used contacts')
+})
+
 test('user can select appointment contact', async ({ page }) => {
   await featureFlags.stubSnapshot([{ key: 'searchContactsByCategory', enabled: false }])
   const addContactPage = new AddFrequentContactPage(page)

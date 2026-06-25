@@ -27,7 +27,7 @@ export const normaliseSelectedCategories = (value: undefined | string | string[]
 }
 
 export const buildCategoryCheckboxItems = (selectedCategories: string[]): CategoryCheckboxItem[] => {
-  const categories = Array.from(new Set(ContactTypeCategoryEntries.map(entry => entry.category))).sort((a, b) =>
+  const categories = Array.from(new Set(ContactTypeCategoryEntries().map(entry => entry.category))).sort((a, b) =>
     a.localeCompare(b),
   )
   return categories.map(category => ({
@@ -37,8 +37,10 @@ export const buildCategoryCheckboxItems = (selectedCategories: string[]): Catego
   }))
 }
 
-export const buildSearchResults = (categories: string[], crn: string) => {
-  const entries = ContactTypeCategoryEntries.filter(entry => categories.includes(entry.category))
+export const buildSearchResults = (categories: string[], crn: string, enableEnforcementContacts = false) => {
+  const entries = ContactTypeCategoryEntries(enableEnforcementContacts).filter(entry =>
+    categories.includes(entry.category),
+  )
   const grouped = new Map<string, { items: CategorySearchItem[]; subcategories: Map<string, CategorySearchItem[]> }>()
 
   entries.forEach(entry => {
@@ -78,4 +80,22 @@ export const buildSearchResults = (categories: string[], crn: string) => {
     count: entries.length,
     categories: categoriesSorted,
   }
+}
+
+export const buildKeywordSearchResults = (keyword: string, crn: string, enableEnforcementContacts = false) => {
+  const lowerKeyword = keyword.toLowerCase()
+  const seen = new Set<string>()
+  const items = ContactTypeCategoryEntries(enableEnforcementContacts)
+    .filter(entry => {
+      if (seen.has(entry.code)) return false
+      seen.add(entry.code)
+      return entry.displayName.toLowerCase().includes(lowerKeyword)
+    })
+    .sort((a, b) => a.displayName.localeCompare(b.displayName))
+    .map(entry => ({
+      displayName: entry.displayName,
+      href: `/case/${crn}/contacts/add-${slugify(entry.displayName)}`,
+    }))
+
+  return { keyword, count: items.length, items }
 }

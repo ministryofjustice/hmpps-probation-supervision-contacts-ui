@@ -31,6 +31,7 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: false,
+    showOutcomeBanner: true,
     outcomes: [
       {
         label: 'Risk review',
@@ -223,7 +224,7 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     ],
   },
   {
-    code: 'IRP2',
+    code: 'IRP1',
     description: 'IPP progression panel',
     sensitive: false,
     relatesTo: ['Person'],
@@ -262,7 +263,7 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
         systemLabel: 'Following Negative Parole Outcome',
       },
       { label: 'Following recall', value: 'PNL16', systemLabel: 'Following Recall' },
-      { label: 'Following recategorisation', value: 'PNL17', systemLabel: 'Following Recategoristation' },
+      { label: 'Following recategorisation', value: 'PNL17', systemLabel: 'Following Recategorisation' },
       {
         label: 'Following remission from secure hospital',
         value: 'PNL12',
@@ -292,11 +293,11 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
       { label: 'Home visit delayed', value: 'MO13', systemLabel: 'Delay of home visit' },
       { label: 'Follow-up action required', value: 'MO1', systemLabel: 'Follow-up Action Required' },
       { label: 'Follow-up action completed', value: 'MO28', systemLabel: 'Follow-up Action Completed' },
-      { label: 'Home visit not carried out', value: 'MO3', systemLabel: 'Home Visit Not Undetaken' },
-      { label: 'Management oversight decision', value: 'MO27', systemLabel: 'Management Oversight Decision' },
+      { label: 'Home visit not carried out', value: 'MO12', systemLabel: 'Home Visit Not Undertaken' },
+      { label: 'Management oversight decision', value: 'MO3', systemLabel: 'Management Oversight Decision' },
       {
         label: 'Probation practitioner recommendation endorsed',
-        value: 'MO26',
+        value: 'MO27',
         systemLabel: 'PP recommendation endorsed',
       },
     ],
@@ -309,15 +310,16 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     defaultHeading:
       'TO BE COMPLETED BY PP:\n- Specify RoSH level and nature of any risk to probation staff\n- Any known or relevant information regarding the address or area\n- Name of probation practitioner(s) undertaking visit\n- Specify type of visit (initial or repeat)\n- Duration of home visit (minutes)\n\nNOTE:\nWhere home visit is approved, all of the following must be completed.\n- Office home visit itinerary diary is completed, and car registration recorded\n- Personal safety device will be used\n- Nominated contact point will be contacted immediately before the visit to provide the estimated length of visit, and upon completion of visit\n- Mobile phone will be carried at all times\n- Individual has been advised to secure any pets, where required\n\nA further Management Oversight – HVRA entry is only required where there has been a significant change in circumstance or risk level which impacts safe facilitation of a home visit.\n\nTO BE COMPLETED BY SPO:\n- SPO rationale for decision',
     mandatoryOutcome: false,
+    showOutcomeBanner: true,
     outcomes: [
       {
         label: 'Home visit - referred for SPO decision',
-        value: 'MO23',
+        value: 'MO26',
         systemLabel: 'Home Visit - Referred for SPO Decision',
       },
-      { label: 'Home visit approved', value: 'MO25', systemLabel: 'Home Visit Approved' },
-      { label: 'Home visit exempted', value: 'MO24', systemLabel: 'Home Visit Exempted' },
-      { label: 'Home visit not approved', value: 'MAP9', systemLabel: 'Home Visit Not Approved' },
+      { label: 'Home visit approved', value: 'MO23', systemLabel: 'Home Visit Approved' },
+      { label: 'Home visit exempted', value: 'MO25', systemLabel: 'Home Visit Exempted' },
+      { label: 'Home visit not approved', value: 'MO24', systemLabel: 'Home Visit Not Approved' },
     ],
   },
   {
@@ -329,22 +331,22 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     outcomes: [
       {
         label: 'Review complete - refer to Level 2 (SPO endorsed)',
-        value: 'MAP10',
+        value: 'MAP9',
         systemLabel: 'Review complete - Refer to Level 2 - SPO endorsed',
       },
       {
         label: 'Review complete - refer to Level 3 (SPO endorsed)',
-        value: 'MAP7',
+        value: 'MAP10',
         systemLabel: 'Review complete - Refer to Level 3 - SPO endorsed',
       },
       {
         label: 'Review complete - retain at Level 1 (management oversight not required)',
-        value: 'MAP8',
+        value: 'MAP7',
         systemLabel: 'Review complete - Retain at Level 1 - MO not required',
       },
       {
         label: 'Review complete - retain at Level 1 (SPO endorsed)',
-        value: 'RDL2',
+        value: 'MAP8',
         systemLabel: 'Review complete - Retain at Level 1 - SPO endorsed',
       },
     ],
@@ -356,15 +358,15 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
     outcomes: [
-      { label: 'Accepted - level 2', value: 'RDL3', systemLabel: 'Accepted - Level 2' },
-      { label: 'Accepted - level 3', value: 'RRJ2', systemLabel: 'Accepted - Level 3' },
+      { label: 'Accepted - level 2', value: 'RDL2', systemLabel: 'Accepted - Level 2' },
+      { label: 'Accepted - level 3', value: 'RDL3', systemLabel: 'Accepted - Level 3' },
       {
         label: 'Category 3 referral rejected - not MAPPA managed',
-        value: 'RPEN',
+        value: 'RRJ2',
         systemLabel: 'Category 3 Referral Rejected - Not MAPPA Managed',
       },
-      { label: 'Referral decision - pending', value: 'RRJT', systemLabel: 'Referral Decision - Pending' },
-      { label: 'Rejected - remain at level 1', value: 'RACC', systemLabel: 'Rejected - Remain at Level 1' },
+      { label: 'Referral decision - pending', value: 'RPEN', systemLabel: 'Referral Decision - Pending' },
+      { label: 'Rejected - remain at level 1', value: 'RRJT', systemLabel: 'Rejected - Remain at Level 1' },
     ],
   },
   {
@@ -376,9 +378,9 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
       'Before saving please check the "Sensitive" flag - these contacts should normally be marked as sensitive.',
     mandatoryOutcome: true,
     outcomes: [
-      { label: 'Referral decision - accepted', value: 'RPEN', systemLabel: 'Referral Decision - Accepted' },
-      { label: 'Referral decision - pending', value: 'RRJT', systemLabel: 'Referral Decision - Pending' },
-      { label: 'Rejected - remain at level 1', value: 'PIDA', systemLabel: 'Rejected - Remain at Level 1' },
+      { label: 'Referral decision - accepted', value: 'RACC', systemLabel: 'Referral Decision - Accepted' },
+      { label: 'Referral decision - pending', value: 'RPEN', systemLabel: 'Referral Decision - Pending' },
+      { label: 'Rejected - remain at level 1', value: 'RRJT', systemLabel: 'Rejected - Remain at Level 1' },
     ],
   },
   {
@@ -387,13 +389,14 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: false,
+    showOutcomeBanner: true,
     outcomes: [
-      { label: 'Domestic abuse', value: 'PIDO', systemLabel: 'Domestic Abuse' },
-      { label: 'Domestic abuse and other check', value: 'PICO', systemLabel: 'Domestic Abuse and Other Check' },
-      { label: 'Other check (not domestic abuse)', value: 'PIDN', systemLabel: 'Other Check (not DA)' },
+      { label: 'Domestic abuse', value: 'PIDA', systemLabel: 'Domestic Abuse' },
+      { label: 'Domestic abuse and other check', value: 'PIDO', systemLabel: 'Domestic Abuse and Other Check' },
+      { label: 'Other check (not domestic abuse)', value: 'PICO', systemLabel: 'Other Check (not DA)' },
       {
         label: 'Request not sent - up to date information already',
-        value: 'PIDA',
+        value: 'PIDN',
         systemLabel: 'Request Not Sent - up to date information already',
       },
     ],
@@ -404,19 +407,12 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: false,
+    showOutcomeBanner: true,
     outcomes: [
-      { label: 'Domestic abuse', value: 'PIDO', systemLabel: 'Domestic Abuse' },
-      { label: 'Domestic abuse and other check', value: 'PICO', systemLabel: 'Domestic Abuse and Other Check' },
-      { label: 'Other check (not domestic abuse)', value: 'AAME', systemLabel: 'Other Check (not DA)' },
+      { label: 'Domestic abuse', value: 'PIDA', systemLabel: 'Domestic Abuse' },
+      { label: 'Domestic abuse and other check', value: 'PIDO', systemLabel: 'Domestic Abuse and Other Check' },
+      { label: 'Other check (not domestic abuse)', value: 'PICO', systemLabel: 'Other Check (not DA)' },
     ],
-  },
-  {
-    code: 'DPRE',
-    description: 'Pre-cons received',
-    sensitive: false,
-    relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
-    mandatoryOutcome: false,
-    outcomes: [{ label: 'Accepted absence - medical', value: 'CO28', systemLabel: 'Accepted Absence - medical' }],
   },
   {
     code: 'CTPJ',
@@ -425,9 +421,9 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
     outcomes: [
-      { label: 'Enforcement action consideration', value: 'PJAS', systemLabel: 'Enforcement Action Consideration' },
-      { label: 'Reviewed assessment frequency', value: 'PJAT', systemLabel: 'Reviewed Assessment Frequency' },
-      { label: 'Reviewed attendance frequency', value: 'RRDD', systemLabel: 'Reviewed Attendance Frequency' },
+      { label: 'Enforcement action consideration', value: 'CO28', systemLabel: 'Enforcement Action Consideration' },
+      { label: 'Reviewed assessment frequency', value: 'PJAS', systemLabel: 'Reviewed Assessment Frequency' },
+      { label: 'Reviewed attendance frequency', value: 'PJAT', systemLabel: 'Reviewed Attendance Frequency' },
     ],
   },
   {
@@ -437,8 +433,8 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
     outcomes: [
-      { label: 'Recommendation declined', value: 'RRDE', systemLabel: 'Recommendation Declined' },
-      { label: 'Recommendation endorsed', value: 'RACC', systemLabel: 'Recommendation Endorsed' },
+      { label: 'Recommendation declined', value: 'RRDD', systemLabel: 'Recommendation Declined' },
+      { label: 'Recommendation endorsed', value: 'RRDE', systemLabel: 'Recommendation Endorsed' },
     ],
   },
   {
@@ -448,9 +444,9 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
     outcomes: [
-      { label: 'Referral decision - accepted', value: 'RPEN', systemLabel: 'Referral Decision - Accepted' },
-      { label: 'Referral decision - pending', value: 'RRJT', systemLabel: 'Referral Decision - Pending' },
-      { label: 'Rejected - remain at level 1', value: 'RACC', systemLabel: 'Rejected - Remain at Level 1' },
+      { label: 'Referral decision - accepted', value: 'RACC', systemLabel: 'Referral Decision - Accepted' },
+      { label: 'Referral decision - pending', value: 'RPEN', systemLabel: 'Referral Decision - Pending' },
+      { label: 'Rejected - remain at level 1', value: 'RRJT', systemLabel: 'Rejected - Remain at Level 1' },
     ],
   },
   {
@@ -460,9 +456,9 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
     outcomes: [
-      { label: 'Referral decision - accepted', value: 'RPEN', systemLabel: 'Referral Decision - Accepted' },
-      { label: 'Referral decision - pending', value: 'RRJT', systemLabel: 'Referral Decision - Pending' },
-      { label: 'Rejected - remain at level 1', value: 'RACC', systemLabel: 'Rejected - Remain at Level 1' },
+      { label: 'Referral decision - accepted', value: 'RACC', systemLabel: 'Referral Decision - Accepted' },
+      { label: 'Referral decision - pending', value: 'RPEN', systemLabel: 'Referral Decision - Pending' },
+      { label: 'Rejected - remain at level 1', value: 'RRJT', systemLabel: 'Rejected - Remain at Level 1' },
     ],
   },
   {
@@ -472,9 +468,9 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
     outcomes: [
-      { label: 'Referral decision - accepted', value: 'RPEN', systemLabel: 'Referral Decision - Accepted' },
-      { label: 'Referral decision - pending', value: 'RRJT', systemLabel: 'Referral Decision - Pending' },
-      { label: 'Rejected - remain at level 1', value: 'SFG1', systemLabel: 'Rejected - Remain at Level 1' },
+      { label: 'Referral decision - accepted', value: 'RACC', systemLabel: 'Referral Decision - Accepted' },
+      { label: 'Referral decision - pending', value: 'RPEN', systemLabel: 'Referral Decision - Pending' },
+      { label: 'Rejected - remain at level 1', value: 'RRJT', systemLabel: 'Rejected - Remain at Level 1' },
     ],
   },
   {
@@ -483,15 +479,16 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: false,
+    showOutcomeBanner: true,
     outcomes: [
       {
         label: 'Response received - known to social services',
-        value: 'SFG2',
+        value: 'SFG1',
         systemLabel: 'Response Received - Known to Social Services',
       },
       {
         label: 'Response received - not known to social services',
-        value: 'SFG3',
+        value: 'SFG2',
         systemLabel: 'Response Received - Not Known to Social Services',
       },
     ],
@@ -505,33 +502,13 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     outcomes: [
       {
         label: "Enquiry sent to local authority children's service",
-        value: 'PIDN',
+        value: 'SFG3',
         systemLabel: "Enquiry sent to local authority children's service",
       },
       {
         label: 'Request not sent - up to date information already',
-        value: 'ATFI',
+        value: 'PIDN',
         systemLabel: 'Request Not Sent - up to date information already',
-      },
-    ],
-  },
-  {
-    code: 'COUP',
-    description: 'Unplanned contact from person on probation',
-    sensitive: false,
-    relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
-    mandatoryOutcome: true,
-    outcomes: [
-      {
-        label: 'Failed to comply with other instruction',
-        value: 'CO22',
-        systemLabel: 'Failed to Comply with other Instruction',
-      },
-      { label: 'No action required', value: 'UBHV', systemLabel: 'No Action Required' },
-      {
-        label: 'Unacceptable behaviour',
-        value: 'Unacceptable Behaviour',
-        systemLabel: 'Unacceptable Behaviour',
       },
     ],
   },

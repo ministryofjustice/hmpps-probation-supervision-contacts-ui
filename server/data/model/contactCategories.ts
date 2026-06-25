@@ -5,7 +5,16 @@ export type ContactTypeCategoryEntry = {
   displayName: string
 }
 
-export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
+const ENFORCEMENT_ENTRIES: ContactTypeCategoryEntry[] = [
+  { category: 'Non-compliance and enforcement', code: 'AAM1', displayName: 'Alcohol consumption' },
+  {
+    category: 'Communication and information sharing with others',
+    code: 'AAM10',
+    displayName: 'Critical communications',
+  },
+]
+
+const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
   {
     category: 'Case management and meetings',
     subcategory: 'Case meetings',
@@ -143,11 +152,6 @@ export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
     subcategory: 'Management oversight',
     code: 'MO8',
     displayName: 'Management oversight – home visit risk assessment',
-  },
-  {
-    category: 'Communication and information sharing with others',
-    code: 'AAM10',
-    displayName: 'Critical communications',
   },
   {
     category: 'Communication and information sharing with others',
@@ -290,7 +294,7 @@ export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
     category: 'Communication and information sharing with others',
     subcategory: 'Information sharing and requests',
     code: 'CI3B',
-    displayName: 'Information from third party',
+    displayName: 'Information to third party',
   },
   {
     category: 'Communication and information sharing with others',
@@ -463,12 +467,6 @@ export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
   {
     category: 'Communication with person on probation',
     subcategory: 'Other communications',
-    code: 'COUP',
-    displayName: 'Unplanned contact from person on probation',
-  },
-  {
-    category: 'Communication with person on probation',
-    subcategory: 'Other communications',
     code: 'C129',
     displayName: 'Use of video link or teleconference',
   },
@@ -571,11 +569,6 @@ export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
     category: 'Non-compliance and enforcement',
     code: 'CARR',
     displayName: 'Arrest incident',
-  },
-  {
-    category: 'Non-compliance and enforcement',
-    code: 'AAM1',
-    displayName: 'Alcohol consumption',
   },
   {
     category: 'Non-compliance and enforcement',
@@ -748,3 +741,8 @@ export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
     displayName: 'Substance misuse screening tool',
   },
 ]
+
+export const ENFORCEMENT_CONTACT_CODES: ReadonlySet<string> = new Set(ENFORCEMENT_ENTRIES.map(e => e.code))
+
+export const ContactTypeCategoryEntries = (enableEnforcementContacts = false): ContactTypeCategoryEntry[] =>
+  enableEnforcementContacts ? [...BASE_ENTRIES, ...ENFORCEMENT_ENTRIES] : BASE_ENTRIES

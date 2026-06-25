@@ -71,17 +71,6 @@ These credentials are configured using the following env variables:
 
 ### Dependencies
 
-### HMPPS Auth
-
-To allow authenticated users to access your application you need to point it to a running instance of `hmpps-auth`.
-By default the application is configured to run against an instance running in docker that can be started
-via `docker-compose`.
-
-**NB:** It's common for developers to run against the instance of auth running in the development/T3 environment for
-local development.
-Most APIs don't have images with cached data that you can run with docker: setting up realistic stubbed data in sync
-across a variety of services is very difficult.
-
 ### REDIS
 
 When deployed to an environment with multiple pods we run applications with an instance of REDIS/Elasticache to provide

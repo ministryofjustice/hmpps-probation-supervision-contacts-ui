@@ -1,5 +1,13 @@
-import { isNotEmpty, isValidDate, isValidDateFormat, timeIsValid24HourFormat } from '../../utils/validationUtils'
+import {
+  isNotEmpty,
+  isValidDate,
+  isValidDateFormat,
+  timeIsValid24HourFormat,
+  dateTimeIsNotInFuture,
+  dateIsTodayOrPast,
+} from '../../utils/validationUtils'
 import { ValidationSpec } from '../../models/Errors'
+import { showOfficer } from '../../data/model/contants'
 
 export interface AddContactValidationArgs {
   responsibleOfficer: string
@@ -40,6 +48,11 @@ export const addContactValidation = ({
         msg: 'Enter a date in the correct format, for example 17/5/2024',
         log: 'Contact date invalid',
       },
+      {
+        validator: dateIsTodayOrPast,
+        msg: 'The date of the contact must be today or in the past',
+        log: 'Contact date in future',
+      },
     ],
   },
   time: {
@@ -56,9 +69,15 @@ export const addContactValidation = ({
         log: 'Contact time format invalid',
         crossField: 'date',
       },
+      {
+        validator: dateTimeIsNotInFuture,
+        msg: 'The time of the contact must be the current time or in the past',
+        log: 'Contact date and time in future',
+        crossField: 'date',
+      },
     ],
   },
-  outcome: {
+  outcomeCode: {
     optional: !outcomeRequired,
     checks: [
       {
@@ -89,7 +108,7 @@ export const addContactValidation = ({
     ],
   },
   alertResponsibleOfficer: {
-    optional: responsibleOfficer !== 'SHOW_OFFICER',
+    optional: responsibleOfficer !== showOfficer,
     checks: [
       {
         validator: isNotEmpty,

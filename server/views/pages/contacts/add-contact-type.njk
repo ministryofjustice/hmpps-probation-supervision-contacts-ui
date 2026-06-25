@@ -1,5 +1,6 @@
 {% extends "../../partials/layout.njk" %}
 {%- from "moj/components/date-picker/macro.njk" import mojDatePicker -%}
+{% from "moj/components/banner/macro.njk" import mojBanner %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
@@ -45,9 +46,9 @@
 
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-7">
+            <h2 class="govuk-heading-l govuk-!-margin-bottom-7">
                 {{ addContactType }}
-            </h1>
+            </h2>
 
             <form method="post" enctype="multipart/form-data" novalidate>
 
@@ -95,6 +96,7 @@
                 }) }}
 
                 <h3 class="govuk-heading-m">Enter the date and time of the contact</h3>
+                <div class="govuk-hint">You can only add contacts for the current date or time or in the past.</div>
 
                 {{ mojDatePicker({
                     label: {
@@ -105,6 +107,7 @@
                     },
                     id: "date",
                     name: "date",
+                    maxDate: dateToday,
                     value: formValues.date,
                     errorMessage: { text: errorMessages.date } if errorMessages.date
                 }) }}
@@ -174,7 +177,7 @@
                 {{ govukCharacterCount({
                     name: "details",
                     id: "details",
-                    maxlength: 12000,
+                    maxlength: detailsMaxLength,
                     rows: '10',
                     value: formValues.details,
                     label: {
@@ -193,7 +196,20 @@
                 }) }}
 
                 {% if outcomeSection %}
-                    {% if outcomeSection.type == 'checkbox' %}
+                    {% if showOutcomeBanner and outcomeSection.type != 'inset' %}
+                        {{ mojBanner({
+                            type: 'information',
+                            text: 'You should select an outcome and add details.'
+                        }) }}
+                    {% endif %}
+                    {% if outcomeSection.type == 'inset' %}
+                        <h3 class="govuk-heading-m">Outcome</h3>
+                        {{ govukInsetText({
+                            text: outcomeSection.insetText,
+                            attributes: { 'data-qa': 'outcomeInsetText' }
+                        }) }}
+                        <input type="hidden" name="outcomeCode" value="{{ formValues.outcomeCode }}">
+                    {% elif outcomeSection.type == 'checkbox' %}
                         {{ govukCheckboxes({
                             fieldset: {
                                 legend: {
@@ -202,10 +218,10 @@
                                     isPageHeading: false
                                 }
                             },
-                            name: 'outcome',
-                            idPrefix: 'outcome',
+                            name: 'outcomeCode',
+                            idPrefix: 'outcomeCode',
                             items: outcomeSection.items,
-                            errorMessage: { text: errorMessages.outcome } if errorMessages.outcome
+                            errorMessage: { text: errorMessages.outcomeCode } if errorMessages.outcomeCode
                         }) }}
                     {% else %}
                         {{ govukRadios({
@@ -216,10 +232,10 @@
                                     isPageHeading: false
                                 }
                             },
-                            name: 'outcome',
-                            idPrefix: 'outcome',
+                            name: 'outcomeCode',
+                            idPrefix: 'outcomeCode',
                             items: outcomeSection.items,
-                            errorMessage: { text: errorMessages.outcome } if errorMessages.outcome
+                            errorMessage: { text: errorMessages.outcomeCode } if errorMessages.outcomeCode
                         }) }}
                     {% endif %}
                 {% endif %}

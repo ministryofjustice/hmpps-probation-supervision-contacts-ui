@@ -8,12 +8,25 @@ import ContactService from '../services/contactService'
 import config from '../config'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
 import { ContactTypeOptions } from '../data/model/contactTypes'
+import { ENFORCEMENT_CONTACT_CODES } from '../data/model/contactCategories'
 import {
   buildCategoryCheckboxItems,
+  buildKeywordSearchResults,
   buildSearchResults,
   normaliseSelectedCategories,
 } from '../services/contactCategorySearch'
 import { buildAddContactViewModel } from '../services/addContactViewModel'
+import { isBlank } from '../utils/isBlank'
+import logger from '../../logger'
+import { showOfficer } from '../data/model/contants'
+
+const buildContactTypeLinksJson = (crn: string, enableEnforcementContacts = false) =>
+  JSON.stringify(
+    ContactTypeOptions.filter(t => enableEnforcementContacts || !ENFORCEMENT_CONTACT_CODES.has(t.code)).map(t => ({
+      text: t.description,
+      href: `/case/${crn}/contacts/add-${slugify(t.description)}`,
+    })),
+  )
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -68,6 +81,7 @@ const addContactController = {
         selectedCategories: [],
         searchResults: null,
         searchByCategoryTabActive: false,
+        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags?.enableEnforcementContacts === true),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -75,56 +89,56 @@ const addContactController = {
       })
     }
   },
-  postSearchByCategory: (): RequestHandler => {
+  getSearchByCategory: (): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
-      const selectedCategories = normaliseSelectedCategories(req.body?.categories)
+      const selectedCategories = normaliseSelectedCategories(req.query?.categories as string | string[])
       const lastCategories = normaliseSelectedCategories(
-        typeof req.body?.lastCategories === 'string' && req.body.lastCategories.length
-          ? req.body.lastCategories
+        typeof req.query?.lastCategories === 'string' && req.query.lastCategories.length
+          ? req.query.lastCategories
               .split(',')
               .map((value: string) => value.trim())
               .filter(Boolean)
           : [],
       )
-      const action = req.body?.action
+      const action = req.query?.action
 
       const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
       const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
 
-      if (action === 'clear') {
+      const baseLocals = {
+        crn,
+        frequentlyUsedContacts,
+        categoryCheckboxItems: buildCategoryCheckboxItems([]),
+        selectedCategories: [] as string[],
+        searchResults: null as ReturnType<typeof buildSearchResults> | null,
+        searchByCategoryTabActive: true,
+        lastCategories: '',
+        csrfToken: res.locals.csrfToken,
+        contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
+        ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
+      }
+
+      if (!action || action === 'clear') {
         return res.render('pages/contacts/add-frequently-used-contact', {
-          crn,
-          frequentlyUsedContacts,
-          categoryCheckboxItems: buildCategoryCheckboxItems([]),
-          selectedCategories: [],
-          searchResults: null,
-          searchByCategoryTabActive: true,
-          lastCategories: '',
-          csrfToken: res.locals.csrfToken,
-          contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
-          ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
+          ...baseLocals,
+          clearedAnnouncement: action === 'clear',
         })
       }
 
       if (!selectedCategories.length) {
-        const searchResults = lastCategories.length ? buildSearchResults(lastCategories, crn) : null
         return res.render('pages/contacts/add-frequently-used-contact', {
-          crn,
+          ...baseLocals,
           errorMessages: { categories: 'Select a category' },
-          frequentlyUsedContacts,
-          categoryCheckboxItems: buildCategoryCheckboxItems([]),
-          selectedCategories: [],
-          searchResults,
-          searchByCategoryTabActive: true,
           lastCategories: lastCategories.join(','),
-          csrfToken: res.locals.csrfToken,
-          contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
-          ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
         })
       }
 
-      const searchResults = buildSearchResults(selectedCategories, crn)
+      const searchResults = buildSearchResults(
+        selectedCategories,
+        crn,
+        res.locals.flags?.enableEnforcementContacts === true,
+      )
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
@@ -136,6 +150,54 @@ const addContactController = {
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
         ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
+      })
+    }
+  },
+  getSearchByKeyword: (): RequestHandler => {
+    return async (req, res, next) => {
+      const { crn } = req.params as Record<string, string>
+      const keyword = typeof req.query?.keyword === 'string' ? req.query.keyword.trim() : ''
+      const action = req.query?.action
+
+      const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
+      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
+
+      const baseLocals = {
+        crn,
+        frequentlyUsedContacts,
+        categoryCheckboxItems: buildCategoryCheckboxItems([]),
+        searchByCategoryTabActive: false,
+        searchByKeywordTabActive: true,
+        keywordSearch: keyword,
+        keywordSearchResults: null as ReturnType<typeof buildKeywordSearchResults> | null,
+        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags?.enableEnforcementContacts === true),
+        lastCategories: '',
+        csrfToken: res.locals.csrfToken,
+        contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
+        ndeliusDeepLinkUrl: deliusDeepLinkUrl('ContactList', crn),
+      }
+
+      if (!action) {
+        return res.render('pages/contacts/add-frequently-used-contact', baseLocals)
+      }
+
+      if (isBlank(keyword)) {
+        return res.render('pages/contacts/add-frequently-used-contact', {
+          ...baseLocals,
+          errorMessages: { keyword: 'Enter a keyword or phrase' },
+        })
+      }
+
+      if (/[^a-zA-Z0-9\-–+ ]/.test(keyword)) {
+        return res.render('pages/contacts/add-frequently-used-contact', {
+          ...baseLocals,
+          errorMessages: { keyword: 'You can only search using letters, numbers, hyphens or dashes' },
+        })
+      }
+
+      return res.render('pages/contacts/add-frequently-used-contact', {
+        ...baseLocals,
+        keywordSearchResults: buildKeywordSearchResults(keyword, crn, res.locals.flags?.enableEnforcementContacts),
       })
     }
   },
@@ -177,7 +239,7 @@ const addContactController = {
       const overview = await masApiClient.getOverview(crn, username)
       const hasVisorRegistration = overview?.registrations?.some(r => r.toLowerCase() === 'visor') ?? false
       const isVisor: string | undefined = hasVisorRegistration ? 'SHOW_VISOR' : undefined
-      const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? 'SHOW_OFFICER' : undefined
+      const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
       const headerName = res.locals.headerPersonName
       const personName = `${headerName?.forename || ''} ${headerName?.surname || ''}`.trim()
       const viewModel = buildAddContactViewModel({
@@ -209,7 +271,7 @@ const addContactController = {
       const alertResponsibleOfficer = getStringValue(req.body?.alertResponsibleOfficer)
       const date = getStringValue(req.body?.date)
       const time = getStringValue(req.body?.time)
-      const outcome = getStringValue(req.body?.outcome)
+      const outcomeCode = getStringValue(req.body?.outcomeCode)
       const contactTypes = ContactTypeOptions
       const selectedType = contactTypes.find(c => slugify(c.description) === slug)
       const contactService = new ContactService(masApiClient)
@@ -228,13 +290,12 @@ const addContactController = {
         requirementId: null,
         description: title || undefined,
         notes: details || '',
-        outcome: outcome || undefined,
+        outcomeCode: outcomeCode || undefined,
         alert: alertResponsibleOfficer === 'Yes',
         sensitive: sensitivity === 'Yes',
         visorReport: visor === 'Yes',
       }
       const { id: contactId } = await contactService.createContact(crn, payload, username)
-
       if (req.file) {
         try {
           await contactService.patchDocuments(crn, contactId.toString(), req.file, username)

@@ -1,0 +1,92 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "_components/document/macro.njk" import appDocument %}
+
+{% set appointment = contact.appointment %}
+{% set contactDisplayName = appointment.displayName or appointment.type or 'Not provided' %}
+{% set appointmentNotes = appointment.appointmentNotes or [] %}
+{% set documents = contact.documents if contact.documents else (appointment.documents or []) %}
+{% set documentsHtml = '' %}
+{% for document in documents %}
+  {% set documentsHtml = documentsHtml ~ appDocument(document, crn, manageProbationUrl) %}
+{% endfor %}
+
+{% set appointmentDate = appointment.startDateTime or 'Not provided' %}
+{% set appointmentTime = (appointment.startDateTime | govukTime) if appointment.startDateTime else 'Not provided' %}
+
+{% set rarActivity = 'Not provided' %}
+{% if appointment.isRarRelated == true %}
+  {% set rarActivity = 'Yes' %}
+{% endif %}
+
+{% set outcome = null %}
+{% if appointment.outcome is defined %}
+  {% set outcome = outcomeLabel or appointment.outcome or 'No outcome selected' %}
+{% endif %}
+
+{% set sensitive = 'Not provided' %}
+{% if appointment.isSensitive == true %}
+  {% set sensitive = 'Yes' %}
+{% elseif appointment.isSensitive == false %}
+  {% set sensitive = 'No' %}
+{% endif %}
+
+{% set detailsHtml %}
+  {% if appointmentNotes.length > 0 and appointmentNotes[0].note %}
+    <div class="app-note">
+      <p class="govuk-body govuk-!-margin-bottom-1">
+        <span class="line-break" data-qa="notesValue">{{ appointmentNotes[0].note | escape }}</span>
+      </p>
+      {% if appointmentNotes[0].createdBy %}
+        <p class="govuk-body-s secondary-text app-note__author">
+          Comment added by {{ appointmentNotes[0].createdBy | escape }}{% if appointmentNotes[0].createdByDate %} on {{ appointmentNotes[0].createdByDate | dateWithYear }}{% endif %}
+        </p>
+      {% endif %}
+    </div>
+  {% else %}
+    Not provided
+  {% endif %}
+{% endset %}
+
+{% set rows = [
+  {
+    key: { html: '<span data-qa="typeLabel">Type</span>' },
+    value: { html: '<span data-qa="typeValue">' + (contactDisplayName | escape) + '</span>' }
+  },
+  {
+    key: { html: '<span data-qa="dateLabel">Date</span>' },
+    value: { html: '<span data-qa="dateValue">' + (appointmentDate | dateWithDayAndWithYear | escape) + '</span>' }
+  },
+  {
+    key: { html: '<span data-qa="timeLabel">Time</span>' },
+    value: { html: '<span data-qa="timeValue">' + (appointmentTime | escape) + '</span>' }
+  },
+  {
+    key: { html: '<span data-qa="rarActivityLabel">RAR activity</span>' },
+    value: { html: '<span data-qa="rarActivityValue">' + (rarActivity | escape) + '</span>' }
+  } if not outcome,
+  {
+    key: { html: '<span data-qa="detailsLabel">Details</span>' },
+    value: { html: '<div data-qa="detailsValue">' + detailsHtml + '</div>' }
+  }
+] %}
+
+{% if outcome != null %}
+  {% set _ = rows.push({
+    key: { html: '<span data-qa="outcomeLabel">Outcome</span>' },
+    value: { html: '<span data-qa="outcomeValue">' + (outcome | escape) + '</span>' }
+  }) %}
+{% endif %}
+
+{% set _ = rows.push({ key: { html: '<span data-qa="sensitiveLabel">Sensitive</span>' }, value: { html: '<span data-qa="sensitiveValue">' + (sensitive | escape) + '</span>' } }) %}
+
+{% if documentsHtml %}
+  {% set _ = rows.push({
+    key: { html: '<span data-qa="relatedDocumentsLabel">Related documents</span>' },
+    value: { html: '<div data-qa="relatedDocumentsValue">' + documentsHtml + '</div>' }
+  }) %}
+{% endif %}
+
+{{ govukSummaryList({
+  classes: 'govuk-!-margin-bottom-0',
+  rows: rows
+}) }}

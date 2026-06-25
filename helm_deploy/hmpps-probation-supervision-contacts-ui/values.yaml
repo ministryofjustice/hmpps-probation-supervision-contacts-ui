@@ -17,7 +17,7 @@ generic-service:
     host: app-hostname.local # override per environment
     modsecurity_enabled: true
     modsecurity_audit_enabled: true
-    modsecurity_github_team: mpop-tech
+    modsecurity_github_team:  hmpps-manage-people-on-probation
     tlsSecretName: hmpps-probation-supervision-contacts-ui-cert
 
   livenessProbe:
@@ -59,14 +59,19 @@ generic-service:
       REDIS_AUTH_TOKEN: 'auth_token'
     hmpps-probation-supervision-contacts-ui-application-insights:
       APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"
+      APPINSIGHTS_INSTRUMENTATIONKEY: "APPINSIGHTS_INSTRUMENTATIONKEY"
     # This secret will need to be created in your namespace (note it isn't in hmpps-templates-dev)
     # IRSA configuration in your namespace will also be required, and then uncomment serviceAccountName above.
     sqs-hmpps-audit-secret:
       AUDIT_SQS_QUEUE_URL: 'sqs_queue_url'
 
+  # https://github.com/ministryofjustice/hmpps-ip-allowlists/blob/main/ip-allowlist-groups.yaml
   allowlist:
     groups:
-      - internal
+      - digital_staff_and_mojo
+      - unilink_staff
+      - moj_cloud_platform
+      - probation
 
 generic-prometheus-alerts:
   targetApplication: hmpps-probation-supervision-contacts-ui

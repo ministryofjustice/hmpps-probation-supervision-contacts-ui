@@ -1,0 +1,91 @@
+import type { RequestHandler } from 'express'
+import { DateTime } from 'luxon'
+import { validateWithSpec, countTextareaChars, CONTACT_DETAILS_MAX_LENGTH } from '../../utils/validationUtils'
+import { updateContactValidation } from '../../properties/validation/updateContact'
+import { OutcomeContactTypeDetails } from '../../data/model/outcomeContactTypes'
+import { buildUpdateContactViewModelWithOutcome } from '../../services/updateContactViewModel'
+import { showOfficer } from '../../data/model/contants'
+
+const getStringValue = (value: unknown): string => {
+  if (Array.isArray(value)) {
+    return typeof value[0] === 'string' ? value[0] : ''
+  }
+
+  return typeof value === 'string' ? value : ''
+}
+
+const getFormValues = (body: Record<string, unknown>): Record<string, string> =>
+  Object.entries(body).reduce<Record<string, string>>((accumulator, [key, value]) => {
+    accumulator[key] = getStringValue(value)
+    return accumulator
+  }, {})
+
+const updateContact: RequestHandler = (req, res, next) => {
+  const body = (req.body || {}) as Record<string, string | boolean>
+  const { crn, contactId } = req.params as Record<string, string>
+  const formValues = getFormValues(body)
+
+  body.date = formValues.date
+  body.time = formValues.time
+  body.sensitivity = formValues.sensitivity
+  const { contact } = res.locals
+
+  let displayName = res.locals?.contact.appointment?.displayName
+
+  if (!displayName) {
+    displayName = res.locals?.contact?.appointment?.type
+  }
+
+  const contactDetails = OutcomeContactTypeDetails.find(item => item.description === displayName)
+
+  const outcomeRequired = contactDetails?.outcomes?.length > 1
+  const responsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
+
+  const errorMessages = validateWithSpec(body, updateContactValidation(outcomeRequired, responsibleOfficer))
+
+  const detailsRaw = getStringValue(body.details)
+  const detailsLength = countTextareaChars(detailsRaw)
+
+  const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
+  let outcomeSection
+  let outcomeLabel
+
+  if (isOutcome) {
+    const result = buildUpdateContactViewModelWithOutcome({
+      displayName,
+      contact,
+    })
+    outcomeSection = result.outcomeSection
+    outcomeLabel = result.outcomeLabel
+  }
+
+  if (detailsLength > CONTACT_DETAILS_MAX_LENGTH) {
+    const excess = detailsLength - CONTACT_DETAILS_MAX_LENGTH
+    errorMessages.details = `You have entered ${excess} characters too many`
+  }
+
+  if (Object.keys(errorMessages).length) {
+    res.locals.errorMessages = errorMessages
+    return res.render('pages/contacts/update-contact', {
+      ...res.locals,
+      errorMessages,
+      formValues,
+      crn,
+      displayName,
+      contactId,
+      isOutcome,
+      csrfToken: res.locals.csrfToken,
+      outcomeSection,
+      outcomeLabel,
+      detailsMaxLength: CONTACT_DETAILS_MAX_LENGTH,
+      responsibleOfficer,
+      responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
+      responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
+      dateToday: DateTime.now().toFormat('d/M/yyyy'),
+    })
+  }
+
+  return next()
+}
+
+export default updateContact

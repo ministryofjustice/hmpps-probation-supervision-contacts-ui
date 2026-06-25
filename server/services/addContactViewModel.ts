@@ -1,6 +1,8 @@
+import { DateTime } from 'luxon'
 import { Sentence } from '../data/model/contacts'
 import { convertToTitleCase } from '../utils/utils'
 import { dateWithYear } from '../utils/dateWithYear'
+import { CONTACT_DETAILS_MAX_LENGTH } from '../utils/validationUtils'
 import {
   buildGuidanceContent,
   getContactTypeDetailBySlug,
@@ -96,13 +98,25 @@ export const buildAddContactViewModel = ({
     })
   }
 
+  const isInsetOutcome = !!detail?.showOutcomeBanner && outcomes.length === 1
+
+  function outcomeType() {
+    if (isInsetOutcome) return 'inset'
+    if (outcomes.length === 1) return 'checkbox'
+    return 'radios'
+  }
+
+  if (isInsetOutcome) {
+    updatedFormValues.outcomeCode = outcomes[0].value
+  }
+
   const outcomeItems =
     outcomes.length === 1
       ? [
           {
             text: `Set the outcome to '${outcomes[0].label}'`,
             value: outcomes[0].value,
-            checked: updatedFormValues.outcome === outcomes[0].value,
+            checked: updatedFormValues.outcomeCode === outcomes[0].value,
             attributes: {
               'data-qa': 'contactOutcome',
             },
@@ -111,11 +125,13 @@ export const buildAddContactViewModel = ({
       : outcomes.map(outcome => ({
           text: outcome.label,
           value: outcome.value,
-          checked: updatedFormValues.outcome === outcome.value,
+          checked: updatedFormValues.outcomeCode === outcome.value,
           attributes: {
             'data-qa': 'contactOutcome',
           },
         }))
+
+  const dateToday = DateTime.now().toFormat('d/M/yyyy')
 
   return {
     crn,
@@ -131,12 +147,21 @@ export const buildAddContactViewModel = ({
     showPersonOption,
     showEventOptions,
     guidance: buildGuidanceContent(detail),
+    detailsMaxLength: CONTACT_DETAILS_MAX_LENGTH,
+    showOutcomeBanner: detail?.showOutcomeBanner ?? false,
+    dateToday,
     outcomeSection:
       outcomes.length > 0
         ? {
-            legend: detail?.mandatoryOutcome ? 'Select an outcome' : 'Select an outcome (optional)',
-            type: outcomes.length === 1 ? 'checkbox' : 'radios',
+            legend:
+              detail?.mandatoryOutcome || detail?.showOutcomeBanner
+                ? 'Select an outcome'
+                : 'Select an outcome (optional)',
+            type: outcomeType(),
             items: outcomeItems,
+            insetText: isInsetOutcome
+              ? `The outcome for this contact will be set to '${outcomes[0].label}'.`
+              : undefined,
           }
         : undefined,
   }

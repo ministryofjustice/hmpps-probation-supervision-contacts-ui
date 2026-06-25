@@ -258,4 +258,55 @@ describe('MasApiClient', () => {
       expect(result).toEqual(response)
     })
   })
+
+  describe('getUserDetails', () => {
+    it('returns user details when user exists', async () => {
+      const user = {
+        roles: ['OIBT0002'],
+        userId: 1234,
+        username: 'USER1',
+        firstName: 'Test',
+        surname: 'User',
+        email: 'user@email.com',
+        enabled: true,
+        staff: {
+          probationDeliveryUnits: [{ code: 'N03CTM', description: 'Test PDU' }],
+        },
+      }
+      nock(config.apis.masApi.url)
+        .get('/user/test-user')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, user)
+
+      const result = await masApiClient.getUserDetails('test-user')
+
+      expect(result).toEqual(user)
+    })
+
+    it('returns null when a 404 is returned', async () => {
+      nock(config.apis.masApi.url)
+        .get('/user/test-user')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(404)
+
+      const result = await masApiClient.getUserDetails('test-user')
+
+      expect(result).toEqual(null)
+    })
+  })
+
+  describe('getPersonContact', () => {
+    it('returns the contact for a given crn and appointmentId', async () => {
+      const contact = { id: 'ABC123', type: 'TEST_CONTACT' }
+
+      nock(config.apis.masApi.url)
+        .get('/schedule/X123456/appointment/ABC123')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, contact)
+
+      const result = await masApiClient.getPersonContact('X123456', 'ABC123', 'test-user')
+
+      expect(result).toEqual(contact)
+    })
+  })
 })

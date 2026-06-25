@@ -15,6 +15,7 @@ export type ContactTypeDetail = {
   guidance?: string
   mandatoryOutcome?: boolean
   outcomes?: ContactOutcome[]
+  showOutcomeBanner?: boolean
 }
 
 export const NoOutcomeContactTypeDetails: ContactTypeDetail[] = [
@@ -49,6 +50,12 @@ export const NoOutcomeContactTypeDetails: ContactTypeDetail[] = [
     description: 'Case reviewed by case manager',
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
+  },
+  {
+    code: 'DPRE',
+    description: 'Pre-cons received',
+    sensitive: false,
+    relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
   {
     code: 'CMS40',

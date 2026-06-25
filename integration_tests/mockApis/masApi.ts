@@ -175,6 +175,173 @@ export default {
       },
     }),
 
+  stubGetContact: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/mas-api/schedule/X123456/appointment/00001',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          appointment: {
+            id: 2533,
+            type: 'eMail/Text to PoP',
+            startDateTime: '2026-05-06T09:28:01+01:00',
+            appointmentNotes: [
+              {
+                id: 0,
+                createdBy: 'J dsd',
+                createdByDate: '2026-05-06',
+                note: '[DEV] Mocked notes',
+                hasNoteBeenTruncated: false,
+              },
+            ],
+            isSensitive: false,
+            wasAbsent: false,
+            officer: {
+              code: 'N56A174',
+              name: {
+                forename: 'Jane',
+                surname: 'Smith',
+              },
+              teamCode: 'N11',
+              providerCode: 'N12',
+              username: 'J20',
+            },
+            isInitial: false,
+            isNationalStandard: false,
+            rescheduled: false,
+            rescheduledStaff: false,
+            rescheduledPop: false,
+            absentWaitingEvidence: false,
+            documents: [
+              {
+                id: 'doc-001',
+                name: 'This is a sample pdf.pdf',
+                createdAt: '2026-06-16T19:06:38+01:00',
+                lastUpdated: '2026-06-16T19:06:38+01:00',
+              },
+            ],
+            isRarRelated: false,
+            acceptableAbsence: false,
+            isAppointment: false,
+            isCommunication: true,
+            isSystemContact: false,
+            isEmailOrTextFromPop: false,
+            isPhoneCallFromPop: false,
+            isEmailOrTextToPop: true,
+            isPhoneCallToPop: false,
+            isInPast: true,
+            alert: true,
+            isPastAppointment: false,
+            lastUpdated: '2026-05-06T09:28:01+01:00',
+            lastUpdatedBy: {
+              forename: 'Manage People on Probation',
+              surname: 'Service',
+            },
+            deliusManaged: true,
+            isVisor: false,
+            displayName: 'Email or text to person on probation',
+          },
+          documents: [
+            {
+              id: 'doc-001',
+              name: 'This is a sample pdf.pdf',
+              createdAt: '2026-06-16T19:06:38+01:00',
+              lastUpdated: '2026-06-16T19:06:38+01:00',
+              author: { forename: 'Shilpa', surname: 'basu' },
+            },
+          ],
+        },
+      },
+    }),
+
+  stubGetContactOutcome: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/mas-api/schedule/X123456/appointment/00003',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          personSummary: {
+            name: {
+              forename: 'Marianne',
+              middleName: 'S',
+              surname: 'DuBuque-Predovic',
+            },
+            crn: 'X793504',
+            offenderId: 2501225867,
+            pnc: '1974/3498172L',
+            noms: 'A6087EA',
+            dateOfBirth: '1974-09-19',
+          },
+          appointment: {
+            id: 2510648859,
+            eventNumber: '3',
+            type: 'Police intelligence enquiries - response received',
+            startDateTime: '2026-05-28T12:35:00+01:00',
+            appointmentNotes: [
+              {
+                id: 0,
+                createdBy: 'J Doe',
+                createdByDate: '2026-05-21',
+                note: 'optional outcome testing\n\nThis contact was created in the Manage people on probation service.',
+                hasNoteBeenTruncated: false,
+              },
+            ],
+            isSensitive: false,
+            wasAbsent: false,
+            officer: {
+              code: 'N56A119',
+              name: {
+                forename: 'leigh',
+                surname: 'christie1',
+              },
+              teamCode: 'N56N07',
+              providerCode: 'N56',
+              username: 'leigh.christie1',
+            },
+            isInitial: false,
+            isNationalStandard: false,
+            rescheduled: false,
+            rescheduledStaff: false,
+            rescheduledPop: false,
+            absentWaitingEvidence: false,
+            documents: [],
+            isRarRelated: false,
+            acceptableAbsence: false,
+            isAppointment: false,
+            isCommunication: false,
+            isSystemContact: false,
+            isEmailOrTextFromPop: false,
+            isPhoneCallFromPop: false,
+            isEmailOrTextToPop: false,
+            isPhoneCallToPop: false,
+            isInPast: true,
+            isPastAppointment: false,
+            isAlert: false,
+            lastUpdated: '2026-05-28T15:44:17+01:00',
+            lastUpdatedBy: {
+              forename: 'John',
+              surname: 'Doe',
+            },
+            description: 'optional outcome',
+            outcome: '',
+            deliusManaged: true,
+            isVisor: false,
+            eventId: 2501068142,
+            displayName: 'Police intelligence enquiries - response received',
+          },
+          documents: [],
+        },
+      },
+    }),
+
   stubGetProbationPractitioner: (): SuperAgentRequest =>
     stubFor({
       request: {

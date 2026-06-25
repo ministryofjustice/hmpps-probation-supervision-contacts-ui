@@ -22,6 +22,8 @@ import setUpFlags from './middleware/setUpFlags'
 
 import addContactRoutes from './routes/addContact'
 import type { Services } from './services'
+import addUpdateContactRoutes from './routes/updateContact'
+import { metricsMiddleware } from './monitoring/metricsApp'
 
 export default function createApp(services: Services): express.Application {
   const app = express()
@@ -40,15 +42,17 @@ export default function createApp(services: Services): express.Application {
   nunjucksSetup(app)
   app.use(setUpAuthentication())
   app.use(authorisationMiddleware())
-  app.use(setUpCurrentUser())
+  app.use(setUpCurrentUser(services.masApiClient))
   app.use(setUpFlags(services))
   app.use(getFrontendComponents(services.probationComponentsService))
   app.use(authorisationMiddleware(['ROLE_MANAGE_SUPERVISIONS']))
   app.use(getUserAlertsCount(services.masApiClient))
+  app.use(metricsMiddleware)
 
   // Routes that use multer for multipart upload must be registered before csrf executes
   const router = Router()
   addContactRoutes(router, services)
+  addUpdateContactRoutes(router, services)
   app.use(router)
 
   app.use(setUpCsrf())
