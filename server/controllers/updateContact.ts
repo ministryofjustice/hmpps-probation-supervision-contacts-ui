@@ -20,11 +20,39 @@ const getStringValue = (value: unknown): string => {
 }
 
 const updateContactController = {
-  getUpdateContact: (): RequestHandler => {
+  getUpdateContact: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res, next) => {
+      const { username } = res.locals.user
       const { crn, contactId } = req.params as Record<string, string>
+      const fullNoteId = getStringValue(req.query?.fullNoteId)
 
-      const { contact } = res.locals
+      let { contact } = res.locals
+      if (fullNoteId) {
+        const contactService = new ContactService(masApiClient)
+        const fullContact = await contactService.fullContactNote(crn, contactId, fullNoteId, username)
+
+        if (fullContact) {
+          const fullSingleNote = fullContact.appointment?.appointmentNote
+          const existingNotes = contact.appointment?.appointmentNotes ?? []
+
+          const mergedNotes = fullSingleNote
+            ? [
+                fullSingleNote,
+                ...existingNotes.filter(
+                  (note: { id?: string | number | null }) => String(note?.id) !== String(fullSingleNote.id),
+                ),
+              ]
+            : existingNotes
+
+          contact = {
+            ...contact,
+            appointment: {
+              ...contact.appointment,
+              appointmentNotes: mergedNotes,
+            },
+          }
+        }
+      }
 
       const displayName = contact.appointment?.displayName ?? contact.appointment?.type
 

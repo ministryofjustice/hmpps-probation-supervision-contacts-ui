@@ -29,19 +29,25 @@
 {% elseif appointment.isSensitive == false %}
   {% set sensitive = 'No' %}
 {% endif %}
-
 {% set detailsHtml %}
-  {% if appointmentNotes.length > 0 and appointmentNotes[0].note %}
-    <div class="app-note">
-      <p class="govuk-body govuk-!-margin-bottom-1">
-        <span class="line-break" data-qa="notesValue">{{ appointmentNotes[0].note | escape }}</span>
-      </p>
-      {% if appointmentNotes[0].createdBy %}
-        <p class="govuk-body-s secondary-text app-note__author">
-          Comment added by {{ appointmentNotes[0].createdBy | escape }}{% if appointmentNotes[0].createdByDate %} on {{ appointmentNotes[0].createdByDate | dateWithYear }}{% endif %}
-        </p>
+  {% if appointmentNotes.length > 0 %}
+    {% for note in appointmentNotes %}
+      {% if note.note %}
+        <div class="app-note">
+          <p class="govuk-body govuk-!-margin-bottom-1">
+            <span class="line-break" data-qa="notesValue">{{ note.note | escape }}</span>
+              {% if note.hasNoteBeenTruncated and note.id is not none %}
+                ... <a href="?fullNoteId={{ note.id}}">View full note</a>
+              {% endif %}
+          </p>
+          {% if note.createdBy %}
+            <p class="govuk-body-s secondary-text app-note__author">
+              Comment added by {{ note.createdBy | escape }}{% if note.createdByDate %} on {{ note.createdByDate | dateWithYear }}{% endif %}
+            </p>
+          {% endif %}
+        </div>
       {% endif %}
-    </div>
+    {% endfor %}
   {% else %}
     Not provided
   {% endif %}
