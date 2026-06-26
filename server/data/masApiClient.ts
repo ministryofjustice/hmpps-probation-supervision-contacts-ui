@@ -180,4 +180,20 @@ export default class MasApiClient extends RestClient {
 
     return personContact ? mapPersonAppointmentWithApprovedContactDisplayNames(personContact) : personContact
   }
+
+  async getFullContactNote(
+    crn: string,
+    appointmentId: string,
+    noteId: string,
+    username: string,
+  ): Promise<PersonContact | null> {
+    const personContact = (await this.get(
+      {
+        path: `/schedule/${crn}/appointment/${appointmentId}/note/${noteId}`,
+      },
+      asSystem(username),
+    )) as PersonContact | null
+
+    return personContact ? mapPersonAppointmentWithApprovedContactDisplayNames(personContact) : personContact
+  }
 }

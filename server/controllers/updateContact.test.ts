@@ -31,6 +31,7 @@ function createReq(overrides: Partial<Request> = {}): Request {
 }
 
 describe('getUpdateContact', () => {
+  const mockMasApiClient = {} as jest.Mocked<MasApiClient>
   it('renders the update-contact page with the outcome contact data', async () => {
     const next = jest.fn()
     const req = createReq({
@@ -47,7 +48,7 @@ describe('getUpdateContact', () => {
       csrfToken: 'token',
     })
 
-    await updateContactController.getUpdateContact()(req, res, next)
+    await updateContactController.getUpdateContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
     expect(res.render).toHaveBeenCalledWith(
       'pages/contacts/update-contact',
@@ -77,7 +78,7 @@ describe('getUpdateContact', () => {
       csrfToken: 'token',
     })
 
-    await updateContactController.getUpdateContact()(req, res, next)
+    await updateContactController.getUpdateContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
     expect(res.render).toHaveBeenCalledWith(
       'pages/contacts/update-contact',
@@ -89,6 +90,58 @@ describe('getUpdateContact', () => {
         csrfToken: 'token',
       }),
     )
+  })
+
+  it('keeps two notes and replaces the selected full note content when fullNoteId is provided', async () => {
+    const next = jest.fn()
+    const req = createReq({
+      params: { crn: 'X123456', contactId: 'ABC123' },
+      query: { fullNoteId: '0' },
+    })
+
+    const res = createRes({
+      user: { username: 'john.smith' },
+      contact: {
+        appointment: {
+          id: 'ABC123',
+          displayName: 'Alcohol consumption',
+          appointmentNotes: [
+            { id: 0, note: 'NOTE' },
+            { id: 1, note: 'existing' },
+          ],
+        },
+      },
+      csrfToken: 'token',
+    })
+
+    const mockFullContactNote = jest.fn().mockResolvedValue({
+      appointment: {
+        appointmentNote: {
+          id: 0,
+          note: 'NOTE FULL',
+          createdBy: 'A',
+          createdByDate: '2026-06-18',
+        },
+      },
+    })
+
+    MockContactService.mockImplementation(
+      () =>
+        ({
+          fullContactNote: mockFullContactNote,
+        }) as any,
+    )
+
+    await updateContactController.getUpdateContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+    expect(mockFullContactNote).toHaveBeenCalledWith('X123456', 'ABC123', '0', 'john.smith')
+
+    const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+    const notes = renderArgs.contact.appointment.appointmentNotes
+
+    expect(notes).toHaveLength(2)
+    expect(notes[0].id).toBe(0)
+    expect(notes[0].note).toBe('NOTE FULL')
   })
 })
 

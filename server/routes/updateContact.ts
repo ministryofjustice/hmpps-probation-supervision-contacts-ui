@@ -25,7 +25,7 @@ export default function addUpdateContactRoutes(
   router.get(
     '/case/:crn/:contactId/update-contact',
     ...loadEditContactDeps,
-    controllers.updateContact.getUpdateContact(),
+    controllers.updateContact.getUpdateContact(masApiClient),
   )
   router.post(
     '/case/:crn/:contactId/update-contact',

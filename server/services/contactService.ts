@@ -3,6 +3,7 @@ import {
   ContactType,
   CreateContactRequest,
   CreateContactResponse,
+  PersonContact,
   UpdateContactWithNoOutcome,
   UpdateContactWithOutcome,
 } from '../data/model/contacts'
@@ -44,5 +45,9 @@ export default class ContactService {
 
   async patchDocuments(crn: string, contactId: string, file: Express.Multer.File, username: string): Promise<void> {
     return this.masApiClient.patchDocuments(crn, contactId, file, username)
+  }
+
+  async fullContactNote(crn: string, contactId: string, noteId: string, username: string): Promise<PersonContact> {
+    return this.masApiClient.getFullContactNote(crn, contactId, noteId, username)
   }
 }
