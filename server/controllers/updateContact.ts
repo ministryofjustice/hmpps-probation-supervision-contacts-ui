@@ -11,8 +11,6 @@ import { convertDateToIso } from '../utils/toDateOnly'
 import { CONTACT_DETAILS_MAX_LENGTH } from '../utils/validationUtils'
 import { showOfficer } from '../data/model/contants'
 
-const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024
-
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
     return typeof value[0] === 'string' ? value[0] : ''
@@ -141,7 +139,7 @@ const updateContactController = {
       }
 
       if (req.file) {
-        if (req.file.size > MAX_FILE_SIZE_BYTES) {
+        if (req.file.size > config.maxFileSize) {
           return res.redirect(
             `${config.manageProbationUrl}/case/${crn}/activity/${contactId}?showSuccessBanner=true&uploadFailed=true`,
           )

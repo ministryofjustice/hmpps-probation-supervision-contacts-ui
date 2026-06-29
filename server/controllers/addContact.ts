@@ -17,7 +17,6 @@ import {
 } from '../services/contactCategorySearch'
 import { buildAddContactViewModel } from '../services/addContactViewModel'
 import { isBlank } from '../utils/isBlank'
-import logger from '../../logger'
 import { showOfficer } from '../data/model/contants'
 
 const buildContactTypeLinksJson = (crn: string, enableEnforcementContacts = false) =>
@@ -297,6 +296,11 @@ const addContactController = {
       }
       const { id: contactId } = await contactService.createContact(crn, payload, username)
       if (req.file) {
+        if (req.file.size > config.maxFileSize) {
+          return res.redirect(
+            `${config.manageProbationUrl}/case/${crn}/activity-log?showSuccessBanner=true&uploadFailed=true`,
+          )
+        }
         try {
           await contactService.patchDocuments(crn, contactId.toString(), req.file, username)
           return res.redirect(`${config.manageProbationUrl}/case/${crn}/activity-log?showSuccessBanner=true`)

@@ -514,6 +514,22 @@ describe('addContactController', () => {
       expect(mockPatchDocuments).toHaveBeenCalledWith('X123456', '1', mockFile, 'test-user')
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('showSuccessBanner=true&uploadFailed=true'))
     })
+
+    it('redirects with uploadFailed=true when file exceeds 5mb', async () => {
+      mockPatchDocuments.mockRejectedValue(new Error('Upload failed'))
+      const req = createReq({
+        params: { crn: 'X123456', contactType: 'community-intervention' },
+        body: validBody,
+        file: {
+          size: 30000000,
+        } as Express.Multer.File,
+      })
+      const res = createRes()
+
+      await addContactController.postAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('showSuccessBanner=true&uploadFailed=true'))
+    })
   })
 
   describe('getSearchByCategory', () => {

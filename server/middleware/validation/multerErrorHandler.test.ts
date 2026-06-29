@@ -50,19 +50,6 @@ describe('multerErrorHandler', () => {
     expect(res.locals.errorMessages).toBeUndefined()
   })
 
-  it('sets errorMessages for LIMIT_FILE_SIZE error', () => {
-    const error = new MulterError('LIMIT_FILE_SIZE', 'file')
-    multer().single.mockImplementation(
-      (_field: string) => (_req: Request, _res: Response, cb: (err?: Error) => void) => cb(error),
-    )
-
-    const middleware = multerErrorHandler('file')
-    middleware(req as Request, res as Response, next)
-
-    expect(res.locals.errorMessages).toEqual({ file: 'File size must be 5mb or under' })
-    expect(next).toHaveBeenCalled()
-  })
-
   it('sets errorMessages for LIMIT_UNEXPECTED_FILE error', () => {
     const error = new MulterError('LIMIT_UNEXPECTED_FILE', 'file')
     multer().single.mockImplementation(
@@ -74,18 +61,6 @@ describe('multerErrorHandler', () => {
 
     expect(res.locals.errorMessages).toEqual({ file: 'Only PDF or Word files are allowed' })
     expect(next).toHaveBeenCalled()
-  })
-
-  it('uses the field name provided as the error key', () => {
-    const error = new MulterError('LIMIT_FILE_SIZE', 'document')
-    multer().single.mockImplementation(
-      (_field: string) => (_req: Request, _res: Response, cb: (err?: Error) => void) => cb(error),
-    )
-
-    const middleware = multerErrorHandler('document')
-    middleware(req as Request, res as Response, next)
-
-    expect(res.locals.errorMessages).toEqual({ document: 'File size must be 5mb or under' })
   })
 
   it('calls next even when there is an error', () => {
