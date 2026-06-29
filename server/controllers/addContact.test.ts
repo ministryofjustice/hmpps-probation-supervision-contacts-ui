@@ -516,7 +516,6 @@ describe('addContactController', () => {
     })
 
     it('redirects with uploadFailed=true when file exceeds 5mb', async () => {
-      mockPatchDocuments.mockRejectedValue(new Error('Upload failed'))
       const req = createReq({
         params: { crn: 'X123456', contactType: 'community-intervention' },
         body: validBody,
