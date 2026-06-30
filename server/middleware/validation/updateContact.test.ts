@@ -65,6 +65,36 @@ describe('middleware/validation/updateContact', () => {
     expect(renderData.errorMessages.time).toBeDefined()
   })
 
+  it('preserves multer file upload errors and re-renders with form values', () => {
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactId: 'ABC123' },
+      body: {
+        date: '01/01/2026',
+        time: '09:30',
+        details: 'details',
+        alertResponsibleOfficer: 'Yes',
+        sensitivity: 'No',
+      },
+    })
+    const res = createRes()
+
+    res.locals.errorMessages = { fileUpload: 'File size must be 5mb or under' }
+
+    updateContact(req, res, next)
+
+    expect(next).not.toHaveBeenCalled()
+    expect(res.render).toHaveBeenCalled()
+
+    const renderData = (res.render as jest.Mock).mock.calls[0][1]
+
+    expect(renderData.errorMessages.fileUpload).toBe('File size must be 5mb or under')
+
+    expect(renderData.formValues.date).toBe('01/01/2026')
+    expect(renderData.formValues.time).toBe('09:30')
+    expect(renderData.formValues.details).toBe('details')
+    expect(renderData.formValues.alertResponsibleOfficer).toBe('Yes')
+  })
+
   it('renders with error when date is in the future', () => {
     const req = httpMocks.createRequest({
       params: { crn: 'X123456', contactId: 'ABC123' },

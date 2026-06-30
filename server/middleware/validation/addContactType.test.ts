@@ -108,6 +108,37 @@ describe('middleware/validation/addContactType', () => {
     expect(renderData.errorMessages.alertResponsibleOfficer).toBeDefined()
   })
 
+  it('preserves multer file upload errors and re-renders with form values', () => {
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactType: 'add-police-liaison' },
+      body: {
+        sentence: '1',
+        date: '17/5/2024',
+        time: '09:30',
+        details: 'Contact details entered',
+        sensitivity: 'Yes',
+        alertResponsibleOfficer: 'Yes',
+      },
+    })
+    const res = createRes()
+
+    res.locals.errorMessages = { fileUpload: 'File size must be 5mb or under' }
+
+    addContactType(req, res, next)
+
+    expect(next).not.toHaveBeenCalled()
+    expect(res.render).toHaveBeenCalled()
+
+    const renderData = (res.render as jest.Mock).mock.calls[0][1]
+
+    expect(renderData.errorMessages.fileUpload).toBe('File size must be 5mb or under')
+
+    expect(renderData.formValues.date).toBe('17/5/2024')
+    expect(renderData.formValues.time).toBe('09:30')
+    expect(renderData.formValues.details).toBe('Contact details entered')
+    expect(renderData.formValues.alertResponsibleOfficer).toBe('Yes')
+  })
+
   it('does not require alertResponsibleOfficer when responsibleOfficer is not SHOW_OFFICER', () => {
     const req = httpMocks.createRequest({
       params: { crn: 'X123456', contactType: 'add-police-liaison' },
