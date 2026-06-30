@@ -28,7 +28,7 @@ const addContactType: RequestHandler = (req, res, next) => {
   const slug = rawSlug.replace(/^add-/, '')
   const detail = getContactTypeDetailBySlug(slug)
 
-  const errorMessages = validateWithSpec(
+  const validationErrors = validateWithSpec(
     req.body,
     addContactValidation({
       responsibleOfficer,
@@ -36,6 +36,11 @@ const addContactType: RequestHandler = (req, res, next) => {
       outcomeRequired: !!detail?.mandatoryOutcome,
     }),
   )
+
+  const errorMessages = {
+    ...(res.locals.errorMessages ?? {}),
+    ...validationErrors,
+  }
 
   const detailsRaw = typeof req.body?.details === 'string' ? req.body.details : ''
   const detailsLength = countTextareaChars(detailsRaw)
