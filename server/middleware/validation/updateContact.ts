@@ -41,7 +41,12 @@ const updateContact: RequestHandler = (req, res, next) => {
   const outcomeRequired = contactDetails?.outcomes?.length > 1
   const responsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
 
-  const errorMessages = validateWithSpec(body, updateContactValidation(outcomeRequired, responsibleOfficer))
+  const validationErrors = validateWithSpec(body, updateContactValidation(outcomeRequired, responsibleOfficer))
+
+  const errorMessages = {
+    ...(res.locals.errorMessages ?? {}),
+    ...validationErrors,
+  }
 
   const detailsRaw = getStringValue(body.details)
   const detailsLength = countTextareaChars(detailsRaw)

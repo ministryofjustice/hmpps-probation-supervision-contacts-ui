@@ -244,6 +244,11 @@
                     <label class="govuk-label govuk-label--m" for="fileUpload">
                         Upload a file (optional)
                     </label>
+                    {% if errorMessages.fileUpload %}
+                        <p id="fileUpload-error" class="govuk-error-message">
+                        <span class="govuk-visually-hidden">Error:</span> {{ errorMessages.fileUpload }}
+                        </p>
+                    {% endif %}
                     <div class="govuk-drop-zone" data-module="govuk-file-upload">
                         {{ govukFileUpload({
                             id: "fileUpload",
