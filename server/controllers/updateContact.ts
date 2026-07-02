@@ -104,7 +104,7 @@ const updateContactController = {
       const existingNotes = res.locals.contact.appointment?.appointmentNotes[0]?.note
       const normaliseText = (value: string) => value.replace(/\r\n/g, '\n').trim()
 
-      if (normaliseText(existingNotes) === normaliseText(notes)) {
+      if (existingNotes && normaliseText(existingNotes) === normaliseText(notes)) {
         notes = ''
       }
 
