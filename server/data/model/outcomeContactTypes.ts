@@ -26,6 +26,32 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     ],
   },
   {
+    code: 'MAPLS',
+    description: 'MAPPA level setting process',
+    sensitive: true,
+    relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
+    mandatoryOutcome: true,
+    outcomes: [
+      {
+        label: 'Level 1 - SPO Endorsed',
+        value: 'MAP4',
+        systemLabel: 'Level 1 - SPO endorsed',
+      },
+      {
+        label: 'Refer to Level 2 - SPO Endorsed',
+        value: 'MAP5',
+        systemLabel: 'Refer to level 2 - SPO endorsed',
+      },
+      {
+        label: 'Refer to Level 3 - SPO Endorsed',
+        value: 'MAP6',
+        systemLabel: 'Refer to level 3 - SPO endorsed',
+      },
+    ],
+    defaultHeading: 'Has the prison been notified of MAPPA Level?',
+    guidance: "You must notify the prison of the MAPPA level, and record that you've done this.",
+  },
+  {
     code: 'CARR',
     description: 'Arrest incident',
     sensitive: false,

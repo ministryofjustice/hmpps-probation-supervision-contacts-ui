@@ -328,14 +328,6 @@ export const NoOutcomeContactTypeDetails: ContactTypeDetail[] = [
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
   {
-    code: 'MAPLS',
-    description: 'MAPPA level setting process',
-    sensitive: true,
-    relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
-    defaultHeading: 'Has the prison been notified of MAPPA Level?',
-    guidance: "You must notify the prison of the MAPPA level, and record that you've done this.",
-  },
-  {
     code: 'CCMM',
     description: 'MAPPA meeting',
     sensitive: true,
