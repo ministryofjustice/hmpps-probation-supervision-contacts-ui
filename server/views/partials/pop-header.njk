@@ -15,9 +15,38 @@
             </li>
         </ul>
     </div>
-    {% if risksWidget.overallRisk and risksWidget.overallRisk !== 'NOT_FOUND' %}
-        <div class="govuk-!-margin-left-4">{{ predictorTimelineItem({ type: "ROSH", level: risksWidget.overallRisk }) }}</div>
-    {% endif %}
+
+        {% set overallRisk = risksWidget.overallRisk %}
+        {% if overallRisk == 'VERY_HIGH' %}
+            {% set overallRisk = 'VERY HIGH' %}
+        {% endif %}
+        {% set riskDataRosh = {
+            assessments: [
+                {
+                    rosh: {
+                        name: 'ROSH' if riskData
+                            .assessments[0]
+                            .rsr
+                            .band else
+                                'RISK OF SERIOUS HARM',
+                                band: overallRisk
+                        }
+                }
+            ]
+        } %}
+
+        {% if overallRisk and overallRisk !== 'NOT_FOUND' %}
+            <div class="govuk-!-margin-left-4">
+                {{ predictorBadge({
+                    data: riskDataRosh,
+                    predictor: 'rosh',
+                    showScore: false
+                })}}
+            </div>
+        {% endif %}
+
+
+
     {% if predictorScores.scores.RSR.level %}
         <div class="govuk-!-margin-left-4">{{ predictorTimelineItem(predictorScores.scores.RSR) }}</div>
     {% endif %}

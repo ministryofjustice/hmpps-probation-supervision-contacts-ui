@@ -3,6 +3,7 @@ import path from 'path'
 import nunjucks from 'nunjucks'
 import express from 'express'
 import fs from 'fs'
+import { arnsNunjucksSetup } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { initialiseName } from './utils'
 import { dateWithYear } from './dateWithYear'
 import { yearsSince } from './yearsSince'
@@ -39,6 +40,7 @@ export default function nunjucksSetup(app: express.Express): void {
       'node_modules/@ministryofjustice/frontend/',
       'node_modules/@ministryofjustice/frontend/moj/components/',
       'node_modules/@ministryofjustice/probation-search-frontend/components',
+      'node_modules/@ministryofjustice/hmpps-arns-frontend-components-lib/dist',
     ],
     {
       autoescape: true,
@@ -53,4 +55,6 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('yearsSince', yearsSince)
   njkEnv.addFilter('dateWithDayAndWithYear', dateWithDayAndWithYear)
   njkEnv.addFilter('govukTime', govukTime)
+
+  arnsNunjucksSetup(njkEnv)
 }
