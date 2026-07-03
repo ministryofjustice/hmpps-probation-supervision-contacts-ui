@@ -103,7 +103,7 @@
     "jsonwebtoken": "^9.0.3",
     "lint-staged": "^17.0.8",
     "minimatch": "^10.2.5",
-    "nock": "^14.0.15",
+    "nock": "^14.0.16",
     "node-mocks-http": "1.17.2",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.11",
@@ -112,7 +112,7 @@
   "overrides": {
     "flatted": "^3.4.2",
     "@ministryofjustice/hmpps-npm-script-allowlist": {
-      "tar": "^7.5.17"
+      "tar": "^7.5.19"
     }
   }
 }
