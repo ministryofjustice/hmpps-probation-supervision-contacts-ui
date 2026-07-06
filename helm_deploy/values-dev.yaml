@@ -44,6 +44,27 @@ generic-service:
          ctl:ruleRemoveTargetById=942350;ARGS:details,\
          ctl:ruleRemoveTargetById=942370;ARGS:details"
 
+      SecRule REQUEST_URI "@rx ^/case/[A-Z][0-9]{6}/[0-9]+/update-contact$" \
+        "id:1001002,\
+          phase:1,\
+          pass,\
+          nolog,\
+          ctl:ruleRemoveTargetById=932200;ARGS:details,\
+          ctl:ruleRemoveTargetById=932230;ARGS:details,\
+          ctl:ruleRemoveTargetById=932235;ARGS:details,\
+          ctl:ruleRemoveTargetById=932250;ARGS:details,\
+          ctl:ruleRemoveTargetById=932231;ARGS:details,\
+          ctl:ruleRemoveTargetById=932236;ARGS:details,\
+          ctl:ruleRemoveTargetById=932260;ARGS:details,\
+          ctl:ruleRemoveTargetById=932370;ARGS:details,\
+          ctl:ruleRemoveTargetById=942430;ARGS:details,\
+          ctl:ruleRemoveTargetById=942200;ARGS:details,\
+          ctl:ruleRemoveTargetById=942360;ARGS:details,\
+          ctl:ruleRemoveTargetById=942131;ARGS:details,\
+          ctl:ruleRemoveTargetById=942190;ARGS:details,\
+          ctl:ruleRemoveTargetById=942350;ARGS:details,\
+          ctl:ruleRemoveTargetById=942370;ARGS:details"
+
   env:
     INGRESS_URL: "https://probation-supervision-contacts-ui-dev.hmpps.service.justice.gov.uk"
     HMPPS_AUTH_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
