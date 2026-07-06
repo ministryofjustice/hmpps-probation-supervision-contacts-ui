@@ -33,6 +33,7 @@ generic-service:
          ctl:ruleRemoveTargetById=932250;ARGS:details,\
          ctl:ruleRemoveTargetById=932231;ARGS:details,\
          ctl:ruleRemoveTargetById=932236;ARGS:details,\
+         ctl:ruleRemoveTargetById=932260;ARGS:details,\
          ctl:ruleRemoveTargetById=932370;ARGS:details,\
          ctl:ruleRemoveTargetById=942430;ARGS:details,\
          ctl:ruleRemoveTargetById=942200;ARGS:details,\
