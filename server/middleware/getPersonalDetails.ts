@@ -69,7 +69,6 @@ export const getPersonalDetails = (
 
     res.locals.case = data.overview
     res.locals.risksWidget = toRoshWidget(data.risks)
-    res.locals.risks = data.risks
     res.locals.riskData = data.riskData
     res.locals.tierCalculation = data.tierCalculation
     res.locals.predictorScores = toPredictors(data.predictors)
