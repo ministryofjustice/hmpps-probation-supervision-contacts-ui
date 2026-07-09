@@ -9,6 +9,7 @@ export type PersonalDetailsCache = {
   risks: RiskSummary | ErrorSummary | null
   tierCalculation: TierCalculation | ErrorSummary | null
   predictors: ErrorSummary | RiskScoresDto[] | null
+  riskData: RiskData
 }
 
 type AppSessionData = {

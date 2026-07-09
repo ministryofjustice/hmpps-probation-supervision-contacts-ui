@@ -1,5 +1,7 @@
 import type { RequestHandler } from 'express'
 import createError from 'http-errors'
+import { ArnsComponents } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
+import { asUser } from '@ministryofjustice/hmpps-rest-client'
 import MasApiClient from '../data/masApiClient'
 import ArnsApiClient from '../data/arnsApiClient'
 import TierApiClient from '../data/tierApiClient'
@@ -13,6 +15,7 @@ export const getPersonalDetails = (
   masApiClient: MasApiClient,
   arnsApiClient: ArnsApiClient,
   tierApiClient: TierApiClient,
+  arnsComponents: ArnsComponents,
 ): RequestHandler => {
   return async (req, res, next) => {
     const crn = req.params.crn as string
@@ -30,14 +33,17 @@ export const getPersonalDetails = (
       'Personal details cache',
     )
 
+    const authOptions = asUser(res.locals.user.token)
+
     if (personalDetails) {
       data = personalDetails
     } else {
-      const [overview, risks, tierCalculation, predictors] = await Promise.all([
+      const [overview, risks, tierCalculation, predictors, riskData] = await Promise.all([
         masApiClient.getPersonalDetails(crn, username),
         arnsApiClient.getRisks(crn, username),
         tierApiClient.getCalculationDetails(crn, username),
         arnsApiClient.getPredictorsAll(crn, username),
+        arnsComponents.getRiskData(authOptions, 'crn', crn),
       ])
 
       if (!overview) {
@@ -49,6 +55,7 @@ export const getPersonalDetails = (
         risks,
         tierCalculation,
         predictors,
+        riskData,
       }
 
       req.session.data = {
@@ -62,6 +69,8 @@ export const getPersonalDetails = (
 
     res.locals.case = data.overview
     res.locals.risksWidget = toRoshWidget(data.risks)
+    res.locals.risks = data.risks
+    res.locals.riskData = data.riskData
     res.locals.tierCalculation = data.tierCalculation
     res.locals.predictorScores = toPredictors(data.predictors)
     res.locals.headerPersonName = {

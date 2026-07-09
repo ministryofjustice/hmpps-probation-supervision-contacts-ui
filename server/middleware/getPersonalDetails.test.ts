@@ -1,4 +1,5 @@
 import httpMocks from 'node-mocks-http'
+import { ArnsComponents, RiskData } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { getPersonalDetails } from './getPersonalDetails'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient, { TierCalculation } from '../data/tierApiClient'
@@ -17,6 +18,11 @@ import {
 } from '../data/model/personalDetails'
 import { Contact } from '../data/model/professionalContact'
 import { RiskSummary } from '../data/model/risk'
+
+const mockRiskData: RiskData = {
+  assessments: [],
+  httpStatus: 200,
+}
 
 const mockRisks = {
   overallRisk: 'VERY_HIGH',
@@ -47,6 +53,7 @@ const mockTierCalculation = {
 let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getPersonalDetails'>>
 let mockArnsApiClient: jest.Mocked<Pick<ArnsApiClient, 'getRisks' | 'getPredictorsAll'>>
 let mockTierApiClient: jest.Mocked<Pick<TierApiClient, 'getCalculationDetails'>>
+let mockArnsComponents: jest.Mocked<Pick<ArnsComponents, 'getRiskData'>>
 
 let req: httpMocks.MockRequest<any>
 let res: httpMocks.MockResponse<any>
@@ -78,6 +85,7 @@ const mockSession = (crn = 'X000001') => ({
   risks: mockRisks,
   tierCalculation: mockTierCalculation,
   predictors: mockPredictors,
+  riskData: mockRiskData,
 })
 
 const getReq = () =>
@@ -119,6 +127,7 @@ describe('/middleware/getPersonalDetails', () => {
       getPredictorsAll: jest.fn().mockResolvedValue(mockPredictors),
     }
     mockTierApiClient = { getCalculationDetails: jest.fn().mockResolvedValue(mockTierCalculation) }
+    mockArnsComponents = { getRiskData: jest.fn().mockResolvedValue(mockRiskData) }
   })
 
   afterEach(() => {
@@ -134,6 +143,7 @@ describe('/middleware/getPersonalDetails', () => {
       mockMasApiClient as unknown as MasApiClient,
       mockArnsApiClient as unknown as ArnsApiClient,
       mockTierApiClient as unknown as TierApiClient,
+      mockArnsComponents as unknown as ArnsComponents,
     )(req, res, nextSpy)
     const expected = {
       personalDetails: {
@@ -146,6 +156,7 @@ describe('/middleware/getPersonalDetails', () => {
     expect(mockTierApiClient.getCalculationDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
     expect(mockArnsApiClient.getRisks).toHaveBeenCalledWith(req.params.crn, 'user-1')
     expect(mockArnsApiClient.getPredictorsAll).toHaveBeenCalledWith(req.params.crn, 'user-1')
+    expect(mockArnsComponents.getRiskData).toHaveBeenCalled()
     expect(res.locals.case).toEqual(overview('X000002'))
     expect(res.locals.risksWidget).toEqual(toRoshWidget(mockRisks))
     expect(res.locals.tierCalculation).toEqual(mockTierCalculation)
@@ -177,11 +188,13 @@ describe('/middleware/getPersonalDetails', () => {
       mockMasApiClient as unknown as MasApiClient,
       mockArnsApiClient as unknown as ArnsApiClient,
       mockTierApiClient as unknown as TierApiClient,
+      mockArnsComponents as unknown as ArnsComponents,
     )(req, res, nextSpy)
     expect(mockMasApiClient.getPersonalDetails).not.toHaveBeenCalled()
     expect(mockArnsApiClient.getRisks).not.toHaveBeenCalled()
     expect(mockTierApiClient.getCalculationDetails).not.toHaveBeenCalled()
     expect(mockArnsApiClient.getPredictorsAll).not.toHaveBeenCalled()
+    expect(mockArnsComponents.getRiskData).not.toHaveBeenCalled()
     expect(res.locals.case).toEqual(overview('X000002'))
     expect(res.locals.risksWidget).toEqual(toRoshWidget(mockRisks))
     expect(res.locals.tierCalculation).toEqual(mockTierCalculation)
@@ -203,6 +216,7 @@ describe('/middleware/getPersonalDetails', () => {
       mockMasApiClient as unknown as MasApiClient,
       mockArnsApiClient as unknown as ArnsApiClient,
       mockTierApiClient as unknown as TierApiClient,
+      mockArnsComponents as unknown as ArnsComponents,
     )(req, res, nextSpy)
     expect(nextSpy).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }))
   })
@@ -221,6 +235,7 @@ describe('/middleware/getPersonalDetails', () => {
       mockMasApiClient as unknown as MasApiClient,
       mockArnsApiClient as unknown as ArnsApiClient,
       mockTierApiClient as unknown as TierApiClient,
+      mockArnsComponents as unknown as ArnsComponents,
     )(req, res, nextSpy)
     expect(res.locals.dateOfDeath).toEqual(dateOfDeath)
   })
@@ -242,6 +257,7 @@ describe('/middleware/getPersonalDetails', () => {
       mockMasApiClient as unknown as MasApiClient,
       mockArnsApiClient as unknown as ArnsApiClient,
       mockTierApiClient as unknown as TierApiClient,
+      mockArnsComponents as unknown as ArnsComponents,
     )(req, res, nextSpy)
 
     const expected = {
@@ -256,6 +272,7 @@ describe('/middleware/getPersonalDetails', () => {
     expect(mockTierApiClient.getCalculationDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
     expect(mockArnsApiClient.getRisks).toHaveBeenCalledWith(req.params.crn, 'user-1')
     expect(mockArnsApiClient.getPredictorsAll).toHaveBeenCalledWith(req.params.crn, 'user-1')
+    expect(mockArnsComponents.getRiskData).toHaveBeenCalled()
 
     expect(res.locals.case).toEqual(overview('X000002'))
     expect(res.locals.risksWidget).toEqual(toRoshWidget(mockRisks))

@@ -10,6 +10,7 @@ export const services = () => {
     masApiClient,
     arnsApiClient,
     tierApiClient,
+    arnsComponents,
   } = dataAccess()
 
   return {
@@ -20,6 +21,7 @@ export const services = () => {
     masApiClient,
     arnsApiClient,
     tierApiClient,
+    arnsComponents,
   }
 }
 
