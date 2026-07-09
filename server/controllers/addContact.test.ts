@@ -62,7 +62,7 @@ describe('addContactController', () => {
   describe('getFrequentlyUsedContact', () => {
     it('renders the add-frequently-used-contact page with correct locals', async () => {
       const req = createReq({ params: { crn: 'X123456' } })
-      const res = createRes({ radioItems: [{ value: 'CM3A', text: 'Some contact' }], csrfToken: 'token' })
+      const res = createRes({ csrfToken: 'token' })
 
       await addContactController.getFrequentlyUsedContact()(req, res, next)
 
@@ -76,7 +76,6 @@ describe('addContactController', () => {
         'pages/contacts/add-frequently-used-contact',
         expect.objectContaining({
           crn: 'X123456',
-          radioItems: res.locals.radioItems,
           csrfToken: 'token',
         }),
       )
@@ -91,77 +90,6 @@ describe('addContactController', () => {
       const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
       expect(renderArgs.contactLogUrl).toContain('X123456')
       expect(renderArgs.ndeliusDeepLinkUrl).toContain('X123456')
-    })
-
-    it('keeps selected contactType when returning from step 2 via query param', async () => {
-      const req = createReq({
-        params: { crn: 'X123456' },
-        query: { from: 'step2' },
-        session: {
-          data: {
-            contactType: {
-              X123456: 'CM3A',
-            },
-          },
-        } as any,
-      })
-
-      const res = createRes({
-        radioItems: [{ value: 'CM3A' }, { value: 'CM1' }],
-        contactTypes: [],
-      })
-
-      await addContactController.getFrequentlyUsedContact()(req, res, next)
-
-      expect((req.session as any).data.contactType.X123456).toBe('CM3A')
-    })
-
-    it('keeps selected contactType when returning from step 2 via referer', async () => {
-      const req = createReq({
-        params: { crn: 'X123456' },
-        session: {
-          data: {
-            contactType: {
-              X123456: 'CM3A',
-            },
-          },
-        } as any,
-      })
-
-      ;(req.get as jest.Mock).mockReturnValue('/case/X123456/contacts/add-email-or-text-from-other')
-
-      const res = createRes({
-        radioItems: [{ value: 'CM3A' }, { value: 'CM1' }],
-        contactTypes: [],
-      })
-
-      await addContactController.getFrequentlyUsedContact()(req, res, next)
-
-      expect((req.session as any).data.contactType.X123456).toBe('CM3A')
-    })
-
-    it('clears selected contactType when not returning from step 2', async () => {
-      const req = createReq({
-        params: { crn: 'X123456' },
-        session: {
-          data: {
-            contactType: {
-              X123456: 'CM3A',
-            },
-          },
-        } as any,
-      })
-
-      ;(req.get as jest.Mock).mockReturnValue('/case/X123456/')
-
-      const res = createRes({
-        radioItems: [{ value: 'CM3A' }, { value: 'CM1' }],
-        contactTypes: [],
-      })
-
-      await addContactController.getFrequentlyUsedContact()(req, res, next)
-
-      expect((req.session as any).data.contactType.X123456).toBeUndefined()
     })
 
     it('redirects to arrange-appointment when appointment query is set', async () => {
@@ -216,55 +144,6 @@ describe('addContactController', () => {
       expect(texts).toContain('Suicide or self harm information')
       expect(texts).toContain('Alcohol consumption')
       expect(texts).toContain('Critical communications')
-    })
-  })
-
-  describe('postFrequentlyUsedContact', () => {
-    it('stores selected contactType in session', async () => {
-      const req = createReq({
-        params: { crn: 'X123456' },
-        body: { contactType: 'CM3A' },
-      })
-
-      const res = createRes()
-
-      await addContactController.postFrequentlyUsedContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
-
-      expect((req.session as any).data.contactType.X123456).toBe('CM3A')
-    })
-    it('redirects to arrange-appointment when contactType is APPOINTMENT', async () => {
-      jest.spyOn(crypto, 'randomUUID').mockReturnValue('test-uuid' as ReturnType<typeof crypto.randomUUID>)
-      const req = createReq({ params: { crn: 'X123456' }, body: { contactType: 'APPOINTMENT' } })
-      const res = createRes()
-
-      await addContactController.postFrequentlyUsedContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
-
-      expect(mockSendAuditMessage).toHaveBeenCalledWith(
-        res,
-        AuditAction.SELECT_FREQUENTLY_USED_CONTACT_TYPE,
-        'X123456',
-        SubjectType.CRN,
-      )
-      expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('/case/X123456/arrange-appointment/'))
-      expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('test-uuid'))
-    })
-
-    it('redirects to slugified contact type page for non-appointment types', async () => {
-      const req = createReq({ params: { crn: 'X123456' }, body: { contactType: 'CM3A' } })
-      const res = createRes()
-
-      await addContactController.postFrequentlyUsedContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
-
-      expect(res.redirect).toHaveBeenCalledWith('/case/X123456/contacts/add-email-or-text-from-other')
-    })
-
-    it('falls back to raw contactType code in slug when type not found', async () => {
-      const req = createReq({ params: { crn: 'X123456' }, body: { contactType: 'UNKNOWN_CODE' } })
-      const res = createRes()
-
-      await addContactController.postFrequentlyUsedContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
-
-      expect(res.redirect).toHaveBeenCalledWith('/case/X123456/contacts/add-UNKNOWN_CODE')
     })
   })
 

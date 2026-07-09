@@ -16,7 +16,6 @@ jest.mock('../middleware/getPersonalDetails', () => ({
   getPersonalDetails: jest.fn().mockReturnValue(jest.fn()),
 }))
 jest.mock('../middleware/validation/addContactType', () => jest.fn())
-jest.mock('../middleware/validation/addFrequentlyUsedContact', () => jest.fn())
 jest.mock('../middleware/validation/multerErrorHandler', () => ({
   multerErrorHandler: jest.fn().mockReturnValue(jest.fn()),
 }))
@@ -25,7 +24,6 @@ jest.mock('../controllers', () => ({
   default: {
     addContact: {
       getFrequentlyUsedContact: jest.fn().mockReturnValue(jest.fn()),
-      postFrequentlyUsedContact: jest.fn().mockReturnValue(jest.fn()),
       getSearchByCategory: jest.fn().mockReturnValue(jest.fn()),
       getSearchByKeyword: jest.fn().mockReturnValue(jest.fn()),
       getAddContactType: jest.fn().mockReturnValue(jest.fn()),
@@ -59,10 +57,6 @@ describe('addContactRoutes', () => {
     expect(getSpy.mock.calls[0][0]).toBe('/case/:crn/add-frequently-used-contact')
   })
 
-  it('registers POST /case/:crn/add-frequently-used-contact', () => {
-    expect(postSpy.mock.calls[0][0]).toBe('/case/:crn/add-frequently-used-contact')
-  })
-
   it('registers GET /case/:crn/contacts/find-contact-to-add', () => {
     expect(getSpy.mock.calls[1][0]).toBe('/case/:crn/contacts/find-contact-to-add')
   })
@@ -76,12 +70,12 @@ describe('addContactRoutes', () => {
   })
 
   it('registers POST /case/:crn/contacts/add-:contactType', () => {
-    expect(postSpy.mock.calls[1][0]).toBe('/case/:crn/contacts/add-:contactType')
+    expect(postSpy.mock.calls[0][0]).toBe('/case/:crn/contacts/add-:contactType')
   })
 
-  it('registers exactly 4 GET routes and 2 POST routes', () => {
+  it('registers exactly 4 GET routes and 1 POST route', () => {
     expect(getSpy).toHaveBeenCalledTimes(4)
-    expect(postSpy).toHaveBeenCalledTimes(2)
+    expect(postSpy).toHaveBeenCalledTimes(1)
   })
 
   it('registers validateCrnParam for the crn route parameter', () => {

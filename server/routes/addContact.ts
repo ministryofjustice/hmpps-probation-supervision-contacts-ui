@@ -6,7 +6,6 @@ import { getSentences } from '../middleware/getSentences'
 import { getPersonalDetails } from '../middleware/getPersonalDetails'
 import addContactType from '../middleware/validation/addContactType'
 import { multerErrorHandler } from '../middleware/validation/multerErrorHandler'
-import addFrequentlyUsedContact from '../middleware/validation/addFrequentlyUsedContact'
 import controllers from '../controllers'
 import validateCrnParam from '../middleware/validateCrnParam'
 
@@ -28,14 +27,6 @@ export default function addContactRoutes(
     loadPersonalDetails,
     populate,
     controllers.addContact.getFrequentlyUsedContact(),
-  )
-
-  router.post(
-    '/case/:crn/add-frequently-used-contact',
-    loadPersonalDetails,
-    populate,
-    addFrequentlyUsedContact,
-    controllers.addContact.postFrequentlyUsedContact(masApiClient),
   )
 
   router.get(
