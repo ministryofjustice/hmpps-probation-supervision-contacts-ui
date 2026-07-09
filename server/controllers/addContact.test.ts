@@ -164,10 +164,10 @@ describe('addContactController', () => {
       expect((req.session as any).data.contactType.X123456).toBeUndefined()
     })
 
-    it('redirects to arrange-appointment when feature flag is on and appointment query is set', async () => {
+    it('redirects to arrange-appointment when appointment query is set', async () => {
       jest.spyOn(crypto, 'randomUUID').mockReturnValue('test-uuid' as ReturnType<typeof crypto.randomUUID>)
       const req = createReq({ params: { crn: 'X123456' }, query: { contactType: 'APPOINTMENT' } })
-      const res = createRes({ flags: { searchContactsByCategory: true } })
+      const res = createRes()
 
       await addContactController.getFrequentlyUsedContact()(req, res, next)
 

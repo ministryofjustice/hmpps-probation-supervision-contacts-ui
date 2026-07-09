@@ -69,7 +69,7 @@ const addContactController = {
       const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
       const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
 
-      if (res.locals.flags?.searchContactsByCategory && req.query?.contactType === 'APPOINTMENT') {
+      if (req.query?.contactType === 'APPOINTMENT') {
         const uuid = crypto.randomUUID()
         return res.redirect(`${config.manageProbationUrl}/case/${crn}/arrange-appointment/${uuid}/sentence`)
       }
