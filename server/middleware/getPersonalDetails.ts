@@ -35,8 +35,23 @@ export const getPersonalDetails = (
 
     const authOptions = asUser(res.locals.user.token)
 
-    if (personalDetails) {
+    if (personalDetails?.riskData) {
       data = personalDetails
+    } else if (personalDetails) {
+      const riskData = await arnsComponents.getRiskData(authOptions, 'crn', crn)
+
+      data = {
+        ...personalDetails,
+        riskData,
+      }
+
+      req.session.data = {
+        ...(sessionData ?? {}),
+        personalDetails: {
+          ...(sessionData?.personalDetails ?? {}),
+          [crn]: data,
+        },
+      }
     } else {
       const [overview, risks, tierCalculation, predictors, riskData] = await Promise.all([
         masApiClient.getPersonalDetails(crn, username),
