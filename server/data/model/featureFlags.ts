@@ -3,4 +3,5 @@ export class FeatureFlags {
   [index: string]: boolean
   searchContactsByCategory?: boolean = undefined
   enableEnforcementContacts?: boolean = undefined
+  enableArnsComponent?: boolean = undefined
 }
