@@ -10,74 +10,95 @@
                 (<span data-qa='headerDateOfBirthAge'>{{ headerDob | yearsSince }} years old</span>)
                 <span class='govuk-!-padding-left-3 govuk-!-padding-right-3 hide-mobile'>|</span>
             </li>
-            <li>Tier:{{' '}}
-                <a href="{{ headerTierLink }}" data-qa="tierLink" class="govuk-link">{{ tierCalculation.tierScore }}</a>
+            <li>Tier:{{ ' ' }}
+                <a href="{{ headerTierLink }}" data-qa="tierLink" class="govuk-link">
+                    {{ tierCalculation.tierScore }}
+                </a>
             </li>
         </ul>
     </div>
+
+    {% if not flags.enableArnsComponent %}
+        {% if risksWidget.overallRisk and risksWidget.overallRisk !== 'NOT_FOUND' %}
+            <div class="govuk-!-margin-left-4">
+                {{ predictorTimelineItem({ type: "ROSH", level: risksWidget.overallRisk }) }}
+            </div>
+        {% endif %}
+
+        {% if predictorScores.scores.RSR.level %}
+            <div class="govuk-!-margin-left-4">
+                {{ predictorTimelineItem(predictorScores.scores.RSR) }}
+            </div>
+        {% endif %}
+    {% endif %}
 </div>
 
 <div class="moj-page-header-actions govuk-!-static-margin-bottom-4">
     <div class="moj-page-header-actions__title">
-        <h1 class="govuk-heading-xl govuk-!-margin-bottom-4">
-            <span data-qa='name'>{{ headerPersonName.forename }}{{' '}}{{ headerPersonName.surname }}</span>
+        <h1 class="govuk-heading-xl {% if flags.enableArnsComponent %}govuk-!-margin-bottom-4{% else %}govuk-!-margin-bottom-0{% endif %}">
+            <span data-qa='name'>{{ headerPersonName.forename }}{{ ' ' }}{{ headerPersonName.surname }}</span>
         </h1>
 
-        {% set overallRisk = risksWidget.overallRisk %}
-        {% if overallRisk == 'VERY_HIGH' %}
-            {% set overallRisk = 'VERY HIGH' %}
-        {% endif %}
+        {% if flags.enableArnsComponent %}
+            {% set overallRisk = risksWidget.overallRisk %}
+            {% if overallRisk == 'VERY_HIGH' %}
+                {% set overallRisk = 'VERY HIGH' %}
+            {% endif %}
 
-        {% set riskDataRosh = {
-            assessments: [
-                {
-                    rosh: {
-                        name: 'ROSH' if riskData
-                            and riskData.assessments
-                            and riskData.assessments[0]
-                            and riskData.assessments[0].rsr
-                            and riskData.assessments[0].rsr.band else
-                                'RISK OF SERIOUS HARM',
-                        band: overallRisk
+            {% set riskDataRosh = {
+                assessments: [
+                    {
+                        rosh: {
+                            name: 'ROSH' if riskData
+                                and riskData.assessments
+                                and riskData.assessments[0]
+                                and riskData.assessments[0].rsr
+                                and riskData.assessments[0].rsr.band
+                                else 'RISK OF SERIOUS HARM',
+                            band: overallRisk
+                        }
                     }
-                }
-            ]
-        } %}
+                ]
+            } %}
 
-        {% if riskData
-            and riskData.assessments
-            and riskData.assessments[0]
-            and riskData.assessments[0].combinedSeriousReoffendingPredictor
-            and riskData.assessments[0].combinedSeriousReoffendingPredictor.band != "NOT APPLICABLE" %}
-            {{ predictorBadge({
-                data: riskData,
-                predictor: 'combinedSeriousReoffendingPredictor',
-                showScore: true
-            })}}
-        {% endif %}
+            {% if riskData
+                and riskData.assessments
+                and riskData.assessments[0]
+                and riskData.assessments[0].combinedSeriousReoffendingPredictor
+                and riskData.assessments[0].combinedSeriousReoffendingPredictor.band != "NOT APPLICABLE" %}
+                {{ predictorBadge({
+                    data: riskData,
+                    predictor: 'combinedSeriousReoffendingPredictor',
+                    showScore: true
+                })}}
+            {% endif %}
 
-        {% if riskData
-            and riskData.assessments
-            and riskData.assessments[0]
-            and riskData.assessments[0].rsr
-            and riskData.assessments[0].rsr.band %}
-            {{ predictorBadge({
-                data: riskData,
-                predictor: 'rsr',
-                showScore: true
-            })}}
-        {% endif %}
+            {% if riskData
+                and riskData.assessments
+                and riskData.assessments[0]
+                and riskData.assessments[0].rsr
+                and riskData.assessments[0].rsr.band %}
+                {{ predictorBadge({
+                    data: riskData,
+                    predictor: 'rsr',
+                    showScore: true
+                })}}
+            {% endif %}
 
-        {% if overallRisk and overallRisk !== 'NOT_FOUND' %}
-            {{ predictorBadge({
-                data: riskDataRosh,
-                predictor: 'rosh',
-                showScore: false
-            })}}
+            {% if overallRisk and overallRisk !== 'NOT_FOUND' %}
+                {{ predictorBadge({
+                    data: riskDataRosh,
+                    predictor: 'rosh',
+                    showScore: false
+                })}}
+            {% endif %}
+
         {% endif %}
     </div>
+
     <div class="moj-page-header-actions__actions">
         {{ headerActions | safe }}
     </div>
 </div>
+
 <hr class="govuk-section-break--l">

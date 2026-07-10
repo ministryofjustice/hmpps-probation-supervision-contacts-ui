@@ -178,7 +178,10 @@ describe('/middleware/getPersonalDetails', () => {
         data: {
           personalDetails: {
             X000001: mockSession(),
-            X000002: mockSession('X000002'),
+            X000002: {
+              ...mockSession('X000002'),
+              riskData: mockRiskData,
+            },
           },
         },
       },
