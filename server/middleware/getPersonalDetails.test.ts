@@ -107,6 +107,7 @@ const getRes = () =>
     locals: {
       user: {
         username: 'user-1',
+        token: 'test-token',
       },
     },
     redirect: jest.fn().mockReturnThis(),
