@@ -1,0 +1,33 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/arns-api/risks/predictors/all/crn/[^/]+"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "completedDate": "2024-09-30T12:07:42",
+            "status": "COMPLETE",
+            "assessmentType": "LAYER3",
+            "outputVersion": "1",
+            "output": {
+              "riskOfSeriousRecidivismScore": {
+                "percentageScore": 0.76,
+                "staticOrDynamic": "DYNAMIC",
+                "source": "OASYS",
+                "algorithmVersion": "5",
+                "scoreLevel": "LOW"
+              }
+            }
+          }
+        ],
+        "headers": {
+          "Content-Type": "application/json;charset=UTF-8"
+        }
+      }
+    }
+  ]
+}
