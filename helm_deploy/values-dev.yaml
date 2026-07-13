@@ -28,7 +28,7 @@ generic-service:
          phase:1,\
          pass,\
          nolog,\
-          ctl:ruleRemoveTargetByTag=attack-lfi;ARGS:details,\
+         ctl:ruleRemoveTargetByTag=attack-lfi;ARGS:details,\
          ctl:ruleRemoveTargetByTag=attack-rce;ARGS:details,\
          ctl:ruleRemoveTargetByTag=attack-sqli;ARGS:details,\
          ctl:ruleRemoveTargetByTag=attack-xss;ARGS:details"
@@ -39,9 +39,9 @@ generic-service:
           pass,\
           nolog,\
           ctl:ruleRemoveTargetByTag=attack-lfi;ARGS:details,\
-         ctl:ruleRemoveTargetByTag=attack-rce;ARGS:details,\
-         ctl:ruleRemoveTargetByTag=attack-sqli;ARGS:details,\
-         ctl:ruleRemoveTargetByTag=attack-xss;ARGS:details"
+          ctl:ruleRemoveTargetByTag=attack-rce;ARGS:details,\
+          ctl:ruleRemoveTargetByTag=attack-sqli;ARGS:details,\
+          ctl:ruleRemoveTargetByTag=attack-xss;ARGS:details"
 
   env:
     INGRESS_URL: "https://probation-supervision-contacts-ui-dev.hmpps.service.justice.gov.uk"
