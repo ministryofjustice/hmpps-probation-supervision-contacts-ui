@@ -38,7 +38,7 @@ generic-service:
           phase:1,\
           pass,\
           nolog,\
-         ctl:ruleRemoveTargetByTag=attack-lfi;ARGS,\
+          ctl:ruleRemoveTargetByTag=attack-lfi;ARGS:details,\
          ctl:ruleRemoveTargetByTag=attack-rce;ARGS:details,\
          ctl:ruleRemoveTargetByTag=attack-sqli;ARGS:details,\
          ctl:ruleRemoveTargetByTag=attack-xss;ARGS:details"
