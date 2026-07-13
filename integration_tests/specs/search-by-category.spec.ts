@@ -5,8 +5,6 @@ import masApi from '../mockApis/masApi'
 import arnsApi from '../mockApis/arnsApi'
 import tierApi from '../mockApis/tierApi'
 
-const flagConfig = [{ key: 'searchContactsByCategory', enabled: true }]
-
 test.beforeEach(async ({ page }) => {
   await Promise.all([
     masApi.stubGetPersonalDetails('X123456'),
@@ -17,7 +15,7 @@ test.beforeEach(async ({ page }) => {
     masApi.stubGetSentences(),
     masApi.stubGetOverview(),
   ])
-  await login(page, { flags: flagConfig })
+  await login(page)
 })
 
 test.afterEach(async () => {

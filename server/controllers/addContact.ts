@@ -49,33 +49,18 @@ const addContactController = {
   getFrequentlyUsedContact: (): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
-      const referer = req.get('referer') || ''
-      const cameFromStepTwo = req.query.from === 'step2' || referer.includes(`/case/${crn}/contacts/add-`)
 
       await sendAuditMessage(res, AuditAction.VIEW_ADD_FREQUENTLY_USED_CONTACT, crn as string, SubjectType.CRN)
-      const session = req.session as any
-      session.data ||= {}
-      session.data.contactType ||= {}
-      if (!cameFromStepTwo) {
-        delete session.data.contactType[crn]
-      }
 
-      const selectedContactType = session.data?.contactType?.[crn]
-      const baseRadioItems = res.locals.radioItems || []
-      const radioItems = baseRadioItems.map((item: any) => ({
-        ...item,
-        ...(item.value === selectedContactType ? { checked: true } : {}),
-      }))
       const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
       const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
 
-      if (res.locals.flags?.searchContactsByCategory && req.query?.contactType === 'APPOINTMENT') {
+      if (req.query?.contactType === 'APPOINTMENT') {
         const uuid = crypto.randomUUID()
         return res.redirect(`${config.manageProbationUrl}/case/${crn}/arrange-appointment/${uuid}/sentence`)
       }
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
-        radioItems,
         frequentlyUsedContacts,
         categoryCheckboxItems: buildCategoryCheckboxItems([]),
         selectedCategories: [],
@@ -199,34 +184,6 @@ const addContactController = {
         ...baseLocals,
         keywordSearchResults: buildKeywordSearchResults(keyword, crn, res.locals.flags?.enableEnforcementContacts),
       })
-    }
-  },
-  postFrequentlyUsedContact: (masApiClient: MasApiClient): RequestHandler => {
-    return async (req, res, next) => {
-      const { crn } = req.params as Record<string, string>
-      await sendAuditMessage(res, AuditAction.SELECT_FREQUENTLY_USED_CONTACT_TYPE, crn as string, SubjectType.CRN)
-      const { contactType } = req.body
-      const session = req.session as any
-      const sessionData = session.data || {}
-
-      session.data = {
-        ...sessionData,
-        contactType: {
-          ...(sessionData.contactType || {}),
-          [crn]: contactType,
-        },
-      }
-
-      if (contactType === 'APPOINTMENT') {
-        const uuid = crypto.randomUUID()
-        return res.redirect(`${config.manageProbationUrl}/case/${crn}/arrange-appointment/${uuid}/sentence`)
-      }
-
-      const contactTypes = ContactTypeOptions
-      const selected = contactTypes.find((c: any) => c.code === contactType)
-      const slug = selected ? slugify(selected.description) : contactType
-
-      return res.redirect(`/case/${crn}/contacts/add-${slug}`)
     }
   },
   getAddContactType: (masApiClient: MasApiClient): RequestHandler => {

@@ -1,6 +1,5 @@
 {% extends "../../partials/layout.njk" %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "../../partials/breadcrumb.njk" import breadcrumb %}
@@ -26,27 +25,8 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-three-quarters">
 
-            {% if flags and flags.searchContactsByCategory %}
-                <h2 class="govuk-heading-l">Find a contact to add</h2>
-            {% else %}
-                <h2 class="govuk-heading-m">Add a frequently used contact</h2>
-            {% endif %}
+            <h2 class="govuk-heading-l">Find a contact to add</h2>
 
-                {% if not (flags and flags.searchContactsByCategory) %}
-                <p class="govuk-body">
-                    You can currently add the most frequently used contacts using this service. For any other contacts,
-                    <a
-                        href="{{ ndeliusDeepLinkUrl }}"
-                        target="_blank"
-                        class="govuk-link"
-                        data-ndelius-link="true"
-                        data-back-url="{{ contactLogUrl }}">
-                        use NDelius (opens in new tab)
-                    </a>
-                </p>
-                {% endif %}
-
-            {% if flags and flags.searchContactsByCategory %}
                 <nav class="moj-sub-navigation" aria-label="Sub navigation">
                     <ul class="moj-sub-navigation__list">
                         <li class="moj-sub-navigation__item">
@@ -240,32 +220,6 @@
                         {% endif %}
                     </div>
                 {% endif %}
-
-            {% else %}
-                <form method="post" action="/case/{{ crn }}/add-frequently-used-contact" id="choose-contact-form"
-                      data-ndelius-url="{{ ndeliusDeepLinkUrl }}"
-                      data-back-url="{{ contactLogUrl }}">
-                    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-
-                    {{ govukRadios({
-                        name: "contactType",
-                        idPrefix: "contactType",
-                        fieldset: {
-                            legend: {
-                                text: "Select a contact",
-                                classes: "govuk-fieldset__legend--s"
-                            }
-                        },
-                        items: radioItems,
-                        errorMessage: { text: errorMessages.contactType } if errorMessages.contactType
-                    }) }}
-
-                    {{ govukButton({
-                        text: "Continue",
-                        attributes: { "data-qa": "continue-button" }
-                    }) }}
-                </form>
-            {% endif %}
         </div>
     </div>
 {% endblock %}

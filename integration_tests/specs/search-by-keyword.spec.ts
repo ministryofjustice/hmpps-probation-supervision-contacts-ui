@@ -7,7 +7,6 @@ import arnsApi from '../mockApis/arnsApi'
 import tierApi from '../mockApis/tierApi'
 
 const crn = 'X123456'
-const flagConfig = [{ key: 'searchContactsByCategory', enabled: true }]
 
 test.beforeEach(async ({ page }) => {
   await Promise.all([
@@ -19,7 +18,7 @@ test.beforeEach(async ({ page }) => {
     masApi.stubGetSentences(),
     masApi.stubGetOverview(),
   ])
-  await login(page, { flags: flagConfig })
+  await login(page)
 })
 
 test.afterEach(async () => {
