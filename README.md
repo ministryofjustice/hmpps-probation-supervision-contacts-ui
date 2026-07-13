@@ -250,7 +250,7 @@ tail -f waf-logs/audit.log
 
 | Rule IDs                     | Category              | Tag replacement |
 | ---------------------------- | --------------------- | --------------- |
-| `930120`                     | Local File Inclusion  | `attack-lfi`    |
-| `932230`, `932235`, `932250` | Remote Code Execution | `attack-rce`    |
-| `941370`                     | Cross-Site Scripting  | `attack-xss`    |
-| All listed `942xxx` rules    | SQL Injection         | `attack-sqli`   |
+| `930120`                                          | Local File Inclusion  | `attack-lfi`    |
+| `932200`, `932230`, `932231`, `932235`, `932236`, `932250`, `932260`, `932370` | Remote Code Execution | `attack-rce`    |
+| `941370`                                          | Cross-Site Scripting  | `attack-xss`    |
+| `942131`, `942190`, `942200`, `942350`, `942360`, `942370`, `942430`          | SQL Injection         | `attack-sqli`   |
