@@ -25,6 +25,9 @@
 {% endblock %}
 
 {% block footer %}
+  {% if not hideSurveyUsefulSections %}
+    {% include "./_survey-useful.njk" %}
+  {% endif %}
   {% include "./prob_fe_footer.njk" %}
 {% endblock %}
 

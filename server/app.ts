@@ -49,6 +49,11 @@ export default function createApp(services: Services): express.Application {
   app.use(getUserAlertsCount(services.masApiClient))
   app.use(metricsMiddleware)
 
+  app.use((req, res, next) => {
+    res.locals.pageUrl = encodeURI(`https://manage-people-on-probation.hmpps.service.justice.gov.uk${req.url}`) // ignores ENV
+    next()
+  })
+
   // Routes that use multer for multipart upload must be registered before csrf executes
   const router = Router()
   addContactRoutes(router, services)
