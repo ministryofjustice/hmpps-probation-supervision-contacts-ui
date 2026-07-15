@@ -31,18 +31,23 @@ export function initialiseAppInsights(): void {
 export function buildAppInsightsClient(
   { applicationName, buildNumber }: ApplicationInfo,
   overrideName?: string,
-): TelemetryClient {
+): TelemetryClient | null {
   if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
     defaultClient.context.tags['ai.cloud.role'] = overrideName || applicationName
     defaultClient.context.tags['ai.application.ver'] = buildNumber
 
     if (!processorsRegistered) {
-      defaultClient.addTelemetryProcessor(({ tags, data }, contextObjects) => {
-        const operationNameOverride = contextObjects.correlationContext?.customProperties?.getProperty('operationName')
-        if (operationNameOverride) {
+      defaultClient.addTelemetryProcessor((envelope: any, contextObjects: any) => {
+        const operationNameOverride = contextObjects?.correlationContext?.customProperties?.getProperty('operationName')
+        if (
+          operationNameOverride &&
+          envelope?.tags &&
+          envelope?.data?.baseData &&
+          typeof envelope.data.baseData === 'object'
+        ) {
           /* eslint-disable no-param-reassign */
-          tags['ai.operation.name'] = operationNameOverride
-          data.baseData.name = operationNameOverride
+          envelope.tags['ai.operation.name'] = operationNameOverride
+          envelope.data.baseData.name = operationNameOverride
           /* eslint-enable no-param-reassign */
         }
         return true
@@ -57,19 +62,21 @@ export function buildAppInsightsClient(
 }
 
 export function ignoredRequestsProcessor(envelope: any) {
+  if (envelope?.data?.baseType !== 'RequestData') return true
   const telemetryItem = envelope.data.baseData
   return !(
     telemetryItem?.success &&
-    telemetryItem.name &&
+    typeof telemetryItem.name === 'string' &&
     requestPrefixesToIgnore.some(prefix => telemetryItem.name.startsWith(prefix))
   )
 }
 
 export function ignoredDependenciesProcessor(envelope: any) {
+  if (envelope?.data?.baseType !== 'RemoteDependencyData') return true
   const telemetryItem = envelope.data.baseData
   return !(
     telemetryItem?.success &&
-    telemetryItem.target &&
+    typeof telemetryItem.target === 'string' &&
     dependencyPrefixesToIgnore.some(prefix => telemetryItem.target.startsWith(prefix))
   )
 }
