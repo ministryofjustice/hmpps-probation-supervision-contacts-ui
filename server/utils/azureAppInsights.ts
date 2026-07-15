@@ -24,8 +24,29 @@ export function initialiseAppInsights(): void {
     // eslint-disable-next-line no-console
     console.log('Enabling azure application insights')
 
+    if (!process.env.APPLICATIONINSIGHTS_ROLE_NAME) {
+      const name = defaultName()
+      if (name) {
+        process.env.APPLICATIONINSIGHTS_ROLE_NAME = name
+        process.env.OTEL_SERVICE_NAME = name
+      }
+    }
+    // eslint-disable-next-line no-console
+    console.log(`Setting up App Insights with role name: ${process.env.APPLICATIONINSIGHTS_ROLE_NAME}`)
+
     setup().setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C).start()
   }
+}
+
+export function cloudRoleProcessor(envelope: any) {
+  if (envelope?.tags) {
+    const roleName = process.env.APPLICATIONINSIGHTS_ROLE_NAME || process.env.OTEL_SERVICE_NAME || defaultName()
+    if (roleName) {
+      // eslint-disable-next-line no-param-reassign
+      envelope.tags['ai.cloud.role'] = roleName
+    }
+  }
+  return true
 }
 
 export function buildAppInsightsClient(
@@ -38,6 +59,7 @@ export function buildAppInsightsClient(
 
     if (!processorsRegistered) {
       defaultClient.addTelemetryProcessor(addOperationNameProcessor)
+      defaultClient.addTelemetryProcessor(cloudRoleProcessor)
       defaultClient.addTelemetryProcessor(ignoredRequestsProcessor)
       defaultClient.addTelemetryProcessor(ignoredDependenciesProcessor)
       processorsRegistered = true

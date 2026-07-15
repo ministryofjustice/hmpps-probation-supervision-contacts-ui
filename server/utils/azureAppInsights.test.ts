@@ -1,5 +1,10 @@
 import { TelemetryItem, RequestData, RemoteDependencyData } from 'applicationinsights/out/src/declarations/generated'
-import { addOperationNameProcessor, ignoredDependenciesProcessor, ignoredRequestsProcessor } from './azureAppInsights'
+import {
+  addOperationNameProcessor,
+  cloudRoleProcessor,
+  ignoredDependenciesProcessor,
+  ignoredRequestsProcessor,
+} from './azureAppInsights'
 
 const createEnvelope = (baseData: any, baseType = 'RequestData'): TelemetryItem =>
   ({
@@ -83,6 +88,18 @@ describe('azureAppInsights', () => {
         expect(ignoredDependenciesProcessor(envelope)).toBe(true)
       },
     )
+  })
+
+  describe('cloudRoleProcessor', () => {
+    it('should set cloud role name from environment variable', () => {
+      process.env.APPLICATIONINSIGHTS_ROLE_NAME = 'test-role'
+      const envelope = {
+        tags: {} as Record<string, string>,
+      }
+
+      cloudRoleProcessor(envelope)
+      expect(envelope.tags['ai.cloud.role']).toBe('test-role')
+    })
   })
 
   describe('addOperationNameProcessor', () => {
