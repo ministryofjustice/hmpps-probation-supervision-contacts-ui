@@ -116,10 +116,6 @@
       "tar": "^7.5.19"
     },
     "js-yaml": "^5.2.1",
-    "@opentelemetry/core": "^2.9.0",
-    "@opentelemetry/resources": "^2.9.0",
-    "@opentelemetry/sdk-logs": "^0.219.0",
-    "@opentelemetry/sdk-metrics": "^2.9.0",
-    "@opentelemetry/sdk-trace-base": "^2.9.0"
+    "@opentelemetry/core": "^2.9.0"
   }
 }
