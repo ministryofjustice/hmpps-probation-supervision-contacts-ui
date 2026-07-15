@@ -7,12 +7,9 @@ import { AuthenticationClient, InMemoryTokenStore, RedisTokenStore } from '@mini
 import { ArnsComponents } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import ProbationFrontendComponentsApiClient from './probationFrontendComponentsClient'
 
-import { initialiseAppInsights, buildAppInsightsClient } from '../utils/azureAppInsights'
 import applicationInfoSupplier from '../applicationInfo'
 
 const applicationInfo = applicationInfoSupplier()
-initialiseAppInsights()
-buildAppInsightsClient(applicationInfo)
 
 import { createRedisClient } from './redisClient'
 import config from '../config'
