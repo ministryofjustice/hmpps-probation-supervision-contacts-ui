@@ -37,21 +37,7 @@ export function buildAppInsightsClient(
     defaultClient.context.tags['ai.application.ver'] = buildNumber
 
     if (!processorsRegistered) {
-      defaultClient.addTelemetryProcessor((envelope: any, contextObjects: any) => {
-        const operationNameOverride = contextObjects?.correlationContext?.customProperties?.getProperty('operationName')
-        if (
-          operationNameOverride &&
-          envelope?.tags &&
-          envelope?.data?.baseData &&
-          typeof envelope.data.baseData === 'object'
-        ) {
-          /* eslint-disable no-param-reassign */
-          envelope.tags['ai.operation.name'] = operationNameOverride
-          envelope.data.baseData.name = operationNameOverride
-          /* eslint-enable no-param-reassign */
-        }
-        return true
-      })
+      defaultClient.addTelemetryProcessor(addOperationNameProcessor)
       defaultClient.addTelemetryProcessor(ignoredRequestsProcessor)
       defaultClient.addTelemetryProcessor(ignoredDependenciesProcessor)
       processorsRegistered = true
@@ -59,6 +45,22 @@ export function buildAppInsightsClient(
     return defaultClient
   }
   return null
+}
+
+export function addOperationNameProcessor(envelope: any, contextObjects: any) {
+  const operationNameOverride = contextObjects?.correlationContext?.customProperties?.getProperty('operationName')
+  if (
+    operationNameOverride &&
+    envelope?.tags &&
+    envelope?.data?.baseData &&
+    typeof envelope.data.baseData === 'object'
+  ) {
+    /* eslint-disable no-param-reassign */
+    envelope.tags['ai.operation.name'] = operationNameOverride
+    envelope.data.baseData.name = operationNameOverride
+    /* eslint-enable no-param-reassign */
+  }
+  return true
 }
 
 export function ignoredRequestsProcessor(envelope: any) {
