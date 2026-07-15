@@ -1,5 +1,5 @@
 import { TelemetryItem, RequestData, RemoteDependencyData } from 'applicationinsights/out/src/declarations/generated'
-import { ignoredDependenciesProcessor, ignoredRequestsProcessor } from './azureAppInsights'
+import { addOperationNameProcessor, ignoredDependenciesProcessor, ignoredRequestsProcessor } from './azureAppInsights'
 
 const createEnvelope = (baseData: any, baseType = 'RequestData'): TelemetryItem =>
   ({
@@ -83,5 +83,66 @@ describe('azureAppInsights', () => {
         expect(ignoredDependenciesProcessor(envelope)).toBe(true)
       },
     )
+  })
+
+  describe('addOperationNameProcessor', () => {
+    it('should update operation name when override is present', () => {
+      const envelope = {
+        tags: { 'ai.operation.name': 'old-name' } as Record<string, string>,
+        data: { baseData: { name: 'old-name' } } as any,
+      }
+      const contextObjects = {
+        correlationContext: {
+          customProperties: {
+            getProperty: jest.fn().mockReturnValue('new-name'),
+          },
+        },
+      }
+
+      const result = addOperationNameProcessor(envelope, contextObjects)
+
+      expect(result).toBe(true)
+      expect(envelope.tags['ai.operation.name']).toBe('new-name')
+      expect(envelope.data.baseData.name).toBe('new-name')
+    })
+
+    it('should not update operation name when override is missing', () => {
+      const envelope = {
+        tags: { 'ai.operation.name': 'old-name' } as Record<string, string>,
+        data: { baseData: { name: 'old-name' } } as any,
+      }
+      const contextObjects = {
+        correlationContext: {
+          customProperties: {
+            getProperty: jest.fn().mockReturnValue(undefined),
+          },
+        },
+      }
+
+      const result = addOperationNameProcessor(envelope, contextObjects)
+
+      expect(result).toBe(true)
+      expect(envelope.tags['ai.operation.name']).toBe('old-name')
+      expect(envelope.data.baseData.name).toBe('old-name')
+    })
+
+    it('should not update operation name when envelope structure is invalid', () => {
+      const envelope = {
+        tags: {} as Record<string, string>,
+        data: {} as any,
+      }
+      const contextObjects = {
+        correlationContext: {
+          customProperties: {
+            getProperty: jest.fn().mockReturnValue('new-name'),
+          },
+        },
+      }
+
+      const result = addOperationNameProcessor(envelope, contextObjects)
+
+      expect(result).toBe(true)
+      expect(envelope.tags['ai.operation.name']).toBeUndefined()
+    })
   })
 })
