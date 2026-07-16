@@ -25,10 +25,10 @@ export function initialiseAppInsights(): void {
     console.log('Enabling azure application insights')
 
     if (!process.env.APPLICATIONINSIGHTS_ROLE_NAME) {
-      const name = defaultName()
+      const name = process.env.OTEL_SERVICE_NAME || defaultName()
       if (name) {
         process.env.APPLICATIONINSIGHTS_ROLE_NAME = name
-        process.env.OTEL_SERVICE_NAME = name
+        if (!process.env.OTEL_SERVICE_NAME) process.env.OTEL_SERVICE_NAME = name
       }
     }
     // eslint-disable-next-line no-console
