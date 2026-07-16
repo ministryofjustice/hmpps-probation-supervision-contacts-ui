@@ -38,9 +38,9 @@ export function initialiseAppInsights(): void {
   }
 }
 
-export function cloudRoleProcessor(envelope: any) {
-  if (envelope?.tags) {
-    const roleName = process.env.APPLICATIONINSIGHTS_ROLE_NAME || process.env.OTEL_SERVICE_NAME || defaultName()
+export function cloudRoleProcessor(envelope: any): boolean {
+  if (envelope?.tags && !envelope.tags['ai.cloud.role']) {
+    const roleName = process.env.APPLICATIONINSIGHTS_ROLE_NAME || process.env.OTEL_SERVICE_NAME
     if (roleName) {
       // eslint-disable-next-line no-param-reassign
       envelope.tags['ai.cloud.role'] = roleName
