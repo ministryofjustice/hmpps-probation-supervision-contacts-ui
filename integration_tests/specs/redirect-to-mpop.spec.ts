@@ -23,10 +23,10 @@ test.afterEach(async () => {
 
 test('crn page redirects to page in MPOP', async ({ page }) => {
   await page.goto('/case/X123456')
-  expect(page.url()).toBe('https://manage-people-on-probation-dev.hmpps.service.justice.gov.uk/case/X123456')
+  expect(page.url()).toBe('http://localhost:9091/case/X123456')
 })
 
 test('case page redirects to page in MPOP', async ({ page }) => {
   await page.goto('/case')
-  expect(page.url()).toBe('https://manage-people-on-probation-dev.hmpps.service.justice.gov.uk/case')
+  expect(page.url()).toBe('http://localhost:9091/case')
 })
