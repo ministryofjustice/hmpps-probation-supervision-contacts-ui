@@ -11,10 +11,10 @@ import updateContact from '../middleware/validation/updateContact'
 
 export default function addUpdateContactRoutes(
   router: Router,
-  { masApiClient, arnsApiClient, tierApiClient, arnsComponents }: Services,
+  { masApiClient, tierApiClient, arnsComponents }: Services,
 ): void {
   router.param('crn', validateCrnParam)
-  const loadPersonalDetails = getPersonalDetails(masApiClient, arnsApiClient, tierApiClient, arnsComponents)
+  const loadPersonalDetails = getPersonalDetails(masApiClient, tierApiClient, arnsComponents)
   const loadEditContactDeps = [
     loadPersonalDetails,
     isResponsibleOfficerMiddleware(masApiClient),

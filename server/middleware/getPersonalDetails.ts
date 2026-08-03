@@ -3,7 +3,6 @@ import createError from 'http-errors'
 import { ArnsComponents } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { asUser } from '@ministryofjustice/hmpps-rest-client'
 import MasApiClient from '../data/masApiClient'
-import ArnsApiClient from '../data/arnsApiClient'
 import TierApiClient from '../data/tierApiClient'
 import { tierLink } from '../utils/tierLink'
 import { toPredictors } from '../utils/toPredictors'
@@ -13,7 +12,6 @@ import logger from '../../logger'
 
 export const getPersonalDetails = (
   masApiClient: MasApiClient,
-  arnsApiClient: ArnsApiClient,
   tierApiClient: TierApiClient,
   arnsComponents: ArnsComponents,
 ): RequestHandler => {
@@ -53,11 +51,9 @@ export const getPersonalDetails = (
         },
       }
     } else {
-      const [overview, risks, tierCalculation, predictors, riskData] = await Promise.all([
+      const [overview, tierCalculation, riskData] = await Promise.all([
         masApiClient.getPersonalDetails(crn, username),
-        arnsApiClient.getRisks(crn, username),
         tierApiClient.getCalculationDetails(crn, username),
-        arnsApiClient.getPredictorsAll(crn, username),
         arnsComponents.getRiskData(authOptions, 'crn', crn),
       ])
 
@@ -67,9 +63,7 @@ export const getPersonalDetails = (
 
       data = {
         overview,
-        risks,
         tierCalculation,
-        predictors,
         riskData,
       }
 
@@ -83,10 +77,8 @@ export const getPersonalDetails = (
     }
 
     res.locals.case = data.overview
-    res.locals.risksWidget = toRoshWidget(data.risks)
     res.locals.riskData = data.riskData
     res.locals.tierCalculation = data.tierCalculation
-    res.locals.predictorScores = toPredictors(data.predictors)
     res.locals.headerPersonName = {
       forename: data.overview.name.forename,
       surname: data.overview.name.surname,

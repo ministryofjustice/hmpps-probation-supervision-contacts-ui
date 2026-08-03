@@ -6,7 +6,6 @@ import { createRedisClient } from './redisClient'
 import config from '../config'
 import logger from '../../logger'
 import MasApiClient from './masApiClient'
-import ArnsApiClient from './arnsApiClient'
 import TierApiClient from './tierApiClient'
 
 const applicationInfo = applicationInfoSupplier()
@@ -29,7 +28,6 @@ export const dataAccess = () => {
     hmppsAuthClient,
     probationFrontendComponentsApiClient: new ProbationFrontendComponentsApiClient(),
     masApiClient: new MasApiClient(hmppsAuthClient),
-    arnsApiClient: new ArnsApiClient(hmppsAuthClient),
     tierApiClient: new TierApiClient(hmppsAuthClient),
     arnsComponents: new ArnsComponents(authClientArns as any, config.apis.arnsApi, logger),
   }

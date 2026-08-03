@@ -11,11 +11,11 @@ import validateCrnParam from '../middleware/validateCrnParam'
 
 export default function addContactRoutes(
   router: Router,
-  { masApiClient, arnsApiClient, tierApiClient, arnsComponents }: Services,
+  { masApiClient, tierApiClient, arnsComponents }: Services,
 ): void {
   router.param('crn', validateCrnParam)
   const populate = populateContactTypes()
-  const loadPersonalDetails = getPersonalDetails(masApiClient, arnsApiClient, tierApiClient, arnsComponents)
+  const loadPersonalDetails = getPersonalDetails(masApiClient, tierApiClient, arnsComponents)
   const loadContactFormDeps = [
     loadPersonalDetails,
     isResponsibleOfficerMiddleware(masApiClient),
