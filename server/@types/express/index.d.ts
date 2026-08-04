@@ -6,9 +6,7 @@ import { RiskScoresDto, RiskSummary } from '../../data/model/risk'
 
 export type PersonalDetailsCache = {
   overview: PersonalDetails
-  risks: RiskSummary | ErrorSummary | null
   tierCalculation: TierCalculation | ErrorSummary | null
-  predictors: ErrorSummary | RiskScoresDto[] | null
   riskData: RiskData
 }
 

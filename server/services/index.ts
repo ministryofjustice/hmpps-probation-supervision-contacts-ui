@@ -8,7 +8,6 @@ export const services = () => {
     hmppsAuthClient,
     probationFrontendComponentsApiClient,
     masApiClient,
-    arnsApiClient,
     tierApiClient,
     arnsComponents,
   } = dataAccess()
@@ -19,7 +18,6 @@ export const services = () => {
     flagService: new FlagService(),
     probationComponentsService: new ProbationComponentsService(probationFrontendComponentsApiClient),
     masApiClient,
-    arnsApiClient,
     tierApiClient,
     arnsComponents,
   }

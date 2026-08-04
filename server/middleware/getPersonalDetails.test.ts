@@ -3,9 +3,6 @@ import { ArnsComponents, RiskData } from '@ministryofjustice/hmpps-arns-frontend
 import { getPersonalDetails } from './getPersonalDetails'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient, { TierCalculation } from '../data/tierApiClient'
-import ArnsApiClient from '../data/arnsApiClient'
-import { toPredictors } from '../utils/toPredictors'
-import { toRoshWidget } from '../utils/toRoshWidget'
 import {
   AddressType,
   Circumstances,
@@ -17,32 +14,60 @@ import {
   Provisions,
 } from '../data/model/personalDetails'
 import { Contact } from '../data/model/professionalContact'
-import { RiskSummary } from '../data/model/risk'
 
 const mockRiskData: RiskData = {
-  assessments: [],
+  assessments: [
+    {
+      outputVersion: '1',
+      completedDate: '09 May 2024',
+      completedDateTime: '09 May 2024 at 10:22',
+      assessmentType: 'layer 3',
+      ogrs3: {
+        name: 'OGRS',
+        band: 'LOW',
+        staticOrDynamic: null,
+        score: 1,
+        completedDate: '09 May 2024',
+      },
+      ovp: {
+        name: 'OVP',
+        band: 'LOW',
+        staticOrDynamic: null,
+        score: 10,
+        completedDate: '09 May 2024',
+      },
+      ogp: {
+        name: 'OGP',
+        band: 'LOW',
+        staticOrDynamic: null,
+        score: 15,
+        completedDate: '09 May 2024',
+      },
+      rsr: {
+        name: 'RSR',
+        band: 'LOW',
+        staticOrDynamic: 'Dynamic',
+        score: 0.76,
+        completedDate: '09 May 2024',
+      },
+      ospdc: {
+        name: 'OSP–DC',
+        band: null,
+        staticOrDynamic: null,
+        score: null,
+        completedDate: '09 May 2024',
+      },
+      ospiic: {
+        name: 'OSP–IIC',
+        band: null,
+        staticOrDynamic: null,
+        score: null,
+        completedDate: '09 May 2024',
+      },
+    },
+  ],
   httpStatus: 200,
 }
-
-const mockRisks = {
-  overallRisk: 'VERY_HIGH',
-  assessedOn: '2024-11-29T13:01:15',
-  riskInCommunity: {
-    Public: 'HIGH',
-    Children: 'LOW',
-    'Known Adult': 'MEDIUM',
-    Staff: 'VERY_HIGH',
-  },
-  riskInCustody: {
-    Public: 'HIGH',
-    Children: 'LOW',
-    'Known Adult': 'MEDIUM',
-    Staff: 'VERY_HIGH',
-    Prisoners: 'MEDIUM',
-  },
-} as unknown as RiskSummary
-
-const mockPredictors = [] as any[]
 
 const mockTierCalculation = {
   tierScore: 'B2',
@@ -51,7 +76,6 @@ const mockTierCalculation = {
 } as unknown as TierCalculation
 
 let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getPersonalDetails'>>
-let mockArnsApiClient: jest.Mocked<Pick<ArnsApiClient, 'getRisks' | 'getPredictorsAll'>>
 let mockTierApiClient: jest.Mocked<Pick<TierApiClient, 'getCalculationDetails'>>
 let mockArnsComponents: jest.Mocked<Pick<ArnsComponents, 'getRiskData'>>
 
@@ -82,9 +106,7 @@ const overview = (crn = 'X000001'): PersonalDetails => ({
 
 const mockSession = (crn = 'X000001') => ({
   overview: overview(crn),
-  risks: mockRisks,
   tierCalculation: mockTierCalculation,
-  predictors: mockPredictors,
   riskData: mockRiskData,
 })
 
@@ -123,10 +145,6 @@ describe('/middleware/getPersonalDetails', () => {
     process.env = { ...ORIGINAL_ENV }
 
     mockMasApiClient = { getPersonalDetails: jest.fn() }
-    mockArnsApiClient = {
-      getRisks: jest.fn().mockResolvedValue(mockRisks),
-      getPredictorsAll: jest.fn().mockResolvedValue(mockPredictors),
-    }
     mockTierApiClient = { getCalculationDetails: jest.fn().mockResolvedValue(mockTierCalculation) }
     mockArnsComponents = { getRiskData: jest.fn().mockResolvedValue(mockRiskData) }
   })
@@ -142,7 +160,6 @@ describe('/middleware/getPersonalDetails', () => {
     res = getRes()
     await getPersonalDetails(
       mockMasApiClient as unknown as MasApiClient,
-      mockArnsApiClient as unknown as ArnsApiClient,
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
     )(req, res, nextSpy)
@@ -155,13 +172,10 @@ describe('/middleware/getPersonalDetails', () => {
     expect((req.session as any).data).toEqual(expected)
     expect(mockMasApiClient.getPersonalDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
     expect(mockTierApiClient.getCalculationDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
-    expect(mockArnsApiClient.getRisks).toHaveBeenCalledWith(req.params.crn, 'user-1')
-    expect(mockArnsApiClient.getPredictorsAll).toHaveBeenCalledWith(req.params.crn, 'user-1')
     expect(mockArnsComponents.getRiskData).toHaveBeenCalled()
     expect(res.locals.case).toEqual(overview('X000002'))
-    expect(res.locals.risksWidget).toEqual(toRoshWidget(mockRisks))
+    expect(res.locals.riskData).toEqual(mockRiskData)
     expect(res.locals.tierCalculation).toEqual(mockTierCalculation)
-    expect(res.locals.predictorScores).toEqual(toPredictors(mockPredictors))
     expect(res.locals.headerPersonName).toEqual({ forename: 'Caroline', surname: 'Wolff' })
     expect(res.locals.headerCRN).toEqual(req.params.crn)
     expect(res.locals.headerDob).toEqual('1979-08-18')
@@ -190,19 +204,15 @@ describe('/middleware/getPersonalDetails', () => {
     res = getRes()
     await getPersonalDetails(
       mockMasApiClient as unknown as MasApiClient,
-      mockArnsApiClient as unknown as ArnsApiClient,
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
     )(req, res, nextSpy)
     expect(mockMasApiClient.getPersonalDetails).not.toHaveBeenCalled()
-    expect(mockArnsApiClient.getRisks).not.toHaveBeenCalled()
     expect(mockTierApiClient.getCalculationDetails).not.toHaveBeenCalled()
-    expect(mockArnsApiClient.getPredictorsAll).not.toHaveBeenCalled()
     expect(mockArnsComponents.getRiskData).not.toHaveBeenCalled()
     expect(res.locals.case).toEqual(overview('X000002'))
-    expect(res.locals.risksWidget).toEqual(toRoshWidget(mockRisks))
+    expect(res.locals.riskData).toEqual(mockRiskData)
     expect(res.locals.tierCalculation).toEqual(mockTierCalculation)
-    expect(res.locals.predictorScores).toEqual(toPredictors(mockPredictors))
     expect(res.locals.headerPersonName).toEqual({ forename: 'Caroline', surname: 'Wolff' })
     expect(res.locals.headerCRN).toEqual(req.params.crn)
     expect(res.locals.headerDob).toEqual('1979-08-18')
@@ -218,7 +228,6 @@ describe('/middleware/getPersonalDetails', () => {
     res = getRes()
     await getPersonalDetails(
       mockMasApiClient as unknown as MasApiClient,
-      mockArnsApiClient as unknown as ArnsApiClient,
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
     )(req, res, nextSpy)
@@ -237,7 +246,6 @@ describe('/middleware/getPersonalDetails', () => {
     )
     await getPersonalDetails(
       mockMasApiClient as unknown as MasApiClient,
-      mockArnsApiClient as unknown as ArnsApiClient,
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
     )(req, res, nextSpy)
@@ -259,7 +267,6 @@ describe('/middleware/getPersonalDetails', () => {
 
     await getPersonalDetails(
       mockMasApiClient as unknown as MasApiClient,
-      mockArnsApiClient as unknown as ArnsApiClient,
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
     )(req, res, nextSpy)
@@ -274,14 +281,11 @@ describe('/middleware/getPersonalDetails', () => {
 
     expect(mockMasApiClient.getPersonalDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
     expect(mockTierApiClient.getCalculationDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
-    expect(mockArnsApiClient.getRisks).toHaveBeenCalledWith(req.params.crn, 'user-1')
-    expect(mockArnsApiClient.getPredictorsAll).toHaveBeenCalledWith(req.params.crn, 'user-1')
     expect(mockArnsComponents.getRiskData).toHaveBeenCalled()
 
     expect(res.locals.case).toEqual(overview('X000002'))
-    expect(res.locals.risksWidget).toEqual(toRoshWidget(mockRisks))
+    expect(res.locals.riskData).toEqual(mockRiskData)
     expect(res.locals.tierCalculation).toEqual(mockTierCalculation)
-    expect(res.locals.predictorScores).toEqual(toPredictors(mockPredictors))
     expect(res.locals.headerPersonName).toEqual({ forename: 'Caroline', surname: 'Wolff' })
     expect(res.locals.headerCRN).toEqual(req.params.crn)
     expect(res.locals.headerDob).toEqual('1979-08-18')
