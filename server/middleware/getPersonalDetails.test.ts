@@ -69,6 +69,18 @@ const mockRiskData: RiskData = {
   httpStatus: 200,
 }
 
+const mockRoshData = {
+  assessment: {
+    completedDate: '09 May 2024',
+    overallRisk: 'LOW',
+    risks: [
+      { riskTo: 'Children', community: 'LOW', custody: 'LOW' },
+      { riskTo: 'Public', community: 'LOW', custody: 'LOW' },
+    ],
+  },
+  httpStatus: 200,
+}
+
 const mockTierCalculation = {
   tierScore: 'B2',
   calculationId: 'ee1f151f-7417-47f8-9366-2ced6356db37',
@@ -77,7 +89,7 @@ const mockTierCalculation = {
 
 let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getPersonalDetails'>>
 let mockTierApiClient: jest.Mocked<Pick<TierApiClient, 'getCalculationDetails'>>
-let mockArnsComponents: jest.Mocked<Pick<ArnsComponents, 'getRiskData'>>
+let mockArnsComponents: jest.Mocked<Pick<ArnsComponents, 'getRiskData' | 'getRoshData'>>
 
 let req: httpMocks.MockRequest<any>
 let res: httpMocks.MockResponse<any>
@@ -108,6 +120,7 @@ const mockSession = (crn = 'X000001') => ({
   overview: overview(crn),
   tierCalculation: mockTierCalculation,
   riskData: mockRiskData,
+  roshData: mockRoshData,
 })
 
 const getReq = () =>
@@ -146,7 +159,10 @@ describe('/middleware/getPersonalDetails', () => {
 
     mockMasApiClient = { getPersonalDetails: jest.fn() }
     mockTierApiClient = { getCalculationDetails: jest.fn().mockResolvedValue(mockTierCalculation) }
-    mockArnsComponents = { getRiskData: jest.fn().mockResolvedValue(mockRiskData) }
+    mockArnsComponents = {
+      getRiskData: jest.fn().mockResolvedValue(mockRiskData),
+      getRoshData: jest.fn().mockResolvedValue(mockRoshData),
+    }
   })
 
   afterEach(() => {
@@ -173,6 +189,7 @@ describe('/middleware/getPersonalDetails', () => {
     expect(mockMasApiClient.getPersonalDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
     expect(mockTierApiClient.getCalculationDetails).toHaveBeenCalledWith(req.params.crn, 'user-1')
     expect(mockArnsComponents.getRiskData).toHaveBeenCalled()
+    expect(mockArnsComponents.getRoshData).toHaveBeenCalled()
     expect(res.locals.case).toEqual(overview('X000002'))
     expect(res.locals.riskData).toEqual(mockRiskData)
     expect(res.locals.tierCalculation).toEqual(mockTierCalculation)
@@ -196,6 +213,7 @@ describe('/middleware/getPersonalDetails', () => {
             X000002: {
               ...mockSession('X000002'),
               riskData: mockRiskData,
+              roshData: mockRoshData,
             },
           },
         },
@@ -210,6 +228,7 @@ describe('/middleware/getPersonalDetails', () => {
     expect(mockMasApiClient.getPersonalDetails).not.toHaveBeenCalled()
     expect(mockTierApiClient.getCalculationDetails).not.toHaveBeenCalled()
     expect(mockArnsComponents.getRiskData).not.toHaveBeenCalled()
+    expect(mockArnsComponents.getRoshData).not.toHaveBeenCalled()
     expect(res.locals.case).toEqual(overview('X000002'))
     expect(res.locals.riskData).toEqual(mockRiskData)
     expect(res.locals.tierCalculation).toEqual(mockTierCalculation)

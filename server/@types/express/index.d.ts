@@ -8,6 +8,7 @@ export type PersonalDetailsCache = {
   overview: PersonalDetails
   tierCalculation: TierCalculation | ErrorSummary | null
   riskData: RiskData
+  roshData: RoshData
 }
 
 type AppSessionData = {

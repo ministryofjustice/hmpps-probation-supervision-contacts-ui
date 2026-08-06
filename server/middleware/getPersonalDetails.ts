@@ -33,14 +33,18 @@ export const getPersonalDetails = (
 
     const authOptions = asUser(res.locals.user.token)
 
-    if (personalDetails?.riskData) {
+    if (personalDetails?.riskData && personalDetails?.roshData) {
       data = personalDetails
     } else if (personalDetails) {
-      const riskData = await arnsComponents.getRiskData(authOptions, 'crn', crn)
+      const [riskData, roshData] = await Promise.all([
+        personalDetails.riskData ?? arnsComponents.getRiskData(authOptions, 'crn', crn),
+        personalDetails.roshData ?? arnsComponents.getRoshData(authOptions, crn),
+      ])
 
       data = {
         ...personalDetails,
         riskData,
+        roshData,
       }
 
       req.session.data = {
@@ -51,10 +55,11 @@ export const getPersonalDetails = (
         },
       }
     } else {
-      const [overview, tierCalculation, riskData] = await Promise.all([
+      const [overview, tierCalculation, riskData, roshData] = await Promise.all([
         masApiClient.getPersonalDetails(crn, username),
         tierApiClient.getCalculationDetails(crn, username),
         arnsComponents.getRiskData(authOptions, 'crn', crn),
+        arnsComponents.getRoshData(authOptions, crn),
       ])
 
       if (!overview) {
@@ -65,6 +70,7 @@ export const getPersonalDetails = (
         overview,
         tierCalculation,
         riskData,
+        roshData,
       }
 
       req.session.data = {
@@ -78,6 +84,7 @@ export const getPersonalDetails = (
 
     res.locals.case = data.overview
     res.locals.riskData = data.riskData
+    res.locals.roshData = data.roshData
     res.locals.tierCalculation = data.tierCalculation
     res.locals.headerPersonName = {
       forename: data.overview.name.forename,

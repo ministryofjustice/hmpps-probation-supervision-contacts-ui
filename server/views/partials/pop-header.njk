@@ -1,3 +1,5 @@
+{% from "arns/components/rosh-badge/macro.njk" import roshBadge %}
+
 <div class="govuk-flex">
     <div>
         <ul class="govuk-list govuk-caption-m inline-list-from-tablet">
@@ -81,6 +83,21 @@
                     showScore: false
                 })}}
             {% endif %}
+
+            {% set normalizedRoshData = roshData %}
+            {% if roshData and roshData.assessment and roshData.assessment.overallRisk %}
+                {% set normalizedRoshData = {
+                    assessment: {
+                        overallRisk: roshData.assessment.overallRisk | replace('_', ' '),
+                        completedDate: roshData.assessment.completedDate,
+                        risks: roshData.assessment.risks
+                    },
+                    httpStatus: roshData.httpStatus
+                } %}
+                {{ roshBadge({ data: normalizedRoshData }) }}
+            {% endif %}
+
+
 
 
     </div>
