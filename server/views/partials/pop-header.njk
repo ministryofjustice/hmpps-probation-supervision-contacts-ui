@@ -84,19 +84,20 @@
                 })}}
             {% endif %}
 
-{% set normalizedRoshData = roshData %}
-{% if roshData and roshData.assessment and roshData.assessment.overallRisk %}
-  {% set normalizedRoshData = {
-      assessment: {
-          overallRisk: roshData.assessment.overallRisk | replace('_', ' '),
-          completedDate: roshData.assessment.completedDate,
-          risks: roshData.assessment.risks
-      },
-      httpStatus: roshData.httpStatus
-  } %}
-{% endif %}
+            {% set normalizedRoshData = roshData %}
+            {% if roshData and roshData.assessment and roshData.assessment.overallRisk %}
+                {% set normalizedRoshData = {
+                    assessment: {
+                        overallRisk: roshData.assessment.overallRisk | replace('_', ' '),
+                        completedDate: roshData.assessment.completedDate,
+                        risks: roshData.assessment.risks
+                    },
+                    httpStatus: roshData.httpStatus
+                } %}
+                {{ roshBadge({ data: normalizedRoshData }) }}
+            {% endif %}
 
-{{ roshBadge({ data: normalizedRoshData }) }}
+
 
 
     </div>
