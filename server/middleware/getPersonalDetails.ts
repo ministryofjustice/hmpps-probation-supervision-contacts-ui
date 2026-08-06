@@ -36,8 +36,10 @@ export const getPersonalDetails = (
     if (personalDetails?.riskData && personalDetails?.roshData) {
       data = personalDetails
     } else if (personalDetails) {
-      const riskData = await arnsComponents.getRiskData(authOptions, 'crn', crn)
-      const roshData = await arnsComponents.getRoshData(authOptions, crn)
+      const [riskData, roshData] = await Promise.all([
+        personalDetails.riskData ?? arnsComponents.getRiskData(authOptions, 'crn', crn),
+        personalDetails.roshData ?? arnsComponents.getRoshData(authOptions, crn),
+      ])
 
       data = {
         ...personalDetails,
