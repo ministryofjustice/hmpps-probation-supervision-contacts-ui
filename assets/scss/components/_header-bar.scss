@@ -144,7 +144,7 @@
   }
 }
 
-.govuk-phase-banner {
+.govuk-phase-banner.govuk-width-container {
   @include govuk-width-container;
   border: none;
 }
