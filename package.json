@@ -28,7 +28,7 @@
   },
   "engines": {
     "node": "^24",
-    "npm": "^11"
+    "npm": "^12"
   },
   "dependencies": {
     "@flipt-io/flipt-client": "^0.14.0",
