@@ -54,7 +54,7 @@
     "express-prom-bundle": "^8.0.0",
     "express-session": "^1.19.0",
     "fuse.js": "7.5.0",
-    "govuk-frontend": "^6.4.0",
+    "govuk-frontend": "^6.5.0",
     "helmet": "^8.3.0",
     "http-errors": "^2.0.1",
     "jwt-decode": "^4.0.0",
@@ -84,7 +84,7 @@
     "@types/http-errors": "^2.0.5",
     "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/luxon": "3.7.4",
+    "@types/luxon": "3.7.5",
     "@types/node": "^24.13.3",
     "@types/nunjucks": "^3.2.6",
     "@types/passport": "^1.0.17",
@@ -115,7 +115,7 @@
     "@ministryofjustice/hmpps-npm-script-allowlist": {
       "tar": "^7.5.22"
     },
-    "js-yaml": "^5.3.0",
+    "js-yaml": "^5.4.1",
     "@opentelemetry/core": "^2.10.0"
   }
 }
