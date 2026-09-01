@@ -99,4 +99,37 @@ describe('multerErrorHandler', () => {
 
     expect(next).toHaveBeenCalled()
   })
+
+  it('sets errorMessages for INVALID_FILE_NAME error', () => {
+    const error = new Error('INVALID_FILE_NAME')
+
+    multer().single.mockImplementation(
+      (_field: string) => (_req: Request, _res: Response, cb: (err?: Error) => void) => cb(error),
+    )
+
+    const middleware = multerErrorHandler('file')
+    middleware(req as Request, res as Response, next)
+
+    expect(res.locals.errorMessages).toEqual({
+      file: 'Filename: The Filename must not include any of the following characters ! | $ % & # ^ / \\ " < > : ? *',
+    })
+    expect(next).toHaveBeenCalled()
+  })
+
+  it('uses the provided field name for INVALID_FILE_NAME error', () => {
+    const error = new Error('INVALID_FILE_NAME')
+
+    multer().single.mockImplementation(
+      (_field: string) => (_req: Request, _res: Response, cb: (err?: Error) => void) => cb(error),
+    )
+
+    const middleware = multerErrorHandler('document')
+    middleware(req as Request, res as Response, next)
+
+    expect(res.locals.errorMessages).toEqual({
+      document:
+        'Filename: The Filename must not include any of the following characters ! | $ % & # ^ / \\ " < > : ? *',
+    })
+    expect(next).toHaveBeenCalled()
+  })
 })

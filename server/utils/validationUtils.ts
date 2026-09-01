@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon'
 import { ErrorCheck, Validateable, ValidationSpec } from '../models/Errors'
 
+export const isValidFileName = (string: string) => !/[!|$%&<>:?*#"/\\^]/.test(string)
+
 export const isNotEmpty = (args: any[]) => {
   return !!args[0] && args[0] !== undefined
 }
