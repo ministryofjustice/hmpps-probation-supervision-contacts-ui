@@ -97,7 +97,7 @@
     "esbuild-plugin-manifest": "^1.0.5",
     "esbuild-sass-plugin": "^3.7.0",
     "eslint-plugin-import": "^2.32.0",
-    "jest": "^30.4.2",
+    "jest": "^30.5.0",
     "jest-html-reporter": "^4.4.0",
     "jest-junit": "^17.0.0",
     "jsonwebtoken": "^9.0.3",
