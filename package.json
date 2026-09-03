@@ -34,7 +34,7 @@
     "@flipt-io/flipt-client": "^0.14.0",
     "@microsoft/applicationinsights-clickanalytics-js": "^3.4.3",
     "@microsoft/applicationinsights-web": "^3.4.3",
-    "@ministryofjustice/frontend": "^10.0.1",
+    "@ministryofjustice/frontend": "^11.0.0",
     "@ministryofjustice/hmpps-arns-frontend-components-lib": "3.0.3",
     "@ministryofjustice/hmpps-audit-client": "1.1.3",
     "@ministryofjustice/hmpps-auth-clients": "3.0.0",
@@ -112,7 +112,9 @@
   "overrides": {
     "flatted": "^3.4.4",
     "js-yaml": "^5.4.1",
-    "@opentelemetry/core": "^2.10.0"
+    "@opentelemetry/core": "^2.10.0",
+    "qs": "^6.16.0",
+    "@humanfs/node": "^0.16.8"
   },
   "allowScripts": {
     "@parcel/watcher@2.5.6": true,
