@@ -97,7 +97,7 @@
     "esbuild-plugin-manifest": "^1.0.5",
     "esbuild-sass-plugin": "^3.7.0",
     "eslint-plugin-import": "^2.32.0",
-    "jest": "^30.5.0",
+    "jest": "^30.5.1",
     "jest-html-reporter": "^4.4.0",
     "jest-junit": "^17.0.0",
     "jsonwebtoken": "^9.0.3",
@@ -112,7 +112,7 @@
   "overrides": {
     "flatted": "^3.4.4",
     "js-yaml": "^5.4.1",
-    "@opentelemetry/core": "^2.10.0",
+    "@opentelemetry/core": "^2.11.0",
     "qs": "^6.16.0",
     "@humanfs/node": "^0.16.8"
   },
