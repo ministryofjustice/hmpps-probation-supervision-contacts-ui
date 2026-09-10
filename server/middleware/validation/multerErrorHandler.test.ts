@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { MulterError } from 'multer'
-import { multerErrorHandler } from './multerErrorHandler'
+import { fileFilter, multerErrorHandler } from './multerErrorHandler'
 
 jest.mock('multer', () => {
   const multerMock = jest.fn()
@@ -72,7 +72,7 @@ describe('multerErrorHandler', () => {
     const middleware = multerErrorHandler('file')
     middleware(req as Request, res as Response, next)
 
-    expect(res.locals.errorMessages).toEqual({ file: 'Only PDF or Word files are allowed' })
+    expect(res.locals.errorMessages).toEqual({ file: 'Only PDF, Word or JPEG files are allowed' })
     expect(next).toHaveBeenCalled()
   })
 
@@ -98,5 +98,49 @@ describe('multerErrorHandler', () => {
     middleware(req as Request, res as Response, next)
 
     expect(next).toHaveBeenCalled()
+  })
+
+  it('should accept image/jpeg with a .jpeg extension', () => {
+    const file = {
+      mimetype: 'image/jpeg',
+      originalname: 'image.jpeg',
+      fieldname: 'file',
+    } as Express.Multer.File
+
+    const cb = jest.fn()
+
+    fileFilter(req as Request, file, cb)
+
+    expect(cb).toHaveBeenCalledWith(null, true)
+  })
+
+  it('should reject image/jpeg with a mismatched extension', () => {
+    const file = {
+      mimetype: 'image/jpeg',
+      originalname: 'image.pdf',
+      fieldname: 'file',
+    } as Express.Multer.File
+
+    const cb = jest.fn()
+
+    fileFilter(req as Request, file, cb)
+
+    expect(cb).toHaveBeenCalledWith(expect.any(MulterError))
+    expect(cb.mock.calls[0][0]).toMatchObject({ code: 'LIMIT_UNEXPECTED_FILE', field: 'file' })
+  })
+
+  it('should reject an unsupported MIME type and image type', () => {
+    const file = {
+      mimetype: 'image/png',
+      originalname: 'image.png',
+      fieldname: 'file',
+    } as Express.Multer.File
+
+    const cb = jest.fn()
+
+    fileFilter(req as Request, file, cb)
+
+    expect(cb).toHaveBeenCalledWith(expect.any(MulterError))
+    expect(cb.mock.calls[0][0]).toMatchObject({ code: 'LIMIT_UNEXPECTED_FILE', field: 'file' })
   })
 })

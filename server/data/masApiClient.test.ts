@@ -1,5 +1,6 @@
 import nock from 'nock'
 import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
+import { asSystem } from '@ministryofjustice/hmpps-rest-client'
 import config from '../config'
 import MasApiClient from './masApiClient'
 
@@ -337,6 +338,32 @@ describe('MasApiClient', () => {
       const result = await masApiClient.getFullContactNote('X123456', 'ABC123', '0', 'test-user')
 
       expect(result).toEqual(fullContact)
+    })
+  })
+
+  describe('patchDocuments', () => {
+    it('sanitizes the filename before sending the multipart request', async () => {
+      const file = {
+        buffer: Buffer.from('file contents'),
+        originalname: 'my!file$name&test?.pdf',
+      } as Express.Multer.File
+
+      const patch = jest.spyOn(masApiClient, 'patch').mockResolvedValue(undefined)
+
+      await masApiClient.patchDocuments('CRN123', 'contact123', file, 'test-user')
+
+      expect(patch).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '/documents/CRN123/update/contact/contact123',
+          files: {
+            file: {
+              buffer: file.buffer,
+              originalname: 'my-file-name-test-.pdf',
+            },
+          },
+        }),
+        asSystem('test-user'),
+      )
     })
   })
 })

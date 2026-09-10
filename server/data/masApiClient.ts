@@ -16,6 +16,7 @@ import {
 } from './model/contacts'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { mapPersonAppointmentWithApprovedContactDisplayNames } from '../utils/contactDisplayNames'
+import { sanitizeFilename } from '../utils/sanitizeFilename'
 
 interface UserAlerts {
   content: unknown[]
@@ -122,10 +123,14 @@ export default class MasApiClient extends RestClient {
   }
 
   async patchDocuments(crn: string, contactId: string, file: Express.Multer.File, username: string): Promise<void> {
+    const sanitizedFile: Express.Multer.File = {
+      ...file,
+      originalname: sanitizeFilename(file.originalname),
+    }
     await this.patch(
       {
         path: `/documents/${crn}/update/contact/${contactId}`,
-        files: { file: { buffer: file.buffer, originalname: file.originalname } },
+        files: { file: { buffer: sanitizedFile.buffer, originalname: sanitizedFile.originalname } },
       } as Parameters<typeof this.patch>[0],
       asSystem(username),
     )
