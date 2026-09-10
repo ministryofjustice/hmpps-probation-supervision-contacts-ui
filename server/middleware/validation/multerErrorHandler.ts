@@ -3,27 +3,29 @@ import multer, { MulterError } from 'multer'
 import path from 'path'
 import config from '../../config'
 
+export const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  const validMimeTypes = Object.values(config.validMimeTypes)
+
+  if (!validMimeTypes.includes(file.mimetype)) {
+    return cb(new MulterError('LIMIT_UNEXPECTED_FILE', file.fieldname))
+  }
+
+  if (
+    file.mimetype === config.validMimeTypes.jpeg &&
+    path.extname(file.originalname).toLowerCase() !== config.validFileExtensions.jpeg
+  ) {
+    return cb(new MulterError('LIMIT_UNEXPECTED_FILE', file.fieldname))
+  }
+
+  return cb(null, true)
+}
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
     fileSize: config.maxFileSize as number,
     files: 1,
   },
-  fileFilter: (_req, file, cb) => {
-    const validMimeTypes = Object.values(config.validMimeTypes)
-
-    if (!validMimeTypes.includes(file.mimetype)) {
-      return cb(new MulterError('LIMIT_UNEXPECTED_FILE', file.fieldname))
-    }
-    if (
-      file.mimetype === config.validMimeTypes.jpeg &&
-      path.extname(file.originalname).toLowerCase() !== config.validFileExtensions.jpeg
-    ) {
-      return cb(new MulterError('LIMIT_UNEXPECTED_FILE', file.fieldname))
-    }
-
-    return cb(null, true)
-  },
+  fileFilter,
 })
 
 export const multerErrorHandler = (field: string) => {
