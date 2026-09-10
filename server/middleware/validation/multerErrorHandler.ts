@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import multer, { MulterError } from 'multer'
+import path from 'path'
 import config from '../../config'
 
 const upload = multer({
@@ -9,13 +10,18 @@ const upload = multer({
     files: 1,
   },
   fileFilter: (_req, file, cb) => {
+    const validMimeTypes = Object.values(config.validMimeTypes)
+
+    if (!validMimeTypes.includes(file.mimetype)) {
+      return cb(new MulterError('LIMIT_UNEXPECTED_FILE', file.fieldname))
+    }
     if (
-      !Object.entries(config.validMimeTypes)
-        .map(([_k, v]) => v)
-        .includes(file.mimetype)
+      file.mimetype === config.validMimeTypes.jpeg &&
+      path.extname(file.originalname).toLowerCase() !== config.validFileExtensions.jpeg
     ) {
       return cb(new MulterError('LIMIT_UNEXPECTED_FILE', file.fieldname))
     }
+
     return cb(null, true)
   },
 })
@@ -31,7 +37,7 @@ export const multerErrorHandler = (field: string) => {
         }
         if (err.code === 'LIMIT_UNEXPECTED_FILE') {
           res.locals.errorMessages = {
-            [field]: 'Only PDF or Word files are allowed',
+            [field]: 'Only PDF, Word or JPEG files are allowed',
           }
         }
       }

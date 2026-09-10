@@ -72,7 +72,7 @@ describe('multerErrorHandler', () => {
     const middleware = multerErrorHandler('file')
     middleware(req as Request, res as Response, next)
 
-    expect(res.locals.errorMessages).toEqual({ file: 'Only PDF or Word files are allowed' })
+    expect(res.locals.errorMessages).toEqual({ file: 'Only PDF, Word or JPEG files are allowed' })
     expect(next).toHaveBeenCalled()
   })
 
