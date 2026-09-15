@@ -42,6 +42,10 @@ generic-service:
           ctl:ruleRemoveTargetByTag=attack-sqli;ARGS:details,\
           ctl:ruleRemoveTargetByTag=attack-xss;ARGS:details"
 
+      SecRule REQUEST_FILENAME "@rx ^/case/[^/]+/contacts/add-email-or-text-from-other$" \
+        "id:100103,phase:1,pass,nolog,\
+          ctl:ruleRemoveTargetById=920120;FILES:fileUpload"
+
   env:
     INGRESS_URL: "https://probation-supervision-contacts-ui-preprod.hmpps.service.justice.gov.uk"
     HMPPS_AUTH_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
