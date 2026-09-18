@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 import arnsApi from '../mockApis/arnsApi'
 import hmppsAuth from '../mockApis/hmppsAuth'
 import masApi from '../mockApis/masApi'
+import mpopApi from '../mockApis/mpopApi'
 import probationFrontendComponentsApi from '../mockApis/probationFrontendComponentsApi'
 import tierApi from '../mockApis/tierApi'
 import tokenVerification from '../mockApis/tokenVerification'
@@ -18,6 +19,7 @@ test.describe('Health', () => {
       await Promise.all([
         hmppsAuth.stubPing(),
         masApi.stubPing(),
+        mpopApi.stubPing(),
         arnsApi.stubPing(),
         tierApi.stubPing(),
         probationFrontendComponentsApi.stubPing(),
@@ -49,6 +51,7 @@ test.describe('Health', () => {
       await Promise.all([
         hmppsAuth.stubPing(),
         masApi.stubPing(),
+        mpopApi.stubPing(),
         arnsApi.stubPing(),
         tierApi.stubPing(),
         probationFrontendComponentsApi.stubPing(),

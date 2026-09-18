@@ -4,9 +4,7 @@ import { ArnsComponents } from '@ministryofjustice/hmpps-arns-frontend-component
 import { asUser } from '@ministryofjustice/hmpps-rest-client'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient from '../data/tierApiClient'
-import { tierLink } from '../utils/tierLink'
-import { toPredictors } from '../utils/toPredictors'
-import { toRoshWidget } from '../utils/toRoshWidget'
+import { tierLink, tierUrlV3 } from '../utils/tierLink'
 import type { PersonalDetailsCache } from '../@types/express'
 import logger from '../../logger'
 
@@ -93,6 +91,7 @@ export const getPersonalDetails = (
     res.locals.headerCRN = crn
     res.locals.headerDob = data.overview.dateOfBirth
     res.locals.headerTierLink = tierLink(crn)
+    res.locals.headerTierUrlV3 = tierUrlV3(crn)
 
     if (data.overview.dateOfDeath) {
       res.locals.dateOfDeath = data.overview.dateOfDeath
