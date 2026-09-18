@@ -85,6 +85,15 @@ export default {
       },
       agent: new AgentConfig(Number(get('ARNS_API_TIMEOUT_RESPONSE', 10000))),
     },
+    mpopApi: {
+      url: get('MPOP_API_URL', 'http://localhost:8100', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('MPOP_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('MPOP_API_TIMEOUT_DEADLINE', 10000)),
+      },
+      agent: new AgentConfig(Number(get('MPOP_API_TIMEOUT_RESPONSE', 10000))),
+    },
     tierApi: {
       url: get('TIER_API_URL', 'http://localhost:8100', requiredInProduction),
       healthPath: '/health/ping',
@@ -124,6 +133,7 @@ export default {
   maxFileSize: 5 * 1024 * 1024, // 5mb
   tier: {
     link: get('TIER_LINK', 'https://tier-dev.hmpps.service.justice.gov.uk/case', requiredInProduction),
+    url: get('TIER_URL', 'https://tier-dev.hmpps.service.justice.gov.uk', requiredInProduction),
   },
   manageProbationUrl: get(
     'MANAGE_PEOPLE_ON_PROBATION_URL',
