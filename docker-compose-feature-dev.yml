@@ -25,6 +25,7 @@ services:
       - MANAGE_PEOPLE_ON_PROBATION_URL=http://wiremock:8080
       - PROBATION_FRONTEND_COMPONENTS_API_URL=http://wiremock:8080/probation-frontend-components
       - MAS_API_URL=http://wiremock:8080/mas-api
+      - MPOP_API_URL=http://wiremock:8080/mpop-api
       - ARNS_API_URL=http://wiremock:8080/arns-api
       - TIER_API_URL=http://wiremock:8080/tier-api
       - FLIPT_URL=http://wiremock:8080/flipt
