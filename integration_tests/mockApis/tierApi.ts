@@ -15,6 +15,25 @@ export default {
       },
     }),
 
+  stubGetTierDetailsV3: (tierScore = 'A1'): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/tier-api/v3/crn/.+/tier',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          tierScore,
+          calculationId: 'abc123',
+          calculationDate: '2024-01-01',
+          changeReason: 'ANNUAL_RECALCULATION',
+          provisional: false,
+        },
+      },
+    }),
+
   stubGetCalculationDetails: (tierScore = 'A1'): SuperAgentRequest =>
     stubFor({
       request: {
