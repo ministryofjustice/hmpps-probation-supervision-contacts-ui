@@ -125,7 +125,7 @@ export default class MasApiClient extends RestClient {
   async patchDocuments(crn: string, contactId: string, file: Express.Multer.File, username: string): Promise<void> {
     const sanitizedFile: Express.Multer.File = {
       ...file,
-      originalname: sanitizeFilename(file.originalname),
+      originalname: Buffer.from(sanitizeFilename(file.originalname), 'latin1').toString('utf8'),
     }
     await this.patch(
       {

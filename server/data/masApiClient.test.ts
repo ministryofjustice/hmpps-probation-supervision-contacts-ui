@@ -345,7 +345,7 @@ describe('MasApiClient', () => {
     it('sanitizes the filename before sending the multipart request', async () => {
       const file = {
         buffer: Buffer.from('file contents'),
-        originalname: 'my!file$name&test?.pdf',
+        originalname: 'my!£file$name&test?.pdf',
       } as Express.Multer.File
 
       const patch = jest.spyOn(masApiClient, 'patch').mockResolvedValue(undefined)
@@ -358,7 +358,7 @@ describe('MasApiClient', () => {
           files: {
             file: {
               buffer: file.buffer,
-              originalname: 'my-file-name-test-.pdf',
+              originalname: 'my-�file-name-test-.pdf',
             },
           },
         }),
