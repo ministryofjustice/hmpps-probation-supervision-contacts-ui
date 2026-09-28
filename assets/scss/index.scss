@@ -19,3 +19,16 @@ $govuk-page-width: $moj-page-width;
 @import './components/summary-card';
 @import './components/document';
 @import './components/page-useful';
+
+.feedback-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.feedback-container-inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem
+}
