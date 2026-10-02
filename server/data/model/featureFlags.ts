@@ -3,5 +3,4 @@ export class FeatureFlags {
   [index: string]: boolean
   enableEnforcementContacts?: boolean = undefined
   enableSupervisionPackagePoPHeader?: boolean = undefined
-  enableFeedback?: boolean = undefined
 }
