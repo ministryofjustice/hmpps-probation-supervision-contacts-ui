@@ -105,9 +105,11 @@
         {{ headerActions | safe }}
     </div>
 </div>
- {{ govukWarningText({
+{% if flags.enableNDeliusRosh %}
+        {{ govukWarningText({
             classes: "govuk-!-margin-bottom-2",
             text: "Check ROSH in NDelius and OASys",
             iconFallbackText: "Warning"
         }) }} 
+{% endif %}
 <hr class="govuk-section-break--l">
