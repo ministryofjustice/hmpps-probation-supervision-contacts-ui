@@ -147,4 +147,6 @@ export default {
     url: get('FLIPT_URL', 'http://localhost:8100', requiredInProduction),
     token: get('FLIPT_TOKEN', 'FLIPT_TOKEN', requiredInProduction),
   },
+  preservedWords: ['(NS)', '(Non', 'NS)'],
+  preservedSeparators: ['-'],
 }

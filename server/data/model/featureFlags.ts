@@ -4,4 +4,5 @@ export class FeatureFlags {
   enableEnforcementContacts?: boolean = undefined
   enableSupervisionPackagePoPHeader?: boolean = undefined
   enableFeedback?: boolean = undefined
+  enableNDeliusRosh?: boolean = undefined
 }
