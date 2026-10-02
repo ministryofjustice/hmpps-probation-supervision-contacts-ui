@@ -1,5 +1,7 @@
 {% from "arns/components/rosh-badge/macro.njk" import roshBadge %}
 {% from "mpop/components/pop-header/macro.njk" import popHeader %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
 
 {% if flags.enableSupervisionPackagePoPHeader %}
     {% set calculation = tierDetails.calculation %}
@@ -103,4 +105,9 @@
         {{ headerActions | safe }}
     </div>
 </div>
+ {{ govukWarningText({
+            classes: "govuk-!-margin-bottom-2",
+            text: "Check ROSH in NDelius and OASys",
+            iconFallbackText: "Warning"
+        }) }} 
 <hr class="govuk-section-break--l">
