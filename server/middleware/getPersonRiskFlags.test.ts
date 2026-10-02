@@ -1,15 +1,10 @@
 import httpMocks from 'node-mocks-http'
-// import { RedisTokenStore } from '@ministryofjustice/hmpps-auth-clients'
 import { getPersonRiskFlags } from './getPersonRiskFlags'
 import MasApiClient from '../data/masApiClient'
 import { findReplace } from '../utils/findReplace'
 import { setDataValue } from '../utils/setDataValue'
 import { getStaffRisk } from '../utils/getStaffRisk'
 import { PersonRiskFlags, RiskFlag } from '../data/model/risk'
-
-// const tokenStore = new RedisTokenStore(null) as jest.Mocked<RedisTokenStore>
-// jest.mock('../data/masApiClient')
-// jest.mock('../data/tokenStore/redisTokenStore')
 
 jest.mock('../utils/findReplace', () => {
   return {
