@@ -13,7 +13,6 @@ export const getPersonRiskFlags = (masApiClient: MasApiClient): RequestHandler =
     let personRisks: PersonRiskFlags
     let riskBadgeData: RiskBadgeData
     if (!req.session?.data?.risks?.[crn]) {
-      console.log('requesting')
       personRisks = await masApiClient.getPersonRiskFlags(crn, username)
 
       if (personRisks.riskFlags) {
