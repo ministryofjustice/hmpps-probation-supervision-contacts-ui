@@ -9,6 +9,7 @@ import addContactType from '../middleware/validation/addContactType'
 import { multerErrorHandler } from '../middleware/validation/multerErrorHandler'
 import controllers from '../controllers'
 import validateCrnParam from '../middleware/validateCrnParam'
+import { getPersonRiskFlags } from '../middleware/getPersonRiskFlags'
 
 export default function addContactRoutes(
   router: Router,
@@ -21,6 +22,7 @@ export default function addContactRoutes(
   const loadContactFormDeps = [
     loadPersonalDetails,
     isResponsibleOfficerMiddleware(masApiClient),
+    getPersonRiskFlags(masApiClient),
     getSentences(masApiClient),
     loadTierDetails,
   ]
