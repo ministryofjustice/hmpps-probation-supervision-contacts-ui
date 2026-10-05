@@ -73,6 +73,7 @@ test('shows additional questions for a contact with outcomes', async ({ page }) 
   const updateContactPage = new UpdateContactPage(page)
 
   await page.goto('/case/X123456/00003/update-contact')
+  await page.pause()
 
   await updateContactPage.expectAlertResponsibleQuestionVisible()
 
