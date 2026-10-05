@@ -194,3 +194,5 @@ export interface Need {
   riskOfReoffending: boolean
   severity: string
 }
+
+export type RiskFlagLevel = 'HIGH' | 'MEDIUM' | 'LOW' | 'INFORMATION_ONLY' | 'VERY HIGH'
