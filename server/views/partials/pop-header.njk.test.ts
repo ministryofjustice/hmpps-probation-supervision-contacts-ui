@@ -2,7 +2,6 @@ import * as cheerio from 'cheerio'
 import httpMocks from 'node-mocks-http'
 import { RiskData } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { RoshRiskWidgetDto } from '../../data/model/risk'
-import { AppResponse } from '../../models/Locals'
 import { createNunjucksTestEnv } from '../../testutils/nunjucksTestEnv'
 import { RiskBadgeData } from '../../utils/personRiskFlagSorter'
 
@@ -150,7 +149,7 @@ const render = (model = {} as Partial<TestModel>) => {
   const req = httpMocks.createRequest()
   const res = httpMocks.createResponse({
     locals: input,
-  }) as AppResponse
+  })
   const env = createNunjucksTestEnv(req, res)
   return cheerio.load(env.render('partials/pop-header.njk', input))
 }
