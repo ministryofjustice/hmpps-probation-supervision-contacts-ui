@@ -8,6 +8,9 @@ import { getStaffRisk, getProbationRisk } from '../utils/getStaffRisk'
 
 export const getPersonRiskFlags = (masApiClient: MasApiClient): RequestHandler => {
   return async function getPersonRiskFlagsInner(req, res, next) {
+    if (!res.locals?.flags?.enableNDeliusRosh) {
+      return next()
+    }
     const { crn } = req.params as Record<string, string>
     const { username } = res.locals.user
     let personRisks: PersonRiskFlags
@@ -58,16 +61,14 @@ export const getPersonRiskFlags = (masApiClient: MasApiClient): RequestHandler =
       return item
     })
 
-    if (res.locals?.flags?.enableNDeliusRosh) {
-      const riskScore = personRisks.riskFlags
-        ?.find(riskFlag => riskFlag.description.toLowerCase().includes('rosh'))
-        ?.description?.toLowerCase()
-        .replace('rosh', '')
-        .trim()
-        .toUpperCase() as RiskFlagLevel
-      res.locals.rosh = {
-        level: riskScore,
-      }
+    const riskScore = personRisks.riskFlags
+      ?.find(riskFlag => riskFlag.description.toLowerCase().includes('rosh'))
+      ?.description?.toLowerCase()
+      .replace('rosh', '')
+      .trim()
+      .toUpperCase() as RiskFlagLevel
+    res.locals.rosh = {
+      level: riskScore,
     }
     res.locals.personRisks = personRisks
     res.locals.riskBadgeData = riskBadgeData
