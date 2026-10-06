@@ -22,7 +22,7 @@ export const findReplace = <DataT, ItemT = never>({ data, path, key, find, repla
     if (Array.isArray(node)) {
       setDataValue(
         newData as unknown as Record<string, unknown>,
-        path[0],
+        path,
         (node as ItemT[]).map(item => {
           return {
             ...item,

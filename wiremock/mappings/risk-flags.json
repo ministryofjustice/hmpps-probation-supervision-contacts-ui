@@ -1,11 +1,11 @@
 {
   "mappings": [
-{
-  "request": {
-    "method": "GET",
-    "urlPathPattern": "/mas-api/risk-flags/.*",
-  },
-        "response": {
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/mas-api/risk-flags/.*"
+      },
+      "response": {
         "status": 200,
         "jsonBody": {
           "personSummary": {
@@ -308,7 +308,3 @@
     }
   ]
 }
-
-
-
-

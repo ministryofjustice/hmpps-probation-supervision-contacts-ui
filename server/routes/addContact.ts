@@ -30,6 +30,7 @@ export default function addContactRoutes(
   router.get(
     '/case/:crn/add-frequently-used-contact',
     loadPersonalDetails,
+    getPersonRiskFlags(masApiClient),
     loadTierDetails,
     populate,
     controllers.addContact.getFrequentlyUsedContact(),
@@ -38,6 +39,7 @@ export default function addContactRoutes(
   router.get(
     '/case/:crn/contacts/find-contact-to-add',
     loadPersonalDetails,
+    getPersonRiskFlags(masApiClient),
     loadTierDetails,
     populate,
     controllers.addContact.getSearchByCategory(),
@@ -46,6 +48,7 @@ export default function addContactRoutes(
   router.get(
     '/case/:crn/contacts/search-keyword',
     loadPersonalDetails,
+    getPersonRiskFlags(masApiClient),
     loadTierDetails,
     populate,
     controllers.addContact.getSearchByKeyword(),

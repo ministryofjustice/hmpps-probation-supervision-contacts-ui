@@ -275,6 +275,7 @@ describe('POP header', () => {
 
     it('should not render any badges when the ARNS combined predictor is NOT APPLICABLE', () => {
       const $ = render({
+        flags: { ...baseModel.flags, enableNDeliusRosh: false },
         riskData: riskData({
           combinedSeriousReoffendingPredictor: {
             name: 'Combined serious reoffending predictor',
