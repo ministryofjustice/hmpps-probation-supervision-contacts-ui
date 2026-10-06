@@ -17,7 +17,9 @@ type AppSessionData = {
   risks?: {
     [crn: string]: PersonRiskFlags
   }
-  riskBadgeData?: RiskBadgeData
+  riskBadgeData?: {
+    [crn: string]: RiskBadgeData
+  }
 }
 
 export declare module 'express-session' {
