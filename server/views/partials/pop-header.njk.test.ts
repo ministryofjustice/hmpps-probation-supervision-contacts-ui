@@ -284,6 +284,16 @@ describe('POP header', () => {
         }),
       })
       expect($('.moj-page-header-actions .moj-page-header-actions__title').find('[data-badge-base]').length).toBe(1)
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title').find(
+          '[data-badge-base="Combined serious reoffending predictor NOT APPLICABLE"]',
+        ).length,
+      ).toBe(0)
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title').find(
+          '[data-badge-base="Risk of serious harm MEDIUM"]',
+        ).length,
+      ).toBe(1)
     })
   })
 })
