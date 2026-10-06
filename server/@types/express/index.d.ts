@@ -3,6 +3,7 @@ import { PersonalDetails } from '../../data/model/personalDetails'
 import { TierCalculation } from '../../data/tierApiClient'
 import { ErrorSummary } from '../../data/model/common'
 import { PersonRiskFlags, RiskScoresDto, RiskSummary } from '../../data/model/risk'
+import { RiskBadgeData } from '../../utils/personRiskFlagSorter'
 
 export type PersonalDetailsCache = {
   overview: PersonalDetails
