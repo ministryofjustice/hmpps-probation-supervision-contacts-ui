@@ -1,8 +1,6 @@
 /* eslint-disable max-classes-per-file */
 const childProcess = require('node:child_process')
 const fs = require('node:fs')
-const path = require('node:path')
-const { globSync } = require('node:fs')
 const { styleText } = require('node:util')
 
 // Emoji constants
@@ -242,32 +240,6 @@ function cleanPlugin(patterns = []) {
   }
 }
 
-function copyFiles(assets = []) {
-  assets.forEach(asset => {
-    const sourceRoot = asset.from.replace(/\/\*\*\/\*?$/, '').replace(/\/\*$/, '')
-    const files = globSync(asset.from).filter(file => fs.statSync(file).isFile())
-
-    files.forEach(file => {
-      const relativePath = path.relative(sourceRoot, file)
-      const destination = path.join(asset.to, relativePath)
-
-      fs.mkdirSync(path.dirname(destination), { recursive: true })
-      fs.copyFileSync(file, destination)
-    })
-  })
-}
-
-function copyPlugin(assets = []) {
-  return {
-    name: 'copy',
-    setup({ onStart: registerOnStartCallback }) {
-      registerOnStartCallback(() => {
-        copyFiles(assets)
-      })
-    },
-  }
-}
-
 function getEnvFile(args) {
   const index = args.findIndex(arg => arg === '--env' || arg.startsWith('--env='))
   if (index === -1) return '.env'
@@ -281,7 +253,6 @@ module.exports = {
   getEnvFile,
   buildNotificationPlugin,
   cleanPlugin,
-  copyPlugin,
   ESBuildManager,
   ServerManager,
 }

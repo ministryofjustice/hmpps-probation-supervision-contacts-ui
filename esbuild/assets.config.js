@@ -1,8 +1,9 @@
 const path = require('node:path')
+const { copy } = require('esbuild-plugin-copy')
 const { sassPlugin } = require('esbuild-sass-plugin')
 const manifestPlugin = require('esbuild-plugin-manifest')
 const { globSync } = require('node:fs')
-const { buildNotificationPlugin, cleanPlugin, copyPlugin } = require('./utils')
+const { buildNotificationPlugin, cleanPlugin } = require('./utils')
 
 /**
  * Copy additional assets into distribution
@@ -10,7 +11,10 @@ const { buildNotificationPlugin, cleanPlugin, copyPlugin } = require('./utils')
 const getAdditionalAssetsConfig = buildConfig => ({
   outdir: buildConfig.assets.outDir,
   plugins: [
-    copyPlugin(buildConfig.assets.copy),
+    copy({
+      resolveFrom: 'cwd',
+      assets: buildConfig.assets.copy,
+    }),
     buildNotificationPlugin('Assets (Additional)', buildConfig.isWatchMode),
   ],
 })
