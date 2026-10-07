@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
-const { deleteSync } = require('del')
 const childProcess = require('node:child_process')
+const fs = require('node:fs')
 const { styleText } = require('node:util')
 
 // Emoji constants
@@ -232,7 +232,9 @@ function cleanPlugin(patterns = []) {
       }
 
       registerOnStartCallback(() => {
-        deleteSync(patterns)
+        patterns.forEach(pattern => {
+          fs.rmSync(pattern, { recursive: true, force: true })
+        })
       })
     },
   }
