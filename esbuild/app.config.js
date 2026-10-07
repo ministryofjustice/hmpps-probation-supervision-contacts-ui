@@ -1,7 +1,6 @@
-const { copy } = require('esbuild-plugin-copy')
 const { typecheckPlugin } = require('@jgoz/esbuild-plugin-typecheck')
 const { globSync } = require('node:fs')
-const { buildNotificationPlugin } = require('./utils')
+const { buildNotificationPlugin, copyPlugin } = require('./utils')
 
 /**
  * Build typescript application into CommonJS
@@ -15,10 +14,7 @@ const getAppConfig = buildConfig => ({
   format: 'cjs',
   plugins: [
     typecheckPlugin({ watch: buildConfig.isWatchMode }),
-    copy({
-      resolveFrom: 'cwd',
-      assets: buildConfig.app.copy,
-    }),
+    copyPlugin(buildConfig.app.copy),
     buildNotificationPlugin('App', buildConfig.isWatchMode),
   ],
 })

@@ -96,9 +96,8 @@
     "@types/superagent": "^8.1.11",
     "@types/supertest": "^7.2.1",
     "audit-ci": "^7.1.0",
-    "del": "8.0.1",
+    "cheerio": "1.2.0",
     "esbuild": "^0.28.2",
-    "esbuild-plugin-copy": "^2.1.1",
     "esbuild-plugin-manifest": "^1.0.5",
     "esbuild-sass-plugin": "^3.7.0",
     "eslint-plugin-import": "^2.32.0",
@@ -112,15 +111,23 @@
     "node-mocks-http": "1.18.1",
     "supertest": "^7.3.0",
     "ts-jest": "^29.4.14",
-    "typescript": "^6.0.3",
-    "cheerio": "1.2.0"
+    "typescript": "^6.0.3"
   },
   "overrides": {
     "flatted": "^3.4.4",
     "js-yaml": "^5.4.2",
     "@opentelemetry/core": "^2.11.0",
     "qs": "^6.16.0",
-    "@humanfs/node": "^0.17.0"
+    "@humanfs/node": "^0.17.0",
+    "@azure/monitor-opentelemetry": "^1.20.1",
+    "@grpc/grpc-js": "^1.14.5",
+    "@opentelemetry/instrumentation-mysql": "^0.69.0",
+    "@opentelemetry/instrumentation-pg": "^0.75.0",
+    "brace-expansion": "^1.1.21",
+    "chokidar": "^5.0.0",
+    "proxy-addr": "^2.0.8",
+    "shell-quote": "^1.12.0",
+    "source-map-js": "^1.2.2"
   },
   "allowScripts": {
     "@parcel/watcher@2.5.6": true,
