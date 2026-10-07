@@ -51,7 +51,7 @@ export const getPersonRiskFlags = (masApiClient: MasApiClient): RequestHandler =
         : null
     res.locals.riskToProbationStaff = riskToProbationStaff ? { id: riskToProbationStaff?.id } : undefined
     res.locals.riskToStaff = riskToStaff ? { id: riskToStaff?.id, level } : undefined
-    personRisks.riskFlags = personRisks?.riskFlags?.map(item => {
+    const riskFlags = personRisks?.riskFlags?.map(item => {
       if (item.description === 'Risk to Probation Staff') {
         return {
           ...item,
@@ -60,8 +60,12 @@ export const getPersonRiskFlags = (masApiClient: MasApiClient): RequestHandler =
       }
       return item
     })
+    const personRisksForLocals = {
+      ...personRisks,
+      riskFlags,
+    }
 
-    const riskScore = personRisks.riskFlags
+    const riskScore = riskFlags
       ?.find(riskFlag => riskFlag.description.toLowerCase().includes('rosh'))
       ?.description?.toLowerCase()
       .replace('rosh', '')
@@ -70,7 +74,7 @@ export const getPersonRiskFlags = (masApiClient: MasApiClient): RequestHandler =
     res.locals.rosh = {
       level: riskScore,
     }
-    res.locals.personRisks = personRisks
+    res.locals.personRisks = personRisksForLocals
     res.locals.riskBadgeData = riskBadgeData
 
     return next()

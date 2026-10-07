@@ -35,4 +35,19 @@ describe('utils/setDataValue', () => {
     setDataValue(data, ['appointments', 'X000001', '4567', 'date'], updatedValue)
     expect(data.appointments.X000001['4567'].date).toEqual(updatedValue)
   })
+
+  it('should throw if path contains unsafe prototype keys', () => {
+    const data: Record<string, unknown> = {}
+    expect(() => setDataValue(data, ['safe', '__proto__', 'polluted'], 'yes')).toThrow(
+      'Unsafe path key "__proto__" in setDataValue',
+    )
+    expect(({} as { polluted?: string }).polluted).toBeUndefined()
+  })
+
+  it('should throw if final key is unsafe', () => {
+    const data: Record<string, unknown> = {}
+    expect(() => setDataValue(data, ['safe', 'nested', 'constructor'], 'yes')).toThrow(
+      'Unsafe path key "constructor" in setDataValue',
+    )
+  })
 })
