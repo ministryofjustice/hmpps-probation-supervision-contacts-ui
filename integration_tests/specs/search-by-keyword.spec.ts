@@ -12,6 +12,7 @@ test.beforeEach(async ({ page }) => {
   await Promise.all([
     masApi.stubGetPersonalDetails(crn),
     arnsApi.stubGetRisks(),
+    masApi.stubGetPersonRiskFlags(),
     tierApi.stubGetCalculationDetails(),
     arnsApi.stubGetPredictorsAll(),
     masApi.stubGetProbationPractitioner(),

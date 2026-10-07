@@ -361,4 +361,310 @@ export default {
         },
       },
     }),
+
+  stubGetPersonRiskFlags: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/mas-api/risk-flags/.+',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          personSummary: {
+            name: {
+              forename: 'Caroline',
+              middleName: 'Linda',
+              surname: 'Wolff',
+            },
+            crn: 'X000001',
+            dateOfBirth: '1979-08-18',
+          },
+          opd: {
+            eligible: true,
+            date: '2024-12-12',
+          },
+          mappa: {
+            level: 2,
+            levelDescription: 'M2 Desc',
+            category: 0,
+            categoryDescription: 'X9 Desc',
+            startDate: '2024-12-12',
+            reviewDate: '2024-12-13',
+          },
+          riskFlags: [
+            {
+              id: 1,
+              level: 'HIGH',
+              levelDescription: 'Medium',
+              description: 'Risk to Staff',
+              createdDate: '2022-12-18',
+              nextReviewDate: '2024-12-15',
+              createdBy: {
+                forename: 'Paul',
+                surname: 'Smith',
+              },
+              removed: false,
+            },
+            {
+              id: 2,
+              description: 'Domestic Abuse Perpetrator',
+              level: 'MEDIUM',
+              riskNotes: [
+                {
+                  id: 0,
+                  createdBy: 'Patrick Bateman',
+                  createdByDate: '2024-10-30',
+                  note: 'Risk Notes 1',
+                  hasNoteBeenTruncated: false,
+                },
+                {
+                  id: 1,
+                  note: 'Note 1',
+                  hasNoteBeenTruncated: false,
+                },
+              ],
+              nextReviewDate: '2025-08-18',
+              mostRecentReviewDate: '2023-12-18',
+              createdDate: '2022-12-18',
+              createdBy: {
+                forename: 'Paul',
+                surname: 'Smith',
+              },
+              removed: false,
+            },
+            {
+              id: 3,
+              description: 'Risk to Known Adult',
+              level: 'LOW',
+              riskNotes: [
+                {
+                  id: 0,
+                  createdBy: 'Tom Brady',
+                  createdByDate: '2024-10-30',
+                  note: 'Risk Notes created automatically from the Create and Vary a licence system of\nAllow person(s) as designated by your supervising officer to install an electronic monitoring tag on you and access to install any associated equipment in your property, and for the purpose of ensuring that equipment is functioning correctly. You must not damage or tamper with these devices and ensure that the tag is charged, and report to your supervising officer and the EM provider immediately if the tag or the associated equipment are not working correctly. This will be for the purpose of monitoring your alcohol abstinence Disability Notes(s) unless otherwise authorised by your supervising officer. Disability Notes created automatically from the Create and Vary a licence system of\nAllow person(s) as designated by your supervising officer to install an electronic monitoring tag on you and access to install any associated equipment in your property, and for the purpose of ensuring that equipment is functioning correctly. You must not damage or tamper with these devices and ensure that the tag is charged, and report to your supervising officer and the EM provider immediately if the tag or the associated equipment are not working correctly. This will be for the purpose of monitoring your alcohol abstinence Disability Notes(s) unless otherwise authorised by your supervising officer.Disability Notes created automatically from the Create and Vary a licence system of\nAllow person(s) as desi',
+                  hasNoteBeenTruncated: true,
+                },
+                {
+                  id: 1,
+                  note: 'Note 1',
+                  hasNoteBeenTruncated: false,
+                },
+              ],
+              nextReviewDate: '2025-08-18',
+              mostRecentReviewDate: '2023-12-18',
+              createdDate: '2022-12-18',
+              createdBy: {
+                forename: 'Paul',
+                surname: 'Smith',
+              },
+              removed: false,
+            },
+            {
+              id: 4,
+              description: 'Domestic Abuse Perpetrator',
+              level: 'INFORMATION_ONLY',
+              riskNotes: [
+                {
+                  id: 0,
+                  createdBy: 'John Wick',
+                  createdByDate: '2024-10-30',
+                  note: 'Risk Notes 4',
+                  hasNoteBeenTruncated: false,
+                },
+                {
+                  id: 1,
+                  note: 'Note 1',
+                  hasNoteBeenTruncated: false,
+                },
+              ],
+              nextReviewDate: '2025-08-18',
+              mostRecentReviewDate: '2023-12-18',
+              createdDate: '2022-12-18',
+              createdBy: {
+                forename: 'Paul',
+                surname: 'Smith',
+              },
+              removed: false,
+            },
+            {
+              id: 5,
+              level: 'HIGH',
+              description: 'Risk to public',
+              notes: 'Some notes',
+              createdDate: '2022-12-18',
+              nextReviewDate: '2026-12-15',
+              createdBy: {
+                forename: 'Paul',
+                surname: 'Smith',
+              },
+              removed: false,
+            },
+            {
+              id: 6,
+              level: 'LOW',
+              description: 'County Lines - Victim',
+              notes: 'Some notes',
+              createdDate: '2022-12-18',
+              nextReviewDate: '2024-12-15',
+              createdBy: {
+                forename: 'Paul',
+                surname: 'Smith',
+              },
+              removed: false,
+            },
+            {
+              id: 7,
+              level: 'LOW',
+              description: 'Contact Suspended',
+              notes: 'Some notes',
+              createdDate: '2022-12-18',
+              nextReviewDate: '2024-12-15',
+              createdBy: {
+                forename: 'Paul',
+                surname: 'Smith',
+              },
+              removed: false,
+            },
+            {
+              id: 8,
+              level: 'LOW',
+              description: 'Sexual Conviction',
+              notes: 'Some notes',
+              createdDate: '2022-12-18',
+              nextReviewDate: '2024-12-15',
+              createdBy: {
+                forename: 'Paul',
+                surname: 'Smith',
+              },
+              removed: false,
+            },
+            {
+              id: 9,
+              level: 'LOW',
+              description: 'Low Rosh',
+              notes: 'Some notes',
+              createdDate: '2022-12-18',
+              nextReviewDate: '2024-12-15',
+              createdBy: {
+                forename: 'Paul',
+                surname: 'Smith',
+              },
+              removed: false,
+            },
+          ],
+          removedRiskFlags: [
+            {
+              id: 4,
+              description: 'Restraining Order',
+              riskNotes: [
+                {
+                  id: 0,
+                  createdBy: 'Harry Hole',
+                  createdByDate: '2025-01-01',
+                  note: 'Removed risk note 1',
+                  hasNoteBeenTruncated: false,
+                },
+              ],
+              nextReviewDate: '2025-08-18',
+              mostRecentReviewDate: '2023-12-18',
+              createdDate: '2022-12-18',
+              createdBy: {
+                forename: 'Paul',
+                surname: 'Smith',
+              },
+              removed: true,
+              removalHistory: [
+                {
+                  riskRemovalNotes: [
+                    {
+                      id: 0,
+                      createdBy: 'Dave Holland',
+                      createdByDate: '2025-01-02',
+                      note: 'Removal history note 1',
+                      hasNoteBeenTruncated: false,
+                    },
+                  ],
+                  removalDate: '2022-11-18',
+                  removedBy: {
+                    forename: 'Paul',
+                    surname: 'Smith',
+                  },
+                },
+              ],
+            },
+            {
+              id: 5,
+              description: 'Domestic Abuse Perpetrator',
+              riskNotes: [
+                {
+                  id: 0,
+                  createdBy: 'Charlie Brown',
+                  createdByDate: '2025-01-02',
+                  note: 'Removed risk note 2',
+                  hasNoteBeenTruncated: false,
+                },
+              ],
+              nextReviewDate: '2025-08-18',
+              mostRecentReviewDate: '2023-12-18',
+              createdDate: '2022-12-18',
+              createdBy: {
+                forename: 'Paul',
+                surname: 'Smith',
+              },
+              removed: true,
+              removalHistory: [
+                {
+                  removalDate: '2022-11-18',
+                  removedBy: {
+                    forename: 'Paul',
+                    surname: 'Smith',
+                  },
+                },
+              ],
+            },
+            {
+              id: 6,
+              description: 'Risk to Known Adult',
+              riskNotes: [
+                {
+                  id: 0,
+                  createdBy: 'Mickey Haller',
+                  createdByDate: '2025-01-03',
+                  note: 'Removed risk note 3',
+                  hasNoteBeenTruncated: false,
+                },
+              ],
+              nextReviewDate: '2025-08-18',
+              mostRecentReviewDate: '2023-12-18',
+              createdDate: '2022-12-18',
+              createdBy: {
+                forename: 'Paul',
+                surname: 'Smith',
+              },
+              removed: true,
+              removalHistory: [
+                {
+                  riskRemovalNotes: [
+                    {
+                      id: 0,
+                      createdBy: 'Peter Jones',
+                      createdByDate: '2025-01-10',
+                      note: 'Removal history note 2',
+                      hasNoteBeenTruncated: false,
+                    },
+                  ],
+                  removalDate: '2022-11-18',
+                  removedBy: {
+                    forename: 'Paul',
+                    surname: 'Smith',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      },
+    }),
 }

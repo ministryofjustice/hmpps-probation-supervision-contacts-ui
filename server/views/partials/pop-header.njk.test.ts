@@ -11,6 +11,7 @@ type TestModel = {
   risksWidget: RoshRiskWidgetDto
   riskBadgeData: RiskBadgeData
   riskData: RiskData
+  headerCRN: string
 }
 
 const riskBadgeData: RiskBadgeData = {
@@ -116,6 +117,7 @@ const riskData = (assessments = {} as any): RiskData => ({
 })
 
 const baseModel: TestModel = {
+  headerCRN: 'X000001',
   flags: {
     enableNDeliusRosh: true,
     enablePersonHeader: true,
@@ -153,16 +155,145 @@ const render = (model = {} as Partial<TestModel>) => {
 }
 describe('POP header', () => {
   describe('enableNDeliusRosh feature flag enabled', () => {
-    it('should render the ROSH warning', () => {
+    it('should render the ROSH badge with NDelius data', () => {
       const $ = render()
-      expect($('.govuk-warning-text').find('strong').text()).toContain('Check ROSH in NDelius and OASys')
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title')
+          .find('[data-badge-base="Risk of serious harm HIGH"]')
+          .find('span')
+          .text(),
+      ).toContain('Risk of serious harm')
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title')
+          .find('[data-badge-base="Risk of serious harm HIGH"]')
+          .hasClass('arns-badge-base--high'),
+      ).toBe(true)
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title')
+          .find('[data-badge-base="Risk of serious harm HIGH"]')
+          .find('span')
+          .find('strong')
+          .text(),
+      ).toContain('HIGH')
+    })
+
+    it('should render the ROSH badge from NDelius even when the ARNS combined predictor is NOT APPLICABLE', () => {
+      const $ = render({
+        riskData: riskData({
+          combinedSeriousReoffendingPredictor: {
+            name: 'Combined serious reoffending predictor',
+            band: 'NOT APPLICABLE',
+          },
+        }),
+      })
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title')
+          .find('[data-badge-base="Risk of serious harm HIGH"]')
+          .find('span')
+          .text(),
+      ).toContain('Risk of serious harm')
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title').find(
+          '[data-badge-base="Combined serious reoffending predictor NOT APPLICABLE"]',
+        ).length,
+      ).toBe(0)
+    })
+
+    it('should not render a ROSH badge when rosh.level is undefined', () => {
+      const $ = render({ rosh: { level: undefined } })
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title').find('[data-badge-base^="Risk of serious harm"]')
+          .length,
+      ).toBe(0)
     })
   })
-
   describe('enableNDeliusRosh feature flag is disabled', () => {
-    it(`should not render the ROSH warning`, () => {
+    it(`should render the ROSH badge with 'Risk of serious harm' label and ARNS data`, () => {
       const $ = render({ flags: { ...baseModel.flags, enableNDeliusRosh: false } })
-      expect($('.govuk-warning-text').length).toBe(0)
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title')
+          .find('[data-badge-base="Risk of serious harm MEDIUM"]')
+          .find('span')
+          .text(),
+      ).toContain('Risk of serious harm')
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title')
+          .find('[data-badge-base="Risk of serious harm MEDIUM"]')
+          .hasClass('arns-badge-base--medium'),
+      ).toBe(true)
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title')
+          .find('[data-badge-base="Risk of serious harm MEDIUM"]')
+          .find('span')
+          .find('strong')
+          .text(),
+      ).toContain('MEDIUM')
+    })
+    it(`should render the ROSH badge with 'ROSH' label and ARNS data`, () => {
+      const $ = render({
+        flags: { ...baseModel.flags, enableNDeliusRosh: false },
+        riskData: riskData({ rsr: { band: 'LOW' } }),
+      })
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title')
+          .find('[data-badge-base="ROSH MEDIUM"]')
+          .find('span')
+          .text(),
+      ).toContain('ROSH')
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title')
+          .find('[data-badge-base="ROSH MEDIUM"]')
+          .hasClass('arns-badge-base--medium'),
+      ).toBe(true)
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title')
+          .find('[data-badge-base="ROSH MEDIUM"]')
+          .find('span')
+          .find('strong')
+          .text(),
+      ).toContain('MEDIUM')
+    })
+
+    it(`should render the ROSH badge with a 'VERY HIGH' label when overallRisk is VERY_HIGH`, () => {
+      const $ = render({
+        flags: { ...baseModel.flags, enableNDeliusRosh: false },
+        risksWidget: { ...baseModel.risksWidget, overallRisk: 'VERY_HIGH' },
+      })
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title')
+          .find('[data-badge-base="Risk of serious harm VERY HIGH"]')
+          .hasClass('arns-badge-base--very-high'),
+      ).toBe(true)
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title')
+          .find('[data-badge-base="Risk of serious harm VERY HIGH"]')
+          .find('span')
+          .find('strong')
+          .text(),
+      ).toContain('VERY HIGH')
+    })
+
+    it('should not render any badges when the ARNS combined predictor is NOT APPLICABLE', () => {
+      const $ = render({
+        flags: { ...baseModel.flags, enableNDeliusRosh: false },
+        riskData: riskData({
+          combinedSeriousReoffendingPredictor: {
+            name: 'Combined serious reoffending predictor',
+            band: 'NOT APPLICABLE',
+          },
+        }),
+      })
+      expect($('.moj-page-header-actions .moj-page-header-actions__title').find('[data-badge-base]').length).toBe(1)
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title').find(
+          '[data-badge-base="Combined serious reoffending predictor NOT APPLICABLE"]',
+        ).length,
+      ).toBe(0)
+      expect(
+        $('.moj-page-header-actions .moj-page-header-actions__title').find(
+          '[data-badge-base="Risk of serious harm MEDIUM"]',
+        ).length,
+      ).toBe(1)
     })
   })
 })

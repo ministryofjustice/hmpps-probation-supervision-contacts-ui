@@ -9,6 +9,7 @@ test.beforeEach(async ({ page }) => {
   await Promise.all([
     masApi.stubGetPersonalDetails('X123456'),
     arnsApi.stubGetRisks(),
+    masApi.stubGetPersonRiskFlags(),
     tierApi.stubGetCalculationDetails(),
     arnsApi.stubGetPredictorsAll(),
     masApi.stubGetProbationPractitioner(),

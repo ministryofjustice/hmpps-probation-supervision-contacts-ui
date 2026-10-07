@@ -9,6 +9,7 @@ import addContactType from '../middleware/validation/addContactType'
 import { multerErrorHandler } from '../middleware/validation/multerErrorHandler'
 import controllers from '../controllers'
 import validateCrnParam from '../middleware/validateCrnParam'
+import { getPersonRiskFlags } from '../middleware/getPersonRiskFlags'
 
 export default function addContactRoutes(
   router: Router,
@@ -21,6 +22,7 @@ export default function addContactRoutes(
   const loadContactFormDeps = [
     loadPersonalDetails,
     isResponsibleOfficerMiddleware(masApiClient),
+    getPersonRiskFlags(masApiClient),
     getSentences(masApiClient),
     loadTierDetails,
   ]
@@ -28,6 +30,7 @@ export default function addContactRoutes(
   router.get(
     '/case/:crn/add-frequently-used-contact',
     loadPersonalDetails,
+    getPersonRiskFlags(masApiClient),
     loadTierDetails,
     populate,
     controllers.addContact.getFrequentlyUsedContact(),
@@ -36,6 +39,7 @@ export default function addContactRoutes(
   router.get(
     '/case/:crn/contacts/find-contact-to-add',
     loadPersonalDetails,
+    getPersonRiskFlags(masApiClient),
     loadTierDetails,
     populate,
     controllers.addContact.getSearchByCategory(),
@@ -44,6 +48,7 @@ export default function addContactRoutes(
   router.get(
     '/case/:crn/contacts/search-keyword',
     loadPersonalDetails,
+    getPersonRiskFlags(masApiClient),
     loadTierDetails,
     populate,
     controllers.addContact.getSearchByKeyword(),

@@ -4,6 +4,7 @@ import { isResponsibleOfficerMiddleware } from '../middleware/isResponsibleOffic
 import { getSentences } from '../middleware/getSentences'
 import { getPersonalDetails } from '../middleware/getPersonalDetails'
 import { multerErrorHandler } from '../middleware/validation/multerErrorHandler'
+import { getPersonRiskFlags } from '../middleware/getPersonRiskFlags'
 import controllers from '../controllers'
 import validateCrnParam from '../middleware/validateCrnParam'
 import { getExistingContact } from '../middleware/getContact'
@@ -22,6 +23,7 @@ export default function addUpdateContactRoutes(
     loadPersonalDetails,
     loadTierDetails,
     isResponsibleOfficerMiddleware(masApiClient),
+    getPersonRiskFlags(masApiClient),
     getSentences(masApiClient),
     getExistingContact(masApiClient),
   ]
