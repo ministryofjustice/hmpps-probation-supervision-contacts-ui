@@ -245,7 +245,7 @@ function cleanPlugin(patterns = []) {
 function copyFiles(assets = []) {
   assets.forEach(asset => {
     const sourceRoot = asset.from.replace(/\/\*\*\/\*?$/, '').replace(/\/\*$/, '')
-    const files = globSync(asset.from, { nodir: true })
+    const files = globSync(asset.from).filter(file => fs.statSync(file).isFile())
 
     files.forEach(file => {
       const relativePath = path.relative(sourceRoot, file)
