@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
+import { V8CoverageEntry } from 'monocart-reporter'
 
 /**
  * Read environment variables from file.
@@ -39,7 +40,10 @@ export default defineConfig({
           outputDir: './coverage',
           lcov: true,
           sourceFilter: (sourcePath: string) => {
-            return sourcePath.includes('integration_tests') && !sourcePath.includes('node_modules')
+            return sourcePath.includes('server/') && !sourcePath.includes('node_modules')
+          },
+          entryFilter: (entry: V8CoverageEntry) => {
+            return entry.url.includes('localhost') && !entry.url.includes('node_modules')
           },
         },
       },
