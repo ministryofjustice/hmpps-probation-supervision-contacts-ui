@@ -30,6 +30,28 @@ export default defineConfig({
     ['list'],
     ['html', { outputFolder: 'test_results/playwright/report', open: process.env.CI ? 'never' : 'on-failure' }],
     ['junit', { outputFile: 'test_results/playwright/junit.xml' }],
+    [
+      'monocart-reporter',
+      {
+        name: 'Monocart report',
+        outputFile: './test_results/playwright/monocart/report.html',
+        coverage: {
+          outputDir: './coverage-reports',
+          reports: [
+            ['v8'],
+            [
+              'lcovonly',
+              {
+                file: 'lcov.info',
+              },
+            ],
+          ],
+        },
+        sourceFilter: (sourcePath: string) => {
+          return sourcePath.includes('server/') && !sourcePath.includes('node_modules')
+        },
+      },
+    ],
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
