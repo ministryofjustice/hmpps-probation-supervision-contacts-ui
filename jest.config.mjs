@@ -9,6 +9,12 @@ export default {
   reporters: [
     'default',
     [
+      'lcov',
+      {
+        outputPath: 'test_results/jest/lcov.info',
+      },
+    ],
+    [
       'jest-junit',
       {
         outputDirectory: 'test_results/jest/',
