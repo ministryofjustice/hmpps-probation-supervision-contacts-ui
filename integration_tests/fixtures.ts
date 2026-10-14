@@ -13,8 +13,6 @@ export const test = testBase.extend({
 
     if (coverage && coverage.length > 0) {
       await addCoverageReport(coverage, testInfo)
-    } else {
-      console.warn(`[Coverage Warning] No V8 coverage data collected for test: "${testInfo.title}"`)
     }
   },
 })
