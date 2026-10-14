@@ -8,12 +8,7 @@ export default {
   testEnvironment: 'node',
   reporters: [
     'default',
-    [
-      'lcov',
-      {
-        outputPath: 'test_results/jest/lcov.info',
-      },
-    ],
+    'lcov',
     [
       'jest-junit',
       {
