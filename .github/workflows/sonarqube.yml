@@ -14,11 +14,7 @@ jobs:
         with:
             pattern: npm_unit_test_artifacts
             merge-multiple: true
-            path: .
-      - name: see files
-        run: ls -lR
-      - name: see coverage
-        run: cat ./coverage/lcov.info
+            path: test_results/
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v8
         env:
