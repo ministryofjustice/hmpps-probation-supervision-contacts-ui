@@ -39,18 +39,6 @@ export default defineConfig({
         coverage: {
           outputDir: './coverage',
           lcov: true,
-          sourceFilter: (sourcePath: string) => {
-            return sourcePath.includes('server/') && !sourcePath.includes('node_modules')
-          },
-          entryFilter: (entry: V8CoverageEntry) => {
-            return entry.url.includes('localhost') && !entry.url.includes('node_modules')
-          },
-          sourcePath: (filePath: string) => {
-            if (filePath.startsWith('localhost-3007/')) {
-              return filePath.replace(/localhost-3007\/[^/]+\//, 'server/')
-            }
-            return filePath
-          },
         },
       },
     ],
