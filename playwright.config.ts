@@ -34,21 +34,13 @@ export default defineConfig({
       'monocart-reporter',
       {
         name: 'Monocart report',
-        outputFile: './test_results/playwright/monocart/report.html',
+        outputFile: 'test_results/playwright/monocart/report.html',
         coverage: {
-          outputDir: './coverage-reports',
-          reports: [
-            ['v8'],
-            [
-              'lcovonly',
-              {
-                file: 'lcov.info',
-              },
-            ],
-          ],
-        },
-        sourceFilter: (sourcePath: string) => {
-          return sourcePath.includes('server/') && !sourcePath.includes('node_modules')
+          outputDir: './coverage',
+          lcov: true,
+          sourceFilter: (sourcePath: string) => {
+            return sourcePath.includes('server/') && !sourcePath.includes('node_modules')
+          },
         },
       },
     ],

@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test'
+import { expect } from '@playwright/test'
+import { test } from '../fixtures'
 import UpdateContactPage from '../pages/update-contact-page'
 import { login, resetStubs } from '../testUtils'
 import masApi from '../mockApis/masApi'

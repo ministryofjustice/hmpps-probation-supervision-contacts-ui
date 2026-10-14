@@ -1,4 +1,5 @@
-import { expect, test } from '@playwright/test'
+import { expect } from '@playwright/test'
+import { test } from '../fixtures'
 import arnsApi from '../mockApis/arnsApi'
 import hmppsAuth from '../mockApis/hmppsAuth'
 import masApi from '../mockApis/masApi'

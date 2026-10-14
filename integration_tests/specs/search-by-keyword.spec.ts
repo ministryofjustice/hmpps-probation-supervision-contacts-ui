@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test'
+import { expect } from '@playwright/test'
+import { test } from '../fixtures'
 import SearchByKeywordPage from '../pages/search-by-keyword'
 import SearchByCategoryPage from '../pages/search-by-category'
 import { login, resetStubs } from '../testUtils'

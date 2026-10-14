@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test'
+import { expect } from '@playwright/test'
+import { test } from '../fixtures'
 import { login, resetStubs } from '../testUtils'
 import masApi from '../mockApis/masApi'
 import arnsApi from '../mockApis/arnsApi'

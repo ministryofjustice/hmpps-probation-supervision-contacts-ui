@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test'
+import { expect } from '@playwright/test'
+import { test } from '../fixtures'
 import AddContactPage from '../pages/add-contact'
 import { login, resetStubs } from '../testUtils'
 import masApi from '../mockApis/masApi'
@@ -16,6 +17,7 @@ test.beforeEach(async ({ page }) => {
     masApi.stubGetSentences(),
     masApi.stubGetOverview(),
   ])
+  await page.coverage.startJSCoverage()
   await login(page)
 })
 
