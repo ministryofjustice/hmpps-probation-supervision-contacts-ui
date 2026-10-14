@@ -17,7 +17,6 @@ test.beforeEach(async ({ page }) => {
     masApi.stubGetSentences(),
     masApi.stubGetOverview(),
   ])
-  await page.coverage.startJSCoverage()
   await login(page)
 })
 
