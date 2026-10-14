@@ -8,7 +8,6 @@ export default {
   testEnvironment: 'node',
   reporters: [
     'default',
-    'lcov',
     [
       'jest-junit',
       {
@@ -22,5 +21,7 @@ export default {
       },
     ],
   ],
+  coverageReporters: ['lcovonly'],
+  coverageDirectory: 'test_results/jest',
   moduleFileExtensions: ['web.js', 'js', 'json', 'node', 'ts'],
 }
