@@ -47,7 +47,7 @@ export default defineConfig({
           },
           sourcePath: (filePath: string) => {
             if (filePath.startsWith('localhost-3007/')) {
-              return filePath.replace('localhost-3007/', '')
+              return filePath.replace(/localhost-3007\/[^/]+\//, 'server/')
             }
             return filePath
           },
