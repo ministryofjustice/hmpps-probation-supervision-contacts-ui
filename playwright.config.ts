@@ -45,6 +45,12 @@ export default defineConfig({
           entryFilter: (entry: V8CoverageEntry) => {
             return entry.url.includes('localhost') && !entry.url.includes('node_modules')
           },
+          sourcePath: (filePath: string) => {
+            if (filePath.startsWith('localhost-3007/')) {
+              return filePath.replace('localhost-3007/', '')
+            }
+            return filePath
+          },
         },
       },
     ],
