@@ -39,7 +39,7 @@ export default defineConfig({
           outputDir: './coverage',
           lcov: true,
           sourceFilter: (sourcePath: string) => {
-            return sourcePath.includes('server/') && !sourcePath.includes('node_modules')
+            return sourcePath.includes('integration_tests') && !sourcePath.includes('node_modules')
           },
         },
       },

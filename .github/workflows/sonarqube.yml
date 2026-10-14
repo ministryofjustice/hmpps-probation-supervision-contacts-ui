@@ -15,6 +15,12 @@ jobs:
             pattern: npm_integration_test_artifacts
             merge-multiple: true
             path: .
+      - name: download the unit test artifacts
+        uses: actions/download-artifact@v8
+        with:
+            pattern: npm_unit_test_artifacts
+            merge-multiple: true
+            path: .
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v8
         env:
