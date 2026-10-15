@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
-import path from 'path'
+import path from 'node:path'
 import nunjucks from 'nunjucks'
 import express from 'express'
-import fs from 'fs'
+import fs from 'node:fs'
 import { arnsNunjucksSetup } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { mpopNunjucksSetup } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { initialiseName } from './utils'
