@@ -67,12 +67,12 @@ export const buildSearchResults = (categories: string[], crn: string, enableEnfo
     .sort(([first], [second]) => first.localeCompare(second))
     .map(([name, group]) => ({
       name,
-      items: group.items.sort((a, b) => a.displayName.localeCompare(b.displayName)),
+      items: group.items.toSorted((a, b) => a.displayName.localeCompare(b.displayName)),
       subcategories: Array.from(group.subcategories.entries())
         .sort(([first], [second]) => first.localeCompare(second))
         .map(([subcategoryName, items]) => ({
           name: subcategoryName,
-          items: items.sort((a, b) => a.displayName.localeCompare(b.displayName)),
+          items: items.toSorted((a, b) => a.displayName.localeCompare(b.displayName)),
         })),
     }))
 
