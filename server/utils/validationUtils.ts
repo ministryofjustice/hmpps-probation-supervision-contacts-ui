@@ -27,7 +27,7 @@ export const CONTACT_DETAILS_MAX_LENGTH = 12000
 
 export const countTextareaChars = (value: string): number => {
   const lineBreaks = value.split('\r\n').length - 1
-  return value.split('\r\n').join('').length + lineBreaks
+  return value.replaceAll('\r\n', '').length + lineBreaks
 }
 
 export function validateWithSpec<R extends Validateable>(request: R, validationSpec: ValidationSpec) {

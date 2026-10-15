@@ -89,7 +89,7 @@ export const buildAddContactViewModel = ({
       relatesToOptions.push({
         text: sentence.order.description,
         value: sentence.id,
-        checked: updatedFormValues.sentence && sentence.id.toString() === updatedFormValues.sentence.toString(),
+        checked: sentence.id.toString() === updatedFormValues.sentence?.toString(),
         label: {
           classes: 'govuk-!-font-weight-bold',
         },

@@ -15,7 +15,7 @@ export default class FlagService {
     const flagList: string[] = []
     const featureFlags = new FeatureFlags()
     Object.keys(featureFlags).forEach(key => {
-      if (Object.prototype.hasOwnProperty.call(featureFlags, key)) {
+      if (Object.hasOwn(featureFlags, key)) {
         flagList.push(key)
       }
     })

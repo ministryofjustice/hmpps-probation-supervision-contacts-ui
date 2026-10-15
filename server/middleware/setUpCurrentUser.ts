@@ -31,12 +31,12 @@ export default function setUpCurrentUser(masClient: MasApiClient) {
       res.locals.user.email = user?.email
 
       if (res.locals.user.authSource === 'nomis') {
-        res.locals.user.staffId = parseInt(userId, 10) || undefined
+        res.locals.user.staffId = Number.parseInt(userId, 10) || undefined
       }
 
       next()
     } catch (error) {
-      logger.error(error, `Failed to populate user details for: ${res.locals.user && res.locals.user.username}`)
+      logger.error(error, `Failed to populate user details for: ${res.locals.user?.username}`)
       next(error)
     }
   })
