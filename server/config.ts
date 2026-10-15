@@ -2,11 +2,12 @@ import { AgentConfig } from '@ministryofjustice/hmpps-rest-client'
 
 const production = process.env.NODE_ENV === 'production'
 
-function get<T>(name: string, fallback: T, options = { requireInProduction: false }): T | string {
+function get<T>(name: string, fallback: T, options?: { requireInProduction: boolean }): T | string {
   if (process.env[name]) {
     return process.env[name]
   }
-  if (fallback !== undefined && (!production || !options.requireInProduction)) {
+  const requireInProduction = options?.requireInProduction ?? false
+  if (fallback !== undefined && (!production || !requireInProduction)) {
     return fallback
   }
   throw new Error(`Missing env var ${name}`)

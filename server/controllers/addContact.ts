@@ -17,7 +17,6 @@ import {
 } from '../services/contactCategorySearch'
 import { buildAddContactViewModel } from '../services/addContactViewModel'
 import { isBlank } from '../utils/isBlank'
-import logger from '../../logger'
 import { showOfficer } from '../data/model/contants'
 
 const buildContactTypeLinksJson = (crn: string, enableEnforcementContacts = false) =>
