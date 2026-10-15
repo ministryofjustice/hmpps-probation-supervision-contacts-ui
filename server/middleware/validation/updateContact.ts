@@ -44,7 +44,7 @@ const updateContact: RequestHandler = (req, res, next) => {
   const validationErrors = validateWithSpec(body, updateContactValidation(outcomeRequired, responsibleOfficer))
 
   const errorMessages = {
-    ...(res.locals.errorMessages ?? {}),
+    ...res.locals.errorMessages,
     ...validationErrors,
   }
 

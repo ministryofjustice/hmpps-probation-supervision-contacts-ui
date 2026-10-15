@@ -14,8 +14,8 @@ export const getSentences = (masApiClient: MasApiClient): RequestHandler => {
       if (!sessionData?.sentences?.[crn]) {
         sentences = await masApiClient.getSentences(crn, username, number, includeRarRequirements)
         ;(req.session as any).data = {
-          ...(sessionData ?? {}),
-          sentences: { ...(sessionData?.sentences ?? {}), [crn]: sentences },
+          ...sessionData,
+          sentences: { ...sessionData?.sentences, [crn]: sentences },
         }
       } else {
         sentences = sessionData.sentences[crn]

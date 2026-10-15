@@ -46,9 +46,9 @@ export const getPersonalDetails = (
       }
 
       req.session.data = {
-        ...(sessionData ?? {}),
+        ...sessionData,
         personalDetails: {
-          ...(sessionData?.personalDetails ?? {}),
+          ...sessionData?.personalDetails,
           [crn]: data,
         },
       }
@@ -72,9 +72,9 @@ export const getPersonalDetails = (
       }
 
       req.session.data = {
-        ...(sessionData ?? {}),
+        ...sessionData,
         personalDetails: {
-          ...(sessionData?.personalDetails ?? {}),
+          ...sessionData?.personalDetails,
           [crn]: data,
         },
       }
