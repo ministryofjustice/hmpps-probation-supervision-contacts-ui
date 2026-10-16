@@ -2,11 +2,12 @@ import { AgentConfig } from '@ministryofjustice/hmpps-rest-client'
 
 const production = process.env.NODE_ENV === 'production'
 
-function get<T>(name: string, fallback: T, options = { requireInProduction: false }): T | string {
+function get<T>(name: string, fallback: T, options?: { requireInProduction: boolean }): T | string {
   if (process.env[name]) {
     return process.env[name]
   }
-  if (fallback !== undefined && (!production || !options.requireInProduction)) {
+  const requireInProduction = options?.requireInProduction ?? false
+  if (fallback !== undefined && (!production || !requireInProduction)) {
     return fallback
   }
   throw new Error(`Missing env var ${name}`)
@@ -25,7 +26,7 @@ export default {
   redis: {
     enabled: get('REDIS_ENABLED', 'false', requiredInProduction) === 'true',
     host: get('REDIS_HOST', 'localhost', requiredInProduction),
-    port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+    port: Number.parseInt(process.env.REDIS_PORT, 10) || 6379,
     password: process.env.REDIS_AUTH_TOKEN,
     tls_enabled: get('REDIS_TLS_ENABLED', 'false'),
   },

@@ -38,7 +38,7 @@ const addContactType: RequestHandler = (req, res, next) => {
   )
 
   const errorMessages = {
-    ...(res.locals.errorMessages ?? {}),
+    ...res.locals.errorMessages,
     ...validationErrors,
   }
 

@@ -46,21 +46,21 @@ export default class MasApiClient extends RestClient {
     return response.totalResults
   }
 
-  async getFrequentContactTypes(username: string): Promise<ContactType[]> {
+  getFrequentContactTypes(username: string): Promise<ContactType[]> {
     return this.get({ path: `/contact/types` }, asSystem(username))
   }
 
-  async getContactType(code: string, username: string): Promise<ContactType> {
+  getContactType(code: string, username: string): Promise<ContactType> {
     return this.get({ path: `/contact/types/${code}` }, asSystem(username))
   }
 
-  async getUserProviders(username: string, regionCode?: string, teamCode?: string): Promise<UserProviders> {
+  getUserProviders(username: string, regionCode?: string, teamCode?: string): Promise<UserProviders> {
     const teamQueryParam = teamCode ? `&team=${teamCode}` : ''
     const queryParameters = regionCode ? `?region=${regionCode}${teamQueryParam}` : ''
     return this.get({ path: `/user/${username}/providers${queryParameters}` }, asSystem(username))
   }
 
-  async getPersonRiskFlags(crn: string, username: string): Promise<PersonRiskFlags> {
+  getPersonRiskFlags(crn: string, username: string): Promise<PersonRiskFlags> {
     return this.get({ path: `/risk-flags/${crn}` }, asSystem(username))
   }
 
@@ -80,7 +80,7 @@ export default class MasApiClient extends RestClient {
     return result.sentences
   }
 
-  async getProbationPractitioner(crn: string, username: string): Promise<ProbationPractitioner> {
+  getProbationPractitioner(crn: string, username: string): Promise<ProbationPractitioner> {
     return this.get({ path: `/case/${crn}/probation-practitioner` }, asSystem(username))
   }
 
@@ -98,29 +98,21 @@ export default class MasApiClient extends RestClient {
     return result?.isResponsibleOfficer ?? false
   }
 
-  async createContact(crn: string, payload: CreateContactRequest, username: string): Promise<CreateContactResponse> {
+  createContact(crn: string, payload: CreateContactRequest, username: string): Promise<CreateContactResponse> {
     return this.post(
       { path: `/contact/${crn}`, data: payload as unknown as Record<string, unknown> },
       asSystem(username),
     )
   }
 
-  async updateContactWithNoOutcome(
-    contactId: string,
-    payload: UpdateContactWithNoOutcome,
-    username: string,
-  ): Promise<void> {
+  updateContactWithNoOutcome(contactId: string, payload: UpdateContactWithNoOutcome, username: string): Promise<void> {
     return this.patch(
       { path: `/contact/${contactId}`, data: payload as unknown as Record<string, unknown> },
       asSystem(username),
     )
   }
 
-  async updateContactWithOutcome(
-    contactId: string,
-    payload: UpdateContactWithOutcome,
-    username: string,
-  ): Promise<void> {
+  updateContactWithOutcome(contactId: string, payload: UpdateContactWithOutcome, username: string): Promise<void> {
     return this.put(
       { path: `/contact/${contactId}`, data: payload as unknown as Record<string, unknown> },
       asSystem(username),
@@ -141,7 +133,7 @@ export default class MasApiClient extends RestClient {
     )
   }
 
-  async getOverview(crn: string, username: string): Promise<Overview | null> {
+  getOverview(crn: string, username: string): Promise<Overview | null> {
     return this.get<Overview | null>(
       {
         path: `/overview/${crn}`,
@@ -154,7 +146,7 @@ export default class MasApiClient extends RestClient {
     )
   }
 
-  async getPersonalDetails(crn: string, username: string): Promise<PersonalDetails | null> {
+  getPersonalDetails(crn: string, username: string): Promise<PersonalDetails | null> {
     return this.get<PersonalDetails | null>(
       {
         path: `/personal-details/${crn}`,
@@ -167,7 +159,7 @@ export default class MasApiClient extends RestClient {
     )
   }
 
-  async getUserDetails(username: string): Promise<HmppsUser | null> {
+  getUserDetails(username: string): Promise<HmppsUser | null> {
     return this.get<HmppsUser | null>(
       {
         path: `/user/${username}`,

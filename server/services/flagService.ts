@@ -3,6 +3,9 @@ import config from '../config'
 import { FeatureFlags } from '../data/model/featureFlags'
 import logger from '../../logger'
 
+const responsesFor = (results: EvaluationResponse[], key: string) =>
+  results.filter(r => r.booleanEvaluationResponse?.flagKey === key)
+
 export default class FlagService {
   async getFlags(context: { email?: string }): Promise<FeatureFlags> {
     const namespace = 'probation-supervision-contacts-ui'
@@ -15,7 +18,7 @@ export default class FlagService {
     const flagList: string[] = []
     const featureFlags = new FeatureFlags()
     Object.keys(featureFlags).forEach(key => {
-      if (Object.prototype.hasOwnProperty.call(featureFlags, key)) {
+      if (Object.hasOwn(featureFlags, key)) {
         flagList.push(key)
       }
     })
@@ -35,10 +38,6 @@ export default class FlagService {
     })
 
     const flags = fliptEvaluationClient.evaluateBatch(requests)
-
-    function responsesFor(results: EvaluationResponse[], key: string) {
-      return results.filter(r => r.booleanEvaluationResponse?.flagKey === key)
-    }
 
     flagList.forEach(f => {
       const matching = responsesFor(flags.responses, f)

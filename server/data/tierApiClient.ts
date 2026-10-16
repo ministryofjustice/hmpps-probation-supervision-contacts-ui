@@ -9,7 +9,7 @@ export default class TierApiClient extends RestClient {
     super('Tier API', config.apis.tierApi, logger, authenticationClient)
   }
 
-  async getCalculationDetails(crn: string, username: string): Promise<TierCalculation | ErrorSummary | null> {
+  getCalculationDetails(crn: string, username: string): Promise<TierCalculation | ErrorSummary | null> {
     const errorMessage =
       'The tier service is experiencing technical difficulties. It has not been possible to provide tier information'
     return this.get<TierCalculation | ErrorSummary | null>(

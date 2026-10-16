@@ -17,7 +17,6 @@ import {
 } from '../services/contactCategorySearch'
 import { buildAddContactViewModel } from '../services/addContactViewModel'
 import { isBlank } from '../utils/isBlank'
-import logger from '../../logger'
 import { showOfficer } from '../data/model/contants'
 
 const buildContactTypeLinksJson = (crn: string, enableEnforcementContacts = false) =>
@@ -75,7 +74,7 @@ const addContactController = {
     }
   },
   getSearchByCategory: (): RequestHandler => {
-    return async (req, res, next) => {
+    return (req, res, next) => {
       const { crn } = req.params as Record<string, string>
       const selectedCategories = normaliseSelectedCategories(req.query?.categories as string | string[])
       const lastCategories = normaliseSelectedCategories(
@@ -139,7 +138,7 @@ const addContactController = {
     }
   },
   getSearchByKeyword: (): RequestHandler => {
-    return async (req, res, next) => {
+    return (req, res, next) => {
       const { crn } = req.params as Record<string, string>
       const keyword = typeof req.query?.keyword === 'string' ? req.query.keyword.trim() : ''
       const action = req.query?.action

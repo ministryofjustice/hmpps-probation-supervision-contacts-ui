@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import multer, { MulterError } from 'multer'
-import path from 'path'
+import path from 'node:path'
 import config from '../../config'
 
 export const fileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
