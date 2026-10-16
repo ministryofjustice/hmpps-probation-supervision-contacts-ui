@@ -68,4 +68,4 @@ generic-service:
     FLIPT_URL: 'https://feature-flags-manage-people-on-probation-preprod.hmpps.service.justice.gov.uk'
 
 generic-prometheus-alerts:
-  alertSeverity: manage-people-on-probation-alerts-nonprod
+  alertSeverityOverride: manage-people-on-probation-alerts-nonprod
