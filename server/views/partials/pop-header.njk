@@ -1,8 +1,131 @@
 {% from "arns/components/rosh-badge/macro.njk" import roshBadge %}
 {% from "mpop/components/pop-header/macro.njk" import popHeader %}
+{% from "mpop/components/person-header/macro.njk" import personHeader %}
+{% from "moj/components/alert/macro.njk" import mojAlert %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "arns/components/predictor-badge/macro.njk" import predictorBadge %}
 
+{% set calculation = tierDetails.calculation %}
+
+{% set headerErrors = [] %}
+{% if prisonsUnavailable %}
+    {% set headerErrors = (headerErrors.push({ text: "Photos and throughcare information are currently unavailable." }), headerErrors) %}
+{% endif %}
+{% if arnsUnavailable %}
+    {% set headerErrors = (headerErrors.push({ text: "Risk information from the ARNS service is currently unavailable." }), headerErrors) %}
+{% endif %}
+{% if flags.enablePersonHeader and headerErrors.length %}
+    {% set headerErrorsHtml %}
+        {% if headerErrors.length > 1 %}
+            <ul class="govuk-!-margin-top-0">
+            {% for error in headerErrors %}
+                <li>{{ error.text }}</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <span>{{ headerErrors[0].text }}</span>
+        {% endif %}
+    {% endset %}
+    {{ mojAlert({
+        variant: "error",
+        title: "There is a problem",
+        showTitleAsHeading: true,
+        attributes: { "data-qa": "headerErrors" },
+        html: headerErrorsHtml
+    }) }}
+{% endif %}
+
+{% set overallRisk = rosh.level if flags.enableNDeliusRosh else risksWidget.overallRisk %}
+{% set riskName = 'Risk of serious harm' %}
+{% if not flags.enableNDeliusRosh %}
+    {% set riskName = 'ROSH' if riskData.assessments[0].rsr.band else 'Risk of serious harm' %}
+    {% if overallRisk == 'VERY_HIGH' %}
+        {% set overallRisk = 'VERY HIGH' %}
+    {% endif %}
+{% endif %}
+{% set riskDataRosh = {
+    assessments: [
+        {
+            rosh: {
+                name: riskName,
+                band: overallRisk
+            }
+        }
+    ]
+} %}
+{% set riskBadges %}
+{% if riskData
+        .assessments[0]
+        .combinedSeriousReoffendingPredictor
+        .band != "NOT APPLICABLE" %}
+
+{{ predictorBadge({
+            data: riskData,
+            predictor: 'combinedSeriousReoffendingPredictor',
+            showScore: true
+        })}}
+
+{% if riskData
+            .assessments[0]
+            .rsr
+            .band %}
+{{ predictorBadge({
+                data: riskData,
+                predictor: 'rsr',
+                showScore: true
+            })}}
+{% endif %}
+{% if not flags.enableNDeliusRosh and overallRisk and overallRisk !== 'NOT_FOUND' %}
+{{ predictorBadge({
+    data: riskDataRosh,
+    predictor: 'rosh',
+    showScore: false
+ })}}
+{% endif %}
+{% endif %}
+{% if flags.enableNDeliusRosh and overallRisk and overallRisk !== 'NOT_FOUND' %}
+{{ predictorBadge({
+    data: riskDataRosh,
+    predictor: 'rosh',
+    showScore: false
+ })}}
+{% endif %}
+{% endset %}
+
+{% set combinedRiskBadges %}
+    {% if riskBadges and (riskBadges | trim) %}
+        <div class="pop-header-risk-badges">
+            {{ riskBadges | safe }}
+        </div>
+    {% endif %}
+{% endset %}
+
+{% set personRiskFlags %}
+    {% if riskBadgeData  %}
+        <div class="pop-header-risk-flags">
+            {{ riskBadgeData | safe }}
+        </div>
+    {% endif %}
+{% endset %}
+
+{% if flags.enablePersonHeader %}
+    {{ personHeader({
+        name: headerPersonName.forename + ' ' + headerPersonName.surname,
+        crn: headerCRN,
+        dob: headerDob | dateWithYear,
+        tier: (calculation.tierScore if flags.enablePersonHeaderTierV3 else tierCalculation.tierScore) | convertToTitleCase,
+        historyHref: tierUrlV3 if flags.enablePersonHeaderTierV3 else headerTierLink,
+        provisional: calculation.provisional if flags.enablePersonHeaderTierV3 else false,
+        managedBy: managedBy.text,
+        managedByName: managedBy.name,
+        managedByLocation: managedBy.location,
+        managedByHref: managedBy.href,
+        photo: personPhotoSrc,
+        riskBadges: combinedRiskBadges,
+        personRiskFlags: riskBadgeData,
+        collapsibleRiskFlags: collapsibleRiskFlags
+    }) }}
+{% else %}
 {% if flags.enableSupervisionPackagePoPHeader %}
     {% set calculation = tierDetails.calculation %}
     <div data-qa="new-pop-header">
@@ -105,3 +228,4 @@
     </div>
 </div>
 <hr class="govuk-section-break--l">
+{% endif %}

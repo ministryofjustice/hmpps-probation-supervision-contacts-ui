@@ -10,14 +10,15 @@ import { multerErrorHandler } from '../middleware/validation/multerErrorHandler'
 import controllers from '../controllers'
 import validateCrnParam from '../middleware/validateCrnParam'
 import { getPersonRiskFlags } from '../middleware/getPersonRiskFlags'
+import { setCollapsibleRiskFlags } from '../middleware/setCollapsibleRiskFlags'
 
 export default function addContactRoutes(
   router: Router,
-  { masApiClient, tierApiClient, arnsComponents, mpopComponents, hmppsAuthClient }: Services,
+  { masApiClient, tierApiClient, prisonApiClient, arnsComponents, mpopComponents, hmppsAuthClient }: Services,
 ): void {
   router.param('crn', validateCrnParam)
   const populate = populateContactTypes()
-  const loadPersonalDetails = getPersonalDetails(masApiClient, tierApiClient, arnsComponents)
+  const loadPersonalDetails = getPersonalDetails(masApiClient, tierApiClient, arnsComponents, prisonApiClient)
   const loadTierDetails = getTierDetails(hmppsAuthClient, mpopComponents)
   const loadContactFormDeps = [
     loadPersonalDetails,
@@ -25,6 +26,7 @@ export default function addContactRoutes(
     getPersonRiskFlags(masApiClient),
     getSentences(masApiClient),
     loadTierDetails,
+    setCollapsibleRiskFlags,
   ]
 
   router.get(
@@ -32,6 +34,7 @@ export default function addContactRoutes(
     loadPersonalDetails,
     getPersonRiskFlags(masApiClient),
     loadTierDetails,
+    setCollapsibleRiskFlags,
     populate,
     controllers.addContact.getFrequentlyUsedContact(),
   )
@@ -41,6 +44,7 @@ export default function addContactRoutes(
     loadPersonalDetails,
     getPersonRiskFlags(masApiClient),
     loadTierDetails,
+    setCollapsibleRiskFlags,
     populate,
     controllers.addContact.getSearchByCategory(),
   )
@@ -50,6 +54,7 @@ export default function addContactRoutes(
     loadPersonalDetails,
     getPersonRiskFlags(masApiClient),
     loadTierDetails,
+    setCollapsibleRiskFlags,
     populate,
     controllers.addContact.getSearchByKeyword(),
   )

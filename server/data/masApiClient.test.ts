@@ -3,6 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import { asSystem } from '@ministryofjustice/hmpps-rest-client'
 import config from '../config'
 import MasApiClient from './masApiClient'
+import { ProfessionalContact } from './model/professionalContact'
 
 describe('MasApiClient', () => {
   let masApiClient: MasApiClient
@@ -231,6 +232,32 @@ describe('MasApiClient', () => {
       nock(config.apis.masApi.url).get('/overview/X123456').reply(404)
 
       const result = await masApiClient.getOverview('X123456', 'test-user')
+
+      expect(result).toBeNull()
+    })
+  })
+
+  describe('getContacts', () => {
+    it('returns the professional contacts for a given crn', async () => {
+      const contacts: ProfessionalContact = {
+        name: { forename: 'Caroline', surname: 'Wolff' },
+        currentContacts: [],
+        previousContacts: [],
+      }
+      nock(config.apis.masApi.url)
+        .get('/sentence/X123456/contacts')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, contacts)
+
+      const result = await masApiClient.getContacts('X123456', 'test-user')
+
+      expect(result).toEqual(contacts)
+    })
+
+    it('returns null when the contacts are not found', async () => {
+      nock(config.apis.masApi.url).get('/sentence/X123456/contacts').reply(404)
+
+      const result = await masApiClient.getContacts('X123456', 'test-user')
 
       expect(result).toBeNull()
     })

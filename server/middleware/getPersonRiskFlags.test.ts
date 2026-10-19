@@ -61,11 +61,12 @@ const getPersonRiskFlagsSpy = jest
   .spyOn(MasApiClient.prototype, 'getPersonRiskFlags')
   .mockImplementation(() => Promise.resolve(mockRisks))
 
-const createResponse = ({ enableNDeliusRosh = true } = {}) =>
+const createResponse = ({ enableNDeliusRosh = true, enablePersonHeader = false } = {}) =>
   httpMocks.createResponse({
     locals: {
       flags: {
         enableNDeliusRosh,
+        enablePersonHeader,
       },
       user: {
         username: 'testuser',
@@ -137,7 +138,7 @@ describe('middleware/getPersonRiskFlags', () => {
       })
       it('should set res.locals.personRisks to the api response', () => {
         expect(res.locals.personRisks).toEqual(mockFormattedRisks)
-        expect(res.locals.rosh).toStrictEqual({ level: 'HIGH' })
+        expect(res.locals.rosh).toStrictEqual({ level: 'HIGH', assessedOn: null })
       })
       it('should call next()', () => {
         expect(nextSpy).toHaveBeenCalledTimes(1)
@@ -248,7 +249,48 @@ describe('middleware/getPersonRiskFlags', () => {
       })
       const mockRes = createResponse({ enableNDeliusRosh: true })
       await getPersonRiskFlags(mockMasApiClient as unknown as MasApiClient)(req, mockRes, nextSpy)
-      expect(mockRes.locals.rosh).toEqual({ level: 'HIGH' })
+      expect(mockRes.locals.rosh).toEqual({ level: 'HIGH', assessedOn: null })
+    })
+
+    it('should not set a NDelius Rosh level from a removed ROSH flag', async () => {
+      mockFindReplace.mockImplementationOnce(() => ({
+        ...mockRisks,
+        riskFlags: [{ id: 2, description: 'Low ROSH', removed: true }],
+      }))
+      mockFindReplace.mockImplementationOnce(() => ({
+        ...mockRisks,
+        riskFlags: [{ id: 2, description: 'Low ROSH', removed: true }],
+      }))
+      const req = httpMocks.createRequest({
+        params: {
+          crn,
+        },
+        session: {
+          data: {},
+        },
+      })
+      const mockRes = createResponse({ enableNDeliusRosh: true })
+      await getPersonRiskFlags(mockMasApiClient as unknown as MasApiClient)(req, mockRes, nextSpy)
+      expect(mockRes.locals.rosh).toEqual({ level: null, assessedOn: null })
+    })
+  })
+
+  describe('person header is enabled and NDelius ROSH is disabled', () => {
+    it('should request the risk flags for the header without setting the NDelius ROSH', async () => {
+      const req = httpMocks.createRequest({
+        params: {
+          crn,
+        },
+        session: {
+          data: {},
+        },
+      })
+      const mockRes = createResponse({ enableNDeliusRosh: false, enablePersonHeader: true })
+      await getPersonRiskFlags(mockMasApiClient as unknown as MasApiClient)(req, mockRes, nextSpy)
+      expect(mockMasApiClient.getPersonRiskFlags).toHaveBeenCalledWith(crn, 'testuser')
+      expect(mockRes.locals.personRisks).toBeDefined()
+      expect(mockRes.locals.rosh).toBeUndefined()
+      expect(nextSpy).toHaveBeenCalled()
     })
   })
 })

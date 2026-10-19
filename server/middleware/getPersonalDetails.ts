@@ -4,7 +4,9 @@ import { ArnsComponents } from '@ministryofjustice/hmpps-arns-frontend-component
 import { asUser } from '@ministryofjustice/hmpps-rest-client'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient from '../data/tierApiClient'
+import PrisonApiClient from '../data/prisonApiClient'
 import { tierLink, tierUrlV3 } from '../utils/tierLink'
+import { getManagedByDetails } from '../utils/getManagedByDetails'
 import type { PersonalDetailsCache } from '../@types/express'
 import logger from '../../logger'
 
@@ -12,10 +14,22 @@ export const getPersonalDetails = (
   masApiClient: MasApiClient,
   tierApiClient: TierApiClient,
   arnsComponents: ArnsComponents,
+  prisonApiClient: PrisonApiClient,
 ): RequestHandler => {
   return async (req, res, next) => {
     const crn = req.params.crn as string
     const { username } = res.locals.user
+    const enablePersonHeader = res.locals.flags?.enablePersonHeader === true
+    const enablePersonHeaderPhoto = enablePersonHeader && res.locals.flags?.enablePersonHeaderPhoto === true
+    let arnsUnavailable = false
+    let prisonsUnavailable = false
+    const isolateArnsFailure = <T>(promise: Promise<T>): Promise<T | null> =>
+      enablePersonHeader
+        ? promise.catch((): null => {
+            arnsUnavailable = true
+            return null
+          })
+        : promise
 
     const sessionData = req.session.data
     const personalDetails = sessionData?.personalDetails?.[crn]
@@ -35,8 +49,8 @@ export const getPersonalDetails = (
       data = personalDetails
     } else if (personalDetails) {
       const [riskData, roshData] = await Promise.all([
-        personalDetails.riskData ?? arnsComponents.getRiskData(authOptions, 'crn', crn),
-        personalDetails.roshData ?? arnsComponents.getRoshData(authOptions, crn),
+        personalDetails.riskData ?? isolateArnsFailure(arnsComponents.getRiskData(authOptions, 'crn', crn)),
+        personalDetails.roshData ?? isolateArnsFailure(arnsComponents.getRoshData(authOptions, crn)),
       ])
 
       data = {
@@ -56,8 +70,8 @@ export const getPersonalDetails = (
       const [overview, tierCalculation, riskData, roshData] = await Promise.all([
         masApiClient.getPersonalDetails(crn, username),
         tierApiClient.getCalculationDetails(crn, username),
-        arnsComponents.getRiskData(authOptions, 'crn', crn),
-        arnsComponents.getRoshData(authOptions, crn),
+        isolateArnsFailure(arnsComponents.getRiskData(authOptions, 'crn', crn)),
+        isolateArnsFailure(arnsComponents.getRoshData(authOptions, crn)),
       ])
 
       if (!overview) {
@@ -78,6 +92,57 @@ export const getPersonalDetails = (
           [crn]: data,
         },
       }
+    }
+
+    if (enablePersonHeader) {
+      const cache = () => {
+        req.session.data = {
+          ...(req.session.data ?? {}),
+          personalDetails: {
+            ...(req.session.data?.personalDetails ?? {}),
+            [crn]: data,
+          },
+        }
+      }
+
+      if (data.riskData && data.riskData.httpStatus !== 200 && data.riskData.httpStatus !== 404) {
+        arnsUnavailable = true
+        data = { ...data, riskData: null }
+        cache()
+      }
+
+      // Managed by and the photo are only needed by the person-header, so fetch them once it is enabled.
+      // The photo can be switched off on its own with enablePersonHeaderPhoto. No image is cached as null rather
+      // than undefined, as undefined values are dropped when the session is serialised to JSON and the photo
+      // would then be looked up again on every request.
+      const fetchManagedBy = data.professionalContact === undefined
+      const fetchPhoto = enablePersonHeaderPhoto && data.personPhotoSrc === undefined
+      if (fetchManagedBy || fetchPhoto) {
+        const { noms } = data.overview
+        const [professionalContact, photoData] = await Promise.all([
+          fetchManagedBy ? masApiClient.getContacts(crn, username).catch((): null => null) : data.professionalContact,
+          fetchPhoto && noms
+            ? prisonApiClient.getImageData(noms, username).catch((): null => {
+                prisonsUnavailable = true
+                return null
+              })
+            : null,
+        ])
+        photoData?.destroy()
+        data = { ...data, professionalContact }
+        if (fetchPhoto && !prisonsUnavailable) {
+          data = {
+            ...data,
+            personPhotoSrc: photoData ? `/search/prisoner-image/${encodeURIComponent(noms)}` : null,
+          }
+        }
+        cache()
+      }
+
+      res.locals.managedBy = getManagedByDetails(crn, data.professionalContact ?? null)
+      res.locals.personPhotoSrc = (enablePersonHeaderPhoto && data.personPhotoSrc) || undefined
+      res.locals.arnsUnavailable = arnsUnavailable
+      res.locals.prisonsUnavailable = prisonsUnavailable
     }
 
     res.locals.case = data.overview

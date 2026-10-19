@@ -55,6 +55,39 @@
               "updatedAt": "2026-09-30T12:00:00.000000Z",
               "rules": [],
               "rollouts": []
+            },
+            {
+              "key": "enablePersonHeader",
+              "name": "enablePersonHeader",
+              "description": "",
+              "enabled": false,
+              "type": "BOOLEAN_FLAG_TYPE",
+              "createdAt": "2026-10-16T12:00:00.000000Z",
+              "updatedAt": "2026-10-16T12:00:00.000000Z",
+              "rules": [],
+              "rollouts": []
+            },
+            {
+              "key": "enablePersonHeaderTierV3",
+              "name": "enablePersonHeaderTierV3",
+              "description": "",
+              "enabled": false,
+              "type": "BOOLEAN_FLAG_TYPE",
+              "createdAt": "2026-10-16T12:00:00.000000Z",
+              "updatedAt": "2026-10-16T12:00:00.000000Z",
+              "rules": [],
+              "rollouts": []
+            },
+            {
+              "key": "enablePersonHeaderPhoto",
+              "name": "enablePersonHeaderPhoto",
+              "description": "",
+              "enabled": false,
+              "type": "BOOLEAN_FLAG_TYPE",
+              "createdAt": "2026-10-16T12:00:00.000000Z",
+              "updatedAt": "2026-10-16T12:00:00.000000Z",
+              "rules": [],
+              "rollouts": []
             }
           ]
         }
