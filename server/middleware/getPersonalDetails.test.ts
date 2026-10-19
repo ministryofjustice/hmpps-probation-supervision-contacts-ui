@@ -563,6 +563,49 @@ describe('/middleware/getPersonalDetails', () => {
       expect(req.session.data.personalDetails.X000002.riskData).toBeNull()
     })
 
+    it('flags arns as unavailable and requests the rosh data again when it has an error status', async () => {
+      mockPrisonApiClient.getImageData.mockResolvedValue(null)
+      mockArnsComponents.getRoshData.mockResolvedValueOnce({ ...mockRoshData, httpStatus: 500 })
+      req = getReq()
+      res = getHeaderRes()
+      await run()
+
+      expect(res.locals.arnsUnavailable).toBe(true)
+      expect(req.session.data.personalDetails.X000002.roshData).toBeNull()
+
+      res = getHeaderRes()
+      await run()
+
+      expect(mockArnsComponents.getRoshData).toHaveBeenCalledTimes(2)
+      expect(res.locals.roshData).toEqual(mockRoshData)
+      expect(res.locals.arnsUnavailable).toBe(false)
+    })
+
+    it('sets the rosh widget from the rosh data', async () => {
+      mockPrisonApiClient.getImageData.mockResolvedValue(null)
+      req = getReq()
+      res = getHeaderRes()
+
+      await run()
+
+      expect(res.locals.risksWidget).toEqual({
+        overallRisk: 'LOW',
+        assessedOn: '09 May 2024',
+        risks: mockRoshData.assessment.risks,
+      })
+    })
+
+    it('sets the rosh widget to not found when there is no rosh assessment', async () => {
+      mockPrisonApiClient.getImageData.mockResolvedValue(null)
+      mockArnsComponents.getRoshData.mockResolvedValue({ assessment: null, httpStatus: 404 })
+      req = getReq()
+      res = getHeaderRes()
+
+      await run()
+
+      expect(res.locals.risksWidget).toEqual({ overallRisk: 'NOT_FOUND', assessedOn: undefined, risks: undefined })
+    })
+
     it('requests the risk data again on the next request after arns failed', async () => {
       mockPrisonApiClient.getImageData.mockResolvedValue(null)
       mockArnsComponents.getRiskData.mockResolvedValueOnce({ ...mockRiskData, httpStatus: 500 })

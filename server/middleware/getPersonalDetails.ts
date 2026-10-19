@@ -111,6 +111,12 @@ export const getPersonalDetails = (
         cache()
       }
 
+      if (data.roshData && data.roshData.httpStatus !== 200 && data.roshData.httpStatus !== 404) {
+        arnsUnavailable = true
+        data = { ...data, roshData: null }
+        cache()
+      }
+
       // Managed by and the photo are only needed by the person-header, so fetch them once it is enabled.
       // The photo can be switched off on its own with enablePersonHeaderPhoto. No image is cached as null rather
       // than undefined, as undefined values are dropped when the session is serialised to JSON and the photo
@@ -141,6 +147,14 @@ export const getPersonalDetails = (
 
       res.locals.managedBy = getManagedByDetails(crn, data.professionalContact ?? null)
       res.locals.personPhotoSrc = (enablePersonHeaderPhoto && data.personPhotoSrc) || undefined
+      const roshAssessment = data.roshData?.assessment
+      res.locals.risksWidget = roshAssessment?.overallRisk
+        ? {
+            overallRisk: roshAssessment.overallRisk,
+            assessedOn: roshAssessment.completedDate ?? undefined,
+            risks: roshAssessment.risks,
+          }
+        : { overallRisk: 'NOT_FOUND', assessedOn: undefined, risks: undefined }
       res.locals.arnsUnavailable = arnsUnavailable
       res.locals.prisonsUnavailable = prisonsUnavailable
     }
