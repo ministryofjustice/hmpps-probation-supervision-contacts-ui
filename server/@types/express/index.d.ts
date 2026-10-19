@@ -4,12 +4,16 @@ import { TierCalculation } from '../../data/tierApiClient'
 import { ErrorSummary } from '../../data/model/common'
 import { PersonRiskFlags, RiskScoresDto, RiskSummary } from '../../data/model/risk'
 import { RiskBadgeData } from '../../utils/personRiskFlagSorter'
+import { ProfessionalContact } from '../../data/model/professionalContact'
 
 export type PersonalDetailsCache = {
   overview: PersonalDetails
   tierCalculation: TierCalculation | ErrorSummary | null
   riskData: RiskData
   roshData: RoshData
+  professionalContact?: ProfessionalContact | null
+  // null when the photo was looked up and there is no image
+  personPhotoSrc?: string | null
 }
 
 type AppSessionData = {

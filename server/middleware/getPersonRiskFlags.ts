@@ -1,14 +1,15 @@
 import type { RequestHandler } from 'express'
 import MasApiClient from '../data/masApiClient'
-import { PersonRiskFlags, RiskFlag, RiskFlagLevel, RiskScore } from '../data/model/risk'
+import { PersonRiskFlags, RiskFlag, RiskScore } from '../data/model/risk'
 import { getRiskBadgeGroups, RiskBadgeData } from '../utils/personRiskFlagSorter'
 import { setDataValue } from '../utils/setDataValue'
 import { findReplace } from '../utils/findReplace'
 import { getStaffRisk, getProbationRisk } from '../utils/getStaffRisk'
+import { getRiskRoshScore } from '../utils/getRiskRoshScore'
 
 export const getPersonRiskFlags = (masApiClient: MasApiClient): RequestHandler => {
   return async function getPersonRiskFlagsInner(req, res, next) {
-    if (!res.locals?.flags?.enableNDeliusRosh) {
+    if (!res.locals?.flags?.enableNDeliusRosh && !res.locals?.flags?.enablePersonHeader) {
       return next()
     }
     const { crn } = req.params as Record<string, string>
@@ -65,14 +66,12 @@ export const getPersonRiskFlags = (masApiClient: MasApiClient): RequestHandler =
       riskFlags,
     }
 
-    const riskScore = riskFlags
-      ?.find(riskFlag => riskFlag.description.toLowerCase().includes('rosh'))
-      ?.description?.toLowerCase()
-      .replace('rosh', '')
-      .trim()
-      .toUpperCase() as RiskFlagLevel
-    res.locals.rosh = {
-      level: riskScore,
+    if (res.locals.flags.enableNDeliusRosh) {
+      const { score, assessedOn } = getRiskRoshScore(riskFlags)
+      res.locals.rosh = {
+        level: score,
+        assessedOn,
+      }
     }
     res.locals.personRisks = personRisksForLocals
     res.locals.riskBadgeData = riskBadgeData
