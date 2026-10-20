@@ -10,6 +10,7 @@ import validateCrnParam from '../middleware/validateCrnParam'
 import { getExistingContact } from '../middleware/getContact'
 import updateContact from '../middleware/validation/updateContact'
 import { getTierDetails } from '../middleware/getTierDetailsV3'
+import { setCollapsibleRiskFlags } from '../middleware/setCollapsibleRiskFlags'
 
 export default function addUpdateContactRoutes(
   router: Router,
@@ -26,6 +27,7 @@ export default function addUpdateContactRoutes(
     getPersonRiskFlags(masApiClient),
     getSentences(masApiClient),
     getExistingContact(masApiClient),
+    setCollapsibleRiskFlags,
   ]
 
   router.get(
