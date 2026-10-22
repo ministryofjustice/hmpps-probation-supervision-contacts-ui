@@ -18,7 +18,8 @@ const riskLevelByDescription: Record<string, string> = {
   // LOW
   'county lines - victim': 'LOW',
   'domestic abuse safety officer': 'LOW',
-
+  'home office interest': 'LOW',
+  'street gangs': 'LOW',
   // MEDIUM
   'child concerns': 'MEDIUM',
   'victim contact': 'MEDIUM',
@@ -60,9 +61,8 @@ const cohortDescriptions = new Set([
   'cyber - dependent',
   'cyber - enabled',
   'grand avenues cohort',
-  'home office interest',
-  'lifer - supervised',
-  'lifer - not supervised',
+  'Home Office Interest',
+  'lifer',
   'organised crime - overt',
   'short sentence service',
   'final third excluded',
@@ -201,6 +201,11 @@ function getRiskBadgeClass(description: string, severity: string): string {
 function getRiskLevel(flag: RiskFlag): string | undefined {
   const normalisedDescription = flag.description.trim().toLowerCase()
 
+  // Cohort badges do not have a risk severity
+  if (cohortDescriptions.has(normalisedDescription)) {
+    return 'LOW'
+  }
+
   if (risksWithLevelDescription.has(normalisedDescription)) {
     return (flag.levelDescription ?? flag.level)?.toUpperCase()
   }
@@ -208,38 +213,63 @@ function getRiskLevel(flag: RiskFlag): string | undefined {
   return riskLevelByDescription[normalisedDescription] ?? flag.level?.toUpperCase()
 }
 
+function getRiskSortingPriority(description: string): number {
+  const normalisedDescription = description.trim().toLowerCase()
+
+  if (normalisedDescription === 'risk to probation staff') {
+    return 0
+  }
+
+  if (normalisedDescription === 'risk to staff') {
+    return 1
+  }
+
+  return 2
+}
+
+function getRiskDisplayDescription(description: string): string {
+  const displayDescription = toSentenceCase(description, [], null, true, false)
+
+  const displayOverrides: Record<string, string> = {
+    'child criminal exploitation (cce) perpetrator': 'Child Criminal Exploitation (CCE) perpetrator',
+    marac: 'MARAC',
+    'suicide/self harm': 'Suicide/Self Harm',
+    'cppc registered case': 'CPPC registered case',
+    mappa: 'MAPPA',
+  }
+
+  return displayOverrides[description.trim().toLowerCase()] ?? displayDescription
+}
+
 function getGroupedRiskBadges(visibleRiskFlags: RiskFlag[]) {
   return visibleRiskFlags.reduce<RiskBadgeGroup[]>((result, flag) => {
     const severity = getRiskLevel(flag)
-    let group = result.find(item => item.severity === severity)
-
-    if (!group) {
-      group = {
-        severity,
-        badges: [],
-      }
-
-      result.push(group)
-    }
-
     const normalisedDescription = flag.description.trim().toLowerCase()
-    const description = toSentenceCase(flag.description, [], null, true, false)
-    const displayDescription = description.replace(/^Mappa\b/, 'MAPPA').replace(/^Cppc\b/, 'CPPC')
+    const displayDescription = getRiskDisplayDescription(flag.description)
 
-    let text = description
+    let text = displayDescription
 
-    if (lowRiskLevelWithDescription.has(normalisedDescription)) {
+    if (normalisedDescription === 'lifer') {
+      const levelDescription = flag.levelDescription?.replace(/^Lifer\s*-\s*/i, '').toLowerCase()
+
+      text = levelDescription ? `Lifer - ${levelDescription}` : displayDescription
+    } else if (lowRiskLevelWithDescription.has(normalisedDescription)) {
       const levelDescription = flag.levelDescription?.replace('MAPPA ', '') ?? ''
       text = `${displayDescription} - ${levelDescription}`
     } else if (risksWithLevelDescription.has(normalisedDescription)) {
       text = `${displayDescription} - ${toSentenceCase(severity, [], null, true, false)}`
     }
 
-    group.badges.push({
-      id: flag.id,
-      text,
-      level: severity,
-      badgeClass: getRiskBadgeClass(flag.description, severity),
+    result.push({
+      severity,
+      badges: [
+        {
+          id: flag.id,
+          text,
+          level: severity,
+          badgeClass: getRiskBadgeClass(flag.description, severity),
+        },
+      ],
     })
 
     return result
@@ -261,17 +291,51 @@ export function getRiskBadgeGroups(riskFlags: RiskFlag[]): RiskBadgeData {
   )
 
   const sortedRiskFlags = [...activeRiskFlags].sort((a, b) => {
-    const severityPriority =
-      (riskLevelPriority[getRiskLevel(a)] ?? Number.MAX_SAFE_INTEGER) -
-      (riskLevelPriority[getRiskLevel(b)] ?? Number.MAX_SAFE_INTEGER)
+    const aDescription = a.description.trim().toLowerCase()
+    const bDescription = b.description.trim().toLowerCase()
 
-    if (severityPriority !== 0) {
-      return severityPriority
+    // 1. Risk to Probation Staff, then Risk to Staff.
+    const aRiskPriority = getRiskSortingPriority(aDescription)
+    const bRiskPriority = getRiskSortingPriority(bDescription)
+
+    if (aRiskPriority !== bRiskPriority) {
+      return aRiskPriority - bRiskPriority
     }
 
     const aRegisterType = getRiskRegisterType(a.description)
     const bRegisterType = getRiskRegisterType(b.description)
 
+    // 2. Public Protection risks come before the other register types.
+    const aIsPublicProtection = aRegisterType === 'publicProtection'
+    const bIsPublicProtection = bRegisterType === 'publicProtection'
+
+    if (aIsPublicProtection !== bIsPublicProtection) {
+      return aIsPublicProtection ? -1 : 1
+    }
+
+    // 3. Within Public Protection, sort by severity when both risks
+    // have a recognised severity. Otherwise, sort alphabetically.
+    if (aIsPublicProtection && bIsPublicProtection) {
+      const aSeverity = getRiskLevel(a)
+      const bSeverity = getRiskLevel(b)
+
+      const aSeverityPriority = aSeverity
+        ? (riskLevelPriority[aSeverity] ?? Number.MAX_SAFE_INTEGER)
+        : Number.MAX_SAFE_INTEGER
+
+      const bSeverityPriority = bSeverity
+        ? (riskLevelPriority[bSeverity] ?? Number.MAX_SAFE_INTEGER)
+        : Number.MAX_SAFE_INTEGER
+
+      if (aSeverityPriority !== bSeverityPriority) {
+        return aSeverityPriority - bSeverityPriority
+      }
+
+      return aDescription.localeCompare(bDescription)
+    }
+
+    // 4. Remaining register types:
+    // Safeguarding Risk → Alerts → Safeguarding Need → Cohort.
     const aRegisterPriority = aRegisterType
       ? registerTypePriority.indexOf(aRegisterType as (typeof registerTypePriority)[number])
       : Number.MAX_SAFE_INTEGER
@@ -280,7 +344,12 @@ export function getRiskBadgeGroups(riskFlags: RiskFlag[]): RiskBadgeData {
       ? registerTypePriority.indexOf(bRegisterType as (typeof registerTypePriority)[number])
       : Number.MAX_SAFE_INTEGER
 
-    return aRegisterPriority - bRegisterPriority
+    if (aRegisterPriority !== bRegisterPriority) {
+      return aRegisterPriority - bRegisterPriority
+    }
+
+    // 5. Alphabetical order within each remaining register type.
+    return aDescription.localeCompare(bDescription)
   })
 
   const visibleRiskFlags = sortedRiskFlags.slice(0, MAX_RISK_BADGES)
