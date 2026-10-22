@@ -441,6 +441,31 @@ describe('POP header', () => {
       })
     })
 
+    describe('risk badge order', () => {
+      const rsr = { name: 'RSR', band: 'LOW', score: 0.77, staticOrDynamic: 'Static' }
+      const badgeOrder = ($: cheerio.CheerioAPI) =>
+        $('.pop-header-risk-badges [data-badge-base]')
+          .map((_i, el) => $(el).attr('data-badge-base'))
+          .get()
+
+      it('shows the risk of serious harm badge first, then the combined serious reoffending predictor', () => {
+        const $ = renderPersonHeader({ riskData: riskData({ rsr }) })
+        expect(badgeOrder($)).toEqual([
+          'Risk of serious harm HIGH',
+          'Combined serious reoffending predictor LOW',
+          'RSR LOW',
+        ])
+      })
+
+      it('shows the ARNS ROSH badge first when enableNDeliusRosh is off', () => {
+        const $ = renderPersonHeader({
+          flags: { ...baseModel.flags, enableNDeliusRosh: false },
+          riskData: riskData({ rsr }),
+        })
+        expect(badgeOrder($)).toEqual(['ROSH MEDIUM', 'Combined serious reoffending predictor LOW', 'RSR LOW'])
+      })
+    })
+
     describe('person details', () => {
       it('should render the managed by link and the photo', () => {
         const $ = renderPersonHeader({
