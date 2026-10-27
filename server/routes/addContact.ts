@@ -5,6 +5,7 @@ import { isResponsibleOfficerMiddleware } from '../middleware/isResponsibleOffic
 import { getSentences } from '../middleware/getSentences'
 import { getPersonalDetails } from '../middleware/getPersonalDetails'
 import { getTierDetails } from '../middleware/getTierDetailsV3'
+import { getSupervisionPackage } from '../middleware/getSupervisionPackage'
 import addContactType from '../middleware/validation/addContactType'
 import { multerErrorHandler } from '../middleware/validation/multerErrorHandler'
 import controllers from '../controllers'
@@ -18,9 +19,17 @@ export default function addContactRoutes(
 ): void {
   router.param('crn', validateCrnParam)
   const populate = populateContactTypes()
-  const loadPersonalDetails = getPersonalDetails(masApiClient, tierApiClient, arnsComponents, prisonApiClient)
+  const loadPersonalDetails = getPersonalDetails(
+    masApiClient,
+    tierApiClient,
+    arnsComponents,
+    prisonApiClient,
+    hmppsAuthClient,
+  )
   const loadTierDetails = getTierDetails(hmppsAuthClient, mpopComponents)
+  const loadSupervisionPackage = getSupervisionPackage(hmppsAuthClient, mpopComponents)
   const loadContactFormDeps = [
+    loadSupervisionPackage,
     loadPersonalDetails,
     isResponsibleOfficerMiddleware(masApiClient),
     getPersonRiskFlags(masApiClient),
@@ -31,6 +40,7 @@ export default function addContactRoutes(
 
   router.get(
     '/case/:crn/add-frequently-used-contact',
+    loadSupervisionPackage,
     loadPersonalDetails,
     getPersonRiskFlags(masApiClient),
     loadTierDetails,
@@ -41,6 +51,7 @@ export default function addContactRoutes(
 
   router.get(
     '/case/:crn/contacts/find-contact-to-add',
+    loadSupervisionPackage,
     loadPersonalDetails,
     getPersonRiskFlags(masApiClient),
     loadTierDetails,
@@ -51,6 +62,7 @@ export default function addContactRoutes(
 
   router.get(
     '/case/:crn/contacts/search-keyword',
+    loadSupervisionPackage,
     loadPersonalDetails,
     getPersonRiskFlags(masApiClient),
     loadTierDetails,

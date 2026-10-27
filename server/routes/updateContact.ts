@@ -10,6 +10,7 @@ import validateCrnParam from '../middleware/validateCrnParam'
 import { getExistingContact } from '../middleware/getContact'
 import updateContact from '../middleware/validation/updateContact'
 import { getTierDetails } from '../middleware/getTierDetailsV3'
+import { getSupervisionPackage } from '../middleware/getSupervisionPackage'
 import { setCollapsibleRiskFlags } from '../middleware/setCollapsibleRiskFlags'
 
 export default function addUpdateContactRoutes(
@@ -17,10 +18,18 @@ export default function addUpdateContactRoutes(
   { masApiClient, tierApiClient, prisonApiClient, arnsComponents, mpopComponents, hmppsAuthClient }: Services,
 ): void {
   router.param('crn', validateCrnParam)
-  const loadPersonalDetails = getPersonalDetails(masApiClient, tierApiClient, arnsComponents, prisonApiClient)
+  const loadPersonalDetails = getPersonalDetails(
+    masApiClient,
+    tierApiClient,
+    arnsComponents,
+    prisonApiClient,
+    hmppsAuthClient,
+  )
   const loadTierDetails = getTierDetails(hmppsAuthClient, mpopComponents)
+  const loadSupervisionPackage = getSupervisionPackage(hmppsAuthClient, mpopComponents)
 
   const loadEditContactDeps = [
+    loadSupervisionPackage,
     loadPersonalDetails,
     loadTierDetails,
     isResponsibleOfficerMiddleware(masApiClient),

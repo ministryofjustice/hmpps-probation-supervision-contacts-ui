@@ -62,6 +62,7 @@ generic-service:
     MPOP_API_URL: 'https://supervision-packages-api-preprod.hmpps.service.justice.gov.uk'
     TIER_API_URL: 'https://hmpps-tier-preprod.hmpps.service.justice.gov.uk'
     PRISON_API_URL: 'https://prison-api-preprod.prison.service.justice.gov.uk'
+    PRISONER_SEARCH_API_URL: 'https://prisoner-search-preprod.prison.service.justice.gov.uk'
     TIER_LINK: 'https://tier-preprod.hmpps.service.justice.gov.uk/case'
     TIER_URL: 'https://tier-preprod.hmpps.service.justice.gov.uk'
     MANAGE_PEOPLE_ON_PROBATION_URL: 'https://manage-people-on-probation-preprod.hmpps.service.justice.gov.uk'
