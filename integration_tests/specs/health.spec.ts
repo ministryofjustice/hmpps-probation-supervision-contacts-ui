@@ -4,6 +4,7 @@ import hmppsAuth from '../mockApis/hmppsAuth'
 import masApi from '../mockApis/masApi'
 import mpopApi from '../mockApis/mpopApi'
 import prisonApi from '../mockApis/prisonApi'
+import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import probationFrontendComponentsApi from '../mockApis/probationFrontendComponentsApi'
 import tierApi from '../mockApis/tierApi'
 import tokenVerification from '../mockApis/tokenVerification'
@@ -24,6 +25,7 @@ test.describe('Health', () => {
         arnsApi.stubPing(),
         tierApi.stubPing(),
         prisonApi.stubPing(),
+        prisonerSearchApi.stubPing(),
         probationFrontendComponentsApi.stubPing(),
         tokenVerification.stubPing(),
       ])
@@ -57,6 +59,7 @@ test.describe('Health', () => {
         arnsApi.stubPing(),
         tierApi.stubPing(),
         prisonApi.stubPing(),
+        prisonerSearchApi.stubPing(),
         probationFrontendComponentsApi.stubPing(),
         tokenVerification.stubPing(500),
       ])

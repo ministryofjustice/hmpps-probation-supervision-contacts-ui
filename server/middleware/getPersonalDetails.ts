@@ -2,11 +2,13 @@ import type { RequestHandler } from 'express'
 import createError from 'http-errors'
 import { ArnsComponents } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { asUser } from '@ministryofjustice/hmpps-rest-client'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient from '../data/tierApiClient'
 import PrisonApiClient from '../data/prisonApiClient'
 import { tierLink, tierUrlV3 } from '../utils/tierLink'
 import { getManagedByDetails } from '../utils/getManagedByDetails'
+import { getPrisonerDetails, getStatusTag } from '../utils/personStatusTag'
 import type { PersonalDetailsCache } from '../@types/express'
 import logger from '../../logger'
 
@@ -15,6 +17,7 @@ export const getPersonalDetails = (
   tierApiClient: TierApiClient,
   arnsComponents: ArnsComponents,
   prisonApiClient: PrisonApiClient,
+  hmppsAuthClient: AuthenticationClient,
 ): RequestHandler => {
   return async (req, res, next) => {
     const crn = req.params.crn as string
@@ -157,6 +160,19 @@ export const getPersonalDetails = (
         : { overallRisk: 'NOT_FOUND', assessedOn: undefined, risks: undefined }
       res.locals.arnsUnavailable = arnsUnavailable
       res.locals.prisonsUnavailable = prisonsUnavailable
+    }
+
+    const { overview } = data
+    if (res.locals.flags?.enablePersonHeader) {
+      if (overview.noms) {
+        const token = await hmppsAuthClient.getToken(username)
+        res.locals.prisoner = await getPrisonerDetails(token, overview.noms, overview.crn)
+      }
+      res.locals.personStatusTag = await getStatusTag(
+        overview,
+        res.locals.supervisionPackageDetails,
+        res.locals.prisoner,
+      )
     }
 
     res.locals.case = data.overview

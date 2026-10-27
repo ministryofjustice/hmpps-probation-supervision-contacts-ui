@@ -1,5 +1,6 @@
 import httpMocks from 'node-mocks-http'
 import { ArnsComponents, RiskData } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import { getPersonalDetails } from './getPersonalDetails'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient, { TierCalculation } from '../data/tierApiClient'
@@ -15,6 +16,15 @@ import {
   Provisions,
 } from '../data/model/personalDetails'
 import { Contact, ProfessionalContact } from '../data/model/professionalContact'
+import * as personStatusTag from '../utils/personStatusTag'
+
+jest.mock('../data/prisonerSearchApiClient')
+jest.mock('../utils/personStatusTag', () => ({
+  ...jest.requireActual('../utils/personStatusTag'),
+  getStatusTag: jest.fn(),
+}))
+
+const mockedGetStatusTag = jest.mocked(personStatusTag.getStatusTag)
 
 const mockRiskData: RiskData = {
   assessments: [
@@ -90,6 +100,7 @@ const mockTierCalculation = {
 
 let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getPersonalDetails' | 'getContacts'>>
 let mockPrisonApiClient: jest.Mocked<Pick<PrisonApiClient, 'getImageData'>>
+let mockHmppsAuthClient: jest.Mocked<Pick<AuthenticationClient, 'getToken'>>
 let mockTierApiClient: jest.Mocked<Pick<TierApiClient, 'getCalculationDetails'>>
 let mockArnsComponents: jest.Mocked<Pick<ArnsComponents, 'getRiskData' | 'getRoshData'>>
 
@@ -161,6 +172,7 @@ describe('/middleware/getPersonalDetails', () => {
 
     mockMasApiClient = { getPersonalDetails: jest.fn(), getContacts: jest.fn() }
     mockPrisonApiClient = { getImageData: jest.fn() }
+    mockHmppsAuthClient = { getToken: jest.fn().mockResolvedValue('token') }
     mockTierApiClient = { getCalculationDetails: jest.fn().mockResolvedValue(mockTierCalculation) }
     mockArnsComponents = {
       getRiskData: jest.fn().mockResolvedValue(mockRiskData),
@@ -182,6 +194,7 @@ describe('/middleware/getPersonalDetails', () => {
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
       mockPrisonApiClient as unknown as PrisonApiClient,
+      mockHmppsAuthClient as unknown as AuthenticationClient,
     )(req, res, nextSpy)
     const expected = {
       personalDetails: {
@@ -232,6 +245,7 @@ describe('/middleware/getPersonalDetails', () => {
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
       mockPrisonApiClient as unknown as PrisonApiClient,
+      mockHmppsAuthClient as unknown as AuthenticationClient,
     )(req, res, nextSpy)
     expect(mockMasApiClient.getPersonalDetails).not.toHaveBeenCalled()
     expect(mockTierApiClient.getCalculationDetails).not.toHaveBeenCalled()
@@ -258,6 +272,7 @@ describe('/middleware/getPersonalDetails', () => {
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
       mockPrisonApiClient as unknown as PrisonApiClient,
+      mockHmppsAuthClient as unknown as AuthenticationClient,
     )(req, res, nextSpy)
     expect(nextSpy).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }))
   })
@@ -277,6 +292,7 @@ describe('/middleware/getPersonalDetails', () => {
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
       mockPrisonApiClient as unknown as PrisonApiClient,
+      mockHmppsAuthClient as unknown as AuthenticationClient,
     )(req, res, nextSpy)
     expect(res.locals.dateOfDeath).toEqual(dateOfDeath)
   })
@@ -299,6 +315,7 @@ describe('/middleware/getPersonalDetails', () => {
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
       mockPrisonApiClient as unknown as PrisonApiClient,
+      mockHmppsAuthClient as unknown as AuthenticationClient,
     )(req, res, nextSpy)
 
     const expected = {
@@ -351,6 +368,7 @@ describe('/middleware/getPersonalDetails', () => {
         mockTierApiClient as unknown as TierApiClient,
         mockArnsComponents as unknown as ArnsComponents,
         mockPrisonApiClient as unknown as PrisonApiClient,
+        mockHmppsAuthClient as unknown as AuthenticationClient,
       )(req, res, nextSpy)
 
     beforeEach(() => {
@@ -619,6 +637,72 @@ describe('/middleware/getPersonalDetails', () => {
       expect(mockArnsComponents.getRiskData).toHaveBeenCalledTimes(2)
       expect(res.locals.riskData).toEqual(mockRiskData)
       expect(res.locals.arnsUnavailable).toBe(false)
+    })
+  })
+
+  describe('person status tag', () => {
+    beforeEach(() => {
+      mockedGetStatusTag.mockReset()
+      mockMasApiClient.getContacts.mockResolvedValue(null)
+      mockPrisonApiClient.getImageData.mockResolvedValue(null)
+      req = getReq()
+      res = getRes()
+    })
+
+    const run = () =>
+      getPersonalDetails(
+        mockMasApiClient as unknown as MasApiClient,
+        mockTierApiClient as unknown as TierApiClient,
+        mockArnsComponents as unknown as ArnsComponents,
+        mockPrisonApiClient as unknown as PrisonApiClient,
+        mockHmppsAuthClient as unknown as AuthenticationClient,
+      )(req, res, nextSpy)
+
+    it('sets personStatusTag when the feature flag is enabled and NOMS number exists', async () => {
+      const personOverview = { ...overview('X000002'), noms: 'A1234BC' }
+      mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(personOverview)
+      mockedGetStatusTag.mockResolvedValueOnce('In custody')
+      res.locals.flags = { enablePersonHeader: true }
+
+      await run()
+
+      expect(mockHmppsAuthClient.getToken).toHaveBeenCalledWith('user-1')
+      expect(mockedGetStatusTag).toHaveBeenCalledWith(
+        personOverview,
+        res.locals.supervisionPackageDetails,
+        res.locals.prisoner,
+      )
+      expect(res.locals.personStatusTag).toBe('In custody')
+      expect(nextSpy).toHaveBeenCalled()
+    })
+
+    it('does not call getStatusTag when the feature flag is disabled', async () => {
+      const personOverview = { ...overview('X000002'), noms: 'A1234BC' }
+      mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(personOverview)
+      res.locals.flags = { enablePersonHeader: false }
+
+      await run()
+
+      expect(mockedGetStatusTag).not.toHaveBeenCalled()
+      expect(res.locals.personStatusTag).toBeUndefined()
+      expect(nextSpy).toHaveBeenCalled()
+    })
+
+    it('sets personStatusTag to undefined when getStatusTag returns undefined', async () => {
+      const personOverview = { ...overview('X000002'), noms: 'A1234BC' }
+      mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(personOverview)
+      mockedGetStatusTag.mockResolvedValueOnce(undefined)
+      res.locals.flags = { enablePersonHeader: true }
+
+      await run()
+
+      expect(mockedGetStatusTag).toHaveBeenCalledWith(
+        personOverview,
+        res.locals.supervisionPackageDetails,
+        res.locals.prisoner,
+      )
+      expect(res.locals.personStatusTag).toBeUndefined()
+      expect(nextSpy).toHaveBeenCalled()
     })
   })
 })

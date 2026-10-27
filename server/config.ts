@@ -112,6 +112,15 @@ export default {
       },
       agent: new AgentConfig(Number(get('TIER_API_TIMEOUT_RESPONSE', 10000))),
     },
+    prisonerSearchApi: {
+      url: get('PRISONER_SEARCH_API_URL', 'http://localhost:8100', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 5000)),
+        deadline: Number(get('PRISONER_SEARCH_API_TIMEOUT_DEADLINE', 5000)),
+      },
+      agent: new AgentConfig(Number(get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 5000))),
+    },
   },
   appInsights: {
     connectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', null, requiredInProduction),
