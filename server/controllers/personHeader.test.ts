@@ -1,13 +1,13 @@
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import httpMocks from 'node-mocks-http'
-import PrisonApiClient from '../data/prisonApiClient'
+import PersonRecordApiClient from '../data/personRecordApiClient'
 import personHeaderController from './personHeader'
 
 jest.mock('stream/promises', () => ({ pipeline: jest.fn() }))
 
 describe('personHeaderController', () => {
-  const mockPrisonApiClient = { getImageData: jest.fn() } as unknown as jest.Mocked<PrisonApiClient>
+  const mockPrisonApiClient = { getImageData: jest.fn() } as unknown as jest.Mocked<PersonRecordApiClient>
   const next = jest.fn()
 
   const createResponse = (enablePersonHeader: boolean, enablePersonHeaderPhoto = true) =>

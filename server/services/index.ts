@@ -9,7 +9,7 @@ export const services = () => {
     probationFrontendComponentsApiClient,
     masApiClient,
     tierApiClient,
-    prisonApiClient,
+    personRecordApiClient,
     arnsComponents,
     mpopComponents,
   } = dataAccess()
@@ -21,7 +21,7 @@ export const services = () => {
     probationComponentsService: new ProbationComponentsService(probationFrontendComponentsApiClient),
     masApiClient,
     tierApiClient,
-    prisonApiClient,
+    personRecordApiClient,
     arnsComponents,
     mpopComponents,
   }
