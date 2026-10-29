@@ -15,13 +15,13 @@ jest.mock('../controllers', () => ({
 
 describe('personHeader routes', () => {
   it('serves the prisoner image from the photo controller', async () => {
-    const prisonApiClient = {}
+    const personRecordApiClient = {}
     const router = Router()
-    addPersonHeaderRoutes(router, { prisonApiClient } as unknown as Services)
+    addPersonHeaderRoutes(router, { personRecordApiClient } as unknown as Services)
 
     const response = await request(express().use(router)).get('/search/prisoner-image/A1234BC')
 
-    expect(controllers.personHeader.getPhoto).toHaveBeenCalledWith(prisonApiClient)
+    expect(controllers.personHeader.getPhoto).toHaveBeenCalledWith(personRecordApiClient)
     expect(response.text).toEqual('photo')
   })
 })

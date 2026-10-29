@@ -5,7 +5,7 @@ import { asUser } from '@ministryofjustice/hmpps-rest-client'
 import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient from '../data/tierApiClient'
-import PrisonApiClient from '../data/prisonApiClient'
+import PersonRecordApiClient from '../data/personRecordApiClient'
 import { tierLink, tierUrlV3 } from '../utils/tierLink'
 import { getManagedByDetails } from '../utils/getManagedByDetails'
 import { getPrisonerDetails, getStatusTag } from '../utils/personStatusTag'
@@ -16,7 +16,7 @@ export const getPersonalDetails = (
   masApiClient: MasApiClient,
   tierApiClient: TierApiClient,
   arnsComponents: ArnsComponents,
-  prisonApiClient: PrisonApiClient,
+  personRecordApiClient: PersonRecordApiClient,
   hmppsAuthClient: AuthenticationClient,
 ): RequestHandler => {
   return async (req, res, next) => {
@@ -131,7 +131,7 @@ export const getPersonalDetails = (
         const [professionalContact, photoData] = await Promise.all([
           fetchManagedBy ? masApiClient.getContacts(crn, username).catch((): null => null) : data.professionalContact,
           fetchPhoto && noms
-            ? prisonApiClient.getImageData(noms, username).catch((): null => {
+            ? personRecordApiClient.getImageData(noms, username).catch((): null => {
                 prisonsUnavailable = true
                 return null
               })

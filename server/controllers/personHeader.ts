@@ -1,15 +1,15 @@
 import type { RequestHandler } from 'express'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
-import PrisonApiClient from '../data/prisonApiClient'
+import PersonRecordApiClient from '../data/personRecordApiClient'
 
 const personHeaderController = {
-  getPhoto: (prisonApiClient: PrisonApiClient): RequestHandler => {
+  getPhoto: (personRecordApiClient: PersonRecordApiClient): RequestHandler => {
     return async (req, res) => {
       let data: Readable | null = null
       const { prisonerId } = req.params as Record<string, string>
       if (prisonerId && res.locals.flags?.enablePersonHeader && res.locals.flags?.enablePersonHeaderPhoto) {
-        data = await prisonApiClient.getImageData(prisonerId, res.locals.user.username)
+        data = await personRecordApiClient.getImageData(prisonerId, res.locals.user.username)
       }
 
       if (data) {

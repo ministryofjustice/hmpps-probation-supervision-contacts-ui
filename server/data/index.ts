@@ -8,7 +8,7 @@ import config from '../config'
 import logger from '../../logger'
 import MasApiClient from './masApiClient'
 import TierApiClient from './tierApiClient'
-import PrisonApiClient from './prisonApiClient'
+import PersonRecordApiClient from './personRecordApiClient'
 
 const applicationInfo = applicationInfoSupplier()
 
@@ -37,7 +37,7 @@ export const dataAccess = () => {
     probationFrontendComponentsApiClient: new ProbationFrontendComponentsApiClient(),
     masApiClient: new MasApiClient(hmppsAuthClient),
     tierApiClient: new TierApiClient(hmppsAuthClient),
-    prisonApiClient: new PrisonApiClient(hmppsAuthClient),
+    personRecordApiClient: new PersonRecordApiClient(hmppsAuthClient),
     arnsComponents: new ArnsComponents(authClientArns as any, config.apis.arnsApi, logger),
     mpopComponents: new MPoPComponents(
       authClientMpop as any,

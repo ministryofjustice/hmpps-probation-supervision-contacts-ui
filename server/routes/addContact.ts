@@ -15,7 +15,7 @@ import { setCollapsibleRiskFlags } from '../middleware/setCollapsibleRiskFlags'
 
 export default function addContactRoutes(
   router: Router,
-  { masApiClient, tierApiClient, prisonApiClient, arnsComponents, mpopComponents, hmppsAuthClient }: Services,
+  { masApiClient, tierApiClient, personRecordApiClient, arnsComponents, mpopComponents, hmppsAuthClient }: Services,
 ): void {
   router.param('crn', validateCrnParam)
   const populate = populateContactTypes()
@@ -23,7 +23,7 @@ export default function addContactRoutes(
     masApiClient,
     tierApiClient,
     arnsComponents,
-    prisonApiClient,
+    personRecordApiClient,
     hmppsAuthClient,
   )
   const loadTierDetails = getTierDetails(hmppsAuthClient, mpopComponents)
