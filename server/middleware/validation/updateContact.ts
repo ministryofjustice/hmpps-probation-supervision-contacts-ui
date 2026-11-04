@@ -36,7 +36,9 @@ const updateContact: RequestHandler = (req, res, next) => {
     displayName = res.locals?.contact?.appointment?.type
   }
 
-  const contactDetails = OutcomeContactTypeDetails.find(item => item.description === displayName)
+  const contactDetails = OutcomeContactTypeDetails(res.locals.flags?.enableEarlyTermination20261103Squad3).find(
+    item => item.description === displayName,
+  )
 
   const outcomeRequired = contactDetails?.outcomes?.length > 1
   const responsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
@@ -51,15 +53,20 @@ const updateContact: RequestHandler = (req, res, next) => {
   const detailsRaw = getStringValue(body.details)
   const detailsLength = countTextareaChars(detailsRaw)
 
-  const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
+  const isOutcome = OutcomeContactTypeDetails(res.locals.flags?.enableEarlyTermination20261103Squad3).some(
+    item => item.description === displayName,
+  )
   let outcomeSection
   let outcomeLabel
 
   if (isOutcome) {
-    const result = buildUpdateContactViewModelWithOutcome({
-      displayName,
-      contact,
-    })
+    const result = buildUpdateContactViewModelWithOutcome(
+      {
+        displayName,
+        contact,
+      },
+      res.locals.flags?.enableEarlyTermination20261103Squad3,
+    )
     outcomeSection = result.outcomeSection
     outcomeLabel = result.outcomeLabel
   }

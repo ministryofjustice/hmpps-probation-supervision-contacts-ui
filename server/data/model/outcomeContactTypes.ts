@@ -1,6 +1,33 @@
 import { ContactTypeDetail } from './noOutcomeContactTypes'
 
-export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
+const ET_ENTRIES: ContactTypeDetail[] = [
+  {
+    code: 'ETRP',
+    description: 'Request for Early Termination',
+    sensitive: false,
+    relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
+    mandatoryOutcome: true,
+    outcomes: [
+      {
+        label: 'Checklist in progress',
+        value: 'ET01',
+        systemLabel: 'Checklist in progress',
+      },
+      {
+        label: 'Referred to panel',
+        value: 'ET02',
+        systemLabel: 'Referred to panel',
+      },
+      {
+        label: 'Deferred by Practitioner',
+        value: 'ET07',
+        systemLabel: 'Deferred by Practitioner',
+      },
+    ],
+  },
+]
+
+const BASE_ENTRIES: ContactTypeDetail[] = [
   {
     code: 'AAM1',
     description: 'Alcohol consumption',
@@ -539,3 +566,6 @@ export const OutcomeContactTypeDetails: ContactTypeDetail[] = [
     ],
   },
 ]
+
+export const OutcomeContactTypeDetails = (enableETContact = false): ContactTypeDetail[] =>
+  enableETContact ? [...BASE_ENTRIES, ...ET_ENTRIES] : BASE_ENTRIES
