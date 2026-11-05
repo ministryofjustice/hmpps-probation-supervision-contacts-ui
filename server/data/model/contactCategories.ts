@@ -3,6 +3,7 @@ export type ContactTypeCategoryEntry = {
   subcategory?: string
   code: string
   displayName: string
+  isFrequentlyUsed?: boolean
 }
 
 const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
@@ -148,6 +149,7 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     category: 'Communication and information sharing with others',
     code: 'C326',
     displayName: 'Internal communications',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication and information sharing with others',
@@ -202,12 +204,14 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     subcategory: 'External communications',
     code: 'CM3A',
     displayName: 'Email or text from other',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication and information sharing with others',
     subcategory: 'External communications',
     code: 'CM3B',
     displayName: 'Email or text to other',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication and information sharing with others',
@@ -238,12 +242,14 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     subcategory: 'External communications',
     code: 'CT3A',
     displayName: 'Telephone contact from other',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication and information sharing with others',
     subcategory: 'External communications',
     code: 'CT3B',
     displayName: 'Telephone contact to other',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication and information sharing with others',
@@ -382,6 +388,7 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     subcategory: 'Police',
     code: 'C204',
     displayName: 'Police liaison',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication and information sharing with others',
@@ -400,24 +407,28 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     subcategory: 'Email or telephone',
     code: 'CMOA',
     displayName: 'Email or text from person on probation',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication with person on probation',
     subcategory: 'Email or telephone',
     code: 'CMOB',
     displayName: 'Email or text to person on probation',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication with person on probation',
     subcategory: 'Email or telephone',
     code: 'CTOA',
     displayName: 'Telephone contact from person on probation',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication with person on probation',
     subcategory: 'Email or telephone',
     code: 'CTOB',
     displayName: 'Telephone contact to person on probation',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication with person on probation',
