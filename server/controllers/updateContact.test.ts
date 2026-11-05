@@ -2,14 +2,12 @@ import type { Request, Response } from 'express'
 import MasApiClient from '../data/masApiClient'
 import ContactService from '../services/contactService'
 import updateContactController from './updateContact'
-import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
 import config from '../config'
 
 jest.mock('../services/contactService')
 jest.mock('../middleware/sendAuditMessage')
 
 const MockContactService = ContactService as jest.MockedClass<typeof ContactService>
-const mockSendAuditMessage = sendAuditMessage as jest.Mock
 
 function createRes(locals: Record<string, unknown> = {}): Response {
   return {

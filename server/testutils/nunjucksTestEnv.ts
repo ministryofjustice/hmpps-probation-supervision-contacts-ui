@@ -11,7 +11,7 @@ import { toSentenceCase } from '../utils/toSentenceCase'
 import { yearsSince } from '../utils/yearsSince'
 import { dateWithDayAndWithYear } from '../utils/dateWithDayAndWithYear'
 
-export const createNunjucksTestEnv = (req?: Request, res?: Response) => {
+export const createNunjucksTestEnv = (_req?: Request, _res?: Response) => {
   const env = nunjucks.configure(
     [
       path.join(__dirname, '../views'),
