@@ -121,7 +121,7 @@ export default {
       },
     }),
 
-  stubGetSentences: (crn = 'A000001'): SuperAgentRequest =>
+  stubGetSentences: (): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',

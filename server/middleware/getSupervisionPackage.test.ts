@@ -81,7 +81,6 @@ describe('getSupervisionPackage middleware', () => {
     await getSupervisionPackage(
       hmppsAuthClient as unknown as AuthenticationClient,
       mpopComponents as unknown as MPoPComponents,
-      { includeAppointmentsFlag: true },
     )(req, res, nextSpy)
 
     expect(hmppsAuthClient.getToken).not.toHaveBeenCalled()
@@ -97,7 +96,6 @@ describe('getSupervisionPackage middleware', () => {
     await getSupervisionPackage(
       hmppsAuthClient as unknown as AuthenticationClient,
       mpopComponents as unknown as MPoPComponents,
-      { includeAppointmentsFlag: true },
     )(req, res, nextSpy)
 
     expect(hmppsAuthClient.getToken).not.toHaveBeenCalled()
@@ -189,7 +187,6 @@ describe('getSupervisionPackage middleware', () => {
     const middleware2 = getSupervisionPackage(
       hmppsAuthClient as unknown as AuthenticationClient,
       mpopComponents as unknown as MPoPComponents,
-      { includeAppointmentsFlag: true },
     )
 
     await middleware1(req, res, nextSpy)

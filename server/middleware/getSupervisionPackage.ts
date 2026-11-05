@@ -9,7 +9,6 @@ import { isFinalThirdEligibilityInWindow } from '../utils/finalThird'
 export const getSupervisionPackage = (
   hmppsAuthClient: AuthenticationClient,
   mpopComponents: MPoPComponents,
-  { includeAppointmentsFlag = false }: { includeAppointmentsFlag?: boolean } = {},
 ): RequestHandler => {
   const fetchSupervisionPackage = async (
     crn: string,

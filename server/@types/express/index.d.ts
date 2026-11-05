@@ -2,7 +2,7 @@ import { HmppsUser } from '../../interfaces/hmppsUser'
 import { PersonalDetails } from '../../data/model/personalDetails'
 import { TierCalculation } from '../../data/tierApiClient'
 import { ErrorSummary } from '../../data/model/common'
-import { PersonRiskFlags, RiskScoresDto, RiskSummary } from '../../data/model/risk'
+import { PersonRiskFlags } from '../../data/model/risk'
 import { RiskBadgeData } from '../../utils/personRiskFlagSorter'
 import { ProfessionalContact } from '../../data/model/professionalContact'
 
