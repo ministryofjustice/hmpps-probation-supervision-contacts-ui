@@ -1,3 +1,4 @@
+import { FeatureFlags } from '../data/model/featureFlags'
 import { OutcomeContactTypeDetails } from '../data/model/outcomeContactTypes'
 
 const normalise = (value?: string) => value?.replace(/\s+/g, '').toLowerCase() ?? ''
@@ -14,9 +15,9 @@ export const buildUpdateContactViewModelWithOutcome = (
       }
     }
   },
-  enableETContact = false,
+  flags: FeatureFlags = {},
 ) => {
-  const contactDetails = OutcomeContactTypeDetails(enableETContact).find(item => item.description === displayName)
+  const contactDetails = OutcomeContactTypeDetails(flags).find(item => item.description === displayName)
   const selectedOutcome = contactDetails?.outcomes?.find(
     outcome =>
       normalise(outcome.label) === normalise(contact.appointment.outcome) ||
@@ -51,8 +52,8 @@ export const buildUpdateContactViewModelWithOutcome = (
   }
 }
 
-export const updateContactOutcomeCode = (displayName: string, outcomeCode: string, enableETContact = false) => {
-  const contactDetails = OutcomeContactTypeDetails(enableETContact).find(item => item.description === displayName)
+export const updateContactOutcomeCode = (displayName: string, outcomeCode: string, flags: FeatureFlags = {}) => {
+  const contactDetails = OutcomeContactTypeDetails(flags).find(item => item.description === displayName)
   const hasSingleOutcome = contactDetails?.outcomes?.length === 1
   if (hasSingleOutcome) {
     return contactDetails.outcomes[0].value

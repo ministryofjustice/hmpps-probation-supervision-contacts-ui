@@ -56,9 +56,7 @@ const updateContactController = {
 
       const displayName = contact.appointment?.displayName ?? contact.appointment?.type
 
-      const isOutcome = OutcomeContactTypeDetails(res.locals.flags?.enableEarlyTermination20261103Squad3).some(
-        item => item.description === displayName,
-      )
+      const isOutcome = OutcomeContactTypeDetails(res.locals.flags).some(item => item.description === displayName)
       let outcomeSection
       let outcomeLabel
       const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
@@ -69,7 +67,7 @@ const updateContactController = {
             displayName,
             contact,
           },
-          res.locals.flags?.enableEarlyTermination20261103Squad3,
+          res.locals.flags,
         )
         outcomeSection = result.outcomeSection
         outcomeLabel = result.outcomeLabel
@@ -113,20 +111,14 @@ const updateContactController = {
         notes = ''
       }
 
-      const isOutcome = OutcomeContactTypeDetails(res.locals.flags?.enableEarlyTermination20261103Squad3).some(
-        item => item.description === displayName,
-      )
+      const isOutcome = OutcomeContactTypeDetails(res.locals.flags).some(item => item.description === displayName)
 
       const contactService = new ContactService(masApiClient)
 
       const formattedDateandTime = toIsoDateTime(date, time)
 
       if (isOutcome) {
-        const outcomeCode = updateContactOutcomeCode(
-          displayName,
-          req.body?.outcomeCode,
-          res.locals.flags?.enableEarlyTermination20261103Squad3,
-        )
+        const outcomeCode = updateContactOutcomeCode(displayName, req.body?.outcomeCode, res.locals.flags)
 
         const payload: UpdateContactWithOutcome = {
           date: convertDateToIso(date),

@@ -1,3 +1,4 @@
+import { FeatureFlags } from './featureFlags'
 import { ContactTypeDetail } from './noOutcomeContactTypes'
 
 const ET_ENTRIES: ContactTypeDetail[] = [
@@ -567,5 +568,5 @@ const BASE_ENTRIES: ContactTypeDetail[] = [
   },
 ]
 
-export const OutcomeContactTypeDetails = (enableETContact = false): ContactTypeDetail[] =>
-  enableETContact ? [...BASE_ENTRIES, ...ET_ENTRIES] : BASE_ENTRIES
+export const OutcomeContactTypeDetails = (flags: FeatureFlags = {}): ContactTypeDetail[] =>
+  flags?.enableEarlyTermination20261103Squad3 ? [...BASE_ENTRIES, ...ET_ENTRIES] : BASE_ENTRIES

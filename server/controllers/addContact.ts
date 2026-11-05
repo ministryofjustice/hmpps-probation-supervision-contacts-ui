@@ -16,12 +16,12 @@ import {
 } from '../services/contactCategorySearch'
 import { buildAddContactViewModel } from '../services/addContactViewModel'
 import { isBlank } from '../utils/isBlank'
-import logger from '../../logger'
+import { FeatureFlags } from '../data/model/featureFlags'
 import { showOfficer } from '../data/model/contants'
 
-const buildContactTypeLinksJson = (crn: string, enableETContact = false) =>
+const buildContactTypeLinksJson = (crn: string, flags: FeatureFlags = {}) =>
   JSON.stringify(
-    ContactTypeOptions(enableETContact).map(t => ({
+    ContactTypeOptions(flags).map(t => ({
       text: t.description,
       href: `/case/${crn}/contacts/add-${slugify(t.description)}`,
     })),
@@ -65,10 +65,7 @@ const addContactController = {
         selectedCategories: [],
         searchResults: null,
         searchByCategoryTabActive: false,
-        contactTypeLinksJson: buildContactTypeLinksJson(
-          crn,
-          res.locals.flags?.enableEarlyTermination20261103Squad3 === true,
-        ),
+        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -154,10 +151,7 @@ const addContactController = {
         searchByKeywordTabActive: true,
         keywordSearch: keyword,
         keywordSearchResults: null as ReturnType<typeof buildKeywordSearchResults> | null,
-        contactTypeLinksJson: buildContactTypeLinksJson(
-          crn,
-          res.locals.flags?.enableEarlyTermination20261103Squad3 === true,
-        ),
+        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -214,7 +208,7 @@ const addContactController = {
           responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
           csrfToken: getStringValue(res.locals.csrfToken),
         },
-        res.locals.flags?.enableEarlyTermination20261103Squad3,
+        res.locals.flags,
       )
       return res.render('pages/contacts/add-contact-type', viewModel)
     }
@@ -234,7 +228,7 @@ const addContactController = {
       const date = getStringValue(req.body?.date)
       const time = getStringValue(req.body?.time)
       const outcomeCode = getStringValue(req.body?.outcomeCode)
-      const contactTypes = ContactTypeOptions(res.locals.flags?.enableEarlyTermination20261103Squad3)
+      const contactTypes = ContactTypeOptions(res.locals.flags)
       const selectedType = contactTypes.find(c => slugify(c.description) === slug)
       const contactService = new ContactService(masApiClient)
       const pp = await masApiClient.getProbationPractitioner(crn, username)

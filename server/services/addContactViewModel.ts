@@ -9,6 +9,7 @@ import {
   getContactTypeNameBySlug,
   PERSON_ONLY_CONTACT_CODES,
 } from './contactTypeDetails'
+import { FeatureFlags } from '../data/model/featureFlags'
 
 type BuildAddContactViewModelArgs = {
   crn: string
@@ -36,10 +37,10 @@ export const buildAddContactViewModel = (
     responsibleOfficerSurname,
     csrfToken,
   }: BuildAddContactViewModelArgs,
-  enableETContact = false,
+  flags: FeatureFlags = {},
 ) => {
-  const detail = getContactTypeDetailBySlug(slug, enableETContact)
-  const contactTypeName = getContactTypeNameBySlug(slug, enableETContact)
+  const detail = getContactTypeDetailBySlug(slug, flags)
+  const contactTypeName = getContactTypeNameBySlug(slug, flags)
   const relatesTo = detail?.relatesTo ?? ['Person', 'Pre-CJA Events', 'CJA/ORA Events']
   const isPersonOnly = !!detail && PERSON_ONLY_CONTACT_CODES.has(detail.code)
   const outcomes = detail?.outcomes ?? []

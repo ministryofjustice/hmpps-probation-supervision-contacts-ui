@@ -26,7 +26,7 @@ const addContactType: RequestHandler = (req, res, next) => {
   const formValues = getFormValues(req.body as Record<string, unknown>)
   const rawSlug = getStringValue(req.params?.contactType)
   const slug = rawSlug.replace(/^add-/, '')
-  const detail = getContactTypeDetailBySlug(slug, res.locals.flags?.enableEarlyTermination20261103Squad3)
+  const detail = getContactTypeDetailBySlug(slug, res.locals.flags)
 
   const validationErrors = validateWithSpec(
     req.body,
@@ -66,7 +66,7 @@ const addContactType: RequestHandler = (req, res, next) => {
         responsibleOfficerSurname,
         csrfToken: getStringValue(res.locals.csrfToken),
       },
-      res.locals.flags?.enableEarlyTermination20261103Squad3,
+      res.locals.flags,
     )
     return res.render('pages/contacts/add-contact-type', {
       ...viewModel,
