@@ -8,7 +8,6 @@ import ContactService from '../services/contactService'
 import config from '../config'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
 import { ContactTypeOptions } from '../data/model/contactTypes'
-import { ENFORCEMENT_CONTACT_CODES } from '../data/model/contactCategories'
 import {
   buildCategoryCheckboxItems,
   buildKeywordSearchResults,
@@ -20,10 +19,9 @@ import { isBlank } from '../utils/isBlank'
 import logger from '../../logger'
 import { showOfficer } from '../data/model/contants'
 
-const buildContactTypeLinksJson = (crn: string, enableEnforcementContacts = false, enableETContact = false) =>
+const buildContactTypeLinksJson = (crn: string, enableETContact = false) =>
   JSON.stringify(
     ContactTypeOptions(enableETContact)
-      .filter(t => enableEnforcementContacts || !ENFORCEMENT_CONTACT_CODES.has(t.code))
       .map(t => ({
         text: t.description,
         href: `/case/${crn}/contacts/add-${slugify(t.description)}`,
@@ -70,7 +68,6 @@ const addContactController = {
         searchByCategoryTabActive: false,
         contactTypeLinksJson: buildContactTypeLinksJson(
           crn,
-          res.locals.flags?.enableEnforcementContacts === true,
           res.locals.flags?.enableEarlyTermination20261103Squad3 === true,
         ),
         lastCategories: '',
@@ -125,11 +122,8 @@ const addContactController = {
         })
       }
 
-      const searchResults = buildSearchResults(
-        selectedCategories,
-        crn,
-        res.locals.flags?.enableEnforcementContacts === true,
-      )
+      const searchResults = buildSearchResults(selectedCategories, crn)
+
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
@@ -163,7 +157,6 @@ const addContactController = {
         keywordSearchResults: null as ReturnType<typeof buildKeywordSearchResults> | null,
         contactTypeLinksJson: buildContactTypeLinksJson(
           crn,
-          res.locals.flags?.enableEnforcementContacts === true,
           res.locals.flags?.enableEarlyTermination20261103Squad3 === true,
         ),
         lastCategories: '',
@@ -192,7 +185,7 @@ const addContactController = {
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         ...baseLocals,
-        keywordSearchResults: buildKeywordSearchResults(keyword, crn, res.locals.flags?.enableEnforcementContacts),
+        keywordSearchResults: buildKeywordSearchResults(keyword, crn),
       })
     }
   },
