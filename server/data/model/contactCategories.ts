@@ -5,15 +5,6 @@ export type ContactTypeCategoryEntry = {
   displayName: string
 }
 
-const ENFORCEMENT_ENTRIES: ContactTypeCategoryEntry[] = [
-  { category: 'Non-compliance and enforcement', code: 'AAM1', displayName: 'Alcohol consumption' },
-  {
-    category: 'Communication and information sharing with others',
-    code: 'AAM10',
-    displayName: 'Critical communications',
-  },
-]
-
 const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
   {
     category: 'Case management and meetings',
@@ -742,7 +733,4 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
   },
 ]
 
-export const ENFORCEMENT_CONTACT_CODES: ReadonlySet<string> = new Set(ENFORCEMENT_ENTRIES.map(e => e.code))
-
-export const ContactTypeCategoryEntries = (enableEnforcementContacts = false): ContactTypeCategoryEntry[] =>
-  enableEnforcementContacts ? [...BASE_ENTRIES, ...ENFORCEMENT_ENTRIES] : BASE_ENTRIES
+export const ContactTypeCategoryEntries = (): ContactTypeCategoryEntry[] => BASE_ENTRIES
