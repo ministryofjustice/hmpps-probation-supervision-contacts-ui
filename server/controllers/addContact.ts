@@ -21,11 +21,10 @@ import { showOfficer } from '../data/model/contants'
 
 const buildContactTypeLinksJson = (crn: string, enableETContact = false) =>
   JSON.stringify(
-    ContactTypeOptions(enableETContact)
-      .map(t => ({
-        text: t.description,
-        href: `/case/${crn}/contacts/add-${slugify(t.description)}`,
-      })),
+    ContactTypeOptions(enableETContact).map(t => ({
+      text: t.description,
+      href: `/case/${crn}/contacts/add-${slugify(t.description)}`,
+    })),
   )
 
 const getStringValue = (value: unknown): string => {
