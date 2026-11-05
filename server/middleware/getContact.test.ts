@@ -1,4 +1,3 @@
-import type { RequestHandler } from 'express'
 import httpMocks from 'node-mocks-http'
 import MasApiClient from '../data/masApiClient'
 import { getExistingContact } from './getContact'

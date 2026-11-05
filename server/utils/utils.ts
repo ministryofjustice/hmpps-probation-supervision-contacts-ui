@@ -1,8 +1,5 @@
 import { properCaseName } from './convertToTitleCase'
 
-const properCase = (word: string): string =>
-  word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
-
 const isBlank = (str: string): boolean => !str || /^\s*$/.test(str)
 
 /**
