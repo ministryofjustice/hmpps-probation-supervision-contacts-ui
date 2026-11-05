@@ -8,7 +8,6 @@ import ContactService from '../services/contactService'
 import config from '../config'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
 import { ContactTypeOptions } from '../data/model/contactTypes'
-import { ENFORCEMENT_CONTACT_CODES } from '../data/model/contactCategories'
 import {
   buildCategoryCheckboxItems,
   buildKeywordSearchResults,
@@ -20,9 +19,9 @@ import { isBlank } from '../utils/isBlank'
 import logger from '../../logger'
 import { showOfficer } from '../data/model/contants'
 
-const buildContactTypeLinksJson = (crn: string, enableEnforcementContacts = false) =>
+const buildContactTypeLinksJson = (crn: string) =>
   JSON.stringify(
-    ContactTypeOptions.filter(t => enableEnforcementContacts || !ENFORCEMENT_CONTACT_CODES.has(t.code)).map(t => ({
+    ContactTypeOptions.map(t => ({
       text: t.description,
       href: `/case/${crn}/contacts/add-${slugify(t.description)}`,
     })),
@@ -66,7 +65,7 @@ const addContactController = {
         selectedCategories: [],
         searchResults: null,
         searchByCategoryTabActive: false,
-        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags?.enableEnforcementContacts === true),
+        contactTypeLinksJson: buildContactTypeLinksJson(crn),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -119,11 +118,8 @@ const addContactController = {
         })
       }
 
-      const searchResults = buildSearchResults(
-        selectedCategories,
-        crn,
-        res.locals.flags?.enableEnforcementContacts === true,
-      )
+      const searchResults = buildSearchResults(selectedCategories, crn)
+
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
@@ -155,7 +151,7 @@ const addContactController = {
         searchByKeywordTabActive: true,
         keywordSearch: keyword,
         keywordSearchResults: null as ReturnType<typeof buildKeywordSearchResults> | null,
-        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags?.enableEnforcementContacts === true),
+        contactTypeLinksJson: buildContactTypeLinksJson(crn),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -182,7 +178,7 @@ const addContactController = {
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         ...baseLocals,
-        keywordSearchResults: buildKeywordSearchResults(keyword, crn, res.locals.flags?.enableEnforcementContacts),
+        keywordSearchResults: buildKeywordSearchResults(keyword, crn),
       })
     }
   },

@@ -34,27 +34,6 @@ describe('contactCategorySearch', () => {
     expect(referrals?.checked).toBe(true)
   })
 
-  it('includes flagged entries only when enableEnforcementContacts is true', () => {
-    const categories = [
-      'Safeguarding and victim liaison',
-      'Non-compliance and enforcement',
-      'Communication and information sharing with others',
-    ]
-    const withFlag = buildSearchResults(categories, crn, true)
-    const withoutFlag = buildSearchResults(categories, crn)
-
-    const allCodes = (r: ReturnType<typeof buildSearchResults>) =>
-      r.categories.flatMap(c => [...c.items, ...c.subcategories.flatMap(s => s.items)]).map(i => i.code)
-
-    expect(allCodes(withFlag)).toContain('C280')
-    expect(allCodes(withFlag)).toContain('AAM1')
-    expect(allCodes(withFlag)).toContain('AAM10')
-    expect(allCodes(withoutFlag)).toContain('C280')
-    expect(allCodes(withoutFlag)).not.toContain('AAM1')
-    expect(allCodes(withoutFlag)).not.toContain('AAM10')
-    expect(withoutFlag.count).toBe(withFlag.count - 2)
-  })
-
   it('builds grouped search results with sorted headings and items', () => {
     const results = buildSearchResults(
       ['Communication with person on probation', 'Communication and information sharing with others'],
@@ -135,15 +114,6 @@ describe('contactCategorySearch', () => {
       const results = buildKeywordSearchResults('liaison', crn)
 
       expect(results.keyword).toBe('liaison')
-    })
-
-    it('includes flagged entries only when enableEnforcementContacts is true', () => {
-      const withFlag = buildKeywordSearchResults('alcohol', crn, true)
-      const withoutFlag = buildKeywordSearchResults('alcohol', crn)
-
-      expect(withFlag.items.some(i => i.displayName === 'Alcohol consumption')).toBe(true)
-      expect(withoutFlag.items.some(i => i.displayName === 'Alcohol consumption')).toBe(false)
-      expect(withoutFlag.count).toBe(0)
     })
   })
 })

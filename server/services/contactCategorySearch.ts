@@ -37,10 +37,8 @@ export const buildCategoryCheckboxItems = (selectedCategories: string[]): Catego
   }))
 }
 
-export const buildSearchResults = (categories: string[], crn: string, enableEnforcementContacts = false) => {
-  const entries = ContactTypeCategoryEntries(enableEnforcementContacts).filter(entry =>
-    categories.includes(entry.category),
-  )
+export const buildSearchResults = (categories: string[], crn: string) => {
+  const entries = ContactTypeCategoryEntries().filter(entry => categories.includes(entry.category))
   const grouped = new Map<string, { items: CategorySearchItem[]; subcategories: Map<string, CategorySearchItem[]> }>()
 
   entries.forEach(entry => {
@@ -82,10 +80,10 @@ export const buildSearchResults = (categories: string[], crn: string, enableEnfo
   }
 }
 
-export const buildKeywordSearchResults = (keyword: string, crn: string, enableEnforcementContacts = false) => {
+export const buildKeywordSearchResults = (keyword: string, crn: string) => {
   const lowerKeyword = keyword.toLowerCase()
   const seen = new Set<string>()
-  const items = ContactTypeCategoryEntries(enableEnforcementContacts)
+  const items = ContactTypeCategoryEntries()
     .filter(entry => {
       if (seen.has(entry.code)) return false
       seen.add(entry.code)

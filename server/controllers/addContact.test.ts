@@ -119,32 +119,6 @@ describe('addContactController', () => {
         href: expect.stringContaining('/case/X123456/contacts/add-'),
       })
     })
-
-    it('excludes enforcement contact types from contactTypeLinksJson when flag is disabled', async () => {
-      const req = createReq({ params: { crn: 'X123456' } })
-      const res = createRes({ flags: { enableEnforcementContacts: false } })
-
-      await addContactController.getFrequentlyUsedContact()(req, res, next)
-
-      const parsed = JSON.parse((res.render as jest.Mock).mock.calls[0][1].contactTypeLinksJson)
-      const texts = parsed.map((t: { text: string }) => t.text)
-      expect(texts).toContain('Suicide or self harm information')
-      expect(texts).not.toContain('Alcohol consumption')
-      expect(texts).not.toContain('Critical communications')
-    })
-
-    it('includes enforcement contact types in contactTypeLinksJson when flag is enabled', async () => {
-      const req = createReq({ params: { crn: 'X123456' } })
-      const res = createRes({ flags: { enableEnforcementContacts: true } })
-
-      await addContactController.getFrequentlyUsedContact()(req, res, next)
-
-      const parsed = JSON.parse((res.render as jest.Mock).mock.calls[0][1].contactTypeLinksJson)
-      const texts = parsed.map((t: { text: string }) => t.text)
-      expect(texts).toContain('Suicide or self harm information')
-      expect(texts).toContain('Alcohol consumption')
-      expect(texts).toContain('Critical communications')
-    })
   })
 
   describe('getAddContactType', () => {
@@ -543,30 +517,6 @@ describe('addContactController', () => {
         text: expect.any(String),
         href: expect.stringContaining('/case/X123456/contacts/add-'),
       })
-    })
-
-    it('excludes enforcement contact types from autocomplete suggestions when flag is disabled', async () => {
-      const req = createReq({ params: { crn: 'X123456' }, query: { keyword: 'alcohol', action: 'search' } })
-      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [], flags: { enableEnforcementContacts: false } })
-      await addContactController.getSearchByKeyword()(req, res, next)
-
-      const parsed = JSON.parse((res.render as jest.Mock).mock.calls[0][1].contactTypeLinksJson)
-      const texts = parsed.map((t: { text: string }) => t.text)
-      expect(texts).toContain('Suicide or self harm information')
-      expect(texts).not.toContain('Alcohol consumption')
-      expect(texts).not.toContain('Critical communications')
-    })
-
-    it('includes enforcement contact types in autocomplete suggestions when flag is enabled', async () => {
-      const req = createReq({ params: { crn: 'X123456' }, query: { keyword: 'alcohol', action: 'search' } })
-      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [], flags: { enableEnforcementContacts: true } })
-      await addContactController.getSearchByKeyword()(req, res, next)
-
-      const parsed = JSON.parse((res.render as jest.Mock).mock.calls[0][1].contactTypeLinksJson)
-      const texts = parsed.map((t: { text: string }) => t.text)
-      expect(texts).toContain('Suicide or self harm information')
-      expect(texts).toContain('Alcohol consumption')
-      expect(texts).toContain('Critical communications')
     })
 
     it('treats non-string keyword query param as empty', async () => {
