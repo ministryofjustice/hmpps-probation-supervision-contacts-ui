@@ -3,7 +3,7 @@ import { ContactTypeDetail } from './noOutcomeContactTypes'
 const ET_ENTRIES: ContactTypeDetail[] = [
   {
     code: 'ETRP',
-    description: 'Request for early termination',
+    description: 'Request for Early Termination',
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
