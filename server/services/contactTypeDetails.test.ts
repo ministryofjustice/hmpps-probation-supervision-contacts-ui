@@ -25,6 +25,24 @@ describe('contactTypeDetails', () => {
     )
   })
 
+  it('returns contact type details by slug for ET contact if flag enabled', () => {
+    expect(
+      getContactTypeDetailBySlug('request-for-early-termination', { enableEarlyTermination20261103Squad3: true }),
+    ).toEqual(
+      expect.objectContaining({
+        code: 'ETRP',
+        description: 'Request for Early Termination',
+        mandatoryOutcome: true,
+      }),
+    )
+  })
+
+  it('returns no contact type details by slug for ET contact if flag disabled', () => {
+    expect(
+      getContactTypeDetailBySlug('request-for-early-termination', { enableEarlyTermination20261103Squad3: false }),
+    ).toEqual(undefined)
+  })
+
   it('uses the correct accepted and pending outcome codes for MARAC referral', () => {
     expect(getContactTypeDetailByCode('ERFM')).toEqual(
       expect.objectContaining({
@@ -34,6 +52,20 @@ describe('contactTypeDetails', () => {
         ]),
       }),
     )
+  })
+
+  it('returns contact type details by code for ET contact if flag enabled', () => {
+    expect(getContactTypeDetailByCode('ETRP', { enableEarlyTermination20261103Squad3: true })).toEqual(
+      expect.objectContaining({
+        code: 'ETRP',
+        description: 'Request for Early Termination',
+        mandatoryOutcome: true,
+      }),
+    )
+  })
+
+  it('returns no contact type details by slug for ET contact if flag disabled', () => {
+    expect(getContactTypeDetailByCode('ETRP', { enableEarlyTermination20261103Squad3: false })).toEqual(undefined)
   })
 
   it('returns a contact type name from standard contact types when no no-outcome detail exists', () => {
