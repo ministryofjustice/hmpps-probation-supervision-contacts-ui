@@ -18,7 +18,7 @@ describe('contactCategorySearch', () => {
   })
 
   it('builds category checkbox items in alphabetical order', () => {
-    const items = buildCategoryCheckboxItems([])
+    const items = buildCategoryCheckboxItems([], {})
 
     expect(items.length).toBeGreaterThan(0)
     const labels = items.map(item => item.text)
@@ -28,7 +28,7 @@ describe('contactCategorySearch', () => {
   })
 
   it('marks selected categories as checked', () => {
-    const items = buildCategoryCheckboxItems(['Referrals'])
+    const items = buildCategoryCheckboxItems(['Referrals'], {})
     const referrals = items.find(item => item.value === 'Referrals')
 
     expect(referrals?.checked).toBe(true)
