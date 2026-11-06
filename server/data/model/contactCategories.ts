@@ -6,7 +6,7 @@ export type ContactTypeCategoryEntry = {
   isFrequentlyUsed?: boolean
 }
 
-const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
+const caseManagementAndMeetings: ContactTypeCategoryEntry[] = [
   {
     category: 'Case management and meetings',
     subcategory: 'Case meetings',
@@ -145,6 +145,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'MO8',
     displayName: 'Management oversight – home visit risk assessment',
   },
+]
+
+const communicationAndInformationSharing: ContactTypeCategoryEntry[] = [
   {
     category: 'Communication and information sharing with others',
     code: 'C326',
@@ -402,6 +405,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'C202',
     displayName: 'Prison liaison',
   },
+]
+
+const communicationWithPersonOnProbation: ContactTypeCategoryEntry[] = [
   {
     category: 'Communication with person on probation',
     subcategory: 'Email or telephone',
@@ -472,6 +478,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'C129',
     displayName: 'Use of video link or teleconference',
   },
+]
+
+const multiAgencyWorking: ContactTypeCategoryEntry[] = [
   {
     category: 'Multi-agency working (including IOM, MAPPA and MARAC)',
     subcategory: 'IOM',
@@ -562,6 +571,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'ERFM',
     displayName: 'MARAC referral',
   },
+]
+
+const nonComplianceAndEnforcement: ContactTypeCategoryEntry[] = [
   {
     category: 'Non-compliance and enforcement',
     code: 'ACOM1',
@@ -592,6 +604,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'CSNR',
     displayName: 'Sick note received',
   },
+]
+
+const referrals: ContactTypeCategoryEntry[] = [
   {
     category: 'Referrals',
     code: 'C115',
@@ -627,6 +642,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'C347',
     displayName: 'Referral - finance, benefits or debt',
   },
+]
+
+const safeguardingAndVictimLiaison: ContactTypeCategoryEntry[] = [
   {
     category: 'Safeguarding and victim liaison',
     code: 'DAD1',
@@ -697,6 +715,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'VINC',
     displayName: 'ViSOR information contact',
   },
+]
+
+const sentenceManagement: ContactTypeCategoryEntry[] = [
   {
     category: 'Sentence management',
     code: 'DUS01',
@@ -744,4 +765,13 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
   },
 ]
 
-export const ContactTypeCategoryEntries = (): ContactTypeCategoryEntry[] => BASE_ENTRIES
+export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
+  ...caseManagementAndMeetings,
+  ...communicationAndInformationSharing,
+  ...communicationWithPersonOnProbation,
+  ...multiAgencyWorking,
+  ...nonComplianceAndEnforcement,
+  ...referrals,
+  ...safeguardingAndVictimLiaison,
+  ...sentenceManagement,
+]
