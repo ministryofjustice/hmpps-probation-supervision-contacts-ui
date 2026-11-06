@@ -231,10 +231,12 @@ export default class MasApiClient extends RestClient {
     )
   }
 
-  async getDocument(typeCode: string, name: string, username: string): Promise<Express.Multer.File | null> {
-    return this.get<Express.Multer.File | null>(
+  async getDocument(typeCode: string, name: string, username: string): Promise<Response | null> {
+    return this.get<Response | null>(
       {
         path: `/contact/types/${typeCode}/templates/${name}/download`,
+        raw: true,
+        responseType: 'arrayBuffer',
       },
       asSystem(username),
     )

@@ -151,7 +151,7 @@ export const buildAddContactViewModel = (
   if (flags.enableEarlyTermination20261103Squad3) {
     documentTemplates?.templates.forEach(template => {
       const link = `/contacts/types/${selectedType?.code}/documents/${template.name}`
-      const name = template.name.split('.').slice(0, -1).join('.')
+      const { name } = template
       templates.push({ link, name })
     })
   }
