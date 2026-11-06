@@ -9,6 +9,7 @@ import {
   getContactTypeNameBySlug,
   PERSON_ONLY_CONTACT_CODES,
 } from './contactTypeDetails'
+import { FeatureFlags } from '../data/model/featureFlags'
 
 type BuildAddContactViewModelArgs = {
   crn: string
@@ -23,20 +24,23 @@ type BuildAddContactViewModelArgs = {
   csrfToken?: string
 }
 
-export const buildAddContactViewModel = ({
-  crn,
-  slug,
-  sentences,
-  personName,
-  formValues,
-  isVisor,
-  responsibleOfficer,
-  responsibleOfficerForename,
-  responsibleOfficerSurname,
-  csrfToken,
-}: BuildAddContactViewModelArgs) => {
-  const detail = getContactTypeDetailBySlug(slug)
-  const contactTypeName = getContactTypeNameBySlug(slug)
+export const buildAddContactViewModel = (
+  {
+    crn,
+    slug,
+    sentences,
+    personName,
+    formValues,
+    isVisor,
+    responsibleOfficer,
+    responsibleOfficerForename,
+    responsibleOfficerSurname,
+    csrfToken,
+  }: BuildAddContactViewModelArgs,
+  flags: FeatureFlags = {},
+) => {
+  const detail = getContactTypeDetailBySlug(slug, flags)
+  const contactTypeName = getContactTypeNameBySlug(slug, flags)
   const relatesTo = detail?.relatesTo ?? ['Person', 'Pre-CJA Events', 'CJA/ORA Events']
   const isPersonOnly = !!detail && PERSON_ONLY_CONTACT_CODES.has(detail.code)
   const outcomes = detail?.outcomes ?? []

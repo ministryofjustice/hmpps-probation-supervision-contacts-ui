@@ -56,16 +56,19 @@ const updateContactController = {
 
       const displayName = contact.appointment?.displayName ?? contact.appointment?.type
 
-      const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
+      const isOutcome = OutcomeContactTypeDetails(res.locals.flags).some(item => item.description === displayName)
       let outcomeSection
       let outcomeLabel
       const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
 
       if (isOutcome) {
-        const result = buildUpdateContactViewModelWithOutcome({
-          displayName,
-          contact,
-        })
+        const result = buildUpdateContactViewModelWithOutcome(
+          {
+            displayName,
+            contact,
+          },
+          res.locals.flags,
+        )
         outcomeSection = result.outcomeSection
         outcomeLabel = result.outcomeLabel
       }
@@ -108,14 +111,14 @@ const updateContactController = {
         notes = ''
       }
 
-      const isOutcome = OutcomeContactTypeDetails.some(item => item.description === displayName)
+      const isOutcome = OutcomeContactTypeDetails(res.locals.flags).some(item => item.description === displayName)
 
       const contactService = new ContactService(masApiClient)
 
       const formattedDateandTime = toIsoDateTime(date, time)
 
       if (isOutcome) {
-        const outcomeCode = updateContactOutcomeCode(displayName, req.body?.outcomeCode)
+        const outcomeCode = updateContactOutcomeCode(displayName, req.body?.outcomeCode, res.locals.flags)
 
         const payload: UpdateContactWithOutcome = {
           date: convertDateToIso(date),

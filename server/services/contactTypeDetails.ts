@@ -2,6 +2,7 @@ import { slugify } from '../utils/slugify'
 import { ContactTypeOptions } from '../data/model/contactTypes'
 import { ContactTypeDetail, NoOutcomeContactTypeDetails } from '../data/model/noOutcomeContactTypes'
 import { OutcomeContactTypeDetails } from '../data/model/outcomeContactTypes'
+import { FeatureFlags } from '../data/model/featureFlags'
 
 export type GuidanceContent = {
   paragraphs: string[]
@@ -17,26 +18,30 @@ export const PERSON_ONLY_CONTACT_CODES = new Set(['ACOM1', 'IRP2', 'LRP1', 'MO1'
 
 const GUIDANCE_EXCLUDED_CODES = new Set(['C344', 'CCMM', 'C150', 'C005', 'CNDC', 'CSNR', 'ERFM'])
 
-const contactTypeDetails = [...NoOutcomeContactTypeDetails, ...OutcomeContactTypeDetails]
+const contactTypeDetails = (flags: FeatureFlags = {}) => {
+  return [...NoOutcomeContactTypeDetails, ...OutcomeContactTypeDetails(flags)]
+}
 
-const detailsByCode = new Map<string, ContactTypeDetail>(contactTypeDetails.map(detail => [detail.code, detail]))
+const detailsByCode = (flags: FeatureFlags = {}) =>
+  new Map<string, ContactTypeDetail>(contactTypeDetails(flags).map(detail => [detail.code, detail]))
 
-const detailsBySlug = new Map<string, ContactTypeDetail>(
-  contactTypeDetails.map(detail => [slugify(detail.description), detail]),
-)
+const detailsBySlug = (flags: FeatureFlags = {}) =>
+  new Map<string, ContactTypeDetail>(contactTypeDetails(flags).map(detail => [slugify(detail.description), detail]))
 
-export const getContactTypeDetailBySlug = (slug: string): ContactTypeDetail | undefined => detailsBySlug.get(slug)
+export const getContactTypeDetailBySlug = (slug: string, flags: FeatureFlags = {}): ContactTypeDetail | undefined =>
+  detailsBySlug(flags).get(slug)
 
-export const getContactTypeNameBySlug = (slug: string): string => {
-  const detail = detailsBySlug.get(slug)
+export const getContactTypeNameBySlug = (slug: string, flags: FeatureFlags = {}): string => {
+  const detail = detailsBySlug(flags).get(slug)
   if (detail) {
     return detail.description
   }
-  const matched = ContactTypeOptions.find(option => slugify(option.description) === slug)
+  const matched = ContactTypeOptions(flags).find(option => slugify(option.description) === slug)
   return matched?.description || 'Contact'
 }
 
-export const getContactTypeDetailByCode = (code: string): ContactTypeDetail | undefined => detailsByCode.get(code)
+export const getContactTypeDetailByCode = (code: string, flags: FeatureFlags = {}): ContactTypeDetail | undefined =>
+  detailsByCode(flags).get(code)
 
 export const buildGuidanceContent = (detail?: ContactTypeDetail): GuidanceContent | undefined => {
   if (!detail || GUIDANCE_EXCLUDED_CODES.has(detail.code)) {

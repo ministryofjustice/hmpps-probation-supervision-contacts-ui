@@ -26,7 +26,7 @@ const addContactType: RequestHandler = (req, res, next) => {
   const formValues = getFormValues(req.body as Record<string, unknown>)
   const rawSlug = getStringValue(req.params?.contactType)
   const slug = rawSlug.replace(/^add-/, '')
-  const detail = getContactTypeDetailBySlug(slug)
+  const detail = getContactTypeDetailBySlug(slug, res.locals.flags)
 
   const validationErrors = validateWithSpec(
     req.body,
@@ -53,18 +53,21 @@ const addContactType: RequestHandler = (req, res, next) => {
     res.locals.errorMessages = errorMessages
     const headerName = res.locals.headerPersonName
     const personName = `${headerName?.forename || ''} ${headerName?.surname || ''}`.trim()
-    const viewModel = buildAddContactViewModel({
-      crn,
-      slug,
-      sentences: res.locals.sentences || [],
-      personName,
-      formValues,
-      isVisor,
-      responsibleOfficer,
-      responsibleOfficerForename,
-      responsibleOfficerSurname,
-      csrfToken: getStringValue(res.locals.csrfToken),
-    })
+    const viewModel = buildAddContactViewModel(
+      {
+        crn,
+        slug,
+        sentences: res.locals.sentences || [],
+        personName,
+        formValues,
+        isVisor,
+        responsibleOfficer,
+        responsibleOfficerForename,
+        responsibleOfficerSurname,
+        csrfToken: getStringValue(res.locals.csrfToken),
+      },
+      res.locals.flags,
+    )
     return res.render('pages/contacts/add-contact-type', {
       ...viewModel,
       errorMessages,

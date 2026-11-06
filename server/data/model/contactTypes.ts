@@ -1,4 +1,5 @@
 import { ContactTypeCategoryEntries } from './contactCategories'
+import { FeatureFlags } from './featureFlags'
 import { NoOutcomeContactTypeDetails } from './noOutcomeContactTypes'
 import { OutcomeContactTypeDetails } from './outcomeContactTypes'
 
@@ -25,10 +26,10 @@ NoOutcomeContactTypeDetails.forEach(detail => {
   contactTypeByCode.set(detail.code, { code: detail.code, description: detail.description })
 })
 
-OutcomeContactTypeDetails.forEach(detail => {
-  contactTypeByCode.set(detail.code, { code: detail.code, description: detail.description })
-})
+export const ContactTypeOptions = (flags: FeatureFlags = {}): ContactTypeOption[] => {
+  OutcomeContactTypeDetails(flags).forEach(detail => {
+    contactTypeByCode.set(detail.code, { code: detail.code, description: detail.description })
+  })
 
-export const ContactTypeOptions: ContactTypeOption[] = Array.from(contactTypeByCode.values()).sort((a, b) =>
-  a.description.localeCompare(b.description),
-)
+  return Array.from(contactTypeByCode.values()).sort((a, b) => a.description.localeCompare(b.description))
+}
