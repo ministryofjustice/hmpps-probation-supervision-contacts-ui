@@ -4,6 +4,9 @@ import MasApiClient from '../data/masApiClient'
 
 export const downloadDocument = (masApiClient: MasApiClient): RequestHandler => {
   return async (req, res) => {
+    if (res.locals.flags?.enableEarlyTermination20261103Squad3 !== true) {
+      res.status(404).json({ error: 'Document not found' })
+    }
     try {
       const { username } = res.locals.user
       const document = await masApiClient.getDocument(
