@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { Sentence } from '../data/model/contacts'
+import { Sentence, Templates } from '../data/model/contacts'
 import { convertToTitleCase } from '../utils/utils'
 import { dateWithYear } from '../utils/dateWithYear'
 import { CONTACT_DETAILS_MAX_LENGTH } from '../utils/validationUtils'
@@ -10,10 +10,12 @@ import {
   PERSON_ONLY_CONTACT_CODES,
 } from './contactTypeDetails'
 import { FeatureFlags } from '../data/model/featureFlags'
+import { ContactTypeOption } from '../data/model/contactTypes'
 
 type BuildAddContactViewModelArgs = {
   crn: string
   slug: string
+  selectedType?: ContactTypeOption
   sentences: Sentence[]
   personName: string
   formValues: Record<string, string>
@@ -23,12 +25,15 @@ type BuildAddContactViewModelArgs = {
   responsibleOfficerSurname?: string
   csrfToken?: string
   backUrl?: string
+  earlyTermination?: boolean
+  documentTemplates?: Templates
 }
 
 export const buildAddContactViewModel = (
   {
     crn,
     slug,
+    selectedType,
     sentences,
     personName,
     formValues,
@@ -38,6 +43,7 @@ export const buildAddContactViewModel = (
     responsibleOfficerSurname,
     csrfToken,
     backUrl,
+    documentTemplates,
   }: BuildAddContactViewModelArgs,
   flags: FeatureFlags = {},
 ) => {
@@ -139,6 +145,15 @@ export const buildAddContactViewModel = (
 
   const dateToday = DateTime.now().toFormat('d/M/yyyy')
 
+  const earlyTermination = flags.enableEarlyTermination20261103Squad3 && contactTypeName === 'Request early termination'
+
+  const templates: { link: string; name: string }[] = []
+  documentTemplates?.templates.forEach(template => {
+    const link = `/contacts/types/${selectedType?.code}/documents/${template.name}`
+    const name = template.name.split('.').slice(0, -1).join('.')
+    templates.push({ link, name })
+  })
+
   return {
     crn,
     contactTypeName,
@@ -157,6 +172,8 @@ export const buildAddContactViewModel = (
     detailsMaxLength: CONTACT_DETAILS_MAX_LENGTH,
     showOutcomeBanner: detail?.showOutcomeBanner ?? false,
     dateToday,
+    earlyTermination,
+    templates,
     outcomeSection:
       outcomes.length > 0
         ? {

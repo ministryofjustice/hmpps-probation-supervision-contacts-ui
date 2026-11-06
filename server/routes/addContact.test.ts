@@ -74,7 +74,7 @@ describe('addContactRoutes', () => {
   })
 
   it('registers exactly 4 GET routes and 1 POST route', () => {
-    expect(getSpy).toHaveBeenCalledTimes(4)
+    expect(getSpy).toHaveBeenCalledTimes(5)
     expect(postSpy).toHaveBeenCalledTimes(1)
   })
 

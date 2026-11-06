@@ -13,6 +13,7 @@ import {
   PersonContact,
   UpdateContactWithNoOutcome,
   UpdateContactWithOutcome,
+  Templates,
 } from './model/contacts'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { mapPersonAppointmentWithApprovedContactDisplayNames } from '../utils/contactDisplayNames'
@@ -219,5 +220,23 @@ export default class MasApiClient extends RestClient {
     )) as PersonContact | null
 
     return personContact ? mapPersonAppointmentWithApprovedContactDisplayNames(personContact) : personContact
+  }
+
+  async getDocumentTemplates(typeCode: string, username: string): Promise<Templates | null> {
+    return this.get<Templates | null>(
+      {
+        path: `/contact/types/${typeCode}/templates`,
+      },
+      asSystem(username),
+    )
+  }
+
+  async getDocument(typeCode: string, name: string, username: string): Promise<Express.Multer.File | null> {
+    return this.get<Express.Multer.File | null>(
+      {
+        path: `/contact/types/${typeCode}/templates/${name}/download`,
+      },
+      asSystem(username),
+    )
   }
 }
