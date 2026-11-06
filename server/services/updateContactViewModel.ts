@@ -37,7 +37,7 @@ export const buildUpdateContactViewModelWithOutcome = (
 
     type: 'radios',
 
-    items: contactDetails.outcomes.map(outcome => ({
+    items: contactDetails?.outcomes.map(outcome => ({
       text: outcome.label,
       value: outcome.value,
 
