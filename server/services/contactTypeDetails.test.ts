@@ -31,7 +31,7 @@ describe('contactTypeDetails', () => {
     ).toEqual(
       expect.objectContaining({
         code: 'ETRP',
-        description: 'Request for Early Termination',
+        description: 'Request early termination',
         mandatoryOutcome: true,
       }),
     )
@@ -58,7 +58,7 @@ describe('contactTypeDetails', () => {
     expect(getContactTypeDetailByCode('ETRP', { enableEarlyTermination20261103Squad3: true })).toEqual(
       expect.objectContaining({
         code: 'ETRP',
-        description: 'Request for Early Termination',
+        description: 'Request early termination',
         mandatoryOutcome: true,
       }),
     )
