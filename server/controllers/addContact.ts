@@ -206,7 +206,9 @@ const addContactController = {
 
       const contactTypes = ContactTypeOptions(res.locals.flags)
       const selectedType = contactTypes.find(c => slugify(c.description) === contactType)
-      const documentTemplates = await masApiClient.getDocumentTemplates(selectedType?.code, username)
+      const documentTemplates = res.locals.flags?.enableEarlyTermination20261103Squad3
+        ? await masApiClient.getDocumentTemplates(selectedType?.code, username)
+        : undefined
       const viewModel = buildAddContactViewModel(
         {
           crn,
