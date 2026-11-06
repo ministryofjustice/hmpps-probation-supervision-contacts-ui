@@ -1,4 +1,5 @@
 import type { RequestHandler } from 'express'
+import createError from 'http-errors'
 import MasApiClient from '../data/masApiClient'
 import { slugify } from '../utils/slugify'
 import { deliusDeepLinkUrl } from '../utils/deliusDeepLinkUrl'
@@ -26,6 +27,9 @@ const buildContactTypeLinksJson = (crn: string, flags: FeatureFlags = {}) =>
       href: `/case/${crn}/contacts/add-${slugify(t.description)}`,
     })),
   )
+
+const isContactTypeValid = (slug: string, flags: FeatureFlags = {}) =>
+  ContactTypeOptions(flags).some(c => slugify(c.description) === slug)
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -187,6 +191,10 @@ const addContactController = {
       const crn = getStringValue(req.params?.crn)
       const contactType = getStringValue(req.params?.contactType)
 
+      if (!isContactTypeValid(contactType, res.locals.flags)) {
+        return next(createError(404, 'Not found'))
+      }
+
       await sendAuditMessage(res, AuditAction.VIEW_ADD_CONTACT, crn, SubjectType.CRN)
       const { username } = res.locals.user
       const overview = await masApiClient.getOverview(crn, username)
@@ -216,8 +224,11 @@ const addContactController = {
   postAddContactType: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
-      await sendAuditMessage(res, AuditAction.ADD_CONTACT, crn, SubjectType.CRN)
       const slug = req.params.contactType as string
+      if (!isContactTypeValid(slug, res.locals.flags)) {
+        return next(createError(404, 'Not found'))
+      }
+      await sendAuditMessage(res, AuditAction.ADD_CONTACT, crn, SubjectType.CRN)
       const { username } = res.locals.user
       const sentence = getStringValue(req.body?.sentence)
       const title = getStringValue(req.body?.title)
@@ -229,7 +240,7 @@ const addContactController = {
       const time = getStringValue(req.body?.time)
       const outcomeCode = getStringValue(req.body?.outcomeCode)
       const contactTypes = ContactTypeOptions(res.locals.flags)
-      const selectedType = contactTypes.find(c => slugify(c.description) === slug)
+      const selectedType = contactTypes.find(c => slugify(c.description) === slug)!
       const contactService = new ContactService(masApiClient)
       const pp = await masApiClient.getProbationPractitioner(crn, username)
 
@@ -241,7 +252,7 @@ const addContactController = {
         time,
         staffCode,
         teamCode,
-        type: selectedType?.code || slug,
+        type: selectedType.code,
         eventId,
         requirementId: null,
         description: title || undefined,
