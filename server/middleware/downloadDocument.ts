@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express'
-import path from 'node:path'
+import JSZip from 'jszip'
 import MasApiClient from '../data/masApiClient'
 
 export const downloadDocument = (masApiClient: MasApiClient): RequestHandler => {
@@ -14,11 +14,22 @@ export const downloadDocument = (masApiClient: MasApiClient): RequestHandler => 
         req.params.name as string,
         username,
       )
-      const originalName = path.parse(document.originalname).name
+      const zip = await JSZip.loadAsync(document.body as unknown as ArrayBuffer)
+      const contentTypesPath = '[Content_Types].xml'
+      const contentTypesFile = zip.file(contentTypesPath)
+      let contentTypesXml = await contentTypesFile.async('text')
+      const dotxType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml'
+      const docxType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml'
+      if (contentTypesXml.includes(dotxType)) {
+        contentTypesXml = contentTypesXml.replace(dotxType, docxType)
+        zip.file(contentTypesPath, contentTypesXml)
+      }
+      const docxBuffer = await zip.generateAsync({ type: 'nodebuffer' })
+      const originalName = (document.body as unknown as File).name
       const newFilename = `${originalName}.docx`
       res.setHeader('Content-Disposition', `attachment; filename="${newFilename}"`)
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-      res.send(document.buffer)
+      res.send(docxBuffer)
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
