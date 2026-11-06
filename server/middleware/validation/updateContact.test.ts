@@ -207,4 +207,19 @@ describe('middleware/validation/updateContact', () => {
 
     expect(renderData.outcomeSection).toEqual(mockOutcomeSection)
   })
+
+  it('does not render with outcome sections when ET type and flag disabled', () => {
+    const textWithNewline = `${'a'.repeat(12000)}\r\n`
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactId: 'ABC123' },
+      body: { ...validBody, details: textWithNewline },
+    })
+    const res = createRes({
+      flags: { enableEarlyTermination20261103Squad3: false },
+      contact: { appointment: { displayName: 'Request for Early Termination' } },
+    })
+    updateContact(req, res, next)
+    const renderData = (res.render as jest.Mock).mock.calls[0][1]
+    expect(renderData.outcomeSection).toEqual(undefined)
+  })
 })
