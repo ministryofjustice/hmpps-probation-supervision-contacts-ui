@@ -148,11 +148,13 @@ export const buildAddContactViewModel = (
   const earlyTermination = flags.enableEarlyTermination20261103Squad3 && contactTypeName === 'Request early termination'
 
   const templates: { link: string; name: string }[] = []
-  documentTemplates?.templates.forEach(template => {
-    const link = `/contacts/types/${selectedType?.code}/documents/${template.name}`
-    const name = template.name.split('.').slice(0, -1).join('.')
-    templates.push({ link, name })
-  })
+  if (flags.enableEarlyTermination20261103Squad3) {
+    documentTemplates?.templates.forEach(template => {
+      const link = `/contacts/types/${selectedType?.code}/documents/${template.name}`
+      const name = template.name.split('.').slice(0, -1).join('.')
+      templates.push({ link, name })
+    })
+  }
 
   return {
     crn,
