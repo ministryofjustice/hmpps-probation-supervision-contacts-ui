@@ -8,15 +8,15 @@ export type ContactTypeOption = {
   description: string
 }
 
-export const FrequentlyUsedContactTypeOptions = (): ContactTypeOption[] =>
-  ContactTypeCategoryEntries()
+export const FrequentlyUsedContactTypeOptions = (flags: FeatureFlags = {}): ContactTypeOption[] =>
+  ContactTypeCategoryEntries(flags)
     .filter(entry => entry.isFrequentlyUsed)
     .map(entry => ({ code: entry.code, description: entry.displayName }))
     .sort((a, b) => a.description.localeCompare(b.description))
 
 const contactTypeByCode = new Map<string, ContactTypeOption>()
 
-ContactTypeCategoryEntries().forEach(entry => {
+ContactTypeCategoryEntries({}).forEach(entry => {
   if (!contactTypeByCode.has(entry.code)) {
     contactTypeByCode.set(entry.code, { code: entry.code, description: entry.displayName })
   }

@@ -1,3 +1,4 @@
+import { FeatureFlags } from '../data/model/featureFlags'
 import { slugify } from '../utils/slugify'
 import { ContactTypeCategoryEntries } from '../data/model/contactCategories'
 
@@ -26,8 +27,11 @@ export const normaliseSelectedCategories = (value: undefined | string | string[]
   return Array.isArray(value) ? value : [value]
 }
 
-export const buildCategoryCheckboxItems = (selectedCategories: string[]): CategoryCheckboxItem[] => {
-  const categories = Array.from(new Set(ContactTypeCategoryEntries().map(entry => entry.category))).sort((a, b) =>
+export const buildCategoryCheckboxItems = (
+  selectedCategories: string[],
+  flags: FeatureFlags = {},
+): CategoryCheckboxItem[] => {
+  const categories = Array.from(new Set(ContactTypeCategoryEntries(flags).map(entry => entry.category))).sort((a, b) =>
     a.localeCompare(b),
   )
   return categories.map(category => ({
@@ -37,8 +41,8 @@ export const buildCategoryCheckboxItems = (selectedCategories: string[]): Catego
   }))
 }
 
-export const buildSearchResults = (categories: string[], crn: string) => {
-  const entries = ContactTypeCategoryEntries().filter(entry => categories.includes(entry.category))
+export const buildSearchResults = (categories: string[], crn: string, flags: FeatureFlags = {}) => {
+  const entries = ContactTypeCategoryEntries(flags).filter(entry => categories.includes(entry.category))
   const grouped = new Map<string, { items: CategorySearchItem[]; subcategories: Map<string, CategorySearchItem[]> }>()
 
   entries.forEach(entry => {
@@ -80,10 +84,10 @@ export const buildSearchResults = (categories: string[], crn: string) => {
   }
 }
 
-export const buildKeywordSearchResults = (keyword: string, crn: string) => {
+export const buildKeywordSearchResults = (keyword: string, crn: string, flags: FeatureFlags = {}) => {
   const lowerKeyword = keyword.toLowerCase()
   const seen = new Set<string>()
-  const items = ContactTypeCategoryEntries()
+  const items = ContactTypeCategoryEntries(flags)
     .filter(entry => {
       if (seen.has(entry.code)) return false
       seen.add(entry.code)
