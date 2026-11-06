@@ -271,7 +271,7 @@
                     <h3 class="govuk-heading-m">Download template (optional)</h3>
                     <div class="govuk-!-padding-bottom-4">
                     {% for template in templates %}
-                        <a classes="govuk-link" href="{{template.link}}">Download {{template.name}}</a>
+                        <a classes="govuk-link" href="{{template.link}}" download="{{template.name}}">Download {{template.name}}</a>
                     {% endfor %}
                     </div>
                 {% endif %}
