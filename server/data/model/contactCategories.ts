@@ -719,7 +719,7 @@ const safeguardingAndVictimLiaison = (_flags: FeatureFlags): ContactTypeCategory
   },
 ]
 
-const sentenceManagement = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
+const sentenceManagement = (flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Sentence management',
     code: 'DUS01',
@@ -765,6 +765,16 @@ const sentenceManagement = (_flags: FeatureFlags): ContactTypeCategoryEntry[] =>
     code: 'DRAT',
     displayName: 'Substance misuse screening tool',
   },
+  ...(flags.enableEarlyTermination20261103Squad3
+    ? [
+        {
+          category: 'Sentence management',
+          code: 'ETRP',
+          displayName: 'Request early termination',
+          isFrequentlyUsed: true,
+        },
+      ]
+    : []),
 ]
 
 export const ContactTypeCategoryEntries = (flags: FeatureFlags = {}): ContactTypeCategoryEntry[] => [
