@@ -61,7 +61,7 @@ const addContactController = {
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.featureFlags),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags),
         selectedCategories: [],
         searchResults: null,
         searchByCategoryTabActive: false,
@@ -93,7 +93,7 @@ const addContactController = {
       const baseLocals = {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.featureFlags),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags),
         selectedCategories: [] as string[],
         searchResults: null as ReturnType<typeof buildSearchResults> | null,
         searchByCategoryTabActive: true,
@@ -118,12 +118,12 @@ const addContactController = {
         })
       }
 
-      const searchResults = buildSearchResults(selectedCategories, crn)
+      const searchResults = buildSearchResults(selectedCategories, crn, res.locals.flags)
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems(selectedCategories, res.locals.featureFlags),
+        categoryCheckboxItems: buildCategoryCheckboxItems(selectedCategories, res.locals.flags),
         selectedCategories,
         searchResults,
         searchByCategoryTabActive: true,
@@ -146,7 +146,7 @@ const addContactController = {
       const baseLocals = {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.featureFlags),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags),
         searchByCategoryTabActive: false,
         searchByKeywordTabActive: true,
         keywordSearch: keyword,
@@ -178,7 +178,7 @@ const addContactController = {
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         ...baseLocals,
-        keywordSearchResults: buildKeywordSearchResults(keyword, crn),
+        keywordSearchResults: buildKeywordSearchResults(keyword, crn, res.locals.flags),
       })
     }
   },

@@ -192,7 +192,7 @@ describe('middleware/validation/updateContact', () => {
     })
     const res = createRes({
       flags: { enableEarlyTermination20261103Squad3: true },
-      contact: { appointment: { displayName: 'Request early Termination' } },
+      contact: { appointment: { displayName: 'Request early termination' } },
     })
     updateContact(req, res, next)
 

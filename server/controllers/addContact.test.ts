@@ -3,6 +3,7 @@ import MasApiClient from '../data/masApiClient'
 import ContactService from '../services/contactService'
 import addContactController from './addContact'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
+import { FrequentlyUsedContactTypeOptions, ContactTypeOptions } from '../data/model/contactTypes'
 
 jest.mock('../services/contactService')
 jest.mock('../middleware/sendAuditMessage')
@@ -105,7 +106,7 @@ describe('addContactController', () => {
 
     it('passes contactTypeLinksJson as a JSON array of {text, href} objects', async () => {
       const req = createReq({ params: { crn: 'X123456' } })
-      const res = createRes()
+      const res = createRes({ contactTypes: FrequentlyUsedContactTypeOptions({}) })
 
       await addContactController.getFrequentlyUsedContact()(req, res, next)
 
@@ -117,6 +118,30 @@ describe('addContactController', () => {
       expect(parsed[0]).toMatchObject({
         text: expect.any(String),
         href: expect.stringContaining('/case/X123456/contacts/add-'),
+      })
+    })
+
+    describe('early termination contact type', () => {
+      const run = async (flags: Record<string, boolean>) => {
+        const req = createReq({ params: { crn: 'X123456' } })
+        const res = createRes({ flags, contactTypes: FrequentlyUsedContactTypeOptions(flags) })
+        await addContactController.getFrequentlyUsedContact()(req, res, next)
+        return (res.render as jest.Mock).mock.calls[0][1]
+      }
+
+      it('excludes early termination from frequentlyUsedContacts and contactTypeLinksJson when the flag is off', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: false })
+
+        expect(args.frequentlyUsedContacts.map((c: any) => c.text)).not.toContain('Request early termination')
+        expect(JSON.parse(args.contactTypeLinksJson).map((c: any) => c.text)).not.toContain('Request early termination')
+        expect(args.contactTypeLinksJson).not.toContain('early-termination')
+      })
+
+      it('includes early termination in both when the flag is on', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: true })
+
+        expect(args.frequentlyUsedContacts.map((c: any) => c.text)).toContain('Request early termination')
+        expect(JSON.parse(args.contactTypeLinksJson).map((c: any) => c.text)).toContain('Request early termination')
       })
     })
   })
@@ -421,6 +446,30 @@ describe('addContactController', () => {
       )
       expect(renderArgs.searchByCategoryTabActive).toBe(true)
     })
+
+    describe('early termination contact type', () => {
+      const run = async (flags: Record<string, boolean>) => {
+        const req = createReq({
+          params: { crn: 'X123456' },
+          query: { action: 'search', categories: ['Sentence management'] },
+        })
+        const res = createRes({ flags, contactTypes: ContactTypeOptions(flags) })
+        await addContactController.getSearchByCategory()(req, res, next)
+        return (res.render as jest.Mock).mock.calls[0][1]
+      }
+
+      it('excludes early termination from searchResults when the flag is off', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: false })
+
+        expect(JSON.stringify(args.searchResults)).not.toContain('Request early termination')
+      })
+
+      it('includes early termination in searchResults when the flag is on', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: true })
+
+        expect(JSON.stringify(args.searchResults)).toContain('Request early termination')
+      })
+    })
   })
 
   describe('getSearchByKeyword', () => {
@@ -523,6 +572,36 @@ describe('addContactController', () => {
       const renderArgs = await invokeKeyword({ keyword: ['police', 'liaison'] as any, action: 'search' })
 
       expect(renderArgs.errorMessages).toEqual({ keyword: 'Enter a keyword or phrase' })
+    })
+
+    describe('early termination contact type', () => {
+      const run = async (flags: Record<string, boolean>) => {
+        const req = createReq({
+          params: { crn: 'X123456' },
+          query: { keyword: 'early termination', action: 'search' },
+        })
+        const res = createRes({ flags, contactTypes: ContactTypeOptions(flags) })
+        await addContactController.getSearchByKeyword()(req, res, next)
+        return (res.render as jest.Mock).mock.calls[0][1]
+      }
+
+      it('excludes early termination from searchResults when the flag is off', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: false })
+
+        expect(JSON.stringify(args.keywordSearchResults)).not.toContain('Request early termination')
+
+        // Used for autocomplete dropdown source
+        expect(JSON.stringify(args.contactTypeLinksJson)).not.toContain('Request early termination')
+      })
+
+      it('includes early termination in searchResults when the flag is on', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: true })
+
+        expect(JSON.stringify(args.keywordSearchResults)).toContain('Request early termination')
+
+        // Used for autocomplete dropdown source
+        expect(args.contactTypeLinksJson).toContain('Request early termination')
+      })
     })
   })
 })
