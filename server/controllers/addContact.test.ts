@@ -31,7 +31,9 @@ function createReq(overrides: Partial<Request> = {}): Request {
 }
 
 describe('addContactController', () => {
-  let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getUserProviders' | 'getOverview' | 'getProbationPractitioner'>>
+  let mockMasApiClient: jest.Mocked<
+    Pick<MasApiClient, 'getUserProviders' | 'getOverview' | 'getProbationPractitioner' | 'getDocumentTemplates'>
+  >
   let mockCreateContact: jest.Mock
   let mockPatchDocuments: jest.Mock
   let next: jest.Mock
@@ -53,6 +55,7 @@ describe('addContactController', () => {
         unallocated: false,
         username: 'PRACTITIONER1',
       }),
+      getDocumentTemplates: jest.fn().mockResolvedValue({ templates: [] }),
     }
     mockCreateContact = jest.fn().mockResolvedValue({ id: 1 })
     mockPatchDocuments = jest.fn().mockResolvedValue(undefined)

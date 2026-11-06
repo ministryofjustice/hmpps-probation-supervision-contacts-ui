@@ -205,10 +205,15 @@ const addContactController = {
       const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
       const headerName = res.locals.headerPersonName
       const personName = `${headerName?.forename || ''} ${headerName?.surname || ''}`.trim()
+
+      const contactTypes = ContactTypeOptions(res.locals.flags)
+      const selectedType = contactTypes.find(c => slugify(c.description) === contactType)
+      const documentTemplates = await masApiClient.getDocumentTemplates(selectedType?.code, username)
       const viewModel = buildAddContactViewModel(
         {
           crn,
           slug: contactType,
+          selectedType,
           sentences: res.locals.sentences || [],
           personName,
           formValues: {},
@@ -218,6 +223,7 @@ const addContactController = {
           responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
           csrfToken: getStringValue(res.locals.csrfToken),
           backUrl: resolveBackUrl(req.query?.backUrl, crn),
+          documentTemplates,
         },
         res.locals.flags,
       )
