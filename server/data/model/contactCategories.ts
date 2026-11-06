@@ -1,3 +1,5 @@
+import { FeatureFlags } from './featureFlags'
+
 export type ContactTypeCategoryEntry = {
   category: string
   subcategory?: string
@@ -6,7 +8,7 @@ export type ContactTypeCategoryEntry = {
   isFrequentlyUsed?: boolean
 }
 
-const caseManagementAndMeetings: ContactTypeCategoryEntry[] = [
+const caseManagementAndMeetings = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Case management and meetings',
     subcategory: 'Case meetings',
@@ -147,7 +149,7 @@ const caseManagementAndMeetings: ContactTypeCategoryEntry[] = [
   },
 ]
 
-const communicationAndInformationSharing: ContactTypeCategoryEntry[] = [
+const communicationAndInformationSharing = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Communication and information sharing with others',
     code: 'C326',
@@ -407,7 +409,7 @@ const communicationAndInformationSharing: ContactTypeCategoryEntry[] = [
   },
 ]
 
-const communicationWithPersonOnProbation: ContactTypeCategoryEntry[] = [
+const communicationWithPersonOnProbation = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Communication with person on probation',
     subcategory: 'Email or telephone',
@@ -480,7 +482,7 @@ const communicationWithPersonOnProbation: ContactTypeCategoryEntry[] = [
   },
 ]
 
-const multiAgencyWorking: ContactTypeCategoryEntry[] = [
+const multiAgencyWorking = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Multi-agency working (including IOM, MAPPA and MARAC)',
     subcategory: 'IOM',
@@ -573,7 +575,7 @@ const multiAgencyWorking: ContactTypeCategoryEntry[] = [
   },
 ]
 
-const nonComplianceAndEnforcement: ContactTypeCategoryEntry[] = [
+const nonComplianceAndEnforcement = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Non-compliance and enforcement',
     code: 'ACOM1',
@@ -606,7 +608,7 @@ const nonComplianceAndEnforcement: ContactTypeCategoryEntry[] = [
   },
 ]
 
-const referrals: ContactTypeCategoryEntry[] = [
+const referrals = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Referrals',
     code: 'C115',
@@ -644,7 +646,7 @@ const referrals: ContactTypeCategoryEntry[] = [
   },
 ]
 
-const safeguardingAndVictimLiaison: ContactTypeCategoryEntry[] = [
+const safeguardingAndVictimLiaison = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Safeguarding and victim liaison',
     code: 'DAD1',
@@ -717,7 +719,7 @@ const safeguardingAndVictimLiaison: ContactTypeCategoryEntry[] = [
   },
 ]
 
-const sentenceManagement: ContactTypeCategoryEntry[] = [
+const sentenceManagement = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Sentence management',
     code: 'DUS01',
@@ -765,13 +767,13 @@ const sentenceManagement: ContactTypeCategoryEntry[] = [
   },
 ]
 
-export const ContactTypeCategoryEntries: ContactTypeCategoryEntry[] = [
-  ...caseManagementAndMeetings,
-  ...communicationAndInformationSharing,
-  ...communicationWithPersonOnProbation,
-  ...multiAgencyWorking,
-  ...nonComplianceAndEnforcement,
-  ...referrals,
-  ...safeguardingAndVictimLiaison,
-  ...sentenceManagement,
+export const ContactTypeCategoryEntries = (flags: FeatureFlags = {}): ContactTypeCategoryEntry[] => [
+  ...caseManagementAndMeetings(flags),
+  ...communicationAndInformationSharing(flags),
+  ...communicationWithPersonOnProbation(flags),
+  ...multiAgencyWorking(flags),
+  ...nonComplianceAndEnforcement(flags),
+  ...referrals(flags),
+  ...safeguardingAndVictimLiaison(flags),
+  ...sentenceManagement(flags),
 ]

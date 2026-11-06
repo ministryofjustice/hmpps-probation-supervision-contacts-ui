@@ -61,7 +61,7 @@ const addContactController = {
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([]),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.featureFlags),
         selectedCategories: [],
         searchResults: null,
         searchByCategoryTabActive: false,
@@ -93,7 +93,7 @@ const addContactController = {
       const baseLocals = {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([]),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.featureFlags),
         selectedCategories: [] as string[],
         searchResults: null as ReturnType<typeof buildSearchResults> | null,
         searchByCategoryTabActive: true,
@@ -123,7 +123,7 @@ const addContactController = {
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems(selectedCategories),
+        categoryCheckboxItems: buildCategoryCheckboxItems(selectedCategories, res.locals.featureFlags),
         selectedCategories,
         searchResults,
         searchByCategoryTabActive: true,
@@ -146,7 +146,7 @@ const addContactController = {
       const baseLocals = {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([]),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.featureFlags),
         searchByCategoryTabActive: false,
         searchByKeywordTabActive: true,
         keywordSearch: keyword,
