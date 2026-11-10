@@ -160,6 +160,33 @@ describe('buildAddContactViewModel', () => {
     })
   })
 
+  it('adds templates if Early Termination flag is set', () => {
+    const result = buildAddContactViewModel(
+      {
+        crn: 'X123456',
+        slug: 'arrest-incident',
+        sentences,
+        personName: 'Stuart Morrison',
+        formValues: {},
+        documentTemplates: {
+          templates: [
+            {
+              name: 'template',
+            },
+          ],
+        },
+      },
+      { enableEarlyTermination20261103Squad3: true },
+    )
+
+    expect(result.templates).toEqual([
+      {
+        link: '/contacts/types/undefined/documents/template',
+        name: 'template',
+      },
+    ])
+  })
+
   it('builds MO8 guidance and mandatory radio outcomes for the HVRA contact', () => {
     const result = buildAddContactViewModel({
       crn: 'X123456',
