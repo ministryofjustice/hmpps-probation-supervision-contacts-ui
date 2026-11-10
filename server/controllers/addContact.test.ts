@@ -3,6 +3,7 @@ import MasApiClient from '../data/masApiClient'
 import ContactService from '../services/contactService'
 import addContactController from './addContact'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
+import { buildCategoryCheckboxItems } from '../services/contactCategorySearch'
 import { FrequentlyUsedContactTypeOptions, ContactTypeOptions } from '../data/model/contactTypes'
 
 jest.mock('../services/contactService')
@@ -622,6 +623,80 @@ describe('addContactController', () => {
         // Used for autocomplete dropdown source
         expect(args.contactTypeLinksJson).toContain('Request early termination')
       })
+    })
+  })
+
+  describe('back link handling', () => {
+    const crn = 'X123456'
+    const hrefsOf = (renderArgs: any) => [
+      ...renderArgs.frequentlyUsedContacts.map((c: { href: string }) => c.href),
+      ...JSON.parse(renderArgs.contactTypeLinksJson ?? '[]').map((c: { href: string }) => c.href),
+    ]
+
+    it('tags frequently used and autocomplete links with the frequently used page', async () => {
+      const originalUrl = `/case/${crn}/add-frequently-used-contact`
+      const req = createReq({ params: { crn }, originalUrl })
+      const res = createRes({ contactTypes: FrequentlyUsedContactTypeOptions({}) })
+
+      await addContactController.getFrequentlyUsedContact()(req, res, next)
+
+      const hrefs = hrefsOf((res.render as jest.Mock).mock.calls[0][1])
+      expect(hrefs.length).toBeGreaterThan(0)
+      hrefs.forEach((href: string) => expect(href).toContain(`?backUrl=${encodeURIComponent(originalUrl)}`))
+    })
+
+    it('tags category search result links with the full search URL', async () => {
+      const category = buildCategoryCheckboxItems([], {})[0].value
+      const originalUrl = `/case/${crn}/contacts/find-contact-to-add?action=search&categories=${encodeURIComponent(category)}`
+      const req = createReq({ params: { crn }, originalUrl, query: { action: 'search', categories: category } })
+      const res = createRes({ contactTypes: [] })
+
+      await addContactController.getSearchByCategory()(req, res, next)
+
+      const { searchResults } = (res.render as jest.Mock).mock.calls[0][1]
+      const items = [
+        ...searchResults.categories.flatMap((c: any) => [...c.items, ...c.subcategories.flatMap((s: any) => s.items)]),
+      ]
+      expect(items.length).toBeGreaterThan(0)
+      items.forEach(item => expect(item.href).toContain(`?backUrl=${encodeURIComponent(originalUrl)}`))
+    })
+
+    it('tags keyword search result links with the full search URL', async () => {
+      const originalUrl = `/case/${crn}/contacts/search-keyword?keyword=police&action=search`
+      const req = createReq({ params: { crn }, originalUrl, query: { keyword: 'police', action: 'search' } })
+      const res = createRes({ contactTypes: [] })
+
+      await addContactController.getSearchByKeyword()(req, res, next)
+
+      const { keywordSearchResults } = (res.render as jest.Mock).mock.calls[0][1]
+      expect(keywordSearchResults.items.length).toBeGreaterThan(0)
+      keywordSearchResults.items.forEach((item: { href: string }) =>
+        expect(item.href).toContain(`?backUrl=${encodeURIComponent(originalUrl)}`),
+      )
+    })
+
+    describe('getAddContactType backLink', () => {
+      const run = async (query: Record<string, unknown>) => {
+        const req = createReq({ params: { crn, contactType: 'police-liaison' }, query: query as any })
+        const res = createRes({ isResponsibleOfficer: true, sentences: [] })
+        await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+        return (res.render as jest.Mock).mock.calls[0][1]
+      }
+
+      it.each([
+        `/case/${crn}/add-frequently-used-contact`,
+        `/case/${crn}/contacts/find-contact-to-add?action=search&categories=Alert`,
+        `/case/${crn}/contacts/search-keyword?keyword=police&action=search`,
+      ])('uses %s as the back link', async backUrl => {
+        expect((await run({ backUrl })).backLink).toBe(backUrl)
+      })
+
+      it.each([undefined, 'https://evil.com', '//evil.com', `/case/${crn}/contacts/add-police-liaison`])(
+        'falls back to frequently used contacts for %s',
+        async backUrl => {
+          expect((await run({ backUrl })).backLink).toBe(`/case/${crn}/add-frequently-used-contact`)
+        },
+      )
     })
   })
 })

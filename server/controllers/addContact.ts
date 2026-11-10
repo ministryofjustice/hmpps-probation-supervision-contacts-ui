@@ -19,12 +19,13 @@ import { buildAddContactViewModel } from '../services/addContactViewModel'
 import { isBlank } from '../utils/isBlank'
 import { FeatureFlags } from '../data/model/featureFlags'
 import { showOfficer } from '../data/model/contants'
+import { resolveBackUrl, withBackUrl } from '../utils/backLink'
 
-const buildContactTypeLinksJson = (crn: string, flags: FeatureFlags = {}) =>
+const buildContactTypeLinksJson = (crn: string, flags: FeatureFlags = {}, backUrl?: string) =>
   JSON.stringify(
     ContactTypeOptions(flags).map(t => ({
       text: t.description,
-      href: `/case/${crn}/contacts/add-${slugify(t.description)}`,
+      href: withBackUrl(`/case/${crn}/contacts/add-${slugify(t.description)}`, backUrl),
     })),
   )
 
@@ -39,24 +40,25 @@ const getStringValue = (value: unknown): string => {
   return typeof value === 'string' ? value : ''
 }
 
-const buildFrequentlyUsedContacts = (contactTypes: any[], crn: string) =>
+const buildFrequentlyUsedContacts = (contactTypes: any[], crn: string, backUrl?: string) =>
   contactTypes
     .slice()
     .sort((first: any, second: any) => first.description.localeCompare(second.description))
     .map((contact: any) => ({
       text: contact.description,
-      href: `/case/${crn}/contacts/add-${slugify(contact.description)}`,
+      href: withBackUrl(`/case/${crn}/contacts/add-${slugify(contact.description)}`, backUrl),
     }))
 
 const addContactController = {
   getFrequentlyUsedContact: (): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
+      const backUrl = req.originalUrl
 
       await sendAuditMessage(res, AuditAction.VIEW_ADD_FREQUENTLY_USED_CONTACT, crn as string, SubjectType.CRN)
 
       const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
-      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
+      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn, backUrl)
 
       if (req.query?.contactType === 'APPOINTMENT') {
         const uuid = crypto.randomUUID()
@@ -69,7 +71,7 @@ const addContactController = {
         selectedCategories: [],
         searchResults: null,
         searchByCategoryTabActive: false,
-        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags),
+        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags, backUrl),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -80,6 +82,7 @@ const addContactController = {
   getSearchByCategory: (): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
+      const backUrl = req.originalUrl
       const selectedCategories = normaliseSelectedCategories(req.query?.categories as string | string[])
       const lastCategories = normaliseSelectedCategories(
         typeof req.query?.lastCategories === 'string' && req.query.lastCategories.length
@@ -92,7 +95,7 @@ const addContactController = {
       const action = req.query?.action
 
       const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
-      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
+      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn, backUrl)
 
       const baseLocals = {
         crn,
@@ -122,7 +125,7 @@ const addContactController = {
         })
       }
 
-      const searchResults = buildSearchResults(selectedCategories, crn, res.locals.flags)
+      const searchResults = buildSearchResults(selectedCategories, crn, res.locals.flags, backUrl)
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
@@ -141,11 +144,12 @@ const addContactController = {
   getSearchByKeyword: (): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
+      const backUrl = req.originalUrl
       const keyword = typeof req.query?.keyword === 'string' ? req.query.keyword.trim() : ''
       const action = req.query?.action
 
       const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
-      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
+      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn, backUrl)
 
       const baseLocals = {
         crn,
@@ -155,7 +159,7 @@ const addContactController = {
         searchByKeywordTabActive: true,
         keywordSearch: keyword,
         keywordSearchResults: null as ReturnType<typeof buildKeywordSearchResults> | null,
-        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags),
+        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags, backUrl),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -182,7 +186,7 @@ const addContactController = {
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         ...baseLocals,
-        keywordSearchResults: buildKeywordSearchResults(keyword, crn, res.locals.flags),
+        keywordSearchResults: buildKeywordSearchResults(keyword, crn, res.locals.flags, backUrl),
       })
     }
   },
@@ -215,6 +219,7 @@ const addContactController = {
           responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
           responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
           csrfToken: getStringValue(res.locals.csrfToken),
+          backUrl: resolveBackUrl(req.query?.backUrl, crn),
         },
         res.locals.flags,
       )

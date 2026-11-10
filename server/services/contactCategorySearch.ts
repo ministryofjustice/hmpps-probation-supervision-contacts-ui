@@ -1,5 +1,6 @@
 import { FeatureFlags } from '../data/model/featureFlags'
 import { slugify } from '../utils/slugify'
+import { withBackUrl } from '../utils/backLink'
 import { ContactTypeCategoryEntries } from '../data/model/contactCategories'
 
 type CategoryCheckboxItem = {
@@ -41,7 +42,7 @@ export const buildCategoryCheckboxItems = (
   }))
 }
 
-export const buildSearchResults = (categories: string[], crn: string, flags: FeatureFlags = {}) => {
+export const buildSearchResults = (categories: string[], crn: string, flags: FeatureFlags = {}, backUrl?: string) => {
   const entries = ContactTypeCategoryEntries(flags).filter(entry => categories.includes(entry.category))
   const grouped = new Map<string, { items: CategorySearchItem[]; subcategories: Map<string, CategorySearchItem[]> }>()
 
@@ -53,7 +54,7 @@ export const buildSearchResults = (categories: string[], crn: string, flags: Fea
     const item = {
       code: entry.code,
       displayName: entry.displayName,
-      href: `/case/${crn}/contacts/add-${slugify(entry.displayName)}`,
+      href: withBackUrl(`/case/${crn}/contacts/add-${slugify(entry.displayName)}`, backUrl),
     }
     if (entry.subcategory) {
       if (!group.subcategories.has(entry.subcategory)) {
@@ -84,7 +85,7 @@ export const buildSearchResults = (categories: string[], crn: string, flags: Fea
   }
 }
 
-export const buildKeywordSearchResults = (keyword: string, crn: string, flags: FeatureFlags = {}) => {
+export const buildKeywordSearchResults = (keyword: string, crn: string, flags: FeatureFlags = {}, backUrl?: string) => {
   const lowerKeyword = keyword.toLowerCase()
   const seen = new Set<string>()
   const items = ContactTypeCategoryEntries(flags)
@@ -96,7 +97,7 @@ export const buildKeywordSearchResults = (keyword: string, crn: string, flags: F
     .sort((a, b) => a.displayName.localeCompare(b.displayName))
     .map(entry => ({
       displayName: entry.displayName,
-      href: `/case/${crn}/contacts/add-${slugify(entry.displayName)}`,
+      href: withBackUrl(`/case/${crn}/contacts/add-${slugify(entry.displayName)}`, backUrl),
     }))
 
   return { keyword, count: items.length, items }
