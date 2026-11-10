@@ -1,7 +1,7 @@
 import type { RequestHandler } from 'express'
 import MasApiClient from '../data/masApiClient'
 import { PersonRiskFlags, RiskFlag, RiskScore } from '../data/model/risk'
-import { getRiskBadgeGroups, RiskBadgeData } from '../utils/personRiskFlagSorter'
+import { getRiskBadges, RiskBadgeData } from '../utils/personRiskFlagSorter'
 import { setDataValue } from '../utils/setDataValue'
 import { findReplace } from '../utils/findReplace'
 import { getStaffRisk, getProbationRisk } from '../utils/getStaffRisk'
@@ -20,7 +20,7 @@ export const getPersonRiskFlags = (masApiClient: MasApiClient): RequestHandler =
       personRisks = await masApiClient.getPersonRiskFlags(crn, username)
 
       if (personRisks.riskFlags) {
-        riskBadgeData = getRiskBadgeGroups(personRisks.riskFlags)
+        riskBadgeData = getRiskBadges(personRisks.riskFlags)
       }
 
       const term = 'RoSH'
@@ -38,7 +38,7 @@ export const getPersonRiskFlags = (masApiClient: MasApiClient): RequestHandler =
       setDataValue(data, ['riskBadgeData', crn], riskBadgeData)
     } else {
       personRisks = req.session.data.risks[crn]
-      riskBadgeData = req.session.data.riskBadgeData?.[crn] ?? getRiskBadgeGroups(personRisks.riskFlags ?? [])
+      riskBadgeData = req.session.data.riskBadgeData?.[crn] ?? getRiskBadges(personRisks.riskFlags ?? [])
     }
     const riskToStaff = getStaffRisk(personRisks.riskFlags)
     const riskToProbationStaff = getProbationRisk(personRisks.riskFlags)
