@@ -1,3 +1,5 @@
+import { FeatureFlags } from './featureFlags'
+
 export type ContactTypeCategoryEntry = {
   category: string
   subcategory?: string
@@ -6,7 +8,7 @@ export type ContactTypeCategoryEntry = {
   isFrequentlyUsed?: boolean
 }
 
-const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
+const caseManagementAndMeetings = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Case management and meetings',
     subcategory: 'Case meetings',
@@ -145,6 +147,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'MO8',
     displayName: 'Management oversight – home visit risk assessment',
   },
+]
+
+const communicationAndInformationSharing = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Communication and information sharing with others',
     code: 'C326',
@@ -402,6 +407,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'C202',
     displayName: 'Prison liaison',
   },
+]
+
+const communicationWithPersonOnProbation = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Communication with person on probation',
     subcategory: 'Email or telephone',
@@ -472,6 +480,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'C129',
     displayName: 'Use of video link or teleconference',
   },
+]
+
+const multiAgencyWorking = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Multi-agency working (including IOM, MAPPA and MARAC)',
     subcategory: 'IOM',
@@ -562,6 +573,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'ERFM',
     displayName: 'MARAC referral',
   },
+]
+
+const nonComplianceAndEnforcement = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Non-compliance and enforcement',
     code: 'ACOM1',
@@ -592,6 +606,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'CSNR',
     displayName: 'Sick note received',
   },
+]
+
+const referrals = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Referrals',
     code: 'C115',
@@ -627,6 +644,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'C347',
     displayName: 'Referral - finance, benefits or debt',
   },
+]
+
+const safeguardingAndVictimLiaison = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Safeguarding and victim liaison',
     code: 'DAD1',
@@ -697,6 +717,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'VINC',
     displayName: 'ViSOR information contact',
   },
+]
+
+const sentenceManagement = (flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Sentence management',
     code: 'DUS01',
@@ -742,6 +765,25 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'DRAT',
     displayName: 'Substance misuse screening tool',
   },
+  ...(flags.enableEarlyTermination20261103Squad3
+    ? [
+        {
+          category: 'Sentence management',
+          code: 'ETRP',
+          displayName: 'Request early termination',
+          isFrequentlyUsed: true,
+        },
+      ]
+    : []),
 ]
 
-export const ContactTypeCategoryEntries = (): ContactTypeCategoryEntry[] => BASE_ENTRIES
+export const ContactTypeCategoryEntries = (flags: FeatureFlags = {}): ContactTypeCategoryEntry[] => [
+  ...caseManagementAndMeetings(flags),
+  ...communicationAndInformationSharing(flags),
+  ...communicationWithPersonOnProbation(flags),
+  ...multiAgencyWorking(flags),
+  ...nonComplianceAndEnforcement(flags),
+  ...referrals(flags),
+  ...safeguardingAndVictimLiaison(flags),
+  ...sentenceManagement(flags),
+]

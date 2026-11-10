@@ -3,6 +3,7 @@ import MasApiClient from '../data/masApiClient'
 import ContactService from '../services/contactService'
 import addContactController from './addContact'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
+import { FrequentlyUsedContactTypeOptions, ContactTypeOptions } from '../data/model/contactTypes'
 
 jest.mock('../services/contactService')
 jest.mock('../middleware/sendAuditMessage')
@@ -105,7 +106,7 @@ describe('addContactController', () => {
 
     it('passes contactTypeLinksJson as a JSON array of {text, href} objects', async () => {
       const req = createReq({ params: { crn: 'X123456' } })
-      const res = createRes()
+      const res = createRes({ contactTypes: FrequentlyUsedContactTypeOptions({}) })
 
       await addContactController.getFrequentlyUsedContact()(req, res, next)
 
@@ -117,6 +118,30 @@ describe('addContactController', () => {
       expect(parsed[0]).toMatchObject({
         text: expect.any(String),
         href: expect.stringContaining('/case/X123456/contacts/add-'),
+      })
+    })
+
+    describe('early termination contact type', () => {
+      const run = async (flags: Record<string, boolean>) => {
+        const req = createReq({ params: { crn: 'X123456' } })
+        const res = createRes({ flags, contactTypes: FrequentlyUsedContactTypeOptions(flags) })
+        await addContactController.getFrequentlyUsedContact()(req, res, next)
+        return (res.render as jest.Mock).mock.calls[0][1]
+      }
+
+      it('excludes early termination from frequentlyUsedContacts and contactTypeLinksJson when the flag is off', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: false })
+
+        expect(args.frequentlyUsedContacts.map((c: any) => c.text)).not.toContain('Request early termination')
+        expect(JSON.parse(args.contactTypeLinksJson).map((c: any) => c.text)).not.toContain('Request early termination')
+        expect(args.contactTypeLinksJson).not.toContain('early-termination')
+      })
+
+      it('includes early termination in both when the flag is on', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: true })
+
+        expect(args.frequentlyUsedContacts.map((c: any) => c.text)).toContain('Request early termination')
+        expect(JSON.parse(args.contactTypeLinksJson).map((c: any) => c.text)).toContain('Request early termination')
       })
     })
   })
@@ -145,8 +170,18 @@ describe('addContactController', () => {
       )
     })
 
+    it('returns 404 when the contact type is unavailable', async () => {
+      const req = createReq({ params: { crn: 'X123456', contactType: 'request-early-termination' } })
+      const res = createRes()
+
+      await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }))
+      expect(res.render).not.toHaveBeenCalled()
+    })
+
     it('sets responsibleOfficer to SHOW_OFFICER when user is not responsible officer', async () => {
-      const req = createReq({ params: { crn: 'X123456', contactType: 'community-intervention' } })
+      const req = createReq({ params: { crn: 'X123456', contactType: 'email-or-text-from-other' } })
       const res = createRes({ isResponsibleOfficer: false })
 
       await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
@@ -156,7 +191,7 @@ describe('addContactController', () => {
     })
 
     it('sets responsibleOfficer to undefined when user is responsible officer', async () => {
-      const req = createReq({ params: { crn: 'X123456', contactType: 'community-intervention' } })
+      const req = createReq({ params: { crn: 'X123456', contactType: 'email-or-text-from-other' } })
       const res = createRes({ isResponsibleOfficer: true })
 
       await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
@@ -167,7 +202,7 @@ describe('addContactController', () => {
 
     it('sets isVisor to SHOW_VISOR when registrations include visor', async () => {
       mockMasApiClient.getOverview.mockResolvedValue({ registrations: ['VISOR', 'Restraining Order'] })
-      const req = createReq({ params: { crn: 'X123456', contactType: 'community-intervention' } })
+      const req = createReq({ params: { crn: 'X123456', contactType: 'email-or-text-from-other' } })
       const res = createRes()
 
       await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
@@ -178,7 +213,7 @@ describe('addContactController', () => {
 
     it('sets isVisor to undefined when registrations do not include visor', async () => {
       mockMasApiClient.getOverview.mockResolvedValue({ registrations: ['Restraining Order'] })
-      const req = createReq({ params: { crn: 'X123456', contactType: 'community-intervention' } })
+      const req = createReq({ params: { crn: 'X123456', contactType: 'email-or-text-from-other' } })
       const res = createRes()
 
       await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
@@ -189,7 +224,7 @@ describe('addContactController', () => {
 
     it('sets isVisor to undefined when overview is null', async () => {
       mockMasApiClient.getOverview.mockResolvedValue(null)
-      const req = createReq({ params: { crn: 'X123456', contactType: 'community-intervention' } })
+      const req = createReq({ params: { crn: 'X123456', contactType: 'email-or-text-from-other' } })
       const res = createRes()
 
       await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
@@ -306,7 +341,7 @@ describe('addContactController', () => {
 
     it('sets eventId to null when sentence is PERSON_LEVEL_CONTACT', async () => {
       const req = createReq({
-        params: { crn: 'X123456', contactType: 'community-intervention' },
+        params: { crn: 'X123456', contactType: 'email-or-text-from-other' },
         body: { ...validBody, sentence: 'PERSON_LEVEL_CONTACT' },
       })
       const res = createRes()
@@ -317,7 +352,7 @@ describe('addContactController', () => {
     })
 
     it('redirects with showSuccessBanner only when no file is attached', async () => {
-      const req = createReq({ params: { crn: 'X123456', contactType: 'community-intervention' }, body: validBody })
+      const req = createReq({ params: { crn: 'X123456', contactType: 'email-or-text-from-other' }, body: validBody })
       const res = createRes()
 
       await addContactController.postAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
@@ -331,7 +366,7 @@ describe('addContactController', () => {
       const mockFile = { buffer: Buffer.from('data'), originalname: 'test.pdf', mimetype: 'application/pdf' }
 
       const req = createReq({
-        params: { crn: 'X123456', contactType: 'community-intervention' },
+        params: { crn: 'X123456', contactType: 'email-or-text-from-other' },
         body: validBody,
         file: mockFile as Express.Multer.File,
       })
@@ -356,7 +391,7 @@ describe('addContactController', () => {
       mockPatchDocuments.mockRejectedValue(new Error('Upload failed'))
       const mockFile = { buffer: Buffer.from('data'), originalname: 'test.pdf', mimetype: 'application/pdf' }
       const req = createReq({
-        params: { crn: 'X123456', contactType: 'community-intervention' },
+        params: { crn: 'X123456', contactType: 'email-or-text-from-other' },
         body: validBody,
         file: mockFile as Express.Multer.File,
       })
@@ -366,6 +401,16 @@ describe('addContactController', () => {
 
       expect(mockPatchDocuments).toHaveBeenCalledWith('X123456', '1', mockFile, 'test-user')
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('showSuccessBanner=true&uploadFailed=true'))
+    })
+
+    it('returns 404 and does not create a contact when the contact type is unavailable', async () => {
+      const req = createReq({ params: { crn: 'X123456', contactType: 'request-early-termination' }, body: validBody })
+      const res = createRes()
+
+      await addContactController.postAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }))
+      expect(mockCreateContact).not.toHaveBeenCalled()
     })
   })
 
@@ -420,6 +465,30 @@ describe('addContactController', () => {
         expect.objectContaining({ count: expect.any(Number), categories: expect.any(Array) }),
       )
       expect(renderArgs.searchByCategoryTabActive).toBe(true)
+    })
+
+    describe('early termination contact type', () => {
+      const run = async (flags: Record<string, boolean>) => {
+        const req = createReq({
+          params: { crn: 'X123456' },
+          query: { action: 'search', categories: ['Sentence management'] },
+        })
+        const res = createRes({ flags, contactTypes: ContactTypeOptions(flags) })
+        await addContactController.getSearchByCategory()(req, res, next)
+        return (res.render as jest.Mock).mock.calls[0][1]
+      }
+
+      it('excludes early termination from searchResults when the flag is off', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: false })
+
+        expect(JSON.stringify(args.searchResults)).not.toContain('Request early termination')
+      })
+
+      it('includes early termination in searchResults when the flag is on', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: true })
+
+        expect(JSON.stringify(args.searchResults)).toContain('Request early termination')
+      })
     })
   })
 
@@ -523,6 +592,36 @@ describe('addContactController', () => {
       const renderArgs = await invokeKeyword({ keyword: ['police', 'liaison'] as any, action: 'search' })
 
       expect(renderArgs.errorMessages).toEqual({ keyword: 'Enter a keyword or phrase' })
+    })
+
+    describe('early termination contact type', () => {
+      const run = async (flags: Record<string, boolean>) => {
+        const req = createReq({
+          params: { crn: 'X123456' },
+          query: { keyword: 'early termination', action: 'search' },
+        })
+        const res = createRes({ flags, contactTypes: ContactTypeOptions(flags) })
+        await addContactController.getSearchByKeyword()(req, res, next)
+        return (res.render as jest.Mock).mock.calls[0][1]
+      }
+
+      it('excludes early termination from searchResults when the flag is off', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: false })
+
+        expect(JSON.stringify(args.keywordSearchResults)).not.toContain('Request early termination')
+
+        // Used for autocomplete dropdown source
+        expect(JSON.stringify(args.contactTypeLinksJson)).not.toContain('Request early termination')
+      })
+
+      it('includes early termination in searchResults when the flag is on', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: true })
+
+        expect(JSON.stringify(args.keywordSearchResults)).toContain('Request early termination')
+
+        // Used for autocomplete dropdown source
+        expect(args.contactTypeLinksJson).toContain('Request early termination')
+      })
     })
   })
 })

@@ -1,4 +1,5 @@
 import type { RequestHandler } from 'express'
+import createError from 'http-errors'
 import MasApiClient from '../data/masApiClient'
 import { slugify } from '../utils/slugify'
 import { deliusDeepLinkUrl } from '../utils/deliusDeepLinkUrl'
@@ -26,6 +27,9 @@ const buildContactTypeLinksJson = (crn: string, flags: FeatureFlags = {}) =>
       href: `/case/${crn}/contacts/add-${slugify(t.description)}`,
     })),
   )
+
+const isContactTypeValid = (slug: string, flags: FeatureFlags = {}) =>
+  ContactTypeOptions(flags).some(c => slugify(c.description) === slug)
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -61,7 +65,7 @@ const addContactController = {
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([]),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags),
         selectedCategories: [],
         searchResults: null,
         searchByCategoryTabActive: false,
@@ -93,7 +97,7 @@ const addContactController = {
       const baseLocals = {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([]),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags),
         selectedCategories: [] as string[],
         searchResults: null as ReturnType<typeof buildSearchResults> | null,
         searchByCategoryTabActive: true,
@@ -118,12 +122,12 @@ const addContactController = {
         })
       }
 
-      const searchResults = buildSearchResults(selectedCategories, crn)
+      const searchResults = buildSearchResults(selectedCategories, crn, res.locals.flags)
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems(selectedCategories),
+        categoryCheckboxItems: buildCategoryCheckboxItems(selectedCategories, res.locals.flags),
         selectedCategories,
         searchResults,
         searchByCategoryTabActive: true,
@@ -146,7 +150,7 @@ const addContactController = {
       const baseLocals = {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([]),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags),
         searchByCategoryTabActive: false,
         searchByKeywordTabActive: true,
         keywordSearch: keyword,
@@ -178,7 +182,7 @@ const addContactController = {
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         ...baseLocals,
-        keywordSearchResults: buildKeywordSearchResults(keyword, crn),
+        keywordSearchResults: buildKeywordSearchResults(keyword, crn, res.locals.flags),
       })
     }
   },
@@ -186,6 +190,10 @@ const addContactController = {
     return async (req, res, next) => {
       const crn = getStringValue(req.params?.crn)
       const contactType = getStringValue(req.params?.contactType)
+
+      if (!isContactTypeValid(contactType, res.locals.flags)) {
+        return next(createError(404, 'Not found'))
+      }
 
       await sendAuditMessage(res, AuditAction.VIEW_ADD_CONTACT, crn, SubjectType.CRN)
       const { username } = res.locals.user
@@ -216,8 +224,11 @@ const addContactController = {
   postAddContactType: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
-      await sendAuditMessage(res, AuditAction.ADD_CONTACT, crn, SubjectType.CRN)
       const slug = req.params.contactType as string
+      if (!isContactTypeValid(slug, res.locals.flags)) {
+        return next(createError(404, 'Not found'))
+      }
+      await sendAuditMessage(res, AuditAction.ADD_CONTACT, crn, SubjectType.CRN)
       const { username } = res.locals.user
       const sentence = getStringValue(req.body?.sentence)
       const title = getStringValue(req.body?.title)
@@ -229,7 +240,7 @@ const addContactController = {
       const time = getStringValue(req.body?.time)
       const outcomeCode = getStringValue(req.body?.outcomeCode)
       const contactTypes = ContactTypeOptions(res.locals.flags)
-      const selectedType = contactTypes.find(c => slugify(c.description) === slug)
+      const selectedType = contactTypes.find(c => slugify(c.description) === slug)!
       const contactService = new ContactService(masApiClient)
       const pp = await masApiClient.getProbationPractitioner(crn, username)
 
@@ -241,7 +252,7 @@ const addContactController = {
         time,
         staffCode,
         teamCode,
-        type: selectedType?.code || slug,
+        type: selectedType.code,
         eventId,
         requirementId: null,
         description: title || undefined,

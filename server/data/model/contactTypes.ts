@@ -8,25 +8,24 @@ export type ContactTypeOption = {
   description: string
 }
 
-export const FrequentlyUsedContactTypeOptions = (): ContactTypeOption[] =>
-  ContactTypeCategoryEntries()
+export const FrequentlyUsedContactTypeOptions = (flags: FeatureFlags = {}): ContactTypeOption[] =>
+  ContactTypeCategoryEntries(flags)
     .filter(entry => entry.isFrequentlyUsed)
     .map(entry => ({ code: entry.code, description: entry.displayName }))
     .sort((a, b) => a.description.localeCompare(b.description))
 
-const contactTypeByCode = new Map<string, ContactTypeOption>()
-
-ContactTypeCategoryEntries().forEach(entry => {
-  if (!contactTypeByCode.has(entry.code)) {
-    contactTypeByCode.set(entry.code, { code: entry.code, description: entry.displayName })
-  }
-})
-
-NoOutcomeContactTypeDetails.forEach(detail => {
-  contactTypeByCode.set(detail.code, { code: detail.code, description: detail.description })
-})
-
 export const ContactTypeOptions = (flags: FeatureFlags = {}): ContactTypeOption[] => {
+  const contactTypeByCode = new Map<string, ContactTypeOption>()
+  ContactTypeCategoryEntries(flags).forEach(entry => {
+    if (!contactTypeByCode.has(entry.code)) {
+      contactTypeByCode.set(entry.code, { code: entry.code, description: entry.displayName })
+    }
+  })
+
+  NoOutcomeContactTypeDetails.forEach(detail => {
+    contactTypeByCode.set(detail.code, { code: detail.code, description: detail.description })
+  })
+
   OutcomeContactTypeDetails(flags).forEach(detail => {
     contactTypeByCode.set(detail.code, { code: detail.code, description: detail.description })
   })
