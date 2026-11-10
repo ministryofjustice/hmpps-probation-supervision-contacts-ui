@@ -1,7 +1,13 @@
 import { Page, Locator, expect } from '@playwright/test'
 
+type ContactTypeName = 'Email or text from other' | 'Request early termination'
+
 export default class AddContactPage {
   readonly page: Page
+
+  readonly pageHeading: Locator
+
+  readonly contactType: ContactTypeName
 
   readonly detailsField: Locator
 
@@ -33,8 +39,10 @@ export default class AddContactPage {
 
   readonly outcomeInsetText: Locator
 
-  constructor(page: Page) {
+  constructor(page: Page, contactType: ContactTypeName = 'Email or text from other') {
     this.page = page
+    this.contactType = contactType
+    this.pageHeading = page.getByRole('heading', { level: 2, name: `Add ${contactType}` })
     this.detailsField = page.locator('#details')
     this.dateField = page.locator('#date')
     this.detailsGuidance = page.locator('[data-qa="detailsGuidance"]')
