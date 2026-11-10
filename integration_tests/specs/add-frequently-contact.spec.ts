@@ -30,6 +30,7 @@ test('has the correct page title', async ({ page }) => {
   const frequentlyUsedContactsPage = new FrequentlyUsedContactsPage(page, 'X123456')
   await frequentlyUsedContactsPage.goto()
 
+  await expect(frequentlyUsedContactsPage.pageHeading).toBeVisible()
   await expect(page).toHaveTitle('Find a contact to add - frequently used contacts')
 })
 
@@ -37,9 +38,10 @@ test('user can select a frequently used contact from the list', async ({ page })
   const frequentlyUsedContactsPage = new FrequentlyUsedContactsPage(page, 'X123456')
   await frequentlyUsedContactsPage.goto()
 
-  await page.locator('a[href*="add-internal-communications"]').click()
+  await frequentlyUsedContactsPage.selectFrequentlyUsedContact('Internal communications')
 
-  await expect(page.url()).toContain('add-internal-communications')
+  const addContactPage = new AddContactPage(page, 'Internal communications')
+  await expect(addContactPage.pageHeading).toBeVisible()
 })
 
 test.describe('Adding request early termination', async () => {
@@ -51,9 +53,7 @@ test.describe('Adding request early termination', async () => {
 
     await frequentlyUsedContactsPage.goto()
     await expect(frequentlyUsedContactsPage.pageHeading).toBeVisible()
-    await frequentlyUsedContactsPage.frequentlyUsedContactList
-      .getByRole('link', { name: 'Request early termination' })
-      .click()
+    await frequentlyUsedContactsPage.selectFrequentlyUsedContact('Request early termination')
 
     const addContactPage = new AddContactPage(page, 'Request early termination')
     await expect(addContactPage.pageHeading).toBeVisible()

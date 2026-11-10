@@ -19,4 +19,8 @@ export default class FrequentlyUsedContactsPage {
   async goto() {
     await this.page.goto(`/case/${this.crn}/add-frequently-used-contact`)
   }
+
+  async selectFrequentlyUsedContact(contactName: string) {
+    await this.frequentlyUsedContactList.getByRole('link', { name: contactName }).click()
+  }
 }
