@@ -242,39 +242,10 @@
                 {% endif %}
 
                 {% if isEarlyTermination %}
-                    <h3 class="govuk-heading-m">Completing your NAT ET Checklist</h3>
-
-                    {% set NATTipsHtml %}
-                    <p class="govuk-body govuk-!-margin-bottom-2">
-                        If you are completing your NAT checklist for the first time:
-                    </p>
-                    <ul>
-                        <li>Download the NAT ET Checklist doc</li>
-                        <li>Open and edit in MS Word</li>
-                        <li>Save changes</li>
-                        <li>Upload to MPOP</li>
-                    </ul>
-                    {% endset %}
-
-                    {{ govukDetails({
-                        summaryText: "How to complete",
-                        classes: "govuk-!-margin-top-2 govuk-!-margin-bottom-4",
-                        attributes: {
-                            "data-qa": "NATTips"
-                        },
-                        html: NATTipsHtml,
-                        open: false
-                    }) }}
+                    {% include "../../partials/early-termination-guidance.njk" %}
                 {% endif %}
 
-                {% if templates.length > 0 %}
-                    <h3 class="govuk-heading-m">Download template (optional)</h3>
-                    <div class="govuk-!-padding-bottom-4">
-                    {% for template in templates %}
-                        <a classes="govuk-link" href="{{template.link}}" download="{{template.name}}">Download {{template.name}}</a>
-                    {% endfor %}
-                    </div>
-                {% endif %}
+                {% include "../../partials/templates.njk" %}
 
                 <div class="govuk-form-group">
                     <label class="govuk-label govuk-label--m" for="fileUpload">

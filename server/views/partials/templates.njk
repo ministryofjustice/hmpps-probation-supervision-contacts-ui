@@ -1,0 +1,12 @@
+{% if templates.length > 0 %}
+    <h3 class="govuk-heading-m">Download template (optional)</h3>
+    <div class="govuk-!-padding-bottom-4">
+    <ul>
+    {% for template in templates %}
+        <li>
+            <a classes="govuk-link" href="{{template.link}}">Download {{template.name}}</a>
+        </li>
+    {% endfor %}
+    </ul>
+    </div>
+{% endif %}

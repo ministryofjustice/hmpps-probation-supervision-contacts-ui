@@ -147,7 +147,7 @@ export const buildAddContactViewModel = (
     flags.enableEarlyTermination20261103Squad3 && contactTypeName === 'Request early termination'
 
   const templates: { link: string; name: string }[] = []
-  if (flags.enableEarlyTermination20261103Squad3) {
+  if (flags.enableEarlyTermination20261103Squad3 && selectedType) {
     documentTemplates?.templates.forEach(template => {
       const link = `/contacts/types/${selectedType?.code}/documents/${template.name}`
       const { name } = template
