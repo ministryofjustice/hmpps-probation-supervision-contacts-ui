@@ -18,6 +18,8 @@ test.beforeEach(async ({ page }) => {
     masApi.stubGetProbationPractitioner(),
     masApi.stubGetSentences(),
     masApi.stubGetOverview(),
+    masApi.stubGetTemplates(),
+    masApi.stubDownloadDocument(),
   ])
   await login(page, { flags })
 })
@@ -48,7 +50,7 @@ test.describe('Adding request early termination', async () => {
   test.beforeAll(() => {
     flags = [{ key: 'enableEarlyTermination20261103Squad3', enabled: true }]
   })
-  test('user can select request early termination from the list', async ({ page }) => {
+  test('user can select request early termination from the list and download the template file', async ({ page }) => {
     const frequentlyUsedContactsPage = new FrequentlyUsedContactsPage(page, 'X123456')
 
     await frequentlyUsedContactsPage.goto()
@@ -58,6 +60,10 @@ test.describe('Adding request early termination', async () => {
     const addContactPage = new AddContactPage(page, 'Request early termination')
     await expect(addContactPage.pageHeading).toBeVisible()
 
-    // TODO continue with filling out the add contact form and submitting it
+    const downloadPromise = page.waitForEvent('download')
+    await page.getByText('NAT_ET_Checklist_template').click()
+    const download = await downloadPromise
+
+    expect(download.suggestedFilename()).toBe('NAT_ET_Checklist_template.docx')
   })
 })
