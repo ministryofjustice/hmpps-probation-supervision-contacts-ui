@@ -15,7 +15,7 @@ import { ContactTypeOption } from '../data/model/contactTypes'
 type BuildAddContactViewModelArgs = {
   crn: string
   slug: string
-  selectedType?: ContactTypeOption
+  selectedContactType?: ContactTypeOption
   sentences: Sentence[]
   personName: string
   formValues: Record<string, string>
@@ -33,7 +33,7 @@ export const buildAddContactViewModel = (
   {
     crn,
     slug,
-    selectedType,
+    selectedContactType,
     sentences,
     personName,
     formValues,
@@ -149,9 +149,9 @@ export const buildAddContactViewModel = (
     flags.enableEarlyTermination20261103Squad3 && contactTypeName === 'Request early termination'
 
   const templates: { link: string; name: string }[] = []
-  if (flags.enableEarlyTermination20261103Squad3 && selectedType) {
+  if (flags.enableEarlyTermination20261103Squad3 && selectedContactType) {
     documentTemplates?.templates.forEach(template => {
-      const link = `/contacts/types/${selectedType?.code}/documents/${template.name}`
+      const link = `/contacts/types/${selectedContactType?.code}/documents/${template.name}`
       const { name } = template
       templates.push({ link, name })
     })
