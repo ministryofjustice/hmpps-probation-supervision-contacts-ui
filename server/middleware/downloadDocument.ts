@@ -9,11 +9,13 @@ export const downloadDocument = (masApiClient: MasApiClient): RequestHandler => 
     }
     try {
       const { username } = res.locals.user
+      console.log('HERE')
       const document = await masApiClient.getDocument(
         req.params.contactType as string,
         req.params.name as string,
         username,
       )
+      console.log('TWO')
       const zip = await JSZip.loadAsync(document.body as unknown as ArrayBuffer)
       const contentTypesPath = '[Content_Types].xml'
       const contentTypesFile = zip.file(contentTypesPath)
@@ -25,8 +27,7 @@ export const downloadDocument = (masApiClient: MasApiClient): RequestHandler => 
         zip.file(contentTypesPath, contentTypesXml)
       }
       const docxBuffer = await zip.generateAsync({ type: 'nodebuffer' })
-      const originalName = (document.body as unknown as File).name
-      const newFilename = `${originalName}.docx`
+      const newFilename = `${req.params.name}.docx`
       res.setHeader('Content-Disposition', `attachment; filename="${newFilename}"`)
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
       return res.send(docxBuffer)

@@ -1,5 +1,10 @@
 import type { SuperAgentRequest } from 'superagent'
+import * as fs from 'fs'
+import * as path from 'path'
 import { stubFor } from './wiremock'
+
+const filePath = path.join(__dirname, 'fixtures/template.dotx')
+const fileBase64 = fs.readFileSync(filePath).toString('base64')
 
 export default {
   stubPing: (httpStatus = 200): SuperAgentRequest =>
@@ -665,6 +670,45 @@ export default {
             },
           ],
         },
+      },
+    }),
+
+  stubGetTemplates: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/mas-api/contact/types/.+/templates',
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: {
+          templates: [
+            {
+              name: 'NAT_ET_Checklist_template',
+              creationDateTime: '2026-05-28T12:35:00+01:00',
+              lastUpdatedDateTime: '2026-05-28T12:35:00+01:00',
+            },
+          ],
+        },
+      },
+    }),
+
+  stubDownloadDocument: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPathPattern: '/mas-api/contact/types/.+/templates/.+/download',
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
+          'Content-Disposition': 'attachment; filename="template.dotx"',
+        },
+        base64Body: fileBase64,
       },
     }),
 }
