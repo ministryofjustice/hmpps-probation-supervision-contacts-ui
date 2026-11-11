@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { Sentence, TemplateDetails, Templates } from '../data/model/contacts'
+import { Sentence, TemplateDetails } from '../data/model/contacts'
 import { convertToTitleCase } from '../utils/utils'
 import { dateWithYear } from '../utils/dateWithYear'
 import { CONTACT_DETAILS_MAX_LENGTH } from '../utils/validationUtils'
@@ -10,7 +10,6 @@ import {
   PERSON_ONLY_CONTACT_CODES,
 } from './contactTypeDetails'
 import { FeatureFlags } from '../data/model/featureFlags'
-import { ContactTypeOption } from '../data/model/contactTypes'
 
 type BuildAddContactViewModelArgs = {
   crn: string
