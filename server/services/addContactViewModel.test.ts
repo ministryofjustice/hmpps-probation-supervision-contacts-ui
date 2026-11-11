@@ -160,11 +160,12 @@ describe('buildAddContactViewModel', () => {
     })
   })
 
-  it('adds templates if Early Termination flag is set', () => {
+  it('adds templates if Early Termination flag is set and a selected type exists', () => {
     const result = buildAddContactViewModel(
       {
         crn: 'X123456',
-        slug: 'arrest-incident',
+        slug: 'request-early-termination',
+        selectedType: { code: 'ETRP', description: '' },
         sentences,
         personName: 'Stuart Morrison',
         formValues: {},
@@ -181,10 +182,55 @@ describe('buildAddContactViewModel', () => {
 
     expect(result.templates).toEqual([
       {
-        link: '/contacts/types/undefined/documents/template',
+        link: '/contacts/types/ETRP/documents/template',
         name: 'template',
       },
     ])
+  })
+
+  it('do not add templates if no type is selected', () => {
+    const result = buildAddContactViewModel(
+      {
+        crn: 'X123456',
+        slug: 'request-early-termination',
+        sentences,
+        personName: 'Stuart Morrison',
+        formValues: {},
+        documentTemplates: {
+          templates: [
+            {
+              name: 'template',
+            },
+          ],
+        },
+      },
+      { enableEarlyTermination20261103Squad3: true },
+    )
+
+    expect(result.templates).toEqual([])
+  })
+
+  it('do not add templates if Early Termination flag is not set', () => {
+    const result = buildAddContactViewModel(
+      {
+        crn: 'X123456',
+        slug: 'request-early-termination',
+        sentences,
+        selectedType: { code: 'ETRP', description: '' },
+        personName: 'Stuart Morrison',
+        formValues: {},
+        documentTemplates: {
+          templates: [
+            {
+              name: 'template',
+            },
+          ],
+        },
+      },
+      { enableEarlyTermination20261103Squad3: false },
+    )
+
+    expect(result.templates).toEqual([])
   })
 
   it('builds MO8 guidance and mandatory radio outcomes for the HVRA contact', () => {
