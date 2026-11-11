@@ -14,6 +14,9 @@ export const downloadDocument = (masApiClient: MasApiClient): RequestHandler => 
         req.params.name as string,
         username,
       )
+      if (!document?.body) {
+        return res.status(404).json({ error: 'Document not found' })
+      }
       const zip = await JSZip.loadAsync(document.body as unknown as ArrayBuffer)
       const contentTypesPath = '[Content_Types].xml'
       const contentTypesFile = zip.file(contentTypesPath)
