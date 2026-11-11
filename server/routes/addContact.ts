@@ -38,7 +38,7 @@ export default function addContactRoutes(
     getSentences(masApiClient),
     loadTierDetails,
     setCollapsibleRiskFlags,
-    getTemplates,
+    getTemplates(masApiClient),
   ]
 
   router.get(
