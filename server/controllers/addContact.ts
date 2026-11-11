@@ -205,15 +205,15 @@ const addContactController = {
       const personName = `${headerName?.forename || ''} ${headerName?.surname || ''}`.trim()
 
       const contactTypes = ContactTypeOptions(res.locals.flags)
-      const selectedType = contactTypes.find(c => slugify(c.description) === contactType)
+      const selectedContactType = contactTypes.find(c => slugify(c.description) === contactType)
       const documentTemplates = res.locals.flags?.enableEarlyTermination20261103Squad3
-        ? await masApiClient.getDocumentTemplates(selectedType?.code, username)
+        ? await masApiClient.getDocumentTemplates(selectedContactType?.code, username)
         : undefined
       const viewModel = buildAddContactViewModel(
         {
           crn,
           slug: contactType,
-          selectedType,
+          selectedContactType,
           sentences: res.locals.sentences || [],
           personName,
           formValues: {},
@@ -248,7 +248,7 @@ const addContactController = {
       const time = getStringValue(req.body?.time)
       const outcomeCode = getStringValue(req.body?.outcomeCode)
       const contactTypes = ContactTypeOptions(res.locals.flags)
-      const selectedType = contactTypes.find(c => slugify(c.description) === slug)!
+      const selectedContactType = contactTypes.find(c => slugify(c.description) === slug)!
       const contactService = new ContactService(masApiClient)
       const pp = await masApiClient.getProbationPractitioner(crn, username)
 
@@ -260,7 +260,7 @@ const addContactController = {
         time,
         staffCode,
         teamCode,
-        type: selectedType.code,
+        type: selectedContactType.code,
         eventId,
         requirementId: null,
         description: title || undefined,
