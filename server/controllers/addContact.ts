@@ -32,7 +32,7 @@ const buildContactTypeLinksJson = (crn: string, flags: FeatureFlags = {}, backUr
 const isContactTypeValid = (slug: string, flags: FeatureFlags = {}) =>
   ContactTypeOptions(flags).some(c => slugify(c.description) === slug)
 
-const getStringValue = (value: unknown): string => {
+export const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
     return typeof value[0] === 'string' ? value[0] : ''
   }
@@ -206,16 +206,11 @@ const addContactController = {
       const headerName = res.locals.headerPersonName
       const personName = `${headerName?.forename || ''} ${headerName?.surname || ''}`.trim()
 
-      const contactTypes = ContactTypeOptions(res.locals.flags)
-      const selectedContactType = contactTypes.find(c => slugify(c.description) === contactType)
-      const documentTemplates = res.locals.flags?.enableEarlyTermination20261103Squad3
-        ? await masApiClient.getDocumentTemplates(selectedContactType?.code, username)
-        : undefined
       const viewModel = buildAddContactViewModel(
         {
           crn,
           slug: contactType,
-          selectedContactType,
+          contactCode: res.locals.contactCode,
           sentences: res.locals.sentences || [],
           personName,
           formValues: {},
@@ -225,7 +220,7 @@ const addContactController = {
           responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
           csrfToken: getStringValue(res.locals.csrfToken),
           backUrl: resolveBackUrl(req.query?.backUrl, crn),
-          documentTemplates,
+          documentTemplates: res.locals.documentTemplates,
         },
         res.locals.flags,
       )
