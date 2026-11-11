@@ -73,7 +73,7 @@ describe('addContactRoutes', () => {
     expect(postSpy.mock.calls[0][0]).toBe('/case/:crn/contacts/add-:contactType')
   })
 
-  it('registers exactly 4 GET routes and 1 POST route', () => {
+  it('registers exactly 5 GET routes and 1 POST route', () => {
     expect(getSpy).toHaveBeenCalledTimes(5)
     expect(postSpy).toHaveBeenCalledTimes(1)
   })
