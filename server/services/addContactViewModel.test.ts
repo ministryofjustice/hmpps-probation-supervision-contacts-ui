@@ -165,7 +165,7 @@ describe('buildAddContactViewModel', () => {
       {
         crn: 'X123456',
         slug: 'request-early-termination',
-        selectedType: { code: 'ETRP', description: '' },
+        selectedContactType: { code: 'ETRP', description: '' },
         sentences,
         personName: 'Stuart Morrison',
         formValues: {},
@@ -216,7 +216,7 @@ describe('buildAddContactViewModel', () => {
         crn: 'X123456',
         slug: 'request-early-termination',
         sentences,
-        selectedType: { code: 'ETRP', description: '' },
+        selectedContactType: { code: 'ETRP', description: '' },
         personName: 'Stuart Morrison',
         formValues: {},
         documentTemplates: {
