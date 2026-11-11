@@ -9,13 +9,11 @@ export const downloadDocument = (masApiClient: MasApiClient): RequestHandler => 
     }
     try {
       const { username } = res.locals.user
-      console.log('HERE')
       const document = await masApiClient.getDocument(
         req.params.contactType as string,
         req.params.name as string,
         username,
       )
-      console.log('TWO')
       const zip = await JSZip.loadAsync(document.body as unknown as ArrayBuffer)
       const contentTypesPath = '[Content_Types].xml'
       const contentTypesFile = zip.file(contentTypesPath)
