@@ -240,19 +240,19 @@
                     {% endif %}
                 {% endif %}
 
-                {% if earlyTermination %}
+                {% if isEarlyTermination %}
                     <h3 class="govuk-heading-m">Completing your NAT ET Checklist</h3>
 
                     {% set NATTipsHtml %}
                     <p class="govuk-body govuk-!-margin-bottom-2">
                         If you are completing your NAT checklist for the first time:
-                        <ul>
-                            <li>Download the NAT ET Checklist doc</li>
-                            <li>Open and edit in MS Word</li>
-                            <li>Save changes</li>
-                            <li>Upload to MPOP</li>
-                        </ul>
                     </p>
+                    <ul>
+                        <li>Download the NAT ET Checklist doc</li>
+                        <li>Open and edit in MS Word</li>
+                        <li>Save changes</li>
+                        <li>Upload to MPOP</li>
+                    </ul>
                     {% endset %}
 
                     {{ govukDetails({

@@ -1,6 +1,6 @@
 import type { SuperAgentRequest } from 'superagent'
-import * as fs from 'fs'
-import * as path from 'path'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 import { stubFor } from './wiremock'
 
 const filePath = path.join(__dirname, 'fixtures/template.dotx')

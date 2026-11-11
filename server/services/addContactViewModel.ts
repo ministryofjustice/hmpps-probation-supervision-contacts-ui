@@ -25,7 +25,7 @@ type BuildAddContactViewModelArgs = {
   responsibleOfficerSurname?: string
   csrfToken?: string
   backUrl?: string
-  earlyTermination?: boolean
+  isEarlyTermination?: boolean
   documentTemplates?: Templates
 }
 
@@ -145,7 +145,8 @@ export const buildAddContactViewModel = (
 
   const dateToday = DateTime.now().toFormat('d/M/yyyy')
 
-  const earlyTermination = flags.enableEarlyTermination20261103Squad3 && contactTypeName === 'Request early termination'
+  const isEarlyTermination =
+    flags.enableEarlyTermination20261103Squad3 && contactTypeName === 'Request early termination'
 
   const templates: { link: string; name: string }[] = []
   if (flags.enableEarlyTermination20261103Squad3) {
@@ -174,7 +175,7 @@ export const buildAddContactViewModel = (
     detailsMaxLength: CONTACT_DETAILS_MAX_LENGTH,
     showOutcomeBanner: detail?.showOutcomeBanner ?? false,
     dateToday,
-    earlyTermination,
+    isEarlyTermination,
     templates,
     outcomeSection:
       outcomes.length > 0
