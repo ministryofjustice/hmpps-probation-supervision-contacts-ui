@@ -57,6 +57,7 @@ const addContactType: RequestHandler = (req, res, next) => {
       {
         crn,
         slug,
+        contactCode: res.locals.contactCode,
         sentences: res.locals.sentences || [],
         personName,
         formValues,
@@ -65,6 +66,7 @@ const addContactType: RequestHandler = (req, res, next) => {
         responsibleOfficerForename,
         responsibleOfficerSurname,
         csrfToken: getStringValue(res.locals.csrfToken),
+        documentTemplates: res.locals.documentTemplates,
       },
       res.locals.flags,
     )

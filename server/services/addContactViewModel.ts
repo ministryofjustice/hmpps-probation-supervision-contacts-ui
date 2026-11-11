@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { Sentence, Templates } from '../data/model/contacts'
+import { Sentence, TemplateDetails, Templates } from '../data/model/contacts'
 import { convertToTitleCase } from '../utils/utils'
 import { dateWithYear } from '../utils/dateWithYear'
 import { CONTACT_DETAILS_MAX_LENGTH } from '../utils/validationUtils'
@@ -15,7 +15,7 @@ import { ContactTypeOption } from '../data/model/contactTypes'
 type BuildAddContactViewModelArgs = {
   crn: string
   slug: string
-  selectedContactType?: ContactTypeOption
+  contactCode?: string
   sentences: Sentence[]
   personName: string
   formValues: Record<string, string>
@@ -25,14 +25,14 @@ type BuildAddContactViewModelArgs = {
   responsibleOfficerSurname?: string
   csrfToken?: string
   isEarlyTermination?: boolean
-  documentTemplates?: Templates
+  documentTemplates?: TemplateDetails[]
 }
 
 export const buildAddContactViewModel = (
   {
     crn,
     slug,
-    selectedContactType,
+    contactCode,
     sentences,
     personName,
     formValues,
@@ -147,9 +147,9 @@ export const buildAddContactViewModel = (
     flags.enableEarlyTermination20261103Squad3 && contactTypeName === 'Request early termination'
 
   const templates: { link: string; name: string }[] = []
-  if (flags.enableEarlyTermination20261103Squad3 && selectedContactType) {
-    documentTemplates?.templates.forEach(template => {
-      const link = `/contacts/types/${selectedContactType?.code}/documents/${template.name}`
+  if (flags.enableEarlyTermination20261103Squad3 && contactCode) {
+    documentTemplates?.forEach(template => {
+      const link = `/contacts/types/${contactCode}/documents/${template.name}`
       const { name } = template
       templates.push({ link, name })
     })
