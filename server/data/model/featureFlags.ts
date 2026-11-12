@@ -7,4 +7,5 @@ export class FeatureFlags {
   enablePersonHeaderPhoto?: boolean = undefined
   enableNDeliusRosh?: boolean = undefined
   enableEarlyTermination20261103Squad3?: boolean = undefined
+  earlyTerminationTemplatesAPI20261112Squad3?: boolean = undefined
 }
