@@ -145,7 +145,7 @@ export const buildAddContactViewModel = (
   const dateToday = DateTime.now().toFormat('d/M/yyyy')
 
   const isEarlyTermination =
-    flags.enableEarlyTermination20261103Squad3 && contactTypeName === 'Request early termination'
+    flags.enableEarlyTermination20261103Squad3 && contactTypeName === 'Early termination request'
 
   const templates: { link: string; name: string }[] = []
   if (flags.enableEarlyTermination20261103Squad3 && contactCode) {

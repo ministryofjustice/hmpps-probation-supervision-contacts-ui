@@ -164,7 +164,7 @@ describe('buildAddContactViewModel', () => {
     const result = buildAddContactViewModel(
       {
         crn: 'X123456',
-        slug: 'request-early-termination',
+        slug: 'early-termination-request',
         contactCode: 'ETRP',
         sentences,
         personName: 'Stuart Morrison',
@@ -186,7 +186,7 @@ describe('buildAddContactViewModel', () => {
     const result = buildAddContactViewModel(
       {
         crn: 'X123456',
-        slug: 'request-early-termination',
+        slug: 'early-termination-request',
         sentences,
         personName: 'Stuart Morrison',
         formValues: {},
@@ -202,7 +202,7 @@ describe('buildAddContactViewModel', () => {
     const result = buildAddContactViewModel(
       {
         crn: 'X123456',
-        slug: 'request-early-termination',
+        slug: 'early-termination-request',
         sentences,
         contactCode: 'ETRP',
         personName: 'Stuart Morrison',

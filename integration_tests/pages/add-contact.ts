@@ -1,6 +1,6 @@
 import { Page, Locator, expect } from '@playwright/test'
 
-type ContactTypeName = 'Email or text from other' | 'Request early termination' | 'Internal communications'
+type ContactTypeName = 'Email or text from other' | 'Early termination request' | 'Internal communications'
 
 export default class AddContactPage {
   readonly page: Page
