@@ -72,6 +72,9 @@ const updateContactController = {
         outcomeSection = result.outcomeSection
         outcomeLabel = result.outcomeLabel
       }
+      const isEarlyTermination =
+        res.locals.flags?.enableEarlyTermination20261103Squad3 && displayName === 'Early termination request'
+
       return res.render('pages/contacts/update-contact', {
         crn,
         displayName,
@@ -86,6 +89,8 @@ const updateContactController = {
         responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
         responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
         dateToday: DateTime.now().toFormat('d/M/yyyy'),
+        documentTemplates: res.locals.documentTemplates,
+        isEarlyTermination,
       })
     }
   },
