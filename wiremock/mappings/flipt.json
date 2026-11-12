@@ -88,6 +88,17 @@
               "updatedAt": "2026-12-03T12:00:00.000000Z",
               "rules": [],
               "rollouts": []
+            },
+            {
+              "key": "earlyTerminationTemplatesAPI20261112Squad3",
+              "name": "earlyTerminationTemplatesAPI20261112Squad3",
+              "description": "",
+              "enabled": true,
+              "type": "BOOLEAN_FLAG_TYPE",
+              "createdAt": "2026-11-03T12:00:00.000000Z",
+              "updatedAt": "2026-12-03T12:00:00.000000Z",
+              "rules": [],
+              "rollouts": []
             }
           ]
         }

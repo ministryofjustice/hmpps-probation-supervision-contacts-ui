@@ -35,7 +35,7 @@ describe('getTemplates', () => {
 
   it('sets templates if early termination flag is set and contactCode can be found', async () => {
     const { req, res } = createReqRes()
-    res.locals.flags = { enableEarlyTermination20261103Squad3: true }
+    res.locals.flags = { enableEarlyTermination20261103Squad3: true, earlyTerminationTemplatesAPI20261112Squad3: true }
 
     await getTemplates(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
