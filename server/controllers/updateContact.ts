@@ -29,7 +29,7 @@ const updateContactController = {
       let { contact } = res.locals
       if (fullNoteId) {
         const contactService = new ContactService(masApiClient)
-        const fullContact = await contactService.fullContactNote(crn, contactId, fullNoteId, username)
+        const fullContact = await contactService.fullContactNote(crn, contactId, fullNoteId, username, res.locals.flags)
 
         if (fullContact) {
           const fullSingleNote = fullContact.appointment?.appointmentNote
