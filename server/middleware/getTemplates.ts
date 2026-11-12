@@ -12,7 +12,9 @@ export const getTemplates = (masApiClient: MasApiClient): RequestHandler => {
     const selectedContactType = contactTypes.find(c => slugify(c.description) === contactType)
     res.locals.contactCode = selectedContactType?.code
     const documentTemplates =
-      res.locals.flags?.enableEarlyTermination20261103Squad3 && res.locals.contactCode
+      res.locals.flags?.enableEarlyTermination20261103Squad3 &&
+      res.locals.contactCode &&
+      res.locals.flags?.earlyTerminationTemplatesAPI20261112Squad3
         ? await masApiClient.getDocumentTemplates(selectedContactType?.code, username)
         : undefined
     res.locals.documentTemplates = documentTemplates?.templates
