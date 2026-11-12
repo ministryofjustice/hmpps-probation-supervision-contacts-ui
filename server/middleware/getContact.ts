@@ -12,7 +12,12 @@ export const getExistingContact = (masApiClient: MasApiClient): RequestHandler =
 
       const { username } = res.locals.user
 
-      const contact: PersonContact | null = await masApiClient.getPersonContact(crn, contactId, username)
+      const contact: PersonContact | null = await masApiClient.getPersonContact(
+        crn,
+        contactId,
+        username,
+        res.locals.flags,
+      )
       res.locals.contact = contact
 
       return next()

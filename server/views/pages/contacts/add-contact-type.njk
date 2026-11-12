@@ -9,7 +9,8 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
-{% set addContactType = 'Add ' + contactTypeName %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% set addContactType = 'Add ' + contactTypeName | toSentenceCase([], null, false, true) %}
 
 {% block pageTitle %}
     {{ addContactType }} - {{ headerPersonName.forename }} {{ headerPersonName.surname }}
@@ -238,6 +239,12 @@
                         }) }}
                     {% endif %}
                 {% endif %}
+
+                {% if isEarlyTermination %}
+                    {% include "../../partials/early-termination-guidance.njk" %}
+                {% endif %}
+
+                {% include "../../partials/templates.njk" %}
 
                 <div class="govuk-form-group">
                     <label class="govuk-label govuk-label--m" for="fileUpload">
