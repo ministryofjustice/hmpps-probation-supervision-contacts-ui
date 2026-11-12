@@ -10,11 +10,9 @@ const crn = 'X123456'
 describe('contactCategorySearch', () => {
   it('normalises selected categories from single values and arrays', () => {
     expect(normaliseSelectedCategories(undefined)).toEqual([])
-    expect(normaliseSelectedCategories('Referrals')).toEqual(['Referrals'])
-    expect(normaliseSelectedCategories(['Referrals', 'Sentence management'])).toEqual([
-      'Referrals',
-      'Sentence management',
-    ])
+    expect(normaliseSelectedCategories('6')).toEqual([6])
+    expect(normaliseSelectedCategories(['6', '8'])).toEqual([6, 8])
+    expect(normaliseSelectedCategories(['6', 'abc'])).toEqual([6])
   })
 
   it('builds category checkbox items in alphabetical order', () => {
@@ -28,17 +26,14 @@ describe('contactCategorySearch', () => {
   })
 
   it('marks selected categories as checked', () => {
-    const items = buildCategoryCheckboxItems(['Referrals'], {})
-    const referrals = items.find(item => item.value === 'Referrals')
+    const items = buildCategoryCheckboxItems([6], {})
+    const referrals = items.find(item => item.text === 'Referrals')
 
     expect(referrals?.checked).toBe(true)
   })
 
   it('builds grouped search results with sorted headings and items', () => {
-    const results = buildSearchResults(
-      ['Communication with person on probation', 'Communication and information sharing with others'],
-      crn,
-    )
+    const results = buildSearchResults([3, 2], crn)
 
     expect(results.count).toBeGreaterThan(0)
     const categoryNames = results.categories.map(category => category.name)

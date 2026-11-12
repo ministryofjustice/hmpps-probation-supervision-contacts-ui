@@ -2,6 +2,7 @@ import type { RequestHandler } from 'express'
 import { validateWithSpec, countTextareaChars, CONTACT_DETAILS_MAX_LENGTH } from '../../utils/validationUtils'
 import { addContactValidation } from '../../properties/validation/addContactType'
 import { buildAddContactViewModel } from '../../services/addContactViewModel'
+import { resolveBackUrl } from '../../utils/backLink'
 import { getContactTypeDetailBySlug } from '../../services/contactTypeDetails'
 
 const getStringValue = (value: unknown): string => {
@@ -65,6 +66,7 @@ const addContactType: RequestHandler = (req, res, next) => {
         responsibleOfficerForename,
         responsibleOfficerSurname,
         csrfToken: getStringValue(res.locals.csrfToken),
+        backUrl: resolveBackUrl(req.query?.backUrl, crn),
       },
       res.locals.flags,
     )

@@ -22,6 +22,7 @@ type BuildAddContactViewModelArgs = {
   responsibleOfficerForename?: string
   responsibleOfficerSurname?: string
   csrfToken?: string
+  backUrl?: string
 }
 
 export const buildAddContactViewModel = (
@@ -36,6 +37,7 @@ export const buildAddContactViewModel = (
     responsibleOfficerForename,
     responsibleOfficerSurname,
     csrfToken,
+    backUrl,
   }: BuildAddContactViewModelArgs,
   flags: FeatureFlags = {},
 ) => {
@@ -141,6 +143,7 @@ export const buildAddContactViewModel = (
     crn,
     contactTypeName,
     csrfToken,
+    backLink: backUrl ?? `/case/${crn}/add-frequently-used-contact`,
     formValues: updatedFormValues,
     isVisor,
     responsibleOfficer,
