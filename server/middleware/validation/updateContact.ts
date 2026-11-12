@@ -72,6 +72,9 @@ const updateContact: RequestHandler = (req, res, next) => {
     errorMessages.details = `You have entered ${excess} characters too many`
   }
 
+  const isEarlyTermination =
+    res.locals.flags?.enableEarlyTermination20261103Squad3 && displayName === 'Early termination request'
+
   if (Object.keys(errorMessages).length) {
     res.locals.errorMessages = errorMessages
     return res.render('pages/contacts/update-contact', {
@@ -90,6 +93,8 @@ const updateContact: RequestHandler = (req, res, next) => {
       responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
       responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
       dateToday: DateTime.now().toFormat('d/M/yyyy'),
+      documentTemplates: res.locals.documentTemplates,
+      isEarlyTermination,
     })
   }
 

@@ -9,8 +9,10 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "_components/compliance-tag/macro.njk" import appComplianceTag %}
 {% from "../../partials/breadcrumb.njk" import breadcrumb %}
+{% set update = true %}
 {% set dateParts = contact.appointment.startDateTime.split('T')[0].split('-') %}
 {% set appointmentDate =
   (dateParts[2] | int) + '/' +
@@ -186,6 +188,11 @@
                     errorMessage: { text: errorMessages.details } if errorMessages.details
                 }) }}
 
+                {% if isEarlyTermination %}
+                    {% include "../../partials/early-termination-guidance.njk" %}
+                {% endif %}
+
+                {% include "../../partials/templates.njk" %}
 
                 <div class="govuk-form-group">
                     <label class="govuk-label govuk-label--m" for="fileUpload">

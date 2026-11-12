@@ -7,7 +7,7 @@ import { getStringValue } from '../controllers/addContact'
 export const getTemplates = (masApiClient: MasApiClient): RequestHandler => {
   return async (req, res, next) => {
     const { username } = res.locals.user
-    const contactType = getStringValue(req.params?.contactType)
+    const contactType = getStringValue(req.params?.contactType ?? slugify(res.locals?.contact.appointment?.displayName))
     const contactTypes = ContactTypeOptions(res.locals.flags)
     const selectedContactType = contactTypes.find(c => slugify(c.description) === contactType)
     res.locals.contactCode = selectedContactType?.code
