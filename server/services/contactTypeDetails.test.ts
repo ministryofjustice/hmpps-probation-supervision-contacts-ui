@@ -27,11 +27,11 @@ describe('contactTypeDetails', () => {
 
   it('returns contact type details by slug for ET contact if flag enabled', () => {
     expect(
-      getContactTypeDetailBySlug('early-termination-request', { enableEarlyTermination20261103Squad3: true }),
+      getContactTypeDetailBySlug('request-early-termination', { enableEarlyTermination20261103Squad3: true }),
     ).toEqual(
       expect.objectContaining({
         code: 'ETRP',
-        description: 'Early termination request',
+        description: 'Request early termination',
         mandatoryOutcome: true,
       }),
     )
@@ -39,7 +39,7 @@ describe('contactTypeDetails', () => {
 
   it('returns no contact type details by slug for ET contact if flag disabled', () => {
     expect(
-      getContactTypeDetailBySlug('early-termination-request', { enableEarlyTermination20261103Squad3: false }),
+      getContactTypeDetailBySlug('request-early-termination', { enableEarlyTermination20261103Squad3: false }),
     ).toEqual(undefined)
   })
 
@@ -58,7 +58,7 @@ describe('contactTypeDetails', () => {
     expect(getContactTypeDetailByCode('ETRP', { enableEarlyTermination20261103Squad3: true })).toEqual(
       expect.objectContaining({
         code: 'ETRP',
-        description: 'Early termination request',
+        description: 'Request early termination',
         mandatoryOutcome: true,
       }),
     )

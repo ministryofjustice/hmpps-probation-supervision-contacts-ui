@@ -12,8 +12,6 @@ import controllers from '../controllers'
 import validateCrnParam from '../middleware/validateCrnParam'
 import { getPersonRiskFlags } from '../middleware/getPersonRiskFlags'
 import { setCollapsibleRiskFlags } from '../middleware/setCollapsibleRiskFlags'
-import { downloadDocument } from '../middleware/downloadDocument'
-import { getTemplates } from '../middleware/getTemplates'
 
 export default function addContactRoutes(
   router: Router,
@@ -38,7 +36,6 @@ export default function addContactRoutes(
     getSentences(masApiClient),
     loadTierDetails,
     setCollapsibleRiskFlags,
-    getTemplates(masApiClient),
   ]
 
   router.get(
@@ -87,6 +84,4 @@ export default function addContactRoutes(
     addContactType,
     controllers.addContact.postAddContactType(masApiClient),
   )
-
-  router.get('/contacts/types/:contactType/documents/:name', downloadDocument(masApiClient))
 }

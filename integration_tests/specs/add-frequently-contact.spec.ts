@@ -18,8 +18,6 @@ test.beforeEach(async ({ page }) => {
     masApi.stubGetProbationPractitioner(),
     masApi.stubGetSentences(),
     masApi.stubGetOverview(),
-    masApi.stubGetTemplates(),
-    masApi.stubDownloadDocument(),
   ])
   await login(page, { flags })
 })
@@ -46,24 +44,20 @@ test('user can select a frequently used contact from the list', async ({ page })
   await expect(addContactPage.pageHeading).toBeVisible()
 })
 
-test.describe('Adding Early termination request', async () => {
+test.describe('Adding request early termination', async () => {
   test.beforeAll(() => {
     flags = [{ key: 'enableEarlyTermination20261103Squad3', enabled: true }]
   })
-  test('user can select Early termination request from the list and download the template file', async ({ page }) => {
+  test('user can select request early termination from the list', async ({ page }) => {
     const frequentlyUsedContactsPage = new FrequentlyUsedContactsPage(page, 'X123456')
 
     await frequentlyUsedContactsPage.goto()
     await expect(frequentlyUsedContactsPage.pageHeading).toBeVisible()
-    await frequentlyUsedContactsPage.selectFrequentlyUsedContact('Early termination request')
+    await frequentlyUsedContactsPage.selectFrequentlyUsedContact('Request early termination')
 
-    const addContactPage = new AddContactPage(page, 'Early termination request')
+    const addContactPage = new AddContactPage(page, 'Request early termination')
     await expect(addContactPage.pageHeading).toBeVisible()
 
-    const downloadPromise = page.waitForEvent('download')
-    await page.getByText('NAT_ET_Checklist_template').click()
-    const download = await downloadPromise
-
-    expect(download.suggestedFilename()).toBe('NAT_ET_Checklist_template.docx')
+    // TODO continue with filling out the add contact form and submitting it
   })
 })

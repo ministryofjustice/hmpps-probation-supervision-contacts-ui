@@ -228,13 +228,3 @@ export interface SentenceComponent {
   description?: string
   type?: string
 }
-
-export interface TemplateDetails {
-  name?: string
-  creationDateTime?: string
-  lastUpdatedDateTime?: string
-}
-
-export interface Templates {
-  templates: TemplateDetails[]
-}

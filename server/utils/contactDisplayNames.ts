@@ -1,5 +1,4 @@
 import { PersonActivity, PersonContact, Schedule, Activity } from '../data/model/contacts'
-import { FeatureFlags } from '../data/model/featureFlags'
 
 const approvedContactDisplayNames: Record<string, string> = {
   'Accommodation Evidence': 'Accommodation evidence',
@@ -114,7 +113,6 @@ const approvedContactDisplayNames: Record<string, string> = {
   'Substance Use Screening Tool': 'Substance misuse screening tool',
   'Suicide/Self Harm Information': 'Suicide or self harm information',
   'Text Message to Send': 'Text message to send',
-  'Unplanned Contact from Person on Probation': 'Unplanned contact from person on probation',
   'Use of Video Link / Teleconference': 'Use of video link or teleconference',
   'Victim Liaison Contact': 'Victim liaison contact',
   'ViSOR Information Contact': 'ViSOR information contact',
@@ -133,8 +131,8 @@ export function normalizeContactDisplayNameKey(value: string): string {
   let result = ''
   let previousWasWhitespace = false
 
-  for (const element of normalized) {
-    const character = element
+  for (let index = 0; index < normalized.length; index += 1) {
+    const character = normalized[index]
 
     if (isWhitespace(character)) {
       previousWasWhitespace = true
@@ -157,37 +155,27 @@ export function normalizeContactDisplayNameKey(value: string): string {
   return result.trimEnd().toLowerCase()
 }
 
-const flaggedContactDisplayNames = (flags?: FeatureFlags) =>
-  flags?.enableEarlyTermination20261103Squad3
-    ? {
-        ...approvedContactDisplayNames,
-        'Request for early termination': 'Early termination request',
-      }
-    : approvedContactDisplayNames
+const normalizedApprovedContactDisplayNames = Object.fromEntries(
+  Object.entries(approvedContactDisplayNames).map(([legacyName, displayName]) => [
+    normalizeContactDisplayNameKey(legacyName),
+    displayName,
+  ]),
+)
 
-const normalizedApprovedContactDisplayNames = (flags?: FeatureFlags) =>
-  Object.fromEntries(
-    Object.entries(flaggedContactDisplayNames(flags)).map(([legacyName, displayName]) => [
-      normalizeContactDisplayNameKey(legacyName),
-      displayName,
-    ]),
-  )
-
-export function getApprovedContactDisplayName(value?: string, flags?: FeatureFlags): string | undefined {
+export function getApprovedContactDisplayName(value?: string): string | undefined {
   if (!value) {
     return undefined
   }
 
-  return normalizedApprovedContactDisplayNames(flags)[normalizeContactDisplayNameKey(value)]
+  return normalizedApprovedContactDisplayNames[normalizeContactDisplayNameKey(value)]
 }
 
-export function withApprovedContactDisplayName<T extends Activity>(activity: T, flags?: FeatureFlags): T {
+export function withApprovedContactDisplayName<T extends Activity>(activity: T): T {
   if (!activity?.type) {
     return activity
   }
 
-  const displayName =
-    getApprovedContactDisplayName(activity.action, flags) ?? getApprovedContactDisplayName(activity.type, flags)
+  const displayName = getApprovedContactDisplayName(activity.action) ?? getApprovedContactDisplayName(activity.type)
 
   if (!displayName) {
     return activity
@@ -196,7 +184,7 @@ export function withApprovedContactDisplayName<T extends Activity>(activity: T, 
   return { ...activity, displayName }
 }
 
-export function mapScheduleWithApprovedContactDisplayNames(schedule: Schedule, flags?: FeatureFlags): Schedule {
+export function mapScheduleWithApprovedContactDisplayNames(schedule: Schedule): Schedule {
   if (!schedule?.personSchedule?.appointments) {
     return schedule
   }
@@ -205,37 +193,29 @@ export function mapScheduleWithApprovedContactDisplayNames(schedule: Schedule, f
     ...schedule,
     personSchedule: {
       ...schedule.personSchedule,
-      appointments: schedule.personSchedule.appointments.map(appointment =>
-        withApprovedContactDisplayName(appointment, flags),
-      ),
+      appointments: schedule.personSchedule.appointments.map(withApprovedContactDisplayName),
     },
   }
 }
 
-export function mapPersonActivityWithApprovedContactDisplayNames(
-  personActivity: PersonActivity,
-  flags?: FeatureFlags,
-): PersonActivity {
+export function mapPersonActivityWithApprovedContactDisplayNames(personActivity: PersonActivity): PersonActivity {
   if (!personActivity?.activities) {
     return personActivity
   }
 
   return {
     ...personActivity,
-    activities: personActivity.activities.map(activity => withApprovedContactDisplayName(activity, flags)),
+    activities: personActivity.activities.map(withApprovedContactDisplayName),
   }
 }
 
-export function mapPersonAppointmentWithApprovedContactDisplayNames(
-  personAppointment: PersonContact,
-  flags?: FeatureFlags,
-): PersonContact {
+export function mapPersonAppointmentWithApprovedContactDisplayNames(personAppointment: PersonContact): PersonContact {
   if (!personAppointment?.appointment) {
     return personAppointment
   }
 
   return {
     ...personAppointment,
-    appointment: withApprovedContactDisplayName(personAppointment.appointment, flags),
+    appointment: withApprovedContactDisplayName(personAppointment.appointment),
   }
 }

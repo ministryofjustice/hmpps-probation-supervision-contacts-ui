@@ -160,61 +160,6 @@ describe('buildAddContactViewModel', () => {
     })
   })
 
-  it('adds templates if Early Termination flag is set and a selected type exists', () => {
-    const result = buildAddContactViewModel(
-      {
-        crn: 'X123456',
-        slug: 'early-termination-request',
-        contactCode: 'ETRP',
-        sentences,
-        personName: 'Stuart Morrison',
-        formValues: {},
-        documentTemplates: [{ name: 'template' }],
-      },
-      { enableEarlyTermination20261103Squad3: true },
-    )
-
-    expect(result.templates).toEqual([
-      {
-        link: '/contacts/types/ETRP/documents/template',
-        name: 'template',
-      },
-    ])
-  })
-
-  it('do not add templates if no type is selected', () => {
-    const result = buildAddContactViewModel(
-      {
-        crn: 'X123456',
-        slug: 'early-termination-request',
-        sentences,
-        personName: 'Stuart Morrison',
-        formValues: {},
-        documentTemplates: [{ name: 'template' }],
-      },
-      { enableEarlyTermination20261103Squad3: true },
-    )
-
-    expect(result.templates).toEqual([])
-  })
-
-  it('do not add templates if Early Termination flag is not set', () => {
-    const result = buildAddContactViewModel(
-      {
-        crn: 'X123456',
-        slug: 'early-termination-request',
-        sentences,
-        contactCode: 'ETRP',
-        personName: 'Stuart Morrison',
-        formValues: {},
-        documentTemplates: [{ name: 'template' }],
-      },
-      { enableEarlyTermination20261103Squad3: false },
-    )
-
-    expect(result.templates).toEqual([])
-  })
-
   it('builds MO8 guidance and mandatory radio outcomes for the HVRA contact', () => {
     const result = buildAddContactViewModel({
       crn: 'X123456',

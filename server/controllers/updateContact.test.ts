@@ -132,7 +132,7 @@ describe('getUpdateContact', () => {
 
     await updateContactController.getUpdateContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
-    expect(mockFullContactNote).toHaveBeenCalledWith('X123456', 'ABC123', '0', 'john.smith', undefined)
+    expect(mockFullContactNote).toHaveBeenCalledWith('X123456', 'ABC123', '0', 'john.smith')
 
     const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
     const notes = renderArgs.contact.appointment.appointmentNotes
