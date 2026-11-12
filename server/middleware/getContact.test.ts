@@ -26,7 +26,7 @@ describe('getExistingContact', () => {
 
     await getExistingContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
-    expect(mockMasApiClient.getPersonContact).toHaveBeenCalledWith('X123456', 'ABC123', 'test-user')
+    expect(mockMasApiClient.getPersonContact).toHaveBeenCalledWith('X123456', 'ABC123', 'test-user', undefined)
 
     expect(res.locals.contact).toEqual(mockContact)
 
