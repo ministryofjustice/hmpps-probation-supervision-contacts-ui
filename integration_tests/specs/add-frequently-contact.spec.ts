@@ -48,7 +48,10 @@ test('user can select a frequently used contact from the list', async ({ page })
 
 test.describe('Adding Early termination request', async () => {
   test.beforeAll(() => {
-    flags = [{ key: 'enableEarlyTermination20261103Squad3', enabled: true }]
+    flags = [
+      { key: 'enableEarlyTermination20261103Squad3', enabled: true },
+      { key: 'earlyTerminationTemplatesAPI20261112Squad3', enabled: true },
+    ]
   })
   test('user can select Early termination request from the list and download the template file', async ({ page }) => {
     const frequentlyUsedContactsPage = new FrequentlyUsedContactsPage(page, 'X123456')
