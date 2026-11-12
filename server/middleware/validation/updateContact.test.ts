@@ -192,14 +192,14 @@ describe('middleware/validation/updateContact', () => {
     })
     const res = createRes({
       flags: { enableEarlyTermination20261103Squad3: true },
-      contact: { appointment: { displayName: 'Early termination request' } },
+      contact: { appointment: { displayName: 'Request early termination' } },
     })
     updateContact(req, res, next)
 
     const mockOutcomeSection = buildUpdateContactViewModelWithOutcome(
       {
-        displayName: 'Early termination request',
-        contact: { appointment: { outcome: 'Early termination request' } },
+        displayName: 'Request early termination',
+        contact: { appointment: { outcome: 'Request early termination' } },
       },
       { enableEarlyTermination20261103Squad3: true },
     ).outcomeSection
@@ -216,7 +216,7 @@ describe('middleware/validation/updateContact', () => {
     })
     const res = createRes({
       flags: { enableEarlyTermination20261103Squad3: false },
-      contact: { appointment: { displayName: 'Early termination request' } },
+      contact: { appointment: { displayName: 'Request early termination' } },
     })
     updateContact(req, res, next)
     const renderData = (res.render as jest.Mock).mock.calls[0][1]

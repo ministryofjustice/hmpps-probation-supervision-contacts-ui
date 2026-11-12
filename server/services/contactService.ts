@@ -7,7 +7,6 @@ import {
   UpdateContactWithNoOutcome,
   UpdateContactWithOutcome,
 } from '../data/model/contacts'
-import { FeatureFlags } from '../data/model/featureFlags'
 
 export default class ContactService {
   constructor(private readonly masApiClient: MasApiClient) {}
@@ -48,13 +47,7 @@ export default class ContactService {
     return this.masApiClient.patchDocuments(crn, contactId, file, username)
   }
 
-  async fullContactNote(
-    crn: string,
-    contactId: string,
-    noteId: string,
-    username: string,
-    flags?: FeatureFlags,
-  ): Promise<PersonContact> {
-    return this.masApiClient.getFullContactNote(crn, contactId, noteId, username, flags)
+  async fullContactNote(crn: string, contactId: string, noteId: string, username: string): Promise<PersonContact> {
+    return this.masApiClient.getFullContactNote(crn, contactId, noteId, username)
   }
 }

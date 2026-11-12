@@ -393,38 +393,4 @@ describe('MasApiClient', () => {
       )
     })
   })
-
-  describe('getDocumentTemplates', () => {
-    it('returns document templates for a given typeCode', async () => {
-      const fullTemplates = {
-        templates: [{ name: 'Template' }],
-      }
-
-      nock(config.apis.masApi.url)
-        .get('/contact/types/ETRP/templates')
-        .matchHeader('authorization', 'Bearer test-system-token')
-        .reply(200, fullTemplates)
-
-      const result = await masApiClient.getDocumentTemplates('ETRP', 'test-user')
-
-      expect(result).toEqual(fullTemplates)
-    })
-  })
-
-  describe('getDocument', () => {
-    it('returns document for a given typeCode and name', async () => {
-      const get = jest.spyOn(masApiClient, 'get').mockResolvedValue(undefined)
-
-      await masApiClient.getDocument('ETRP', 'template', 'test-user')
-
-      expect(get).toHaveBeenCalledWith(
-        expect.objectContaining({
-          path: '/contact/types/ETRP/templates/template/download',
-          raw: true,
-          responseType: 'arrayBuffer',
-        }),
-        asSystem('test-user'),
-      )
-    })
-  })
 })

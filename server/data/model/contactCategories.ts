@@ -786,7 +786,7 @@ const sentenceManagement = (flags: FeatureFlags): ContactTypeCategoryEntry[] => 
         {
           category: 'Sentence management' as const,
           code: 'ETRP',
-          displayName: 'Early termination request',
+          displayName: 'Request early termination',
           isFrequentlyUsed: true,
         },
       ]
