@@ -427,7 +427,6 @@ describe('addContactController', () => {
       const renderArgs = await invokeCategory({})
 
       expect(renderArgs.searchResults).toBeNull()
-      expect(renderArgs.selectedCategories).toEqual([])
       expect(renderArgs.errorMessages).toBeUndefined()
       expect(renderArgs.searchByCategoryTabActive).toBe(true)
     })
@@ -439,7 +438,6 @@ describe('addContactController', () => {
         expect.objectContaining({
           crn: 'X123456',
           searchResults: null,
-          selectedCategories: [],
           searchByCategoryTabActive: true,
           lastCategories: '',
         }),
@@ -448,20 +446,21 @@ describe('addContactController', () => {
 
     it('renders validation error when form submitted with no categories selected', async () => {
       const renderArgs = await invokeCategory({
-        query: { action: 'search', lastCategories: 'Referrals,Sentence management' },
+        query: { action: 'search', lastCategories: '6,8' },
       })
 
       expect(renderArgs.errorMessages).toEqual({ categories: 'Select a category' })
       expect(renderArgs.searchByCategoryTabActive).toBe(true)
-      expect(renderArgs.lastCategories).toBe('Referrals,Sentence management')
+      expect(renderArgs.lastCategories).toBe('6,8')
     })
 
     it('renders results when categories are selected', async () => {
       const renderArgs = await invokeCategory({
-        query: { action: 'search', categories: ['Referrals', 'Sentence management'] },
+        query: { action: 'search', categories: ['6', '8'] },
       })
 
-      expect(renderArgs.selectedCategories).toEqual(['Referrals', 'Sentence management'])
+      expect(renderArgs.lastCategories).toBe('6,8')
+      expect(renderArgs.categoryCheckboxItems.filter((i: any) => i.checked).map((i: any) => i.value)).toEqual([6, 8])
       expect(renderArgs.searchResults).toEqual(
         expect.objectContaining({ count: expect.any(Number), categories: expect.any(Array) }),
       )
@@ -472,7 +471,7 @@ describe('addContactController', () => {
       const run = async (flags: Record<string, boolean>) => {
         const req = createReq({
           params: { crn: 'X123456' },
-          query: { action: 'search', categories: ['Sentence management'] },
+          query: { action: 'search', categories: ['8'] },
         })
         const res = createRes({ flags, contactTypes: ContactTypeOptions(flags) })
         await addContactController.getSearchByCategory()(req, res, next)
@@ -646,7 +645,7 @@ describe('addContactController', () => {
     })
 
     it('tags category search result links with the full search URL', async () => {
-      const category = buildCategoryCheckboxItems([], {})[0].value
+      const category = String(buildCategoryCheckboxItems([], {})[0].value)
       const originalUrl = `/case/${crn}/contacts/find-contact-to-add?action=search&categories=${encodeURIComponent(category)}`
       const req = createReq({ params: { crn }, originalUrl, query: { action: 'search', categories: category } })
       const res = createRes({ contactTypes: [] })

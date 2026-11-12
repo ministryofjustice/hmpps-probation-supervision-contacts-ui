@@ -1,7 +1,23 @@
 import { FeatureFlags } from './featureFlags'
 
+export const CATEGORY_IDS = {
+  'Case management and meetings': 1,
+  'Communication and information sharing with others': 2,
+  'Communication with person on probation': 3,
+  'Multi-agency working (including IOM, MAPPA and MARAC)': 4,
+  'Non-compliance and enforcement': 5,
+  Referrals: 6,
+  'Safeguarding and victim liaison': 7,
+  'Sentence management': 8,
+} as const
+
+export type Category = keyof typeof CATEGORY_IDS
+
+export const categoryFromId = (id: number): Category | undefined =>
+  (Object.keys(CATEGORY_IDS) as Category[]).find(category => CATEGORY_IDS[category] === id)
+
 export type ContactTypeCategoryEntry = {
-  category: string
+  category: Category
   subcategory?: string
   code: string
   displayName: string
@@ -768,7 +784,7 @@ const sentenceManagement = (flags: FeatureFlags): ContactTypeCategoryEntry[] => 
   ...(flags.enableEarlyTermination20261103Squad3
     ? [
         {
-          category: 'Sentence management',
+          category: 'Sentence management' as const,
           code: 'ETRP',
           displayName: 'Request early termination',
           isFrequentlyUsed: true,

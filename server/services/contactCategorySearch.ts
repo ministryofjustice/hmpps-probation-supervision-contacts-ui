@@ -1,10 +1,10 @@
 import { FeatureFlags } from '../data/model/featureFlags'
 import { slugify } from '../utils/slugify'
 import { withBackUrl } from '../utils/backLink'
-import { ContactTypeCategoryEntries } from '../data/model/contactCategories'
+import { CATEGORY_IDS, Category, ContactTypeCategoryEntries, categoryFromId } from '../data/model/contactCategories'
 
 type CategoryCheckboxItem = {
-  value: string
+  value: number
   text: string
   checked: boolean
 }
@@ -16,33 +16,36 @@ export type CategorySearchItem = {
 }
 
 export type CategorySearchGroup = {
+  id: number
   name: string
   items: CategorySearchItem[]
   subcategories: { name: string; items: CategorySearchItem[] }[]
 }
 
-export const normaliseSelectedCategories = (value: undefined | string | string[]): string[] => {
+export const normaliseSelectedCategories = (value: undefined | string | string[]): number[] => {
   if (!value) {
     return []
   }
-  return Array.isArray(value) ? value : [value]
+  const values = Array.isArray(value) ? value : [value]
+  return values.map(item => Number(item)).filter(item => Number.isInteger(item))
 }
 
 export const buildCategoryCheckboxItems = (
-  selectedCategories: string[],
+  selectedCategories: number[],
   flags: FeatureFlags = {},
 ): CategoryCheckboxItem[] => {
   const categories = Array.from(new Set(ContactTypeCategoryEntries(flags).map(entry => entry.category))).sort((a, b) =>
     a.localeCompare(b),
   )
   return categories.map(category => ({
-    value: category,
+    value: CATEGORY_IDS[category],
     text: category,
-    checked: selectedCategories.includes(category),
+    checked: selectedCategories.includes(CATEGORY_IDS[category]),
   }))
 }
 
-export const buildSearchResults = (categories: string[], crn: string, flags: FeatureFlags = {}, backUrl?: string) => {
+export const buildSearchResults = (categoryIds: number[], crn: string, flags: FeatureFlags = {}, backUrl?: string) => {
+  const categories = categoryIds.map(categoryFromId).filter((category): category is Category => !!category)
   const entries = ContactTypeCategoryEntries(flags).filter(entry => categories.includes(entry.category))
   const grouped = new Map<string, { items: CategorySearchItem[]; subcategories: Map<string, CategorySearchItem[]> }>()
 
@@ -69,6 +72,7 @@ export const buildSearchResults = (categories: string[], crn: string, flags: Fea
   const categoriesSorted: CategorySearchGroup[] = Array.from(grouped.entries())
     .sort(([first], [second]) => first.localeCompare(second))
     .map(([name, group]) => ({
+      id: CATEGORY_IDS[name as Category],
       name,
       items: group.items.sort((a, b) => a.displayName.localeCompare(b.displayName)),
       subcategories: Array.from(group.subcategories.entries())
