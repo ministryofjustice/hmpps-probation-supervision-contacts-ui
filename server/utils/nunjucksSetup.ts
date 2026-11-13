@@ -14,6 +14,7 @@ import config from '../config'
 import logger from '../../logger'
 import { merge } from './merge'
 import { convertToTitleCase } from './convertToTitleCase'
+import { toSentenceCase } from './toSentenceCase'
 
 export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
@@ -61,6 +62,7 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('govukTime', govukTime)
   njkEnv.addFilter('merge', merge)
   njkEnv.addFilter('convertToTitleCase', convertToTitleCase)
+  njkEnv.addFilter('toSentenceCase', toSentenceCase)
 
   arnsNunjucksSetup(njkEnv)
   mpopNunjucksSetup(njkEnv)

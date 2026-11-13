@@ -31,7 +31,9 @@ function createReq(overrides: Partial<Request> = {}): Request {
 }
 
 describe('addContactController', () => {
-  let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getUserProviders' | 'getOverview' | 'getProbationPractitioner'>>
+  let mockMasApiClient: jest.Mocked<
+    Pick<MasApiClient, 'getUserProviders' | 'getOverview' | 'getProbationPractitioner' | 'getDocumentTemplates'>
+  >
   let mockCreateContact: jest.Mock
   let mockPatchDocuments: jest.Mock
   let next: jest.Mock
@@ -56,6 +58,7 @@ describe('addContactController', () => {
         unallocated: false,
         username: 'PRACTITIONER1',
       }),
+      getDocumentTemplates: jest.fn().mockResolvedValue({ templates: [] }),
     }
     mockCreateContact = jest.fn().mockResolvedValue({ id: 1 })
     mockPatchDocuments = jest.fn().mockResolvedValue(undefined)
@@ -136,16 +139,16 @@ describe('addContactController', () => {
       it('excludes early termination from frequentlyUsedContacts and contactTypeLinksJson when the flag is off', async () => {
         const args = await run({ enableEarlyTermination20261103Squad3: false })
 
-        expect(args.frequentlyUsedContacts.map((c: any) => c.text)).not.toContain('Request early termination')
-        expect(JSON.parse(args.contactTypeLinksJson).map((c: any) => c.text)).not.toContain('Request early termination')
+        expect(args.frequentlyUsedContacts.map((c: any) => c.text)).not.toContain('Early termination request')
+        expect(JSON.parse(args.contactTypeLinksJson).map((c: any) => c.text)).not.toContain('Early termination request')
         expect(args.contactTypeLinksJson).not.toContain('early-termination')
       })
 
       it('includes early termination in both when the flag is on', async () => {
         const args = await run({ enableEarlyTermination20261103Squad3: true })
 
-        expect(args.frequentlyUsedContacts.map((c: any) => c.text)).toContain('Request early termination')
-        expect(JSON.parse(args.contactTypeLinksJson).map((c: any) => c.text)).toContain('Request early termination')
+        expect(args.frequentlyUsedContacts.map((c: any) => c.text)).toContain('Early termination request')
+        expect(JSON.parse(args.contactTypeLinksJson).map((c: any) => c.text)).toContain('Early termination request')
       })
     })
   })
@@ -175,7 +178,7 @@ describe('addContactController', () => {
     })
 
     it('returns 404 when the contact type is unavailable', async () => {
-      const req = createReq({ params: { crn: 'X123456', contactType: 'request-early-termination' } })
+      const req = createReq({ params: { crn: 'X123456', contactType: 'early-termination-request' } })
       const res = createRes()
 
       await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
@@ -421,7 +424,7 @@ describe('addContactController', () => {
     })
 
     it('returns 404 and does not create a contact when the contact type is unavailable', async () => {
-      const req = createReq({ params: { crn: 'X123456', contactType: 'request-early-termination' }, body: validBody })
+      const req = createReq({ params: { crn: 'X123456', contactType: 'early-termination-request' }, body: validBody })
       const res = createRes()
 
       await addContactController.postAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
@@ -497,13 +500,13 @@ describe('addContactController', () => {
       it('excludes early termination from searchResults when the flag is off', async () => {
         const args = await run({ enableEarlyTermination20261103Squad3: false })
 
-        expect(JSON.stringify(args.searchResults)).not.toContain('Request early termination')
+        expect(JSON.stringify(args.searchResults)).not.toContain('Early termination request')
       })
 
       it('includes early termination in searchResults when the flag is on', async () => {
         const args = await run({ enableEarlyTermination20261103Squad3: true })
 
-        expect(JSON.stringify(args.searchResults)).toContain('Request early termination')
+        expect(JSON.stringify(args.searchResults)).toContain('Early termination request')
       })
     })
   })
@@ -624,19 +627,19 @@ describe('addContactController', () => {
       it('excludes early termination from searchResults when the flag is off', async () => {
         const args = await run({ enableEarlyTermination20261103Squad3: false })
 
-        expect(JSON.stringify(args.keywordSearchResults)).not.toContain('Request early termination')
+        expect(JSON.stringify(args.keywordSearchResults)).not.toContain('Early termination request')
 
         // Used for autocomplete dropdown source
-        expect(JSON.stringify(args.contactTypeLinksJson)).not.toContain('Request early termination')
+        expect(JSON.stringify(args.contactTypeLinksJson)).not.toContain('Early termination request')
       })
 
       it('includes early termination in searchResults when the flag is on', async () => {
         const args = await run({ enableEarlyTermination20261103Squad3: true })
 
-        expect(JSON.stringify(args.keywordSearchResults)).toContain('Request early termination')
+        expect(JSON.stringify(args.keywordSearchResults)).toContain('Early termination request')
 
         // Used for autocomplete dropdown source
-        expect(args.contactTypeLinksJson).toContain('Request early termination')
+        expect(args.contactTypeLinksJson).toContain('Early termination request')
       })
     })
   })
