@@ -93,7 +93,7 @@ const updateContact: RequestHandler = (req, res, next) => {
       responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
       responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
       dateToday: DateTime.now().toFormat('d/M/yyyy'),
-      documentTemplates: res.locals.documentTemplates,
+      templates: res.locals.documentTemplates,
       isEarlyTermination,
     })
   }
