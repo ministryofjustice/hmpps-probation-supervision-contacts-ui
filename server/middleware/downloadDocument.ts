@@ -1,6 +1,7 @@
 import type { RequestHandler } from 'express'
 import JSZip from 'jszip'
 import MasApiClient from '../data/masApiClient'
+import logger from '../../logger'
 
 export const downloadDocument = (masApiClient: MasApiClient): RequestHandler => {
   return async (req, res) => {
@@ -33,7 +34,8 @@ export const downloadDocument = (masApiClient: MasApiClient): RequestHandler => 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
       return res.send(docxBuffer)
     } catch (error) {
-      return res.status(500)?.json({ error: error.message })
+      logger.error(error.message)
+      return res.status(500)
     }
   }
 }
