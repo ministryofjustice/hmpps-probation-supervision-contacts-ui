@@ -1,10 +1,14 @@
 import type { RequestHandler } from 'express'
 import JSZip from 'jszip'
 import MasApiClient from '../data/masApiClient'
+import logger from '../../logger'
 
 export const downloadDocument = (masApiClient: MasApiClient): RequestHandler => {
   return async (req, res) => {
-    if (res.locals.flags?.enableEarlyTermination20261103Squad3 !== true) {
+    if (
+      res.locals.flags?.enableEarlyTermination20261103Squad3 !== true ||
+      res.locals.flags?.earlyTerminationTemplatesAPI20261112Squad3 !== true
+    ) {
       return res.status(404)?.json({ error: 'Document not found' })
     }
     try {
@@ -33,7 +37,8 @@ export const downloadDocument = (masApiClient: MasApiClient): RequestHandler => 
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
       return res.send(docxBuffer)
     } catch (error) {
-      return res.status(500)?.json({ error: error.message })
+      logger.error(error.message)
+      return res.status(500)
     }
   }
 }

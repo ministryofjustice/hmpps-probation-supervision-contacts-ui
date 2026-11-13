@@ -42,7 +42,7 @@ describe('downloadDocument', () => {
   const statusSpy = jest.spyOn(res, 'status')
   const sendSpy = jest.spyOn(res, 'send')
 
-  it('error if early termination flag is not set to true', async () => {
+  it('error if early termination flags are not set to true', async () => {
     const req = httpMocks.createRequest({
       params: { contactType: 'ETRP', name: 'templates' },
     })
@@ -57,7 +57,7 @@ describe('downloadDocument', () => {
       params: { contactType: 'ETRP', name: 'templates' },
     })
     res.locals.user = { username: 'test-user' } as any
-    res.locals.flags = { enableEarlyTermination20261103Squad3: true }
+    res.locals.flags = { enableEarlyTermination20261103Squad3: true, earlyTerminationTemplatesAPI20261112Squad3: true }
 
     await downloadDocument(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
