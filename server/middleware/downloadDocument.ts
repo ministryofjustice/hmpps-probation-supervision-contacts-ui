@@ -5,7 +5,10 @@ import logger from '../../logger'
 
 export const downloadDocument = (masApiClient: MasApiClient): RequestHandler => {
   return async (req, res) => {
-    if (res.locals.flags?.enableEarlyTermination20261103Squad3 !== true) {
+    if (
+      res.locals.flags?.enableEarlyTermination20261103Squad3 !== true ||
+      res.locals.flags?.earlyTerminationTemplatesAPI20261112Squad3 !== true
+    ) {
       return res.status(404)?.json({ error: 'Document not found' })
     }
     try {
