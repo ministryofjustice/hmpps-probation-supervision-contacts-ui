@@ -1,5 +1,4 @@
 import type { Request, Response } from 'express'
-import { isTypedArray } from 'util/types'
 import MasApiClient from '../data/masApiClient'
 import ContactService from '../services/contactService'
 import addContactController from './addContact'
