@@ -7,7 +7,7 @@
   "scripts": {
     "prepare": "hmpps-precommit-hooks-prepare",
     "watch-ts": "tsc -w",
-    "build": "node esbuild/esbuild",
+    "build": "node esbuild/esbuild && npm run sentry:sourcemaps",
     "start": "node $NODE_OPTIONS dist/server.js | bunyan -o short",
     "start:dev": "node esbuild/esbuild --watch",
     "start-feature": " node $NODE_DEBUG_OPTION --env-file=feature.env dist/server.js | bunyan -o short",
@@ -24,7 +24,8 @@
     "int-test-init:ci": "npx playwright install",
     "clean": "rm -rf dist test_results",
     "rebuild": "npm run clean && npm run setup && npm run build",
-    "setup": "npm ci"
+    "setup": "npm ci",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org ministryofjustice --project hmpps-probation-supervision-contacts-ui ./dist && sentry-cli sourcemaps upload --org ministryofjustice --project hmpps-probation-supervision-contacts-ui ./dist"
   },
   "engines": {
     "node": "^24",
@@ -43,6 +44,8 @@
     "@ministryofjustice/hmpps-rest-client": "^2.2.0",
     "@types/express-serve-static-core": "5.1.3",
     "@types/multer": "2.3.0",
+    "@sentry/cli": "^3.8.2",
+    "@sentry/node": "^11.10.0",
     "accessible-autocomplete": "3.0.2",
     "applicationinsights": "^3.17.0",
     "bunyan": "^1.8.15",
@@ -135,10 +138,11 @@
     "undici": "8.12.4"
   },
   "allowScripts": {
+    "@parcel/watcher@2.6.0": true,
+    "@sentry/cli@3.8.2": true,
     "dtrace-provider@0.8.8": true,
     "esbuild@0.28.2": true,
     "fsevents@2.3.3": true,
-    "@parcel/watcher@2.6.0": true,
     "protobufjs@7.6.6": true,
     "unrs-resolver@1.12.2": true
   }

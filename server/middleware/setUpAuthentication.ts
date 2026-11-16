@@ -3,6 +3,7 @@ import flash from 'connect-flash'
 import { Router } from 'express'
 import { Strategy } from 'passport-oauth2'
 import { VerificationClient, AuthenticatedRequest } from '@ministryofjustice/hmpps-auth-clients'
+import * as Sentry from '@sentry/node'
 import config from '../config'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import generateOauthClientToken from '../utils/clientCredentials'
@@ -83,6 +84,7 @@ export default function setupAuthentication() {
   })
 
   router.use((req, res, next) => {
+    if (req.isAuthenticated()) Sentry.setUser({ username: req.user.username })
     res.locals.user = req.user as HmppsUser
     next()
   })

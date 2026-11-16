@@ -15,8 +15,11 @@ import logger from '../../logger'
 import { merge } from './merge'
 import { convertToTitleCase } from './convertToTitleCase'
 import { toSentenceCase } from './toSentenceCase'
+import applicationInfo from '../applicationInfo'
 
 export default function nunjucksSetup(app: express.Express): void {
+  const production = process.env.NODE_ENV === 'production'
+
   app.set('view engine', 'njk')
 
   app.locals.asset_path = '/assets/'
@@ -24,6 +27,16 @@ export default function nunjucksSetup(app: express.Express): void {
   app.locals.environmentName = config.environmentName
   app.locals.environmentNameColour = config.environmentName === 'PRE-PRODUCTION' ? 'govuk-tag--green' : ''
   app.locals.manageProbationUrl = config.manageProbationUrl
+
+  if (production) {
+    app.locals.version = applicationInfo().gitShortHash
+  } else {
+    app.use(function setVersion(_req, res, next) {
+      res.locals.version = Date.now().toString()
+      return next()
+    })
+  }
+
   let assetManifest: Record<string, string> = {}
 
   try {

@@ -6,6 +6,23 @@ import {
   ignoredRequestsProcessor,
 } from './azureAppInsights'
 
+const applicationName = 'mock application name'
+const mockVersion = '1_0_0'
+
+jest.mock('../applicationInfo', () => ({
+  ...jest.requireActual('../applicationInfo'),
+  __esModule: true,
+  default: jest.fn(() => ({
+    applicationName,
+    version: mockVersion,
+    buildNumber: '',
+    gitRef: '',
+    gitShortHash: '#gitShortHash',
+    productId: '',
+    branchName: '',
+  })),
+}))
+
 const createEnvelope = (baseData: any, baseType = 'RequestData'): TelemetryItem =>
   ({
     data: {
@@ -17,6 +34,16 @@ const createEnvelope = (baseData: any, baseType = 'RequestData'): TelemetryItem 
   }) as TelemetryItem
 
 describe('azureAppInsights', () => {
+  describe('version()', () => {
+    it('should return the build version', () => {
+      jest.isolateModules(() => {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports, global-require
+        const { version } = require('./azureAppInsights')
+        expect(version()).toEqual(mockVersion)
+      })
+    })
+  })
+
   describe('ignoredRequestsProcessor', () => {
     it.each([
       ['GET /assets/some.css', false],

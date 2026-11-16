@@ -14,6 +14,14 @@ function get<T>(name: string, fallback: T, options = { requireInProduction: fals
 
 const requiredInProduction = { requireInProduction: true }
 
+export interface SentryConfig {
+  dsn: string
+  loaderScriptId: string
+  tracesSampleRate: number
+  replaySampleRate: number
+  replayOnErrorSampleRate: number
+}
+
 export default {
   buildNumber: get('BUILD_NUMBER', '1_0_0', requiredInProduction),
   productId: get('PRODUCT_ID', 'UNASSIGNED', requiredInProduction),
@@ -32,6 +40,14 @@ export default {
   session: {
     secret: get('SESSION_SECRET', 'app-insecure-default-session', requiredInProduction),
     expiryMinutes: Number(get('WEB_SESSION_TIMEOUT_IN_MINUTES', 120)),
+  },
+  sentry: {
+    dsn: process.env.SENTRY_DSN,
+    environment: get('ENVIRONMENT', 'local'),
+    loaderScriptId: process.env.SENTRY_LOADER_SCRIPT_ID,
+    tracesSampleRate: Number(get('SENTRY_TRACES_SAMPLE_RATE', 0.05)),
+    replaySampleRate: Number(get('SENTRY_REPLAY_SAMPLE_RATE', 0.0)),
+    replayOnErrorSampleRate: Number(get('SENTRY_REPLAY_ON_ERROR_SAMPLE_RATE', 0.1)),
   },
   apis: {
     hmppsAuth: {
@@ -139,6 +155,7 @@ export default {
   },
   ingressUrl: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   environmentName: get('ENVIRONMENT_NAME', ''),
+  env: get('ENVIRONMENT', 'local', requiredInProduction) as 'local' | 'dev' | 'preprod' | 'prod',
   validMimeTypes: {
     pdf: 'application/pdf',
     doc: 'application/msword',

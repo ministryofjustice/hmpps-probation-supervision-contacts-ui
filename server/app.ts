@@ -1,7 +1,7 @@
 import express, { Router } from 'express'
-
 import createError from 'http-errors'
 
+import * as Sentry from '@sentry/node'
 import nunjucksSetup from './utils/nunjucksSetup'
 import errorHandler from './errorHandler'
 import { appInsightsMiddleware } from './utils/azureAppInsights'
@@ -19,6 +19,9 @@ import getFrontendComponents from './middleware/probationFEComponentsMiddleware'
 import baseController from './baseController'
 import { getUserAlertsCount } from './middleware/getUserAlertsCount'
 import setUpFlags from './middleware/setUpFlags'
+import config from './config'
+import './sentry'
+import sentryMiddleware from './middleware/sentryMiddleware'
 
 import addContactRoutes from './routes/addContact'
 import type { Services } from './services'
@@ -26,6 +29,7 @@ import addUpdateContactRoutes from './routes/updateContact'
 import { metricsMiddleware } from './monitoring/metricsApp'
 import addMpopRedirectRoutes from './routes/mpopRedirects'
 import addPersonHeaderRoutes from './routes/personHeader'
+import addHomeRoutes from './routes/home'
 
 export default function createApp(services: Services): express.Application {
   const app = express()
@@ -49,6 +53,8 @@ export default function createApp(services: Services): express.Application {
   app.use(getFrontendComponents(services.probationComponentsService))
   app.use(authorisationMiddleware(['ROLE_MANAGE_SUPERVISIONS']))
   app.use(getUserAlertsCount(services.masApiClient))
+
+  app.use(sentryMiddleware())
   app.use(metricsMiddleware)
 
   app.use((req, res, next) => {
@@ -62,10 +68,11 @@ export default function createApp(services: Services): express.Application {
   addUpdateContactRoutes(router, services)
   addMpopRedirectRoutes(router)
   addPersonHeaderRoutes(router, services)
+  addHomeRoutes(router)
   app.use(router)
 
   app.use(setUpCsrf())
-
+  if (config.sentry.dsn) Sentry.setupExpressErrorHandler(app)
   app.use((req, res, next) => next(createError(404, 'Not found')))
   app.use(errorHandler(process.env.NODE_ENV === 'production'))
 

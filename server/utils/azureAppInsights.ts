@@ -19,6 +19,11 @@ export function defaultName(): string {
   return name
 }
 
+export function version(): string {
+  const { version: buildNumber } = applicationInfo()
+  return buildNumber
+}
+
 export function initialiseAppInsights(): void {
   if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
     // eslint-disable-next-line no-console

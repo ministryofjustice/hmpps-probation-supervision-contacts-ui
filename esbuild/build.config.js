@@ -12,7 +12,7 @@ const getBuildConfig = () => {
   return {
     isProduction,
     isWatchMode,
-
+    sourceMap: process.env.NODE_ENV === 'development' ? 'inline' : false,
     app: {
       outDir: path.join(cwd, 'dist'),
       entryPoints: globSync([path.join(cwd, '*.ts'), path.join(cwd, 'server/**/*.ts')]).filter(
@@ -35,6 +35,10 @@ const getBuildConfig = () => {
           from: path.join(cwd, 'assets/images/**/*'),
           to: path.join(cwd, 'dist/assets/images'),
           watch: isWatchMode,
+        },
+        {
+          from: path.join(cwd, 'package.json'),
+          to: path.join(cwd, 'dist/package.json'),
         },
       ],
       clear: globSync([path.join(cwd, 'dist/assets/{css,js}')]),

@@ -44,6 +44,27 @@
 {% endblock %}
 
 {% block bodyEnd %}
+  {% if sentry and sentry.loaderScriptId %}
+    <script nonce="{{ cspNonce }}">
+      window.sentryOnLoad = function () {
+        Sentry.init({
+          release: "hmpps-probation-supervision-contacts-ui@{{ version }}",
+          environment: "{{ sentry.environment }}",
+          tracesSampleRate: {{ sentry.tracesSampleRate }},
+          replaysSessionSampleRate: {{ sentry.replaySampleRate }},
+          replaysOnErrorSampleRate: {{ sentry.replayOnErrorSampleRate }},
+          initialScope: {
+            user: {
+              username: "{{ user.username }}"
+            }
+          }
+        });
+      };
+    </script>
+    <script src="https://js.sentry-cdn.com/{{ sentry.loaderScriptId }}.min.js" nonce="{{ cspNonce }}" crossorigin="anonymous"></script>
+  {% endif %}
+
+
   <script type="module" src="{{ '/assets/js/index.js' | assetMap }}"></script>
   {% if not feComponents.header %}
     <script type="module" src="{{ '/assets/js/fallback_prob_fe_app.js' | assetMap }}" nonce="{{ cspNonce }}"></script>

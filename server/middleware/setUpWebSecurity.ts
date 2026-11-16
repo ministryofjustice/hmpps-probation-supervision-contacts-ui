@@ -24,9 +24,13 @@ export default function setUpWebSecurity(): Router {
           // <link href="http://example.com/" rel="stylesheet" nonce="{{ cspNonce }}">
           // This ensures only scripts we trust are loaded, and not anything injected into the
           // page by an attacker.
-          scriptSrc: ["'self'", (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`],
+          scriptSrc: [
+            "'self' https://browser.sentry-cdn.com https://js.sentry-cdn.com",
+            (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`,
+          ],
           connectSrc: [
-            "'self'",
+            "'self' https://*.sentry.io",
+            "'self' https://*.sentry-cdn.com",
             'js.monitor.azure.com',
             '*.applicationinsights.azure.com/v2/track',
             config.probationFrontendComponents.connectSrc,
