@@ -188,6 +188,16 @@ describe('addContactController', () => {
       expect(res.render).not.toHaveBeenCalled()
     })
 
+    it('returns 404 if no relates to options available - no sentences and no person level option', async () => {
+      const req = createReq({ params: { crn: 'X123456', contactType: 'cms-assistance-with-assessments' } })
+      const res = createRes({ sentences: [] })
+
+      await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+      expect(next).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }))
+      expect(res.render).not.toHaveBeenCalled()
+    })
+
     it('sets responsibleOfficer to SHOW_OFFICER when user is not responsible officer', async () => {
       const req = createReq({ params: { crn: 'X123456', contactType: 'email-or-text-from-other' } })
       const res = createRes({ isResponsibleOfficer: false })
@@ -488,12 +498,12 @@ describe('addContactController', () => {
     })
 
     describe('early termination contact type', () => {
-      const run = async (flags: Record<string, boolean>) => {
+      const run = async (flags: Record<string, boolean>, noSentence: boolean = false) => {
         const req = createReq({
           params: { crn: 'X123456' },
           query: { action: 'search', categories: ['8'] },
         })
-        const res = createRes({ flags, contactTypes: ContactTypeOptions(flags), sentences: [{}] })
+        const res = createRes({ flags, contactTypes: ContactTypeOptions(flags), sentences: noSentence ? [] : [{}] })
         await addContactController.getSearchByCategory()(req, res, next)
         return (res.render as jest.Mock).mock.calls[0][1]
       }
@@ -508,6 +518,12 @@ describe('addContactController', () => {
         const args = await run({ enableEarlyTermination20261103Squad3: true })
 
         expect(JSON.stringify(args.searchResults)).toContain('Request early termination')
+      })
+
+      it('excludes non person-level contact types if no sentences', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: true }, true)
+
+        expect(JSON.stringify(args.searchResults)).not.toContain('Request early termination')
       })
     })
   })
@@ -615,12 +631,12 @@ describe('addContactController', () => {
     })
 
     describe('early termination contact type', () => {
-      const run = async (flags: Record<string, boolean>) => {
+      const run = async (flags: Record<string, boolean>, noSentence: boolean = false) => {
         const req = createReq({
           params: { crn: 'X123456' },
           query: { keyword: 'early termination', action: 'search' },
         })
-        const res = createRes({ flags, contactTypes: ContactTypeOptions(flags), sentences: [{}] })
+        const res = createRes({ flags, contactTypes: ContactTypeOptions(flags), sentences: noSentence ? [] : [{}] })
         await addContactController.getSearchByKeyword()(req, res, next)
         return (res.render as jest.Mock).mock.calls[0][1]
       }
@@ -641,6 +657,15 @@ describe('addContactController', () => {
 
         // Used for autocomplete dropdown source
         expect(args.contactTypeLinksJson).toContain('Request early termination')
+      })
+
+      it('excludes non person-level contact types if no sentences', async () => {
+        const args = await run({ enableEarlyTermination20261103Squad3: true }, true)
+
+        expect(JSON.stringify(args.keywordSearchResults)).not.toContain('Request early termination')
+
+        // Used for autocomplete dropdown source
+        expect(JSON.stringify(args.contactTypeLinksJson)).not.toContain('Request early termination')
       })
     })
   })
