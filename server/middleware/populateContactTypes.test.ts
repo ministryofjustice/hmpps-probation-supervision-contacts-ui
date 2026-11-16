@@ -21,10 +21,13 @@ describe('populateContactTypes', () => {
     expect(next).toHaveBeenCalledWith()
   })
 
-  it('excludes non person-level types if no sentences exist', async () => {
+  it('excludes non person-level types if no sentences exist and access flag applied', async () => {
     const req = httpMocks.createRequest()
     const res = httpMocks.createResponse({
-      locals: { flags: { enableEarlyTermination20261103Squad3: true }, sentences: [] },
+      locals: {
+        flags: { enableEarlyTermination20261103Squad3: true, enableContactAccessLimitation20261116Squad3: true },
+        sentences: [],
+      },
     })
 
     await populateContactTypes()(req, res, next)

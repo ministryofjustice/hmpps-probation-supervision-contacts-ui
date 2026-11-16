@@ -188,9 +188,9 @@ describe('addContactController', () => {
       expect(res.render).not.toHaveBeenCalled()
     })
 
-    it('returns 404 if no relates to options available - no sentences and no person level option', async () => {
+    it('returns 404 if no relates to options available - no sentences and no person level option and access flag applied', async () => {
       const req = createReq({ params: { crn: 'X123456', contactType: 'cms-assistance-with-assessments' } })
-      const res = createRes({ sentences: [] })
+      const res = createRes({ sentences: [], flags: { enableContactAccessLimitation20261116Squad3: true } })
 
       await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
@@ -521,7 +521,10 @@ describe('addContactController', () => {
       })
 
       it('excludes non person-level contact types if no sentences', async () => {
-        const args = await run({ enableEarlyTermination20261103Squad3: true }, true)
+        const args = await run(
+          { enableEarlyTermination20261103Squad3: true, enableContactAccessLimitation20261116Squad3: true },
+          true,
+        )
 
         expect(JSON.stringify(args.searchResults)).not.toContain('Request early termination')
       })
@@ -659,8 +662,11 @@ describe('addContactController', () => {
         expect(args.contactTypeLinksJson).toContain('Request early termination')
       })
 
-      it('excludes non person-level contact types if no sentences', async () => {
-        const args = await run({ enableEarlyTermination20261103Squad3: true }, true)
+      it('excludes non person-level contact types if no sentences and access flag', async () => {
+        const args = await run(
+          { enableEarlyTermination20261103Squad3: true, enableContactAccessLimitation20261116Squad3: true },
+          true,
+        )
 
         expect(JSON.stringify(args.keywordSearchResults)).not.toContain('Request early termination')
 

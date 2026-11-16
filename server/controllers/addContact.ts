@@ -136,7 +136,7 @@ const addContactController = {
         crn,
         res.locals.flags,
         backUrl,
-        res.locals.sentences?.length === 0,
+        res.locals.sentences?.length === 0 && res.locals.flags?.enableContactAccessLimitation20261116Squad3,
       )
 
       return res.render('pages/contacts/add-frequently-used-contact', {
@@ -174,7 +174,7 @@ const addContactController = {
           crn,
           res.locals.flags,
           backUrl,
-          res.locals.sentences?.length === 0,
+          res.locals.sentences?.length === 0 && res.locals.flags?.enableContactAccessLimitation20261116Squad3,
         ),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
@@ -207,7 +207,7 @@ const addContactController = {
           crn,
           res.locals.flags,
           backUrl,
-          res.locals.sentences?.length === 0,
+          res.locals.sentences?.length === 0 && res.locals.flags?.enableContactAccessLimitation20261116Squad3,
         ),
       })
     }
@@ -245,7 +245,11 @@ const addContactController = {
         },
         res.locals.flags,
       )
-      if (viewModel.showRelatesToQuestion && viewModel.relatesToOptions.length === 0) {
+      if (
+        res.locals.flags?.enableContactAccessLimitation20261116Squad3 &&
+        viewModel.showRelatesToQuestion &&
+        viewModel.relatesToOptions.length === 0
+      ) {
         logger.info('No "Relates to" options')
         return next(createError(404, 'Not found'))
       }
