@@ -22,7 +22,7 @@ export type ContactTypeCategoryEntry = {
   code: string
   displayName: string
   isFrequentlyUsed?: boolean
-  isPersonLevelContact?: boolean
+  isPersonLevelContact: boolean
 }
 
 const caseManagementAndMeetings = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
@@ -367,6 +367,7 @@ const communicationAndInformationSharing = (_flags: FeatureFlags): ContactTypeCa
     subcategory: 'Information sharing and requests',
     code: 'IRP2',
     displayName: 'IPP progression panel', // not in API response
+    isPersonLevelContact: true,
   },
   {
     category: 'Communication and information sharing with others',
@@ -864,6 +865,7 @@ const sentenceManagement = (flags: FeatureFlags): ContactTypeCategoryEntry[] => 
     category: 'Sentence management',
     code: 'IRP2',
     displayName: 'IPP progression panel', // not in API response
+    isPersonLevelContact: true,
   },
   {
     category: 'Sentence management',
