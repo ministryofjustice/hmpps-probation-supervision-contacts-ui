@@ -8,27 +8,35 @@ export type ContactTypeOption = {
   description: string
 }
 
-export const FrequentlyUsedContactTypeOptions = (flags: FeatureFlags = {}): ContactTypeOption[] =>
+export const FrequentlyUsedContactTypeOptions = (
+  flags: FeatureFlags = {},
+  personLevel: boolean = false,
+): ContactTypeOption[] =>
   ContactTypeCategoryEntries(flags)
     .filter(entry => entry.isFrequentlyUsed)
+    .filter(entry => !personLevel || entry.isPersonLevelContact)
     .map(entry => ({ code: entry.code, description: entry.displayName }))
     .sort((a, b) => a.description.localeCompare(b.description))
 
-export const ContactTypeOptions = (flags: FeatureFlags = {}): ContactTypeOption[] => {
+export const ContactTypeOptions = (flags: FeatureFlags = {}, personLevel: boolean = false): ContactTypeOption[] => {
   const contactTypeByCode = new Map<string, ContactTypeOption>()
-  ContactTypeCategoryEntries(flags).forEach(entry => {
-    if (!contactTypeByCode.has(entry.code)) {
-      contactTypeByCode.set(entry.code, { code: entry.code, description: entry.displayName })
-    }
-  })
+  ContactTypeCategoryEntries(flags)
+    .filter(entry => !personLevel || entry.isPersonLevelContact)
+    .forEach(entry => {
+      if (!contactTypeByCode.has(entry.code)) {
+        contactTypeByCode.set(entry.code, { code: entry.code, description: entry.displayName })
+      }
+    })
 
-  NoOutcomeContactTypeDetails.forEach(detail => {
+  NoOutcomeContactTypeDetails.filter(entry => !personLevel || entry.relatesTo.includes('Person')).forEach(detail => {
     contactTypeByCode.set(detail.code, { code: detail.code, description: detail.description })
   })
 
-  OutcomeContactTypeDetails(flags).forEach(detail => {
-    contactTypeByCode.set(detail.code, { code: detail.code, description: detail.description })
-  })
+  OutcomeContactTypeDetails(flags)
+    .filter(entry => !personLevel || entry.relatesTo.includes('Person'))
+    .forEach(detail => {
+      contactTypeByCode.set(detail.code, { code: detail.code, description: detail.description })
+    })
 
   return Array.from(contactTypeByCode.values()).sort((a, b) => a.description.localeCompare(b.description))
 }

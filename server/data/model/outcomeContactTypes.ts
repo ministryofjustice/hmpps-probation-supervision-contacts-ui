@@ -30,7 +30,7 @@ const ET_ENTRIES: ContactTypeDetail[] = [
 
 const BASE_ENTRIES: ContactTypeDetail[] = [
   {
-    code: 'AAM1',
+    code: 'AAM1', // not in a category
     description: 'Alcohol consumption',
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
@@ -113,7 +113,7 @@ const BASE_ENTRIES: ContactTypeDetail[] = [
     ],
   },
   {
-    code: 'AAM10',
+    code: 'AAM10', // not in a category
     description: 'Critical communications',
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
@@ -278,7 +278,7 @@ const BASE_ENTRIES: ContactTypeDetail[] = [
     ],
   },
   {
-    code: 'IRP1',
+    code: 'IRP1', // something matches up wrong
     description: 'IPP progression panel',
     sensitive: false,
     relatesTo: ['Person'],

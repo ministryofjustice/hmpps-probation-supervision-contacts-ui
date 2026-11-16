@@ -59,9 +59,11 @@
                     <div class="govuk-tabs__panel" id="frequently-used-contacts">
                         <h3 class="govuk-heading-m">Select a frequently used contact</h3>
                         <ul class="govuk-list app-contact-list govuk-grid-column-three-quarters" data-qa="frequentlyUsedContactList">
-                            <li class="app-contact-list__item">
-                                <a class="govuk-link" href="/case/{{ crn }}/add-frequently-used-contact?contactType=APPOINTMENT">Appointments</a>
-                            </li>
+                            {% if sentences.length !== 0 %}
+                                <li class="app-contact-list__item">
+                                    <a class="govuk-link" href="/case/{{ crn }}/add-frequently-used-contact?contactType=APPOINTMENT">Appointments</a>
+                                </li>
+                            {% endif %}
                             {% for contact in frequentlyUsedContacts %}
                                 <li class="app-contact-list__item">
                                     <a class="govuk-link" href="{{ contact.href }}">{{ contact.text }}</a>

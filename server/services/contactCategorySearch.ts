@@ -44,9 +44,17 @@ export const buildCategoryCheckboxItems = (
   }))
 }
 
-export const buildSearchResults = (categoryIds: number[], crn: string, flags: FeatureFlags = {}, backUrl?: string) => {
+export const buildSearchResults = (
+  categoryIds: number[],
+  crn: string,
+  flags: FeatureFlags = {},
+  backUrl?: string,
+  personLevel: boolean = false,
+) => {
   const categories = categoryIds.map(categoryFromId).filter((category): category is Category => !!category)
-  const entries = ContactTypeCategoryEntries(flags).filter(entry => categories.includes(entry.category))
+  const entries = ContactTypeCategoryEntries(flags)
+    .filter(entry => categories.includes(entry.category))
+    .filter(entry => !personLevel || entry.isPersonLevelContact)
   const grouped = new Map<string, { items: CategorySearchItem[]; subcategories: Map<string, CategorySearchItem[]> }>()
 
   entries.forEach(entry => {
@@ -89,7 +97,13 @@ export const buildSearchResults = (categoryIds: number[], crn: string, flags: Fe
   }
 }
 
-export const buildKeywordSearchResults = (keyword: string, crn: string, flags: FeatureFlags = {}, backUrl?: string) => {
+export const buildKeywordSearchResults = (
+  keyword: string,
+  crn: string,
+  flags: FeatureFlags = {},
+  backUrl?: string,
+  personLevel: boolean = false,
+) => {
   const lowerKeyword = keyword.toLowerCase()
   const seen = new Set<string>()
   const items = ContactTypeCategoryEntries(flags)
@@ -98,6 +112,7 @@ export const buildKeywordSearchResults = (keyword: string, crn: string, flags: F
       seen.add(entry.code)
       return entry.displayName.toLowerCase().includes(lowerKeyword)
     })
+    .filter(entry => !personLevel || entry.isPersonLevelContact)
     .sort((a, b) => a.displayName.localeCompare(b.displayName))
     .map(entry => ({
       displayName: entry.displayName,

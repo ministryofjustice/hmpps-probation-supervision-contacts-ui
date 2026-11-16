@@ -128,7 +128,7 @@ describe('addContactController', () => {
     describe('early termination contact type', () => {
       const run = async (flags: Record<string, boolean>) => {
         const req = createReq({ params: { crn: 'X123456' } })
-        const res = createRes({ flags, contactTypes: FrequentlyUsedContactTypeOptions(flags) })
+        const res = createRes({ flags, contactTypes: FrequentlyUsedContactTypeOptions(flags), sentences: [{}] })
         await addContactController.getFrequentlyUsedContact()(req, res, next)
         return (res.render as jest.Mock).mock.calls[0][1]
       }
@@ -237,13 +237,13 @@ describe('addContactController', () => {
       expect(renderArgs.isVisor).toBeUndefined()
     })
 
-    it('renders person-only contacts without relates-to options and normalises string values', async () => {
+    it('renders person-only contacts without other relates-to options and normalises string values', async () => {
       const req = createReq({
         params: { crn: ['X123456'], contactType: ['accommodation-evidence'] } as any,
       })
       const res = createRes({
         isResponsibleOfficer: false,
-        sentences: [],
+        sentences: [{ id: 1, order: { description: 'Community Order 1', startDate: '2024-06-15' } }],
         csrfToken: ['csrf-token'],
         responsibleOfficerForename: ['jane'],
         responsibleOfficerSurname: ['doe'],
@@ -283,7 +283,7 @@ describe('addContactController', () => {
       const req = createReq({ params: { crn: 'X123456', contactType: 'management-oversight' } })
       const res = createRes({
         isResponsibleOfficer: false,
-        sentences: [],
+        sentences: [{ id: 1, order: { description: 'Community Order 1', startDate: '2024-06-15' } }],
       })
 
       await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
@@ -489,7 +489,7 @@ describe('addContactController', () => {
           params: { crn: 'X123456' },
           query: { action: 'search', categories: ['8'] },
         })
-        const res = createRes({ flags, contactTypes: ContactTypeOptions(flags) })
+        const res = createRes({ flags, contactTypes: ContactTypeOptions(flags), sentences: [{}] })
         await addContactController.getSearchByCategory()(req, res, next)
         return (res.render as jest.Mock).mock.calls[0][1]
       }
@@ -511,7 +511,7 @@ describe('addContactController', () => {
   describe('getSearchByKeyword', () => {
     async function invokeKeyword(query: Record<string, string | string[]> = {}) {
       const req = createReq({ params: { crn: 'X123456' }, query })
-      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [] })
+      const res = createRes({ csrfToken: 'csrf-token', contactTypes: [], sentences: [{}] })
       await addContactController.getSearchByKeyword()(req, res, next)
       return (res.render as jest.Mock).mock.calls[0][1]
     }
@@ -616,7 +616,7 @@ describe('addContactController', () => {
           params: { crn: 'X123456' },
           query: { keyword: 'early termination', action: 'search' },
         })
-        const res = createRes({ flags, contactTypes: ContactTypeOptions(flags) })
+        const res = createRes({ flags, contactTypes: ContactTypeOptions(flags), sentences: [{}] })
         await addContactController.getSearchByKeyword()(req, res, next)
         return (res.render as jest.Mock).mock.calls[0][1]
       }

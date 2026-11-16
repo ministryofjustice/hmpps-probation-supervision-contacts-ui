@@ -45,6 +45,7 @@ export default function addContactRoutes(
     getPersonRiskFlags(masApiClient),
     loadTierDetails,
     setCollapsibleRiskFlags,
+    getSentences(masApiClient),
     populate,
     controllers.addContact.getFrequentlyUsedContact(),
   )
@@ -56,6 +57,7 @@ export default function addContactRoutes(
     getPersonRiskFlags(masApiClient),
     loadTierDetails,
     setCollapsibleRiskFlags,
+    getSentences(masApiClient),
     populate,
     controllers.addContact.getSearchByCategory(),
   )
@@ -67,6 +69,7 @@ export default function addContactRoutes(
     getPersonRiskFlags(masApiClient),
     loadTierDetails,
     setCollapsibleRiskFlags,
+    getSentences(masApiClient),
     populate,
     controllers.addContact.getSearchByKeyword(),
   )

@@ -20,10 +20,16 @@ import { isBlank } from '../utils/isBlank'
 import { FeatureFlags } from '../data/model/featureFlags'
 import { showOfficer } from '../data/model/contants'
 import { resolveBackUrl, withBackUrl } from '../utils/backLink'
+import logger from '../../logger'
 
-const buildContactTypeLinksJson = (crn: string, flags: FeatureFlags = {}, backUrl?: string) =>
+const buildContactTypeLinksJson = (
+  crn: string,
+  flags: FeatureFlags = {},
+  backUrl?: string,
+  personLevel: boolean = false,
+) =>
   JSON.stringify(
-    ContactTypeOptions(flags).map(t => ({
+    ContactTypeOptions(flags, personLevel).map(t => ({
       text: t.description,
       href: withBackUrl(`/case/${crn}/contacts/add-${slugify(t.description)}`, backUrl),
     })),
@@ -64,6 +70,7 @@ const addContactController = {
         const uuid = crypto.randomUUID()
         return res.redirect(`${config.manageProbationUrl}/case/${crn}/arrange-appointment/${uuid}/sentence`)
       }
+
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
@@ -124,7 +131,13 @@ const addContactController = {
         })
       }
 
-      const searchResults = buildSearchResults(selectedCategories, crn, res.locals.flags, backUrl)
+      const searchResults = buildSearchResults(
+        selectedCategories,
+        crn,
+        res.locals.flags,
+        backUrl,
+        res.locals.sentences?.length === 0,
+      )
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
@@ -157,7 +170,12 @@ const addContactController = {
         searchByKeywordTabActive: true,
         keywordSearch: keyword,
         keywordSearchResults: null as ReturnType<typeof buildKeywordSearchResults> | null,
-        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags, backUrl),
+        contactTypeLinksJson: buildContactTypeLinksJson(
+          crn,
+          res.locals.flags,
+          backUrl,
+          res.locals.sentences?.length === 0,
+        ),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -184,7 +202,13 @@ const addContactController = {
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         ...baseLocals,
-        keywordSearchResults: buildKeywordSearchResults(keyword, crn, res.locals.flags, backUrl),
+        keywordSearchResults: buildKeywordSearchResults(
+          keyword,
+          crn,
+          res.locals.flags,
+          backUrl,
+          res.locals.sentences?.length === 0,
+        ),
       })
     }
   },
@@ -221,6 +245,10 @@ const addContactController = {
         },
         res.locals.flags,
       )
+      if (viewModel.showRelatesToQuestion && viewModel.relatesToOptions.length === 0) {
+        logger.info('No "Relates to" options')
+        return next(createError(404, 'Not found'))
+      }
       return res.render('pages/contacts/add-contact-type', viewModel)
     }
   },

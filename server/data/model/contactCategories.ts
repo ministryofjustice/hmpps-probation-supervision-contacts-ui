@@ -848,7 +848,8 @@ const safeguardingAndVictimLiaison = (_flags: FeatureFlags): ContactTypeCategory
   {
     category: 'Safeguarding and victim liaison',
     code: 'VINC',
-    displayName: 'ViSOR information contact', // not in API
+    displayName: 'ViSOR information contact',
+    isPersonLevelContact: true,
   },
 ]
 
