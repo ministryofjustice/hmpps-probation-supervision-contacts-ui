@@ -38,7 +38,7 @@ export const downloadDocument = (masApiClient: MasApiClient): RequestHandler => 
       return res.send(docxBuffer)
     } catch (error) {
       logger.error(error.message)
-      return res.status(500)
+      return res.status(500).json({ error: 'Document download failed' })
     }
   }
 }
