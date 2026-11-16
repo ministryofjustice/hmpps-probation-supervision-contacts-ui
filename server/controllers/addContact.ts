@@ -32,7 +32,7 @@ const buildContactTypeLinksJson = (crn: string, flags: FeatureFlags = {}, backUr
 const isContactTypeValid = (slug: string, flags: FeatureFlags = {}) =>
   ContactTypeOptions(flags).some(c => slugify(c.description) === slug)
 
-const getStringValue = (value: unknown): string => {
+export const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
     return typeof value[0] === 'string' ? value[0] : ''
   }
@@ -205,10 +205,12 @@ const addContactController = {
       const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
       const headerName = res.locals.headerPersonName
       const personName = `${headerName?.forename || ''} ${headerName?.surname || ''}`.trim()
+
       const viewModel = buildAddContactViewModel(
         {
           crn,
           slug: contactType,
+          contactCode: res.locals.contactCode,
           sentences: res.locals.sentences || [],
           personName,
           formValues: {},
@@ -218,6 +220,7 @@ const addContactController = {
           responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
           csrfToken: getStringValue(res.locals.csrfToken),
           backUrl: resolveBackUrl(req.query?.backUrl, crn),
+          documentTemplates: res.locals.documentTemplates,
         },
         res.locals.flags,
       )
@@ -243,7 +246,7 @@ const addContactController = {
       const time = getStringValue(req.body?.time)
       const outcomeCode = getStringValue(req.body?.outcomeCode)
       const contactTypes = ContactTypeOptions(res.locals.flags)
-      const selectedType = contactTypes.find(c => slugify(c.description) === slug)!
+      const selectedContactType = contactTypes.find(c => slugify(c.description) === slug)!
       const contactService = new ContactService(masApiClient)
       const pp = await masApiClient.getUserProviders(username)
 
@@ -255,7 +258,7 @@ const addContactController = {
         time,
         staffCode,
         teamCode,
-        type: selectedType.code,
+        type: selectedContactType.code,
         eventId,
         requirementId: null,
         description: title || undefined,

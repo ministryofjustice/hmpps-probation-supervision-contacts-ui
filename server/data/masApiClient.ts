@@ -13,12 +13,14 @@ import {
   PersonContact,
   UpdateContactWithNoOutcome,
   UpdateContactWithOutcome,
+  Templates,
 } from './model/contacts'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { mapPersonAppointmentWithApprovedContactDisplayNames } from '../utils/contactDisplayNames'
 import { sanitizeFilename } from '../utils/sanitizeFilename'
 import { PersonRiskFlags } from './model/risk'
 import { ProfessionalContact } from './model/professionalContact'
+import { FeatureFlags } from './model/featureFlags'
 
 interface UserAlerts {
   content: unknown[]
@@ -194,7 +196,12 @@ export default class MasApiClient extends RestClient {
     )
   }
 
-  async getPersonContact(crn: string, appointmentId: string, username: string): Promise<PersonContact | null> {
+  async getPersonContact(
+    crn: string,
+    appointmentId: string,
+    username: string,
+    flags?: FeatureFlags,
+  ): Promise<PersonContact | null> {
     const personContact = (await this.get(
       {
         path: `/schedule/${crn}/appointment/${appointmentId}`,
@@ -202,7 +209,7 @@ export default class MasApiClient extends RestClient {
       asSystem(username),
     )) as PersonContact | null
 
-    return personContact ? mapPersonAppointmentWithApprovedContactDisplayNames(personContact) : personContact
+    return personContact ? mapPersonAppointmentWithApprovedContactDisplayNames(personContact, flags) : personContact
   }
 
   async getFullContactNote(
@@ -210,6 +217,7 @@ export default class MasApiClient extends RestClient {
     appointmentId: string,
     noteId: string,
     username: string,
+    flags?: FeatureFlags,
   ): Promise<PersonContact | null> {
     const personContact = (await this.get(
       {
@@ -218,6 +226,26 @@ export default class MasApiClient extends RestClient {
       asSystem(username),
     )) as PersonContact | null
 
-    return personContact ? mapPersonAppointmentWithApprovedContactDisplayNames(personContact) : personContact
+    return personContact ? mapPersonAppointmentWithApprovedContactDisplayNames(personContact, flags) : personContact
+  }
+
+  async getDocumentTemplates(typeCode: string, username: string): Promise<Templates | null> {
+    return this.get<Templates | null>(
+      {
+        path: `/contact/types/${typeCode}/templates`,
+      },
+      asSystem(username),
+    )
+  }
+
+  async getDocument(typeCode: string, name: string, username: string): Promise<Response | null> {
+    return this.get<Response | null>(
+      {
+        path: `/contact/types/${typeCode}/templates/${name}/download`,
+        raw: true,
+        responseType: 'arrayBuffer',
+      },
+      asSystem(username),
+    )
   }
 }

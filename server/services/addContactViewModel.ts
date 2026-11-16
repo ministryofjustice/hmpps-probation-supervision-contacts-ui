@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { Sentence } from '../data/model/contacts'
+import { Sentence, TemplateDetails } from '../data/model/contacts'
 import { convertToTitleCase } from '../utils/utils'
 import { dateWithYear } from '../utils/dateWithYear'
 import { CONTACT_DETAILS_MAX_LENGTH } from '../utils/validationUtils'
@@ -14,6 +14,7 @@ import { FeatureFlags } from '../data/model/featureFlags'
 type BuildAddContactViewModelArgs = {
   crn: string
   slug: string
+  contactCode?: string
   sentences: Sentence[]
   personName: string
   formValues: Record<string, string>
@@ -23,12 +24,15 @@ type BuildAddContactViewModelArgs = {
   responsibleOfficerSurname?: string
   csrfToken?: string
   backUrl?: string
+  isEarlyTermination?: boolean
+  documentTemplates?: TemplateDetails[]
 }
 
 export const buildAddContactViewModel = (
   {
     crn,
     slug,
+    contactCode,
     sentences,
     personName,
     formValues,
@@ -38,6 +42,7 @@ export const buildAddContactViewModel = (
     responsibleOfficerSurname,
     csrfToken,
     backUrl,
+    documentTemplates,
   }: BuildAddContactViewModelArgs,
   flags: FeatureFlags = {},
 ) => {
@@ -139,6 +144,18 @@ export const buildAddContactViewModel = (
 
   const dateToday = DateTime.now().toFormat('d/M/yyyy')
 
+  const isEarlyTermination =
+    flags.enableEarlyTermination20261103Squad3 && contactTypeName === 'Early termination request'
+
+  const templates: { link: string; name: string }[] = []
+  if (flags.enableEarlyTermination20261103Squad3 && contactCode) {
+    documentTemplates?.forEach(template => {
+      const link = `/contacts/types/${contactCode}/documents/${template.name}`
+      const { name } = template
+      templates.push({ link, name })
+    })
+  }
+
   return {
     crn,
     contactTypeName,
@@ -157,6 +174,8 @@ export const buildAddContactViewModel = (
     detailsMaxLength: CONTACT_DETAILS_MAX_LENGTH,
     showOutcomeBanner: detail?.showOutcomeBanner ?? false,
     dateToday,
+    isEarlyTermination,
+    templates,
     outcomeSection:
       outcomes.length > 0
         ? {
