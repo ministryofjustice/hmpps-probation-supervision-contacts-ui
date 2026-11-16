@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express'
+import { isTypedArray } from 'util/types'
 import MasApiClient from '../data/masApiClient'
 import ContactService from '../services/contactService'
 import addContactController from './addContact'
@@ -126,9 +127,13 @@ describe('addContactController', () => {
     })
 
     describe('early termination contact type', () => {
-      const run = async (flags: Record<string, boolean>) => {
+      const run = async (flags: Record<string, boolean>, noSentence: boolean = false) => {
         const req = createReq({ params: { crn: 'X123456' } })
-        const res = createRes({ flags, contactTypes: FrequentlyUsedContactTypeOptions(flags), sentences: [{}] })
+        const res = createRes({
+          flags,
+          contactTypes: FrequentlyUsedContactTypeOptions(flags),
+          sentences: noSentence ? [] : [{}],
+        })
         await addContactController.getFrequentlyUsedContact()(req, res, next)
         return (res.render as jest.Mock).mock.calls[0][1]
       }
