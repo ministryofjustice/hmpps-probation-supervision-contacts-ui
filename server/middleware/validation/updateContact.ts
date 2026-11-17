@@ -5,6 +5,7 @@ import { updateContactValidation } from '../../properties/validation/updateConta
 import { OutcomeContactTypeDetails } from '../../data/model/outcomeContactTypes'
 import { buildUpdateContactViewModelWithOutcome } from '../../services/updateContactViewModel'
 import { showOfficer } from '../../data/model/contants'
+import { TemplateDetails } from '../../data/model/contacts'
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -72,6 +73,18 @@ const updateContact: RequestHandler = (req, res, next) => {
     errorMessages.details = `You have entered ${excess} characters too many`
   }
 
+  const isEarlyTermination =
+    res.locals.flags?.enableEarlyTermination20261103Squad3 && displayName === 'Early termination request'
+
+  const templates: { link: string; name: string }[] = []
+  if (res.locals.flags?.enableEarlyTermination20261103Squad3 && res.locals.contactCode) {
+    ;(res.locals.documentTemplates as TemplateDetails[])?.forEach(template => {
+      const link = `/contacts/types/${res.locals.contactCode}/documents/${template.name}`
+      const { name } = template
+      templates.push({ link, name })
+    })
+  }
+
   if (Object.keys(errorMessages).length) {
     res.locals.errorMessages = errorMessages
     return res.render('pages/contacts/update-contact', {
@@ -90,6 +103,8 @@ const updateContact: RequestHandler = (req, res, next) => {
       responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
       responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
       dateToday: DateTime.now().toFormat('d/M/yyyy'),
+      templates,
+      isEarlyTermination,
     })
   }
 

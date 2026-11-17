@@ -5,6 +5,8 @@ import masApi from '../mockApis/masApi'
 import arnsApi from '../mockApis/arnsApi'
 import tierApi from '../mockApis/tierApi'
 
+let flags: Array<{ key: string; enabled?: boolean }> = []
+
 test.beforeEach(async ({ page }) => {
   await Promise.all([
     masApi.stubGetPersonalDetails('X123456'),
@@ -17,8 +19,11 @@ test.beforeEach(async ({ page }) => {
     masApi.stubGetOverview(),
     masApi.stubGetContact(),
     masApi.stubGetContactOutcome(),
+    masApi.stubGetContactET(),
+    masApi.stubGetTemplates(),
+    masApi.stubDownloadDocument(),
   ])
-  await login(page)
+  await login(page, { flags })
 })
 
 test.afterEach(async () => {
@@ -78,4 +83,22 @@ test('shows additional questions for a contact with outcomes', async ({ page }) 
   await updateContactPage.expectAlertResponsibleQuestionVisible()
 
   await updateContactPage.expectOutcomeSectionVisible()
+})
+
+test.describe('Updating Early termination request', async () => {
+  test.beforeAll(() => {
+    flags = [
+      { key: 'enableEarlyTermination20261103Squad3', enabled: true },
+      { key: 'earlyTerminationTemplatesAPI20261112Squad3', enabled: true },
+    ]
+  })
+  test('shows downloadable templates for a contact with templates', async ({ page }) => {
+    await page.goto('/case/X123456/00004/update-contact')
+
+    const downloadPromise = page.waitForEvent('download')
+    await page.getByText('NAT_ET_Checklist_template').click()
+    const download = await downloadPromise
+
+    expect(download.suggestedFilename()).toBe('NAT_ET_Checklist_template.docx')
+  })
 })

@@ -2,7 +2,7 @@ import type { RequestHandler } from 'express'
 import { DateTime } from 'luxon'
 import { OutcomeContactTypeDetails } from '../data/model/outcomeContactTypes'
 import { toIsoDateTime } from '../utils/toDateandTime'
-import { UpdateContactWithNoOutcome, UpdateContactWithOutcome } from '../data/model/contacts'
+import { TemplateDetails, UpdateContactWithNoOutcome, UpdateContactWithOutcome } from '../data/model/contacts'
 import MasApiClient from '../data/masApiClient'
 import config from '../config'
 import ContactService from '../services/contactService'
@@ -72,6 +72,18 @@ const updateContactController = {
         outcomeSection = result.outcomeSection
         outcomeLabel = result.outcomeLabel
       }
+      const isEarlyTermination =
+        res.locals.flags?.enableEarlyTermination20261103Squad3 && displayName === 'Early termination request'
+
+      const templates: { link: string; name: string }[] = []
+      if (res.locals.flags?.enableEarlyTermination20261103Squad3 && res.locals.contactCode) {
+        ;(res.locals.documentTemplates as TemplateDetails[])?.forEach(template => {
+          const link = `/contacts/types/${res.locals.contactCode}/documents/${template.name}`
+          const { name } = template
+          templates.push({ link, name })
+        })
+      }
+
       return res.render('pages/contacts/update-contact', {
         crn,
         displayName,
@@ -86,6 +98,8 @@ const updateContactController = {
         responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
         responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
         dateToday: DateTime.now().toFormat('d/M/yyyy'),
+        templates,
+        isEarlyTermination,
       })
     }
   },
