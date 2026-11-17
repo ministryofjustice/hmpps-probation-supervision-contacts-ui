@@ -12,7 +12,6 @@
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 {% from "_components/compliance-tag/macro.njk" import appComplianceTag %}
 {% from "../../partials/breadcrumb.njk" import breadcrumb %}
-{% set update = true %}
 {% set dateParts = contact.appointment.startDateTime.split('T')[0].split('-') %}
 {% set appointmentDate =
   (dateParts[2] | int) + '/' +
@@ -189,6 +188,7 @@
                 }) }}
 
                 {% if isEarlyTermination %}
+                    {% set update = true %}
                     {% include "../../partials/early-termination-guidance.njk" %}
                 {% endif %}
 

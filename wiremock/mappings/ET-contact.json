@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPathPattern": "/mas-api/schedule/X123456/appointment/00002"
+    "urlPathPattern": "/mas-api/schedule/X123456/appointment/00004"
   },
   "response": {
     "status": 200,
@@ -12,7 +12,7 @@
     "appointment" : {
   "id": 2533,
   "type": "Request for early termination",
-  "startDateTime": "2026-05-06T09:28:01+01:00",
+  "startDateTime": "2026-05-08T09:28:01+01:00",
   "appointmentNotes": [
     {
       "id": 0,
@@ -63,7 +63,7 @@
   },
   "deliusManaged": true,
   "isVisor": false,
-  "displayName": "Email or text to person on probation"
+  "displayName": "Request for early termination"
 }
     }
 
