@@ -1,30 +1,77 @@
 import { FeatureFlags } from './featureFlags'
-import { ContactTypeDetail } from './noOutcomeContactTypes'
+import { ContactOutcome, ContactTypeDetail } from './noOutcomeContactTypes'
 
-const ET_ENTRIES: ContactTypeDetail[] = [
+const ET_ENTRIES = (flags: FeatureFlags = {}): ContactTypeDetail[] => [
   {
     code: 'ETRP',
     description: 'Early termination request',
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
-    outcomes: [
-      {
-        label: 'Checklist in progress',
-        value: 'ET01',
-        systemLabel: 'Checklist in progress',
-      },
-      {
-        label: 'Referred to panel',
-        value: 'ET02',
-        systemLabel: 'Referred to panel',
-      },
-      {
-        label: 'Deferred by Practitioner',
-        value: 'ET07',
-        systemLabel: 'Deferred by Practitioner',
-      },
-    ],
+    outcomes: flags.enableETAdditionalOutcomes20261117Squad3
+      ? [...BASE_ET_OUTCOMES, ...ADD_ET_OUTCOMES]
+      : BASE_ET_OUTCOMES,
+  },
+]
+
+const BASE_ET_OUTCOMES: ContactOutcome[] = [
+  {
+    label: 'Checklist in progress',
+    value: 'ET01',
+    systemLabel: 'Checklist in progress',
+  },
+  {
+    label: 'Referred to panel',
+    value: 'ET02',
+    systemLabel: 'Referred to panel',
+  },
+  {
+    label: 'Deferred by Practitioner',
+    value: 'ET07',
+    systemLabel: 'Deferred by Practitioner',
+  },
+]
+
+const ADD_ET_OUTCOMES: ContactOutcome[] = [
+  {
+    label: 'Panel decision approved',
+    value: 'ET03',
+    systemLabel: 'Panel Decision Approved',
+  },
+  {
+    label: 'Panel decision declined – supervision package not delivered',
+    value: 'ET05',
+    systemLabel: 'Panel Decision Declined – SP not delivered',
+  },
+  {
+    label: 'Panel decision declined – RMP not addressed',
+    value: 'ET06',
+    systemLabel: 'Panel Decision Declined – RMP not addressed',
+  },
+  {
+    label: 'Panel decision declined – other (please state)',
+    value: 'ET08',
+    systemLabel: 'Panel Decision Declined – Other',
+  },
+  {
+    label: 'Panel decision declined - insufficient information',
+    value: '_',
+    systemLabel: 'Panel Decision Declined - insufficient information',
+  },
+  {
+    label: 'Panel decision declined - further information required',
+    value: '_',
+    systemLabel: 'Panel Decision Declined - Furher information reqd',
+  },
+  {
+    label: 'Panel date confirmed',
+    value: 'ET09',
+    systemLabel: 'Panel Date Confirmed',
+  },
+  {
+    label: 'Not suitable for early termination - Impact/Reset',
+    value: 'ET11',
+    systemLabel: 'Not suitable for ET - Impact/Reset',
   },
 ]
 
@@ -569,4 +616,4 @@ const BASE_ENTRIES: ContactTypeDetail[] = [
 ]
 
 export const OutcomeContactTypeDetails = (flags: FeatureFlags = {}): ContactTypeDetail[] =>
-  flags?.enableEarlyTermination20261103Squad3 ? [...BASE_ENTRIES, ...ET_ENTRIES] : BASE_ENTRIES
+  flags?.enableEarlyTermination20261103Squad3 ? [...BASE_ENTRIES, ...ET_ENTRIES(flags)] : BASE_ENTRIES
