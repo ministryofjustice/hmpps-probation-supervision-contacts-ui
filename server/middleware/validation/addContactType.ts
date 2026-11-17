@@ -4,7 +4,6 @@ import { addContactValidation } from '../../properties/validation/addContactType
 import { buildAddContactViewModel } from '../../services/addContactViewModel'
 import { resolveBackUrl } from '../../utils/backLink'
 import { getContactTypeDetailBySlug } from '../../services/contactTypeDetails'
-import { TemplateDetails } from '../../data/model/contacts'
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
