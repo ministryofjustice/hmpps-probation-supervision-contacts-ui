@@ -1,5 +1,6 @@
 import httpMocks from 'node-mocks-http'
 import updateContact from './updateContact'
+import { buildUpdateContactViewModelWithOutcome } from '../../services/updateContactViewModel'
 
 // Fixed to noon on a mid-month day: avoids midnight/hour-0 and month-end edge cases
 const FIXED_NOW = new Date('2024-06-15T12:00:00')
@@ -181,5 +182,44 @@ describe('middleware/validation/updateContact', () => {
     expect(next).not.toHaveBeenCalled()
     const renderData = (res.render as jest.Mock).mock.calls[0][1]
     expect(renderData.errorMessages.details).toEqual('You have entered 1 characters too many')
+  })
+
+  it('renders with outcome sections when outcome is required (with ET type)', () => {
+    const textWithNewline = `${'a'.repeat(12000)}\r\n`
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactId: 'ABC123' },
+      body: { ...validBody, details: textWithNewline },
+    })
+    const res = createRes({
+      flags: { enableEarlyTermination20261103Squad3: true },
+      contact: { appointment: { displayName: 'Early termination request' } },
+    })
+    updateContact(req, res, next)
+
+    const mockOutcomeSection = buildUpdateContactViewModelWithOutcome(
+      {
+        displayName: 'Early termination request',
+        contact: { appointment: { outcome: 'Early termination request' } },
+      },
+      { enableEarlyTermination20261103Squad3: true },
+    ).outcomeSection
+    const renderData = (res.render as jest.Mock).mock.calls[0][1]
+
+    expect(renderData.outcomeSection).toEqual(mockOutcomeSection)
+  })
+
+  it('does not render with outcome sections when ET type and flag disabled', () => {
+    const textWithNewline = `${'a'.repeat(12000)}\r\n`
+    const req = httpMocks.createRequest({
+      params: { crn: 'X123456', contactId: 'ABC123' },
+      body: { ...validBody, details: textWithNewline },
+    })
+    const res = createRes({
+      flags: { enableEarlyTermination20261103Squad3: false },
+      contact: { appointment: { displayName: 'Early termination request' } },
+    })
+    updateContact(req, res, next)
+    const renderData = (res.render as jest.Mock).mock.calls[0][1]
+    expect(renderData.outcomeSection).toEqual(undefined)
   })
 })

@@ -1,4 +1,5 @@
 import type { RequestHandler } from 'express'
+import createError from 'http-errors'
 import MasApiClient from '../data/masApiClient'
 import { slugify } from '../utils/slugify'
 import { deliusDeepLinkUrl } from '../utils/deliusDeepLinkUrl'
@@ -8,7 +9,6 @@ import ContactService from '../services/contactService'
 import config from '../config'
 import sendAuditMessage, { AuditAction, SubjectType } from '../middleware/sendAuditMessage'
 import { ContactTypeOptions } from '../data/model/contactTypes'
-import { ENFORCEMENT_CONTACT_CODES } from '../data/model/contactCategories'
 import {
   buildCategoryCheckboxItems,
   buildKeywordSearchResults,
@@ -17,18 +17,22 @@ import {
 } from '../services/contactCategorySearch'
 import { buildAddContactViewModel } from '../services/addContactViewModel'
 import { isBlank } from '../utils/isBlank'
-import logger from '../../logger'
+import { FeatureFlags } from '../data/model/featureFlags'
 import { showOfficer } from '../data/model/contants'
+import { resolveBackUrl, withBackUrl } from '../utils/backLink'
 
-const buildContactTypeLinksJson = (crn: string, enableEnforcementContacts = false) =>
+const buildContactTypeLinksJson = (crn: string, flags: FeatureFlags = {}, backUrl?: string) =>
   JSON.stringify(
-    ContactTypeOptions.filter(t => enableEnforcementContacts || !ENFORCEMENT_CONTACT_CODES.has(t.code)).map(t => ({
+    ContactTypeOptions(flags).map(t => ({
       text: t.description,
-      href: `/case/${crn}/contacts/add-${slugify(t.description)}`,
+      href: withBackUrl(`/case/${crn}/contacts/add-${slugify(t.description)}`, backUrl),
     })),
   )
 
-const getStringValue = (value: unknown): string => {
+const isContactTypeValid = (slug: string, flags: FeatureFlags = {}) =>
+  ContactTypeOptions(flags).some(c => slugify(c.description) === slug)
+
+export const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
     return typeof value[0] === 'string' ? value[0] : ''
   }
@@ -36,24 +40,25 @@ const getStringValue = (value: unknown): string => {
   return typeof value === 'string' ? value : ''
 }
 
-const buildFrequentlyUsedContacts = (contactTypes: any[], crn: string) =>
+const buildFrequentlyUsedContacts = (contactTypes: any[], crn: string, backUrl?: string) =>
   contactTypes
     .slice()
     .sort((first: any, second: any) => first.description.localeCompare(second.description))
     .map((contact: any) => ({
       text: contact.description,
-      href: `/case/${crn}/contacts/add-${slugify(contact.description)}`,
+      href: withBackUrl(`/case/${crn}/contacts/add-${slugify(contact.description)}`, backUrl),
     }))
 
 const addContactController = {
   getFrequentlyUsedContact: (): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
+      const backUrl = req.originalUrl
 
       await sendAuditMessage(res, AuditAction.VIEW_ADD_FREQUENTLY_USED_CONTACT, crn as string, SubjectType.CRN)
 
       const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
-      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
+      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn, backUrl)
 
       if (req.query?.contactType === 'APPOINTMENT') {
         const uuid = crypto.randomUUID()
@@ -62,11 +67,11 @@ const addContactController = {
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([]),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags),
         selectedCategories: [],
         searchResults: null,
         searchByCategoryTabActive: false,
-        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags?.enableEnforcementContacts === true),
+        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags, backUrl),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -77,6 +82,7 @@ const addContactController = {
   getSearchByCategory: (): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
+      const backUrl = req.originalUrl
       const selectedCategories = normaliseSelectedCategories(req.query?.categories as string | string[])
       const lastCategories = normaliseSelectedCategories(
         typeof req.query?.lastCategories === 'string' && req.query.lastCategories.length
@@ -89,13 +95,12 @@ const addContactController = {
       const action = req.query?.action
 
       const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
-      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
+      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn, backUrl)
 
       const baseLocals = {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([]),
-        selectedCategories: [] as string[],
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags),
         searchResults: null as ReturnType<typeof buildSearchResults> | null,
         searchByCategoryTabActive: true,
         lastCategories: '',
@@ -119,16 +124,12 @@ const addContactController = {
         })
       }
 
-      const searchResults = buildSearchResults(
-        selectedCategories,
-        crn,
-        res.locals.flags?.enableEnforcementContacts === true,
-      )
+      const searchResults = buildSearchResults(selectedCategories, crn, res.locals.flags, backUrl)
+
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems(selectedCategories),
-        selectedCategories,
+        categoryCheckboxItems: buildCategoryCheckboxItems(selectedCategories, res.locals.flags),
         searchResults,
         searchByCategoryTabActive: true,
         lastCategories: selectedCategories.join(','),
@@ -141,21 +142,22 @@ const addContactController = {
   getSearchByKeyword: (): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
+      const backUrl = req.originalUrl
       const keyword = typeof req.query?.keyword === 'string' ? req.query.keyword.trim() : ''
       const action = req.query?.action
 
       const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
-      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn)
+      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn, backUrl)
 
       const baseLocals = {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([]),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags),
         searchByCategoryTabActive: false,
         searchByKeywordTabActive: true,
         keywordSearch: keyword,
         keywordSearchResults: null as ReturnType<typeof buildKeywordSearchResults> | null,
-        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags?.enableEnforcementContacts === true),
+        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags, backUrl),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -182,7 +184,7 @@ const addContactController = {
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         ...baseLocals,
-        keywordSearchResults: buildKeywordSearchResults(keyword, crn, res.locals.flags?.enableEnforcementContacts),
+        keywordSearchResults: buildKeywordSearchResults(keyword, crn, res.locals.flags, backUrl),
       })
     }
   },
@@ -190,6 +192,10 @@ const addContactController = {
     return async (req, res, next) => {
       const crn = getStringValue(req.params?.crn)
       const contactType = getStringValue(req.params?.contactType)
+
+      if (!isContactTypeValid(contactType, res.locals.flags)) {
+        return next(createError(404, 'Not found'))
+      }
 
       await sendAuditMessage(res, AuditAction.VIEW_ADD_CONTACT, crn, SubjectType.CRN)
       const { username } = res.locals.user
@@ -199,26 +205,36 @@ const addContactController = {
       const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
       const headerName = res.locals.headerPersonName
       const personName = `${headerName?.forename || ''} ${headerName?.surname || ''}`.trim()
-      const viewModel = buildAddContactViewModel({
-        crn,
-        slug: contactType,
-        sentences: res.locals.sentences || [],
-        personName,
-        formValues: {},
-        isVisor,
-        responsibleOfficer: showResponsibleOfficer,
-        responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
-        responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
-        csrfToken: getStringValue(res.locals.csrfToken),
-      })
+
+      const viewModel = buildAddContactViewModel(
+        {
+          crn,
+          slug: contactType,
+          contactCode: res.locals.contactCode,
+          sentences: res.locals.sentences || [],
+          personName,
+          formValues: {},
+          isVisor,
+          responsibleOfficer: showResponsibleOfficer,
+          responsibleOfficerForename: getStringValue(res.locals.responsibleOfficerForename),
+          responsibleOfficerSurname: getStringValue(res.locals.responsibleOfficerSurname),
+          csrfToken: getStringValue(res.locals.csrfToken),
+          backUrl: resolveBackUrl(req.query?.backUrl, crn),
+          documentTemplates: res.locals.documentTemplates,
+        },
+        res.locals.flags,
+      )
       return res.render('pages/contacts/add-contact-type', viewModel)
     }
   },
   postAddContactType: (masApiClient: MasApiClient): RequestHandler => {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
-      await sendAuditMessage(res, AuditAction.ADD_CONTACT, crn, SubjectType.CRN)
       const slug = req.params.contactType as string
+      if (!isContactTypeValid(slug, res.locals.flags)) {
+        return next(createError(404, 'Not found'))
+      }
+      await sendAuditMessage(res, AuditAction.ADD_CONTACT, crn, SubjectType.CRN)
       const { username } = res.locals.user
       const sentence = getStringValue(req.body?.sentence)
       const title = getStringValue(req.body?.title)
@@ -229,20 +245,20 @@ const addContactController = {
       const date = getStringValue(req.body?.date)
       const time = getStringValue(req.body?.time)
       const outcomeCode = getStringValue(req.body?.outcomeCode)
-      const contactTypes = ContactTypeOptions
-      const selectedType = contactTypes.find(c => slugify(c.description) === slug)
+      const contactTypes = ContactTypeOptions(res.locals.flags)
+      const selectedContactType = contactTypes.find(c => slugify(c.description) === slug)!
       const contactService = new ContactService(masApiClient)
-      const pp = await masApiClient.getProbationPractitioner(crn, username)
+      const pp = await masApiClient.getUserProviders(username)
 
-      const staffCode = pp?.code || 'UNKNOWN'
-      const teamCode = pp?.team?.code || 'UNKNOWN'
+      const staffCode = pp?.defaultUserDetails?.staffCode || 'UNKNOWN'
+      const teamCode = pp?.teams.find(team => team.description === pp.defaultUserDetails.team)?.code || 'UNKNOWN'
       const eventId = sentence === 'PERSON_LEVEL_CONTACT' ? null : Number(sentence)
       const payload: CreateContactRequest = {
         date: formattedDate(date),
         time,
         staffCode,
         teamCode,
-        type: selectedType?.code || slug,
+        type: selectedContactType.code,
         eventId,
         requirementId: null,
         description: title || undefined,

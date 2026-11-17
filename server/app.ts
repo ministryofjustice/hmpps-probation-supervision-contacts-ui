@@ -25,6 +25,7 @@ import type { Services } from './services'
 import addUpdateContactRoutes from './routes/updateContact'
 import { metricsMiddleware } from './monitoring/metricsApp'
 import addMpopRedirectRoutes from './routes/mpopRedirects'
+import addPersonHeaderRoutes from './routes/personHeader'
 
 export default function createApp(services: Services): express.Application {
   const app = express()
@@ -60,6 +61,7 @@ export default function createApp(services: Services): express.Application {
   addContactRoutes(router, services)
   addUpdateContactRoutes(router, services)
   addMpopRedirectRoutes(router)
+  addPersonHeaderRoutes(router, services)
   app.use(router)
 
   app.use(setUpCsrf())

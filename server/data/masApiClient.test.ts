@@ -3,6 +3,7 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import { asSystem } from '@ministryofjustice/hmpps-rest-client'
 import config from '../config'
 import MasApiClient from './masApiClient'
+import { ProfessionalContact } from './model/professionalContact'
 
 describe('MasApiClient', () => {
   let masApiClient: MasApiClient
@@ -236,6 +237,32 @@ describe('MasApiClient', () => {
     })
   })
 
+  describe('getContacts', () => {
+    it('returns the professional contacts for a given crn', async () => {
+      const contacts: ProfessionalContact = {
+        name: { forename: 'Caroline', surname: 'Wolff' },
+        currentContacts: [],
+        previousContacts: [],
+      }
+      nock(config.apis.masApi.url)
+        .get('/sentence/X123456/contacts')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, contacts)
+
+      const result = await masApiClient.getContacts('X123456', 'test-user')
+
+      expect(result).toEqual(contacts)
+    })
+
+    it('returns null when the contacts are not found', async () => {
+      nock(config.apis.masApi.url).get('/sentence/X123456/contacts').reply(404)
+
+      const result = await masApiClient.getContacts('X123456', 'test-user')
+
+      expect(result).toBeNull()
+    })
+  })
+
   describe('createContact', () => {
     it('posts a contact and returns the response', async () => {
       const payload = {
@@ -361,6 +388,40 @@ describe('MasApiClient', () => {
               originalname: 'my-�file-name-test-.pdf',
             },
           },
+        }),
+        asSystem('test-user'),
+      )
+    })
+  })
+
+  describe('getDocumentTemplates', () => {
+    it('returns document templates for a given typeCode', async () => {
+      const fullTemplates = {
+        templates: [{ name: 'Template' }],
+      }
+
+      nock(config.apis.masApi.url)
+        .get('/contact/types/ETRP/templates')
+        .matchHeader('authorization', 'Bearer test-system-token')
+        .reply(200, fullTemplates)
+
+      const result = await masApiClient.getDocumentTemplates('ETRP', 'test-user')
+
+      expect(result).toEqual(fullTemplates)
+    })
+  })
+
+  describe('getDocument', () => {
+    it('returns document for a given typeCode and name', async () => {
+      const get = jest.spyOn(masApiClient, 'get').mockResolvedValue(undefined)
+
+      await masApiClient.getDocument('ETRP', 'template', 'test-user')
+
+      expect(get).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: '/contact/types/ETRP/templates/template/download',
+          raw: true,
+          responseType: 'arrayBuffer',
         }),
         asSystem('test-user'),
       )

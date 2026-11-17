@@ -10,15 +10,13 @@ const crn = 'X123456'
 describe('contactCategorySearch', () => {
   it('normalises selected categories from single values and arrays', () => {
     expect(normaliseSelectedCategories(undefined)).toEqual([])
-    expect(normaliseSelectedCategories('Referrals')).toEqual(['Referrals'])
-    expect(normaliseSelectedCategories(['Referrals', 'Sentence management'])).toEqual([
-      'Referrals',
-      'Sentence management',
-    ])
+    expect(normaliseSelectedCategories('6')).toEqual([6])
+    expect(normaliseSelectedCategories(['6', '8'])).toEqual([6, 8])
+    expect(normaliseSelectedCategories(['6', 'abc'])).toEqual([6])
   })
 
   it('builds category checkbox items in alphabetical order', () => {
-    const items = buildCategoryCheckboxItems([])
+    const items = buildCategoryCheckboxItems([], {})
 
     expect(items.length).toBeGreaterThan(0)
     const labels = items.map(item => item.text)
@@ -28,38 +26,14 @@ describe('contactCategorySearch', () => {
   })
 
   it('marks selected categories as checked', () => {
-    const items = buildCategoryCheckboxItems(['Referrals'])
-    const referrals = items.find(item => item.value === 'Referrals')
+    const items = buildCategoryCheckboxItems([6], {})
+    const referrals = items.find(item => item.text === 'Referrals')
 
     expect(referrals?.checked).toBe(true)
   })
 
-  it('includes flagged entries only when enableEnforcementContacts is true', () => {
-    const categories = [
-      'Safeguarding and victim liaison',
-      'Non-compliance and enforcement',
-      'Communication and information sharing with others',
-    ]
-    const withFlag = buildSearchResults(categories, crn, true)
-    const withoutFlag = buildSearchResults(categories, crn)
-
-    const allCodes = (r: ReturnType<typeof buildSearchResults>) =>
-      r.categories.flatMap(c => [...c.items, ...c.subcategories.flatMap(s => s.items)]).map(i => i.code)
-
-    expect(allCodes(withFlag)).toContain('C280')
-    expect(allCodes(withFlag)).toContain('AAM1')
-    expect(allCodes(withFlag)).toContain('AAM10')
-    expect(allCodes(withoutFlag)).toContain('C280')
-    expect(allCodes(withoutFlag)).not.toContain('AAM1')
-    expect(allCodes(withoutFlag)).not.toContain('AAM10')
-    expect(withoutFlag.count).toBe(withFlag.count - 2)
-  })
-
   it('builds grouped search results with sorted headings and items', () => {
-    const results = buildSearchResults(
-      ['Communication with person on probation', 'Communication and information sharing with others'],
-      crn,
-    )
+    const results = buildSearchResults([3, 2], crn)
 
     expect(results.count).toBeGreaterThan(0)
     const categoryNames = results.categories.map(category => category.name)
@@ -135,15 +109,6 @@ describe('contactCategorySearch', () => {
       const results = buildKeywordSearchResults('liaison', crn)
 
       expect(results.keyword).toBe('liaison')
-    })
-
-    it('includes flagged entries only when enableEnforcementContacts is true', () => {
-      const withFlag = buildKeywordSearchResults('alcohol', crn, true)
-      const withoutFlag = buildKeywordSearchResults('alcohol', crn)
-
-      expect(withFlag.items.some(i => i.displayName === 'Alcohol consumption')).toBe(true)
-      expect(withoutFlag.items.some(i => i.displayName === 'Alcohol consumption')).toBe(false)
-      expect(withoutFlag.count).toBe(0)
     })
   })
 })

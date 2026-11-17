@@ -15,7 +15,7 @@ export default {
       },
     }),
 
-  stubGetRisks: (crn = 'A000001'): SuperAgentRequest =>
+  stubGetRisks: (): SuperAgentRequest =>
     stubFor({
       request: {
         method: 'GET',

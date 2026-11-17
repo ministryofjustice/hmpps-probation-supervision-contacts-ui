@@ -43,7 +43,9 @@ export const getTierDetails = (
   }
 
   return async (req, res, next) => {
-    if (!res.locals.flags?.enableSupervisionPackagePoPHeader) return next()
+    const { flags } = res.locals
+    const personHeaderTierV3 = flags?.enablePersonHeader && flags?.enablePersonHeaderTierV3
+    if (!flags?.enableSupervisionPackagePoPHeader && !personHeaderTierV3) return next()
 
     const { crn } = req.params as Record<string, string>
     res.locals.tierUrlV3 = tierUrlV3(crn)

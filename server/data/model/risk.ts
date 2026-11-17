@@ -196,3 +196,6 @@ export interface Need {
 }
 
 export type RiskFlagLevel = 'HIGH' | 'MEDIUM' | 'LOW' | 'INFORMATION_ONLY' | 'VERY HIGH'
+
+// The ROSH badge level shown in the person header, as named in MPoP
+export type RoshBadgeLevel = RiskFlagLevel

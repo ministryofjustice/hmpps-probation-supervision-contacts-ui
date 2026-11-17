@@ -96,8 +96,7 @@
                                 classes: "govuk-checkboxes--small app-checkboxes--two-columns",
                                 fieldset: {
                                     legend: {
-                                        html: '<h3 class="govuk-heading-m">Search by category</h3>',
-                                        classes: "govuk-fieldset__legend--s"
+                                        html: '<h3 class="govuk-heading-m">Search by category</h3>'
                                     }
                                 },
                                 items: categoryCheckboxItems,
@@ -111,7 +110,13 @@
                                     value: "search",
                                     attributes: { "data-qa": "category-search-button" }
                                 }) }}
-                                <button class="govuk-button govuk-button--secondary" type="submit" name="action" value="clear" data-qa="category-clear-button">Clear</button>
+                                {{ govukButton({
+                                    text: "Clear",
+                                    classes: "govuk-button--secondary",
+                                    name: "action",
+                                    value: "clear",
+                                    attributes: { "data-qa": "category-clear-button" }
+                                }) }}
                             </div>
                         </form>
 

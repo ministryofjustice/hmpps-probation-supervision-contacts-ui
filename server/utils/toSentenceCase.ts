@@ -35,7 +35,7 @@ export const toSentenceCase = (
       .join(' ')
   }
   const formatted = words
-    .map((word, i) => {
+    .map((word, _i) => {
       return formatWord(word)
     })
     .join(' ')

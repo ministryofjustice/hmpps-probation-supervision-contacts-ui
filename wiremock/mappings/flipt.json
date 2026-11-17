@@ -13,17 +13,6 @@
           },
           "flags": [
             {
-              "key": "enableEnforcementContacts",
-              "name": "enableEnforcementContacts",
-              "description": "",
-              "enabled": true,
-              "type": "BOOLEAN_FLAG_TYPE",
-              "createdAt": "2026-06-10T12:00:00.000000Z",
-              "updatedAt": "2026-06-10T12:00:00.000000Z",
-              "rules": [],
-              "rollouts": []
-            },
-            {
               "key": "enableArnsComponent",
               "name": "enableArnsComponent",
               "description": "",
@@ -53,6 +42,61 @@
               "type": "BOOLEAN_FLAG_TYPE",
               "createdAt": "2026-09-30T12:00:00.000000Z",
               "updatedAt": "2026-09-30T12:00:00.000000Z",
+              "rules": [],
+              "rollouts": []
+            },
+            {
+              "key": "enablePersonHeader",
+              "name": "enablePersonHeader",
+              "description": "",
+              "enabled": false,
+              "type": "BOOLEAN_FLAG_TYPE",
+              "createdAt": "2026-10-16T12:00:00.000000Z",
+              "updatedAt": "2026-10-16T12:00:00.000000Z",
+              "rules": [],
+              "rollouts": []
+            },
+            {
+              "key": "enablePersonHeaderTierV3",
+              "name": "enablePersonHeaderTierV3",
+              "description": "",
+              "enabled": false,
+              "type": "BOOLEAN_FLAG_TYPE",
+              "createdAt": "2026-10-16T12:00:00.000000Z",
+              "updatedAt": "2026-10-16T12:00:00.000000Z",
+              "rules": [],
+              "rollouts": []
+            },
+            {
+              "key": "enablePersonHeaderPhoto",
+              "name": "enablePersonHeaderPhoto",
+              "description": "",
+              "enabled": false,
+              "type": "BOOLEAN_FLAG_TYPE",
+              "createdAt": "2026-10-16T12:00:00.000000Z",
+              "updatedAt": "2026-10-16T12:00:00.000000Z",
+              "rules": [],
+              "rollouts": []
+            },
+            {
+              "key": "enableEarlyTermination20261103Squad3",
+              "name": "enableEarlyTermination20261103Squad3",
+              "description": "",
+              "enabled": true,
+              "type": "BOOLEAN_FLAG_TYPE",
+              "createdAt": "2026-11-03T12:00:00.000000Z",
+              "updatedAt": "2026-12-03T12:00:00.000000Z",
+              "rules": [],
+              "rollouts": []
+            },
+            {
+              "key": "earlyTerminationTemplatesAPI20261112Squad3",
+              "name": "earlyTerminationTemplatesAPI20261112Squad3",
+              "description": "",
+              "enabled": true,
+              "type": "BOOLEAN_FLAG_TYPE",
+              "createdAt": "2026-11-03T12:00:00.000000Z",
+              "updatedAt": "2026-12-03T12:00:00.000000Z",
               "rules": [],
               "rollouts": []
             }

@@ -1,19 +1,23 @@
+import { FeatureFlags } from '../data/model/featureFlags'
 import { OutcomeContactTypeDetails } from '../data/model/outcomeContactTypes'
 
 const normalise = (value?: string) => value?.replace(/\s+/g, '').toLowerCase() ?? ''
 
-export const buildUpdateContactViewModelWithOutcome = ({
-  displayName,
-  contact,
-}: {
-  displayName: string
-  contact: {
-    appointment: {
-      outcome: string
+export const buildUpdateContactViewModelWithOutcome = (
+  {
+    displayName,
+    contact,
+  }: {
+    displayName: string
+    contact: {
+      appointment: {
+        outcome: string
+      }
     }
-  }
-}) => {
-  const contactDetails = OutcomeContactTypeDetails.find(item => item.description === displayName)
+  },
+  flags: FeatureFlags = {},
+) => {
+  const contactDetails = OutcomeContactTypeDetails(flags).find(item => item.description === displayName)
   const selectedOutcome = contactDetails?.outcomes?.find(
     outcome =>
       normalise(outcome.label) === normalise(contact.appointment.outcome) ||
@@ -33,7 +37,7 @@ export const buildUpdateContactViewModelWithOutcome = ({
 
     type: 'radios',
 
-    items: contactDetails.outcomes.map(outcome => ({
+    items: contactDetails?.outcomes.map(outcome => ({
       text: outcome.label,
       value: outcome.value,
 
@@ -48,8 +52,8 @@ export const buildUpdateContactViewModelWithOutcome = ({
   }
 }
 
-export const updateContactOutcomeCode = (displayName: string, outcomeCode: string) => {
-  const contactDetails = OutcomeContactTypeDetails.find(item => item.description === displayName)
+export const updateContactOutcomeCode = (displayName: string, outcomeCode: string, flags: FeatureFlags = {}) => {
+  const contactDetails = OutcomeContactTypeDetails(flags).find(item => item.description === displayName)
   const hasSingleOutcome = contactDetails?.outcomes?.length === 1
   if (hasSingleOutcome) {
     return contactDetails.outcomes[0].value

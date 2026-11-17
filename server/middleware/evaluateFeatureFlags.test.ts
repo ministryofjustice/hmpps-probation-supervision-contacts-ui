@@ -3,9 +3,7 @@ import evaluateFeatureFlags from './evaluateFeatureFlags'
 import FlagService from '../services/flagService'
 import logger from '../../logger'
 
-const mockFlags = {
-  enableEnforcementContacts: true,
-}
+const mockFlags = {}
 jest.mock('../services/flagService')
 
 describe('/middleware/evaluateFeatureFlags', () => {

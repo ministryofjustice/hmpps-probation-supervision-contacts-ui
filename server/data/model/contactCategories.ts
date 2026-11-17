@@ -1,20 +1,30 @@
+import { FeatureFlags } from './featureFlags'
+
+export const CATEGORY_IDS = {
+  'Case management and meetings': 1,
+  'Communication and information sharing with others': 2,
+  'Communication with person on probation': 3,
+  'Multi-agency working (including IOM, MAPPA and MARAC)': 4,
+  'Non-compliance and enforcement': 5,
+  Referrals: 6,
+  'Safeguarding and victim liaison': 7,
+  'Sentence management': 8,
+} as const
+
+export type Category = keyof typeof CATEGORY_IDS
+
+export const categoryFromId = (id: number): Category | undefined =>
+  (Object.keys(CATEGORY_IDS) as Category[]).find(category => CATEGORY_IDS[category] === id)
+
 export type ContactTypeCategoryEntry = {
-  category: string
+  category: Category
   subcategory?: string
   code: string
   displayName: string
+  isFrequentlyUsed?: boolean
 }
 
-const ENFORCEMENT_ENTRIES: ContactTypeCategoryEntry[] = [
-  { category: 'Non-compliance and enforcement', code: 'AAM1', displayName: 'Alcohol consumption' },
-  {
-    category: 'Communication and information sharing with others',
-    code: 'AAM10',
-    displayName: 'Critical communications',
-  },
-]
-
-const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
+const caseManagementAndMeetings = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Case management and meetings',
     subcategory: 'Case meetings',
@@ -153,10 +163,14 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'MO8',
     displayName: 'Management oversight – home visit risk assessment',
   },
+]
+
+const communicationAndInformationSharing = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Communication and information sharing with others',
     code: 'C326',
     displayName: 'Internal communications',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication and information sharing with others',
@@ -211,12 +225,14 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     subcategory: 'External communications',
     code: 'CM3A',
     displayName: 'Email or text from other',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication and information sharing with others',
     subcategory: 'External communications',
     code: 'CM3B',
     displayName: 'Email or text to other',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication and information sharing with others',
@@ -247,12 +263,14 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     subcategory: 'External communications',
     code: 'CT3A',
     displayName: 'Telephone contact from other',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication and information sharing with others',
     subcategory: 'External communications',
     code: 'CT3B',
     displayName: 'Telephone contact to other',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication and information sharing with others',
@@ -391,6 +409,7 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     subcategory: 'Police',
     code: 'C204',
     displayName: 'Police liaison',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication and information sharing with others',
@@ -404,29 +423,36 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'C202',
     displayName: 'Prison liaison',
   },
+]
+
+const communicationWithPersonOnProbation = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Communication with person on probation',
     subcategory: 'Email or telephone',
     code: 'CMOA',
     displayName: 'Email or text from person on probation',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication with person on probation',
     subcategory: 'Email or telephone',
     code: 'CMOB',
     displayName: 'Email or text to person on probation',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication with person on probation',
     subcategory: 'Email or telephone',
     code: 'CTOA',
     displayName: 'Telephone contact from person on probation',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication with person on probation',
     subcategory: 'Email or telephone',
     code: 'CTOB',
     displayName: 'Telephone contact to person on probation',
+    isFrequentlyUsed: true,
   },
   {
     category: 'Communication with person on probation',
@@ -470,6 +496,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'C129',
     displayName: 'Use of video link or teleconference',
   },
+]
+
+const multiAgencyWorking = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Multi-agency working (including IOM, MAPPA and MARAC)',
     subcategory: 'IOM',
@@ -560,6 +589,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'ERFM',
     displayName: 'MARAC referral',
   },
+]
+
+const nonComplianceAndEnforcement = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Non-compliance and enforcement',
     code: 'ACOM1',
@@ -590,6 +622,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'CSNR',
     displayName: 'Sick note received',
   },
+]
+
+const referrals = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Referrals',
     code: 'C115',
@@ -625,6 +660,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'C347',
     displayName: 'Referral - finance, benefits or debt',
   },
+]
+
+const safeguardingAndVictimLiaison = (_flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Safeguarding and victim liaison',
     code: 'DAD1',
@@ -695,6 +733,9 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'VINC',
     displayName: 'ViSOR information contact',
   },
+]
+
+const sentenceManagement = (flags: FeatureFlags): ContactTypeCategoryEntry[] => [
   {
     category: 'Sentence management',
     code: 'DUS01',
@@ -740,9 +781,25 @@ const BASE_ENTRIES: ContactTypeCategoryEntry[] = [
     code: 'DRAT',
     displayName: 'Substance misuse screening tool',
   },
+  ...(flags.enableEarlyTermination20261103Squad3
+    ? [
+        {
+          category: 'Sentence management' as const,
+          code: 'ETRP',
+          displayName: 'Early termination request',
+          isFrequentlyUsed: true,
+        },
+      ]
+    : []),
 ]
 
-export const ENFORCEMENT_CONTACT_CODES: ReadonlySet<string> = new Set(ENFORCEMENT_ENTRIES.map(e => e.code))
-
-export const ContactTypeCategoryEntries = (enableEnforcementContacts = false): ContactTypeCategoryEntry[] =>
-  enableEnforcementContacts ? [...BASE_ENTRIES, ...ENFORCEMENT_ENTRIES] : BASE_ENTRIES
+export const ContactTypeCategoryEntries = (flags: FeatureFlags = {}): ContactTypeCategoryEntry[] => [
+  ...caseManagementAndMeetings(flags),
+  ...communicationAndInformationSharing(flags),
+  ...communicationWithPersonOnProbation(flags),
+  ...multiAgencyWorking(flags),
+  ...nonComplianceAndEnforcement(flags),
+  ...referrals(flags),
+  ...safeguardingAndVictimLiaison(flags),
+  ...sentenceManagement(flags),
+]

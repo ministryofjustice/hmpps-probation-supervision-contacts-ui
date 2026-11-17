@@ -94,6 +94,15 @@ export default {
       },
       agent: new AgentConfig(Number(get('MPOP_API_TIMEOUT_RESPONSE', 10000))),
     },
+    prisonApi: {
+      url: get('PRISON_API_URL', 'http://localhost:8100', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('PRISON_API_TIMEOUT_RESPONSE', 5000)),
+        deadline: Number(get('PRISON_API_TIMEOUT_DEADLINE', 5000)),
+      },
+      agent: new AgentConfig(Number(get('PRISON_API_TIMEOUT_RESPONSE', 5000))),
+    },
     tierApi: {
       url: get('TIER_API_URL', 'http://localhost:8100', requiredInProduction),
       healthPath: '/health/ping',
@@ -102,6 +111,15 @@ export default {
         deadline: Number(get('TIER_API_TIMEOUT_DEADLINE', 10000)),
       },
       agent: new AgentConfig(Number(get('TIER_API_TIMEOUT_RESPONSE', 10000))),
+    },
+    prisonerSearchApi: {
+      url: get('PRISONER_SEARCH_API_URL', 'http://localhost:8100', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 5000)),
+        deadline: Number(get('PRISONER_SEARCH_API_TIMEOUT_DEADLINE', 5000)),
+      },
+      agent: new AgentConfig(Number(get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 5000))),
     },
   },
   appInsights: {

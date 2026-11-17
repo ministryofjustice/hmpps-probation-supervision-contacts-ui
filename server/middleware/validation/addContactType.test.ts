@@ -288,4 +288,26 @@ describe('middleware/validation/addContactType', () => {
     expect(renderData.responsibleOfficerSurname).toBe('Doe')
     expect(renderData.csrfToken).toBe('csrf-token')
   })
+
+  describe('back link on validation error', () => {
+    const render = (query: Record<string, string>) => {
+      const req = httpMocks.createRequest({
+        params: { crn: 'X123456', contactType: 'add-police-liaison' },
+        query,
+        body: { date: '', time: '', sensitivity: '' },
+      })
+      const res = createRes()
+      addContactType(req, res, next)
+      return (res.render as jest.Mock).mock.calls[0][1]
+    }
+
+    it('preserves a valid backUrl', () => {
+      const backUrl = '/case/X123456/contacts/search-keyword?keyword=police&action=search'
+      expect(render({ backUrl }).backLink).toBe(backUrl)
+    })
+
+    it('falls back to frequently used contacts for an invalid backUrl', () => {
+      expect(render({ backUrl: 'https://evil.com' }).backLink).toBe('/case/X123456/add-frequently-used-contact')
+    })
+  })
 })

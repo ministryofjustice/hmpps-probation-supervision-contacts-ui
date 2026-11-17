@@ -1,5 +1,6 @@
 import * as govukFrontend from 'govuk-frontend'
 import * as mojFrontend from '@ministryofjustice/frontend'
+import * as mpopFrontend from '@ministryofjustice/hmpps-mpop-frontend-components-lib/dist/js/all'
 import { DateTime } from 'luxon'
 import setupTabsScrollToTop from './tabs-scroll-to-top'
 import setupCategorySearch from './category-search'
@@ -9,6 +10,7 @@ import './appInsights'
 
 govukFrontend.initAll()
 mojFrontend.initAll()
+mpopFrontend.initAll()
 
 class ServiceAlert {
   constructor() {

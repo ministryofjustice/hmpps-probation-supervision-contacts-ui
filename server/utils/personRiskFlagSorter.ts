@@ -8,6 +8,69 @@ const riskLevelBadgeClass: Record<string, string> = {
   LOW: 'risk-badge--low',
 }
 
+const riskTypeBadgeClass: Record<string, string> = {
+  COHORT: 'risk-badge--cohort',
+  MISCELLANEOUS: 'risk-badge--misc',
+}
+
+const riskLevelByDescription: Record<string, string> = {
+  // LOW
+  'county lines - victim': 'LOW',
+  'domestic abuse safety officer': 'LOW',
+  'home office interest': 'LOW',
+  'street gangs': 'LOW',
+  // MEDIUM
+  'child concerns': 'MEDIUM',
+  'victim contact': 'MEDIUM',
+  'county lines - perpetrator': 'MEDIUM',
+  'cuckooing - potential victim': 'MEDIUM',
+  'domestic abuse victim': 'MEDIUM',
+  'doris (disruption of recorded internal secretors)': 'MEDIUM',
+  'information on closed case': 'MEDIUM',
+  'joint intelligence programme': 'MEDIUM',
+  'modern slavery - perpetrator': 'MEDIUM',
+  'modern slavery - victim': 'MEDIUM',
+  'organised crime': 'MEDIUM',
+  'restraining order': 'MEDIUM',
+  stalking: 'MEDIUM',
+  'warrant / summons': 'MEDIUM',
+
+  // HIGH
+  'alert notice': 'HIGH',
+  'barred from working with adults': 'HIGH',
+  'barred from working with children': 'HIGH',
+  'child criminal exploitation (cce) perpetrator': 'HIGH',
+  'child protection': 'HIGH',
+  'child sexual exploitation - perpetrator': 'HIGH',
+  corruptor: 'HIGH',
+  'domestic abuse': 'HIGH',
+  mappa: 'HIGH',
+  marac: 'HIGH',
+  'safeguarding - "adult at risk"': 'HIGH',
+  'sexual conviction': 'HIGH',
+  'sexual harm prevention order / sexual risk order': 'HIGH',
+  sfo: 'HIGH',
+  'suicide/self harm': 'HIGH',
+  'terrorism act offender': 'HIGH',
+  weapons: 'HIGH',
+}
+
+const cohortDescriptions = new Set([
+  'contact suspended',
+  'cyber - dependent',
+  'cyber - enabled',
+  'grand avenues cohort',
+  'home office interest',
+  'lifer',
+  'organised crime - overt',
+  'short sentence service',
+  'final third excluded',
+  'final third - supervision continues',
+  'street gangs',
+])
+
+const miscDescriptions = new Set(['cppc registered case', 'integrated offender management'])
+
 const risksWithLevelDescription = new Set([
   'risk to public',
   'risk to known adult',
@@ -18,90 +81,98 @@ const risksWithLevelDescription = new Set([
 
 const lowRiskLevelWithDescription = new Set(['mappa'])
 
+// Higher priorities sort first. Unknown values default to 0, so sort last.
 const riskLevelPriority: Record<string, number> = {
-  'VERY HIGH': 10,
-  HIGH: 20,
-  MEDIUM: 30,
-  LOW: 40,
+  'VERY HIGH': 40,
+  HIGH: 30,
+  MEDIUM: 20,
+  LOW: 10,
+}
+
+const riskGroupPriority: Record<string, number> = {
+  'Very high': 60,
+  High: 50,
+  Medium: 40,
+  Low: 30,
+  Cohort: 20,
+  Miscellaneous: 10,
 }
 
 export const registerTypes = {
   publicProtection: [
     { code: 'AV2S', description: 'Risk to Staff' },
-    { code: 'RTPS', description: 'Risk to Probation Staff' },
     { code: 'REG17', description: 'Risk to Public' },
-    { code: 'REG15', description: 'Risk to Known Adult' },
     { code: 'REG16', description: 'Risk to Prisoner' },
-    { code: 'REG26', description: 'Organised Crime' },
-    { code: 'RCHD', description: 'Risk to Children' },
+    { code: 'CPPC', description: 'CPPC registered case' },
+    { code: 'ADVP', description: 'Domestic Abuse' },
+    { code: 'MAPP', description: 'MAPPA' },
+    { code: 'IMAR', description: 'MARAC' },
+    { code: 'REG15', description: 'Risk to Known Adult' },
     { code: 'RSC', description: 'Sexual Conviction' },
-    {
-      code: 'SHPO',
-      description: 'Sexual Harm Prevention Order / Sexual Risk Order',
-    },
+    { code: 'SPO', description: 'Stalking' },
     { code: 'RTAO', description: 'Terrorism Act Offender' },
-    { code: 'WEAP', description: 'Weapons' },
-    { code: 'STRG', description: 'Street Gangs' },
-    { code: 'COC', description: 'Organised Crime - Overt' },
-    { code: 'CUCK', description: 'Cuckooing - Potential Victim' },
   ],
 
   safeguardingRisk: [
     { code: 'BWWA', description: 'Barred from working with Adults' },
     { code: 'ADWC', description: 'Barred from working with Children' },
+    { code: 'RCCO', description: 'Child Concerns' },
+    { code: 'CCE', description: 'Child Criminal Exploitation (CCE) perpetrator' },
+    { code: 'RCPR', description: 'Child Protection' },
+    { code: 'CSEP', description: 'Child Sexual Exploitation - Perpetrator' },
     { code: 'CL1', description: 'County Lines - Perpetrator' },
-    { code: 'CL2', description: 'County Lines - Victim' },
-    {
-      code: 'CCE',
-      description: 'Child Criminal Exploitation (CCE) perpetrator',
-    },
-    {
-      code: 'CSEP',
-      description: 'Child Sexual Exploitation - Perpetrator',
-    },
     { code: 'MSP', description: 'Modern Slavery - Perpetrator' },
-    { code: 'MSV', description: 'Modern Slavery - Victim' },
-    { code: 'DASO', description: 'Domestic Abuse Safety Officer' },
-    { code: 'ADVP', description: 'Domestic Abuse Perpetrator' },
-    { code: 'COR', description: 'Corruptor' },
-    { code: 'CYB1', description: 'Cyber - Enabled' },
-    { code: 'CYB2', description: 'Cyber - Dependent' },
+    { code: 'RCHD', description: 'Risk to Children' },
   ],
 
   alerts: [
     { code: 'ALERT', description: 'Alert Notice' },
-    { code: 'PRC', description: 'Contact Suspended' },
+    { code: 'COR', description: 'Corruptor' },
+    { code: 'DASO', description: 'Domestic Abuse Safety Officer' },
+    { code: 'DORIS', description: 'DoRIS (Disruption of Recorded Internal Secretors)' },
     { code: 'ICC', description: 'Information on Closed Case' },
-    { code: 'HOIE', description: 'Home Office Interest' },
-    { code: 'RCCO', description: 'Child Concerns' },
+    { code: 'IIOM', description: 'Integrated Offender Management' },
+    { code: 'JIP', description: 'Joint Intelligence Programme' },
+    { code: 'REG26', description: 'Organised Crime' },
     { code: 'RSTO', description: 'Restraining Order' },
-    { code: 'WRSM', description: 'Warrant / Summons' },
-    { code: 'INLL', description: 'Lifer' },
-  ],
-
-  safeguardingNeed: [
-    { code: 'RVAD', description: 'Safeguarding - "Adult At Risk"' },
-    { code: 'RCPR', description: 'Child Protection' },
-    { code: 'ADVV', description: 'Domestic Abuse Victim' },
-    { code: 'INVI', description: 'Victim Contact' },
-    { code: 'IMAR', description: 'MARAC' },
+    { code: 'RTPS', description: 'Risk to Probation Staff' },
+    { code: 'SHPO', description: 'Sexual Harm Prevention Order / Sexual Risk Order' },
+    { code: 'ASFO', description: 'SFO' },
     { code: 'ALSH', description: 'Suicide/Self Harm' },
+    { code: 'INVI', description: 'Victim Contact' },
+    { code: 'WRSM', description: 'Warrant / Summons' },
+    { code: 'WEAP', description: 'Weapons' },
+  ],
+  safeguardingNeed: [
+    { code: 'CL2', description: 'County Lines - Victim' },
+    { code: 'CUCK', description: 'Cuckooing - Potential Victim' },
+    { code: 'ADVV', description: 'Domestic Abuse Victim' },
+    { code: 'MSV', description: 'Modern Slavery - Victim' },
+    { code: 'RVAD', description: 'Safeguarding - "Adult At Risk"' },
   ],
 
   cohort: [
-    { code: 'MAPP', description: 'MAPPA' },
-    { code: 'IIOM', description: 'Integrated Offender Management' },
-    { code: 'SSS', description: 'Short Sentence Service' },
+    { code: 'PRC', description: 'Contact Suspended' },
+    { code: 'CYB2', description: 'Cyber - Dependent' },
+    { code: 'CYB1', description: 'Cyber - Enabled' },
     { code: 'GA', description: 'Grand Avenues Cohort' },
-    { code: 'JIP', description: 'Joint Intelligence Programme' },
-    {
-      code: 'DORIS',
-      description: 'DoRIS (Disruption of Recorded Internal Secretors)',
-    },
+    { code: 'HOIE', description: 'Home Office Interest' },
+    { code: 'INLL', description: 'Lifer' },
+    { code: 'COC', description: 'Organised Crime - Overt' },
+    { code: 'SSS', description: 'Short Sentence Service' },
+    { code: 'STRG', description: 'Street Gangs' },
   ],
 }
 
-const registerTypePriority = ['publicProtection', 'safeguardingRisk', 'alerts', 'safeguardingNeed', 'cohort'] as const
+type RegisterType = keyof typeof registerTypes
+
+const registerTypePriority: Record<RegisterType, number> = {
+  publicProtection: 50,
+  safeguardingRisk: 40,
+  alerts: 30,
+  safeguardingNeed: 20,
+  cohort: 10,
+}
 
 interface RiskBadge {
   id: number
@@ -110,103 +181,208 @@ interface RiskBadge {
   badgeClass: string
 }
 
+type RiskBadgeType = keyof typeof riskLevelBadgeClass | keyof typeof riskTypeBadgeClass
+
 interface RiskBadgeGroup {
   severity: string
+  title: string
+  className: string
   badges: RiskBadge[]
 }
 
 export interface RiskBadgeData {
-  groups: RiskBadgeGroup[]
+  groupedBadges: RiskBadgeGroup[]
+  headerBadges: RiskBadge[]
   remainingCount: number
 }
 
 const MAX_RISK_BADGES = 7
 
-function getRiskRegisterType(description: string): string | undefined {
+function getRiskRegisterType(description: string): RegisterType | undefined {
   const normalisedDescription = description.trim().toLowerCase()
 
-  return registerTypePriority.find(registerType =>
+  return (Object.keys(registerTypes) as RegisterType[]).find(registerType =>
     registerTypes[registerType].some(register => register.description.trim().toLowerCase() === normalisedDescription),
   )
 }
 
-function getRiskLevel(flag: RiskFlag): string {
+function getRiskFlagGroup(description: string, severity: string): RiskBadgeGroup {
+  const normalisedDescription = description.trim().toLowerCase()
+
+  let type: RiskBadgeType = severity ?? 'LOW'
+
+  if (cohortDescriptions.has(normalisedDescription)) {
+    type = 'COHORT'
+  }
+
+  if (miscDescriptions.has(normalisedDescription)) {
+    type = 'MISCELLANEOUS'
+  }
+
+  const title = `${type.charAt(0).toUpperCase()}${type.substring(1).toLowerCase()}`
+
+  return {
+    severity: type,
+    title,
+    className: riskLevelBadgeClass[type] ?? riskTypeBadgeClass[type],
+    badges: [],
+  }
+}
+
+function getRiskLevel(flag: RiskFlag): string | undefined {
   const normalisedDescription = flag.description.trim().toLowerCase()
 
-  const level = risksWithLevelDescription.has(normalisedDescription)
-    ? (flag.levelDescription ?? flag.level)
-    : flag.level
+  // Cohort badges do not have a risk severity
+  if (cohortDescriptions.has(normalisedDescription)) {
+    return 'LOW'
+  }
 
-  return (level ?? 'LOW').toUpperCase()
+  if (risksWithLevelDescription.has(normalisedDescription)) {
+    return (flag.levelDescription ?? flag.level)?.toUpperCase()
+  }
+
+  return riskLevelByDescription[normalisedDescription] ?? flag.level?.toUpperCase()
 }
-function getGroupedRiskBadges(visibleRiskFlags: RiskFlag[]) {
-  return visibleRiskFlags.reduce<RiskBadgeGroup[]>((result, flag) => {
+
+function getRiskSortingPriority(description: string): number {
+  const normalisedDescription = description.trim().toLowerCase()
+
+  if (normalisedDescription === 'risk to probation staff') {
+    return 2
+  }
+
+  if (normalisedDescription === 'risk to staff') {
+    return 1
+  }
+
+  return 0
+}
+
+function getRiskDisplayDescription(flag: RiskFlag): string {
+  const severity = getRiskLevel(flag)
+  const normalisedDescription = flag.description.trim().toLowerCase()
+  const displayDescription = toSentenceCase(flag.description, [], null, true, false)
+
+  const displayOverrides: Record<string, string> = {
+    'child criminal exploitation (cce) perpetrator': 'Child Criminal Exploitation (CCE) perpetrator',
+    marac: 'MARAC',
+    'suicide/self harm': 'Suicide/Self Harm',
+    'cppc registered case': 'CPPC registered case',
+    mappa: 'MAPPA',
+    'doris (disruption of recorded internal secretors)': 'DORIS (Disruption of recorded internal secretors)',
+  }
+
+  let text = displayOverrides[normalisedDescription] ?? displayDescription
+
+  if (normalisedDescription === 'lifer') {
+    const levelDescription = flag.levelDescription?.replace(/^Lifer\s*-\s*/i, '').toLowerCase()
+    text = levelDescription ? `Lifer - ${levelDescription}` : text
+  } else if (lowRiskLevelWithDescription.has(normalisedDescription)) {
+    const levelDescription = flag.levelDescription?.replace('MAPPA ', '') ?? ''
+    text = `${text} - ${levelDescription}`
+  } else if (risksWithLevelDescription.has(normalisedDescription)) {
+    text = `${text} - ${toSentenceCase(severity, [], null, true, false)}`
+  }
+
+  return text
+}
+
+function renderRiskBadge(flag: RiskFlag): RiskBadge {
+  const severity = getRiskLevel(flag)
+  const group = getRiskFlagGroup(flag.description, severity)
+
+  return {
+    id: flag.id,
+    text: getRiskDisplayDescription(flag),
+    level: severity,
+    badgeClass: group.className,
+  }
+}
+
+function getGroupedRiskBadges(riskFlags: RiskFlag[]) {
+  const groups = riskFlags.reduce<RiskBadgeGroup[]>((result, flag) => {
     const severity = getRiskLevel(flag)
-    let group = result.find(item => item.severity === severity)
+    const badgeGroup = getRiskFlagGroup(flag.description, severity)
+
+    let group = result.find(g => g.title === badgeGroup.title)
 
     if (!group) {
-      group = {
-        severity,
-        badges: [],
-      }
-
+      group = badgeGroup
       result.push(group)
     }
 
-    const normalisedDescription = flag.description.trim().toLowerCase()
-    const description = toSentenceCase(flag.description, [], null, true, false)
-
-    let text = description
-
-    if (lowRiskLevelWithDescription.has(normalisedDescription)) {
-      text = `${description} - ${flag.levelDescription?.replace('MAPPA ', '') ?? ''}`
-    } else if (risksWithLevelDescription.has(normalisedDescription)) {
-      text = `${description} - ${toSentenceCase(severity, [], null, true, false)}`
-    }
-
-    group.badges.push({
-      id: flag.id,
-      text,
-      level: severity,
-      badgeClass: riskLevelBadgeClass[severity],
-    })
+    group.badges.push(renderRiskBadge(flag))
 
     return result
   }, [])
+
+  return groups.sort((a, b) => (riskGroupPriority[b.title] ?? 0) - (riskGroupPriority[a.title] ?? 0))
 }
 
-export function getRiskBadgeGroups(riskFlags: RiskFlag[]): RiskBadgeData {
-  const activeRiskFlags = riskFlags.filter(flag => !flag.removed)
+const validRiskDescriptions = new Set(
+  Object.values(registerTypes)
+    .flat()
+    .map(registerType => registerType.description.toLowerCase()),
+)
+
+export function getRiskBadges(riskFlags: RiskFlag[]): RiskBadgeData {
+  const activeRiskFlags = riskFlags.filter(
+    flag =>
+      !flag.removed &&
+      validRiskDescriptions.has(flag.description.trim().toLowerCase()) &&
+      getRiskLevel(flag) !== undefined,
+  )
 
   const sortedRiskFlags = [...activeRiskFlags].sort((a, b) => {
-    const severityPriority =
-      (riskLevelPriority[getRiskLevel(a)] ?? Number.MAX_SAFE_INTEGER) -
-      (riskLevelPriority[getRiskLevel(b)] ?? Number.MAX_SAFE_INTEGER)
+    const aDescription = a.description.trim().toLowerCase()
+    const bDescription = b.description.trim().toLowerCase()
 
-    if (severityPriority !== 0) {
-      return severityPriority
+    // 1. Risk to Probation Staff, then Risk to Staff.
+    const aRiskPriority = getRiskSortingPriority(aDescription)
+    const bRiskPriority = getRiskSortingPriority(bDescription)
+
+    if (aRiskPriority !== bRiskPriority) {
+      return bRiskPriority - aRiskPriority
     }
 
     const aRegisterType = getRiskRegisterType(a.description)
     const bRegisterType = getRiskRegisterType(b.description)
 
-    const aRegisterPriority = aRegisterType
-      ? registerTypePriority.indexOf(aRegisterType as (typeof registerTypePriority)[number])
-      : Number.MAX_SAFE_INTEGER
+    // 2. Public Protection risks come before the other register types.
+    const aIsPublicProtection = aRegisterType === 'publicProtection'
+    const bIsPublicProtection = bRegisterType === 'publicProtection'
 
-    const bRegisterPriority = bRegisterType
-      ? registerTypePriority.indexOf(bRegisterType as (typeof registerTypePriority)[number])
-      : Number.MAX_SAFE_INTEGER
+    if (aIsPublicProtection !== bIsPublicProtection) {
+      return aIsPublicProtection ? -1 : 1
+    }
 
-    return aRegisterPriority - bRegisterPriority
+    // 3. Within Public Protection, sort by severity when both risks
+    // have a recognised severity. Otherwise, sort alphabetically.
+    if (aIsPublicProtection && bIsPublicProtection) {
+      const severityComparison = (riskLevelPriority[getRiskLevel(b)] ?? 0) - (riskLevelPriority[getRiskLevel(a)] ?? 0)
+
+      if (severityComparison !== 0) {
+        return severityComparison
+      }
+
+      return aDescription.localeCompare(bDescription)
+    }
+
+    // 4. Remaining register types:
+    // Safeguarding Risk → Alerts → Safeguarding Need → Cohort.
+    const registerComparison = (registerTypePriority[bRegisterType] ?? 0) - (registerTypePriority[aRegisterType] ?? 0)
+
+    if (registerComparison !== 0) {
+      return registerComparison
+    }
+
+    // 5. Alphabetical order within each remaining register type.
+    return aDescription.localeCompare(bDescription)
   })
 
-  const visibleRiskFlags = sortedRiskFlags.slice(0, MAX_RISK_BADGES)
-
-  const groups = getGroupedRiskBadges(visibleRiskFlags)
-
   return {
-    groups,
+    groupedBadges: getGroupedRiskBadges(sortedRiskFlags),
+    headerBadges: sortedRiskFlags.slice(0, MAX_RISK_BADGES).map(renderRiskBadge),
     remainingCount: Math.max(sortedRiskFlags.length - MAX_RISK_BADGES, 0),
   }
 }

@@ -1,0 +1,37 @@
+{
+    "mappings": [{
+        "request": {
+            "method": "GET",
+            "urlPathPattern": "/mas-api/contact/types/.*/templates"
+        },
+        "response": {
+            "status": 200,
+            "headers": {
+            "Content-Type": "application/json"
+            },
+            "jsonBody": {
+            "templates": [
+                {
+                "name": "NAT_ET_Checklist_template",
+                "creationDateTime": "2026-05-28T12:35:00+01:00",
+                "lastUpdatedDateTime": "2026-05-28T12:35:00+01:00"
+                }
+            ]
+            }
+        }
+    },
+    {
+        "request": {
+            "method": "GET",
+            "urlPathPattern": "/mas-api/contact/types/.*/templates/.*/download"
+        },
+        "response": {
+            "status": 200,
+            "headers": {
+            "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+            "Content-Disposition": "attachment; filename=\"template.dotx\""
+            },
+            "bodyFileName": "template.dotx"
+        }
+    }]
+}

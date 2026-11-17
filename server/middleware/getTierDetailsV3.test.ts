@@ -107,6 +107,40 @@ describe('getTierDetails', () => {
     expect(next).toHaveBeenCalledWith()
   })
 
+  it('fetches tier details for the person header when tier v3 is enabled for it', async () => {
+    const req = httpMocks.createRequest({ params: { crn: 'X123456' } })
+    const res = httpMocks.createResponse()
+    res.locals.user = { username: 'test-user' } as any
+    res.locals.flags = { enablePersonHeader: true, enablePersonHeaderTierV3: true } as any
+
+    await getTierDetails(
+      mockHmppsAuthClient as unknown as AuthenticationClient,
+      mockMpopComponents as unknown as MPoPComponents,
+    )(req, res, next)
+
+    expect(mockMpopComponents.getTierDetails).toHaveBeenCalledWith('test-token', 'X123456')
+    expect(res.locals.tierDetails).toEqual(tierData)
+    expect(next).toHaveBeenCalledWith()
+  })
+
+  it.each([
+    { enablePersonHeader: true, enablePersonHeaderTierV3: false },
+    { enablePersonHeader: false, enablePersonHeaderTierV3: true },
+  ])('skips fetching tier details when only one person header flag is enabled: %o', async flags => {
+    const req = httpMocks.createRequest({ params: { crn: 'X123456' } })
+    const res = httpMocks.createResponse()
+    res.locals.user = { username: 'test-user' } as any
+    res.locals.flags = flags as any
+
+    await getTierDetails(
+      mockHmppsAuthClient as unknown as AuthenticationClient,
+      mockMpopComponents as unknown as MPoPComponents,
+    )(req, res, next)
+
+    expect(mockMpopComponents.getTierDetails).not.toHaveBeenCalled()
+    expect(next).toHaveBeenCalledWith()
+  })
+
   it('logs an error and continues when hmppsAuthClient.getToken rejects', async () => {
     mockHmppsAuthClient.getToken.mockRejectedValue(new Error('auth error'))
 
