@@ -23,9 +23,9 @@ import { resolveBackUrl, withBackUrl } from '../utils/backLink'
 
 const buildContactTypeLinksJson = (crn: string, flags: FeatureFlags = {}, backUrl?: string) =>
   JSON.stringify(
-    ContactTypeOptions(flags).map(t => ({
-      text: t.description,
-      href: withBackUrl(`/case/${crn}/contacts/add-${slugify(t.description)}`, backUrl),
+    [...new Set(ContactTypeOptions(flags).map(t => t.description))].map(description => ({
+      text: description,
+      href: withBackUrl(`/case/${crn}/contacts/add-${slugify(description)}`, backUrl),
     })),
   )
 

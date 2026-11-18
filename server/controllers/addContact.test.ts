@@ -128,6 +128,18 @@ describe('addContactController', () => {
       })
     })
 
+    it('does not duplicate entries in contactTypeLinksJson', async () => {
+      const req = createReq({ params: { crn: 'X123456' } })
+      const res = createRes({ contactTypes: FrequentlyUsedContactTypeOptions({}) })
+
+      await addContactController.getFrequentlyUsedContact()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      const contactTypes = JSON.parse(renderArgs.contactTypeLinksJson).map((c: any) => c.text)
+      expect(contactTypes).toHaveLength(new Set(contactTypes).size)
+      expect(contactTypes.filter((text: string) => text === 'IPP progression panel')).toHaveLength(1)
+    })
+
     describe('early termination contact type', () => {
       const run = async (flags: Record<string, boolean>) => {
         const req = createReq({ params: { crn: 'X123456' } })
@@ -605,6 +617,14 @@ describe('addContactController', () => {
         text: expect.any(String),
         href: expect.stringContaining('/case/X123456/contacts/add-'),
       })
+    })
+
+    it('does not duplicate entries in contactTypeLinksJson for the autocomplete', async () => {
+      const renderArgs = await invokeKeyword({ keyword: 'IPP', action: 'search' })
+
+      const contactTypes = JSON.parse(renderArgs.contactTypeLinksJson).map((c: any) => c.text)
+      expect(contactTypes).toHaveLength(new Set(contactTypes).size)
+      expect(contactTypes.filter((text: string) => text === 'IPP progression panel')).toHaveLength(1)
     })
 
     it('treats non-string keyword query param as empty', async () => {
