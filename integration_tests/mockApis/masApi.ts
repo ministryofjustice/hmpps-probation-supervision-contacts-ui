@@ -758,9 +758,9 @@ export default {
         },
         jsonBody: [
           {
+            id: 1500870155,
             name: 'NAT_ET_Checklist_template',
-            creationDateTime: '2026-05-28T12:35:00+01:00',
-            lastUpdatedDateTime: '2026-05-28T12:35:00+01:00',
+            dateCreated: '2026-05-28',
           },
         ],
       },

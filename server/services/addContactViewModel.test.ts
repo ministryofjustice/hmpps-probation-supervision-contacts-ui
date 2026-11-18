@@ -169,7 +169,13 @@ describe('buildAddContactViewModel', () => {
         sentences,
         personName: 'Stuart Morrison',
         formValues: {},
-        documentTemplates: [{ name: 'template' }],
+        documentTemplates: [
+          {
+            name: 'template',
+            id: 10,
+            dateCreated: '2026-03-31',
+          },
+        ],
       },
       { enableEarlyTermination20261103Squad3: true },
     )
@@ -190,7 +196,13 @@ describe('buildAddContactViewModel', () => {
         sentences,
         personName: 'Stuart Morrison',
         formValues: {},
-        documentTemplates: [{ name: 'template' }],
+        documentTemplates: [
+          {
+            name: 'template',
+            id: 10,
+            dateCreated: '2026-03-31',
+          },
+        ],
       },
       { enableEarlyTermination20261103Squad3: true },
     )
@@ -207,7 +219,13 @@ describe('buildAddContactViewModel', () => {
         contactCode: 'ETRP',
         personName: 'Stuart Morrison',
         formValues: {},
-        documentTemplates: [{ name: 'template' }],
+        documentTemplates: [
+          {
+            name: 'template',
+            id: 10,
+            dateCreated: '2026-03-31',
+          },
+        ],
       },
       { enableEarlyTermination20261103Squad3: false },
     )
