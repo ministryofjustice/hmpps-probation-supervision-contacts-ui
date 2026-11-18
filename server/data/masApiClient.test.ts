@@ -396,10 +396,7 @@ describe('MasApiClient', () => {
 
   describe('getDocumentTemplates', () => {
     it('returns document templates for a given typeCode', async () => {
-      const fullTemplates = {
-        templates: [{ name: 'Template' }],
-      }
-
+      const fullTemplates = [{ name: 'Template' }]
       nock(config.apis.masApi.url)
         .get('/contact/types/ETRP/templates')
         .matchHeader('authorization', 'Bearer test-system-token')

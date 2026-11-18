@@ -234,7 +234,3 @@ export interface TemplateDetails {
   creationDateTime?: string
   lastUpdatedDateTime?: string
 }
-
-export interface Templates {
-  templates: TemplateDetails[]
-}
