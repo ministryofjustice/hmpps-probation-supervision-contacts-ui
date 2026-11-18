@@ -230,7 +230,7 @@ export interface SentenceComponent {
 }
 
 export interface TemplateDetails {
-  name?: string
-  creationDateTime?: string
-  lastUpdatedDateTime?: string
+  id: number
+  name: string
+  dateCreated: string
 }
