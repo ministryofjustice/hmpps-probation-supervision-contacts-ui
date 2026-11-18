@@ -756,15 +756,13 @@ export default {
         headers: {
           'Content-Type': 'application/json',
         },
-        jsonBody: {
-          templates: [
-            {
-              name: 'NAT_ET_Checklist_template',
-              creationDateTime: '2026-05-28T12:35:00+01:00',
-              lastUpdatedDateTime: '2026-05-28T12:35:00+01:00',
-            },
-          ],
-        },
+        jsonBody: [
+          {
+            name: 'NAT_ET_Checklist_template',
+            creationDateTime: '2026-05-28T12:35:00+01:00',
+            lastUpdatedDateTime: '2026-05-28T12:35:00+01:00',
+          },
+        ],
       },
     }),
 
