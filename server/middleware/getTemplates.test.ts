@@ -6,9 +6,7 @@ describe('getTemplates', () => {
   let next: jest.Mock
   let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getDocumentTemplates'>>
 
-  const mockTemplates = {
-    templates: [{ name: 'template' }],
-  }
+  const mockTemplates = [{ name: 'template' }]
 
   beforeEach(() => {
     jest.resetAllMocks()
@@ -40,7 +38,7 @@ describe('getTemplates', () => {
     await getTemplates(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
     expect(mockMasApiClient.getDocumentTemplates).toHaveBeenCalledWith('C204', 'test-user')
-    expect(res.locals.documentTemplates).toEqual(mockTemplates.templates)
+    expect(res.locals.documentTemplates).toEqual(mockTemplates)
     expect(next).toHaveBeenCalled()
   })
 

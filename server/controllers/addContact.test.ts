@@ -58,7 +58,7 @@ describe('addContactController', () => {
         unallocated: false,
         username: 'PRACTITIONER1',
       }),
-      getDocumentTemplates: jest.fn().mockResolvedValue({ templates: [] }),
+      getDocumentTemplates: jest.fn().mockResolvedValue({ TemplateDetails: [] }),
     }
     mockCreateContact = jest.fn().mockResolvedValue({ id: 1 })
     mockPatchDocuments = jest.fn().mockResolvedValue(undefined)
