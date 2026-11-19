@@ -41,7 +41,12 @@ export const dataAccess = () => {
     arnsComponents: new ArnsComponents(authClientArns as any, config.apis.arnsApi, logger),
     mpopComponents: new MPoPComponents(
       authClientMpop as any,
-      { ...config.apis.tierApi, masApiConfig: config.apis.masApi, supervisionPackageApiConfig: config.apis.mpopApi },
+      {
+        ...config.apis.tierApi,
+        masApiConfig: config.apis.masApi,
+        supervisionPackageApiConfig: config.apis.mpopApi,
+        prisonerSearchApiConfig: config.apis.prisonerSearchApi,
+      },
       logger,
     ),
   }
