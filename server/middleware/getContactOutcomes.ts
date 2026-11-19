@@ -7,7 +7,7 @@ export const getContactOutcomes = (masApiClient: MasApiClient): RequestHandler =
       res.locals.flags?.enableEarlyTermination20261103Squad3 && res.locals.contactCode
         ? await masApiClient.getContactTypeOutcomes(res.locals.contactCode, res.locals.user.username)
         : undefined
-    res.locals.outcomes = response
+    res.locals.outcomeCodes = response?.outcomes.map(outcome => outcome.code)
     return next()
   }
 }

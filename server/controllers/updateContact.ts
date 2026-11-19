@@ -56,7 +56,12 @@ const updateContactController = {
 
       const displayName = contact.appointment?.displayName ?? contact.appointment?.type
 
-      const isOutcome = OutcomeContactTypeDetails(res.locals.flags).some(item => item.description === displayName)
+      const contactDetails = OutcomeContactTypeDetails(res.locals.flags).find(item => item.description === displayName)
+      const contactDetailsOutcomes = contactDetails?.outcomes?.filter(outcome =>
+        res.locals.outcomeCodes?.includes(outcome.value),
+      )
+      const outcomeRequired = contactDetailsOutcomes?.length > 1
+      const isOutcome = outcomeRequired
       let outcomeSection
       let outcomeLabel
       const showResponsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
@@ -66,6 +71,7 @@ const updateContactController = {
           {
             displayName,
             contact,
+            outcomeCodes: res.locals.outcomeCodes,
           },
           res.locals.flags,
         )

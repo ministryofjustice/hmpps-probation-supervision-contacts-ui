@@ -10,7 +10,7 @@ describe('getContactOutcomes', () => {
     jest.resetAllMocks()
     next = jest.fn()
     mockMasApiClient = {
-      getContactTypeOutcomes: jest.fn().mockResolvedValue({ outcomes: [] }),
+      getContactTypeOutcomes: jest.fn().mockResolvedValue({ outcomes: [{ code: 'ETRP' }] }),
     }
   })
 
@@ -28,7 +28,7 @@ describe('getContactOutcomes', () => {
     await getContactOutcomes(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
     expect(mockMasApiClient.getContactTypeOutcomes).toHaveBeenCalledWith('ETRP', 'test-user')
-    expect(res.locals.outcomes).toEqual({ outcomes: [] })
+    expect(res.locals.outcomeCodes).toEqual(['ETRP'])
     expect(next).toHaveBeenCalled()
   })
 
@@ -41,7 +41,7 @@ describe('getContactOutcomes', () => {
     await getContactOutcomes(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
     expect(mockMasApiClient.getContactTypeOutcomes).not.toHaveBeenCalled()
-    expect(res.locals.outcomes).toEqual(undefined)
+    expect(res.locals.outcomeCodes).toEqual(undefined)
     expect(next).toHaveBeenCalled()
   })
 
@@ -53,7 +53,7 @@ describe('getContactOutcomes', () => {
     await getContactOutcomes(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
     expect(mockMasApiClient.getContactTypeOutcomes).not.toHaveBeenCalled()
-    expect(res.locals.outcomes).toEqual(undefined)
+    expect(res.locals.outcomeCodes).toEqual(undefined)
     expect(next).toHaveBeenCalled()
   })
 })

@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { Sentence, TemplateDetails } from '../data/model/contacts'
+import { ContactOutcomes, Sentence, TemplateDetails } from '../data/model/contacts'
 import { convertToTitleCase } from '../utils/utils'
 import { dateWithYear } from '../utils/dateWithYear'
 import { CONTACT_DETAILS_MAX_LENGTH } from '../utils/validationUtils'
@@ -26,6 +26,7 @@ type BuildAddContactViewModelArgs = {
   backUrl?: string
   isEarlyTermination?: boolean
   documentTemplates?: TemplateDetails[]
+  outcomeCodes?: string[]
 }
 
 export const buildAddContactViewModel = (
@@ -43,6 +44,7 @@ export const buildAddContactViewModel = (
     csrfToken,
     backUrl,
     documentTemplates,
+    outcomeCodes,
   }: BuildAddContactViewModelArgs,
   flags: FeatureFlags = {},
 ) => {
@@ -50,7 +52,7 @@ export const buildAddContactViewModel = (
   const contactTypeName = getContactTypeNameBySlug(slug, flags)
   const relatesTo = detail?.relatesTo ?? ['Person', 'Pre-CJA Events', 'CJA/ORA Events']
   const isPersonOnly = !!detail && PERSON_ONLY_CONTACT_CODES.has(detail.code)
-  const outcomes = detail?.outcomes ?? []
+  const outcomes = detail?.outcomes?.filter(outcome => outcomeCodes?.includes(outcome.value)) ?? []
   const showPersonOption = !isPersonOnly && relatesTo.includes('Person')
   const showEventOptions =
     !isPersonOnly && (relatesTo.includes('Pre-CJA Events') || relatesTo.includes('CJA/ORA Events'))
