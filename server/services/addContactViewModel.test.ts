@@ -138,14 +138,17 @@ describe('buildAddContactViewModel', () => {
   })
 
   it('no outcomes found if do not match API results of valid codes', () => {
-    const result = buildAddContactViewModel({
-      crn: 'X123456',
-      slug: 'management-oversight',
-      sentences,
-      personName: 'Stuart Morrison',
-      formValues: { outcomeCode: 'MO3' },
-      outcomeCodes: [],
-    })
+    const result = buildAddContactViewModel(
+      {
+        crn: 'X123456',
+        slug: 'management-oversight',
+        sentences,
+        personName: 'Stuart Morrison',
+        formValues: { outcomeCode: 'MO3' },
+        outcomeCodes: [],
+      },
+      { enableETAdditionalOutcomes20261117Squad3: true },
+    )
 
     expect(result.showRelatesToQuestion).toBe(false)
     expect(result.outcomeSection).toEqual(undefined)

@@ -20,7 +20,9 @@ export const buildUpdateContactViewModelWithOutcome = (
   flags: FeatureFlags = {},
 ) => {
   const contactDetails = OutcomeContactTypeDetails(flags).find(item => item.description === displayName)
-  const contactDetailsOutcomes = contactDetails?.outcomes?.filter(outcome => outcomeCodes?.includes(outcome.value))
+  const contactDetailsOutcomes = flags.enableETAdditionalOutcomes20261117Squad3
+    ? contactDetails?.outcomes?.filter(outcome => outcomeCodes?.includes(outcome.value))
+    : contactDetails?.outcomes
   const selectedOutcome = contactDetailsOutcomes.find(
     outcome =>
       normalise(outcome.label) === normalise(contact.appointment.outcome) ||
