@@ -804,6 +804,36 @@ export default {
             {
               code: 'ET02',
             },
+            {
+              code: 'MO13',
+            },
+            {
+              code: 'MO1',
+            },
+            {
+              code: 'MO28',
+            },
+            {
+              code: 'MO12',
+            },
+            {
+              code: 'MO3',
+            },
+            {
+              code: 'MO27',
+            },
+            {
+              code: 'MO26',
+            },
+            {
+              code: 'MO23',
+            },
+            {
+              code: 'MO25',
+            },
+            {
+              code: 'MO24',
+            },
           ],
         },
       },
