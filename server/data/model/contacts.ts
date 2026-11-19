@@ -232,6 +232,10 @@ export interface TemplateDetails {
 }
 
 export interface EnforcementAction {
+  responseByDate: string
+}
+
+export interface EnforcementActionResponse {
   code: string
   description: string
   defaultResponsePeriodDays: number | null
@@ -239,7 +243,7 @@ export interface EnforcementAction {
 export interface ContactOutcome {
   code: string
   description: string
-  enforcementActions: EnforcementAction[]
+  enforcementActions: EnforcementActionResponse[]
 }
 export interface ContactOutcomes {
   outcomes: ContactOutcome[]

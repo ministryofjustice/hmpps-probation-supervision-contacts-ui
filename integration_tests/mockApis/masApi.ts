@@ -786,14 +786,14 @@ export default {
     stubFor({
       request: {
         method: 'GET',
-        urlPath: '/mas-api/contact/types/.+/outcomes',
+        urlPathPattern: '/mas-api/contact/types/.+/outcomes',
       },
       response: {
         status: 200,
         headers: {
-          'Content-Type': 'text/html',
+          'Content-Type': 'application/json;charset=UTF-8',
         },
-        body: {
+        jsonBody: {
           outcomes: [
             {
               code: 'ET01',
