@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { ContactOutcomes, Sentence, TemplateDetails } from '../data/model/contacts'
+import { Sentence, TemplateDetails } from '../data/model/contacts'
 import { convertToTitleCase } from '../utils/utils'
 import { dateWithYear } from '../utils/dateWithYear'
 import { CONTACT_DETAILS_MAX_LENGTH } from '../utils/validationUtils'
