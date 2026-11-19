@@ -1,4 +1,3 @@
-import type { RiskBadgeData } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { HmppsUser } from '../../interfaces/hmppsUser'
 import { PersonalDetails } from '../../data/model/personalDetails'
 import { TierCalculation } from '../../data/tierApiClient'
@@ -20,9 +19,6 @@ type AppSessionData = {
   personalDetails?: Record<string, PersonalDetailsCache>
   risks?: {
     [crn: string]: PersonRiskFlags
-  }
-  riskBadgeData?: {
-    [crn: string]: RiskBadgeData
   }
 }
 

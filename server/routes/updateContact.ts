@@ -35,7 +35,7 @@ export default function addUpdateContactRoutes(
     loadPersonalDetails,
     loadTierDetails,
     isResponsibleOfficerMiddleware(masApiClient),
-    getPersonRiskFlags(masApiClient),
+    getPersonRiskFlags(hmppsAuthClient, mpopComponents),
     getSentences(masApiClient),
     getExistingContact(masApiClient),
     setCollapsibleRiskFlags,
