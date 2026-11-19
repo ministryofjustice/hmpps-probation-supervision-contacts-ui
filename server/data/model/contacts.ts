@@ -136,10 +136,6 @@ export interface Document {
   createdAt?: string
 }
 
-export interface EnforcementAction {
-  responseByDate: string
-}
-
 export interface PersonActivity {
   size: number
   page: number
@@ -233,4 +229,18 @@ export interface TemplateDetails {
   id: number
   name: string
   dateCreated: string
+}
+
+export interface EnforcementAction {
+  code: string
+  description: string
+  defaultResponsePeriodDays: number | null
+}
+export interface ContactOutcome {
+  code: string
+  description: string
+  enforcementActions: EnforcementAction[]
+}
+export interface ContactOutcomes {
+  outcomes: ContactOutcome[]
 }
