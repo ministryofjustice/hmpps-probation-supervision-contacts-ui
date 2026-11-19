@@ -4,7 +4,7 @@ import nunjucks from 'nunjucks'
 import express from 'express'
 import fs from 'fs'
 import { arnsNunjucksSetup } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
-import { mpopNunjucksSetup } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import { mpopNunjucksSetup, toSentenceCase } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { initialiseName } from './utils'
 import { dateWithYear } from './dateWithYear'
 import { yearsSince } from './yearsSince'
@@ -14,7 +14,6 @@ import config from '../config'
 import logger from '../../logger'
 import { merge } from './merge'
 import { convertToTitleCase } from './convertToTitleCase'
-import { toSentenceCase } from './toSentenceCase'
 
 export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
