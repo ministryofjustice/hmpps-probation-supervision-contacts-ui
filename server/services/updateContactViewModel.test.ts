@@ -24,6 +24,7 @@ describe('buildUpdateContactViewModelWithOutcome', () => {
     const result = buildUpdateContactViewModelWithOutcome({
       displayName: 'Management oversight',
       contact,
+      outcomeCodes: ['MO13', 'MO1', 'MO28', 'MO12', 'MO3'],
     })
 
     expect(result.outcomeLabel).toBe('Home visit delayed')
