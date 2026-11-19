@@ -98,12 +98,12 @@ const mockTierCalculation = {
   calculationDate: '2023-12-07T12:05:11.524616',
 } as unknown as TierCalculation
 
-let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getPersonalDetails' | 'getContacts'>>
+let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getPersonalDetails'>>
 let mockPrisonApiClient: jest.Mocked<Pick<PrisonApiClient, 'getImageData'>>
 let mockHmppsAuthClient: jest.Mocked<Pick<AuthenticationClient, 'getToken'>>
 let mockTierApiClient: jest.Mocked<Pick<TierApiClient, 'getCalculationDetails'>>
 let mockArnsComponents: jest.Mocked<Pick<ArnsComponents, 'getRiskData' | 'getRoshData'>>
-let mockMpopComponents: jest.Mocked<Pick<MPoPComponents, 'getPrisonerDetails'>>
+let mockMpopComponents: jest.Mocked<Pick<MPoPComponents, 'getPrisonerDetails' | 'getContacts'>>
 
 let req: httpMocks.MockRequest<any>
 let res: httpMocks.MockResponse<any>
@@ -171,10 +171,13 @@ describe('/middleware/getPersonalDetails', () => {
     nextSpy = jest.fn()
     process.env = { ...ORIGINAL_ENV }
 
-    mockMasApiClient = { getPersonalDetails: jest.fn(), getContacts: jest.fn() }
+    mockMasApiClient = { getPersonalDetails: jest.fn() }
     mockPrisonApiClient = { getImageData: jest.fn() }
     mockHmppsAuthClient = { getToken: jest.fn().mockResolvedValue('token') }
-    mockMpopComponents = { getPrisonerDetails: jest.fn().mockResolvedValue({ prisoner: null, httpStatus: 404 }) }
+    mockMpopComponents = {
+      getPrisonerDetails: jest.fn().mockResolvedValue({ prisoner: null, httpStatus: 404 }),
+      getContacts: jest.fn().mockResolvedValue({ professionalContact: null, httpStatus: 404 }),
+    }
     mockTierApiClient = { getCalculationDetails: jest.fn().mockResolvedValue(mockTierCalculation) }
     mockArnsComponents = {
       getRiskData: jest.fn().mockResolvedValue(mockRiskData),
@@ -217,7 +220,7 @@ describe('/middleware/getPersonalDetails', () => {
     expect(res.locals.headerCRN).toEqual(req.params.crn)
     expect(res.locals.headerDob).toEqual('1979-08-18')
     expect(res.locals.headerTierLink).toEqual('https://tier-dev.hmpps.service.justice.gov.uk/case/X000002')
-    expect(mockMasApiClient.getContacts).not.toHaveBeenCalled()
+    expect(mockMpopComponents.getContacts).not.toHaveBeenCalled()
     expect(mockPrisonApiClient.getImageData).not.toHaveBeenCalled()
     expect(res.locals.managedBy).toBeUndefined()
     expect(nextSpy).toHaveBeenCalled()
@@ -381,7 +384,7 @@ describe('/middleware/getPersonalDetails', () => {
 
     beforeEach(() => {
       mockMasApiClient.getPersonalDetails.mockResolvedValue({ ...overview('X000002'), noms: 'A1234BC' })
-      mockMasApiClient.getContacts.mockResolvedValue(professionalContact)
+      mockMpopComponents.getContacts.mockResolvedValue({ professionalContact, httpStatus: 200 })
     })
 
     it('sets managed by and the photo, and caches them in the session', async () => {
@@ -392,7 +395,7 @@ describe('/middleware/getPersonalDetails', () => {
 
       await run()
 
-      expect(mockMasApiClient.getContacts).toHaveBeenCalledWith('X000002', 'user-1')
+      expect(mockMpopComponents.getContacts).toHaveBeenCalledWith('token', 'X000002')
       expect(mockPrisonApiClient.getImageData).toHaveBeenCalledWith('A1234BC', 'user-1')
       expect(photoData.destroy).toHaveBeenCalled()
       expect(res.locals.managedBy).toEqual({
@@ -424,7 +427,7 @@ describe('/middleware/getPersonalDetails', () => {
 
       await run()
 
-      expect(mockMasApiClient.getContacts).not.toHaveBeenCalled()
+      expect(mockMpopComponents.getContacts).not.toHaveBeenCalled()
       expect(mockPrisonApiClient.getImageData).not.toHaveBeenCalled()
       expect(res.locals.managedBy.name).toEqual('Jack Frost')
       expect(res.locals.personPhotoSrc).toEqual('/search/prisoner-image/A1')
@@ -442,7 +445,11 @@ describe('/middleware/getPersonalDetails', () => {
     })
 
     it('shows managed by as no data available when the contacts request fails', async () => {
-      mockMasApiClient.getContacts.mockRejectedValue(new Error('500'))
+      mockMpopComponents.getContacts.mockResolvedValue({
+        professionalContact: null,
+        httpStatus: 500,
+        error: new Error('500'),
+      })
       mockPrisonApiClient.getImageData.mockResolvedValue(null)
       req = getReq()
       res = getHeaderRes()
@@ -502,7 +509,7 @@ describe('/middleware/getPersonalDetails', () => {
 
       await run()
 
-      expect(mockMasApiClient.getContacts).not.toHaveBeenCalled()
+      expect(mockMpopComponents.getContacts).not.toHaveBeenCalled()
       expect(mockPrisonApiClient.getImageData).toHaveBeenCalledWith('A1234BC', 'user-1')
       expect(res.locals.personPhotoSrc).toEqual('/search/prisoner-image/A1234BC')
       expect(req.session.data.personalDetails.X000002.personPhotoSrc).toEqual('/search/prisoner-image/A1234BC')
@@ -651,7 +658,7 @@ describe('/middleware/getPersonalDetails', () => {
   describe('person status tag', () => {
     beforeEach(() => {
       mockedGetStatusTag.mockReset()
-      mockMasApiClient.getContacts.mockResolvedValue(null)
+      mockMpopComponents.getContacts.mockResolvedValue({ professionalContact: null, httpStatus: 404 })
       mockPrisonApiClient.getImageData.mockResolvedValue(null)
       req = getReq()
       res = getRes()

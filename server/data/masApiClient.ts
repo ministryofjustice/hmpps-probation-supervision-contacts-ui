@@ -19,7 +19,6 @@ import {
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { mapPersonAppointmentWithApprovedContactDisplayNames } from '../utils/contactDisplayNames'
 import { sanitizeFilename } from '../utils/sanitizeFilename'
-import { ProfessionalContact } from './model/professionalContact'
 import { FeatureFlags } from './model/featureFlags'
 import { CaseAccess } from '../models/caseAccess'
 
@@ -156,16 +155,6 @@ export default class MasApiClient extends BaseRestClient {
     return this.get<PersonalDetails | null>(
       {
         path: `/personal-details/${crn}`,
-        handle404: true,
-      },
-      asSystem(username),
-    )
-  }
-
-  async getContacts(crn: string, username: string): Promise<ProfessionalContact | null> {
-    return this.get<ProfessionalContact | null>(
-      {
-        path: `/sentence/${crn}/contacts`,
         handle404: true,
       },
       asSystem(username),

@@ -132,8 +132,13 @@ export const getPersonalDetails = (
       const fetchPhoto = enablePersonHeaderPhoto && data.personPhotoSrc === undefined
       if (fetchManagedBy || fetchPhoto) {
         const { noms } = data.overview
+        const token = fetchManagedBy ? await hmppsAuthClient.getToken(username) : undefined
         const [professionalContact, photoData] = await Promise.all([
-          fetchManagedBy ? masApiClient.getContacts(crn, username).catch((): null => null) : data.professionalContact,
+          fetchManagedBy
+            ? mpopComponents
+                .getContacts(token, crn)
+                .then(response => response.professionalContact as PersonalDetailsCache['professionalContact'])
+            : data.professionalContact,
           fetchPhoto && noms
             ? prisonApiClient.getImageData(noms, username).catch((): null => {
                 prisonsUnavailable = true
