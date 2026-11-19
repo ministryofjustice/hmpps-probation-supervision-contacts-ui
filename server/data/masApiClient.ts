@@ -18,7 +18,6 @@ import {
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { mapPersonAppointmentWithApprovedContactDisplayNames } from '../utils/contactDisplayNames'
 import { sanitizeFilename } from '../utils/sanitizeFilename'
-import { PersonRiskFlags } from './model/risk'
 import { ProfessionalContact } from './model/professionalContact'
 import { FeatureFlags } from './model/featureFlags'
 
@@ -61,10 +60,6 @@ export default class MasApiClient extends RestClient {
     const teamQueryParam = teamCode ? `&team=${teamCode}` : ''
     const queryParameters = regionCode ? `?region=${regionCode}${teamQueryParam}` : ''
     return this.get({ path: `/user/${username}/providers${queryParameters}` }, asSystem(username))
-  }
-
-  async getPersonRiskFlags(crn: string, username: string): Promise<PersonRiskFlags> {
-    return this.get({ path: `/risk-flags/${crn}` }, asSystem(username))
   }
 
   async getSentences(crn: string, username: string, number = '', includeRarRequirements = true): Promise<Sentence[]> {
