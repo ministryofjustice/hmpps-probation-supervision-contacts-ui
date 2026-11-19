@@ -38,9 +38,9 @@ const updateContact: RequestHandler = (req, res, next) => {
   }
 
   const contactDetails = OutcomeContactTypeDetails(res.locals.flags).find(item => item.description === displayName)
-  const contactDetailsOutcomes = contactDetails?.outcomes?.filter(outcome =>
-    res.locals.outcomeCodes?.includes(outcome.value),
-  )
+  const contactDetailsOutcomes = res.locals.flags?.enableETAdditionalOutcomes20261117Squad3
+    ? contactDetails?.outcomes?.filter(outcome => res.locals.outcomeCodes?.includes(outcome.value))
+    : contactDetails?.outcomes
   const outcomeRequired = contactDetailsOutcomes?.length > 1
   const responsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
 

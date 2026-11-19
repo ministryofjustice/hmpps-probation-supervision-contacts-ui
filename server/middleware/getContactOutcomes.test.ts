@@ -17,7 +17,11 @@ describe('getContactOutcomes', () => {
   function createReqRes(username = 'test-user'): { req: Request; res: Response } {
     const req = {} as Request
     const res = {
-      locals: { user: { username }, contactCode: 'ETRP', flags: { enableEarlyTermination20261103Squad3: true } },
+      locals: {
+        user: { username },
+        contactCode: 'ETRP',
+        flags: { enableEarlyTermination20261103Squad3: true, enableETAdditionalOutcomes20261117Squad3: true },
+      },
     } as unknown as Response
     return { req, res }
   }
