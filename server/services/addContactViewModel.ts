@@ -53,7 +53,7 @@ export const buildAddContactViewModel = (
   const relatesTo = detail?.relatesTo ?? ['Person', 'Pre-CJA Events', 'CJA/ORA Events']
   const isPersonOnly = !!detail && PERSON_ONLY_CONTACT_CODES.has(detail.code)
   const outcomes =
-    (flags.enableETAdditionalOutcomes20261117Squad3
+    (flags?.enableETAdditionalOutcomes20261117Squad3
       ? detail?.outcomes?.filter(outcome => outcomeCodes?.includes(outcome.value))
       : detail?.outcomes) ?? []
   const showPersonOption = !isPersonOnly && relatesTo.includes('Person')

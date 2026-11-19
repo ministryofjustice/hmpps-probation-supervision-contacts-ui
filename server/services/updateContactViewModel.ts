@@ -20,7 +20,7 @@ export const buildUpdateContactViewModelWithOutcome = (
   flags: FeatureFlags = {},
 ) => {
   const contactDetails = OutcomeContactTypeDetails(flags).find(item => item.description === displayName)
-  const contactDetailsOutcomes = flags.enableETAdditionalOutcomes20261117Squad3
+  const contactDetailsOutcomes = flags?.enableETAdditionalOutcomes20261117Squad3
     ? contactDetails?.outcomes?.filter(outcome => outcomeCodes?.includes(outcome.value))
     : contactDetails?.outcomes
   const selectedOutcome = contactDetailsOutcomes.find(
