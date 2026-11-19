@@ -1,9 +1,9 @@
+import type { RiskBadgeData } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { HmppsUser } from '../../interfaces/hmppsUser'
 import { PersonalDetails } from '../../data/model/personalDetails'
 import { TierCalculation } from '../../data/tierApiClient'
 import { ErrorSummary } from '../../data/model/common'
 import { PersonRiskFlags } from '../../data/model/risk'
-import { RiskBadgeData } from '../../utils/personRiskFlagSorter'
 import { ProfessionalContact } from '../../data/model/professionalContact'
 
 export type PersonalDetailsCache = {
