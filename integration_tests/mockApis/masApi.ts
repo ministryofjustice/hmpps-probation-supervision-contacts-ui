@@ -781,4 +781,31 @@ export default {
         base64Body: fileBase64,
       },
     }),
+
+  stubContactOutcomes: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPath: '/mas-api/contact/types/.+/outcomes',
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html',
+        },
+        body: {
+          outcomes: [
+            {
+              code: 'ET01',
+            },
+            {
+              code: 'ET07',
+            },
+            {
+              code: 'ET02',
+            },
+          ],
+        },
+      },
+    }),
 }

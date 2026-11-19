@@ -20,6 +20,7 @@ test.beforeEach(async ({ page }) => {
     masApi.stubGetContact(),
     masApi.stubGetContactOutcome(),
     masApi.stubGetContactET(),
+    masApi.stubContactOutcomes(),
     masApi.stubGetTemplates(),
     masApi.stubDownloadDocument(),
   ])
