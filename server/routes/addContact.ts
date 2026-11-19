@@ -27,6 +27,7 @@ export default function addContactRoutes(
     arnsComponents,
     prisonApiClient,
     hmppsAuthClient,
+    mpopComponents,
   )
   const loadTierDetails = getTierDetails(hmppsAuthClient, mpopComponents)
   const loadSupervisionPackage = getSupervisionPackage(hmppsAuthClient, mpopComponents)

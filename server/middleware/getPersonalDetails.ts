@@ -2,13 +2,16 @@ import type { RequestHandler } from 'express'
 import createError from 'http-errors'
 import { ArnsComponents } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { asUser } from '@ministryofjustice/hmpps-rest-client'
-import { getManagedByDetails } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import {
+  getManagedByDetails,
+  getStatusTag,
+  MPoPComponents,
+} from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient from '../data/tierApiClient'
 import PrisonApiClient from '../data/prisonApiClient'
 import { tierLink, tierUrlV3 } from '../utils/tierLink'
-import { getPrisonerDetails, getStatusTag } from '../utils/personStatusTag'
 import type { PersonalDetailsCache } from '../@types/express'
 import logger from '../../logger'
 
@@ -18,6 +21,7 @@ export const getPersonalDetails = (
   arnsComponents: ArnsComponents,
   prisonApiClient: PrisonApiClient,
   hmppsAuthClient: AuthenticationClient,
+  mpopComponents: MPoPComponents,
 ): RequestHandler => {
   return async (req, res, next) => {
     const crn = req.params.crn as string
@@ -166,7 +170,11 @@ export const getPersonalDetails = (
     if (res.locals.flags?.enablePersonHeader) {
       if (overview.noms) {
         const token = await hmppsAuthClient.getToken(username)
-        res.locals.prisoner = await getPrisonerDetails(token, overview.noms, overview.crn)
+        const { prisoner, error } = await mpopComponents.getPrisonerDetails(token, overview.noms)
+        if (error) {
+          logger.error(`Failed to get prisoner details for NOMS number: ${overview.noms} CRN: ${overview.crn}`, error)
+        }
+        res.locals.prisoner = prisoner ?? undefined
       }
       res.locals.personStatusTag = await getStatusTag(
         overview,
