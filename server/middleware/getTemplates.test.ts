@@ -17,19 +17,10 @@ describe('getTemplates', () => {
   })
 
   function createReqRes(username = 'test-user'): { req: Request; res: Response } {
-    const req = { params: { contactType: 'police-liaison' } } as unknown as Request
-    const res = { locals: { user: { username } } } as unknown as Response
+    const req = { params: { contactType: '' } } as unknown as Request
+    const res = { locals: { user: { username }, contactCode: 'C204' } } as unknown as Response
     return { req, res }
   }
-
-  it('sets contactCode based on type options', async () => {
-    const { req, res } = createReqRes()
-
-    await getTemplates(mockMasApiClient as unknown as MasApiClient)(req, res, next)
-
-    expect(res.locals.contactCode).toEqual('C204')
-    expect(next).toHaveBeenCalled()
-  })
 
   it('sets templates if early termination flag is set and contactCode can be found', async () => {
     const { req, res } = createReqRes()
@@ -53,10 +44,10 @@ describe('getTemplates', () => {
     expect(next).toHaveBeenCalled()
   })
 
-  it('does not set templates if econtactCode cannot be found', async () => {
+  it('does not set templates if no contactCode', async () => {
     const { req, res } = createReqRes()
-    req.params.contactType = 'invalid'
-    res.locals.flags = { enableEarlyTermination20261103Squad3: false }
+    res.locals.contactCode = undefined
+    res.locals.flags = { enableEarlyTermination20261103Squad3: true }
 
     await getTemplates(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 

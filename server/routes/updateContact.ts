@@ -13,6 +13,8 @@ import { getTierDetails } from '../middleware/getTierDetailsV3'
 import { getSupervisionPackage } from '../middleware/getSupervisionPackage'
 import { setCollapsibleRiskFlags } from '../middleware/setCollapsibleRiskFlags'
 import { getTemplates } from '../middleware/getTemplates'
+import { getContactCode } from '../middleware/getContactCode'
+import { getContactOutcomes } from '../middleware/getContactOutcomes'
 
 export default function addUpdateContactRoutes(
   router: Router,
@@ -38,7 +40,9 @@ export default function addUpdateContactRoutes(
     getSentences(masApiClient),
     getExistingContact(masApiClient),
     setCollapsibleRiskFlags,
+    getContactCode,
     getTemplates(masApiClient),
+    getContactOutcomes(masApiClient),
   ]
 
   router.get(

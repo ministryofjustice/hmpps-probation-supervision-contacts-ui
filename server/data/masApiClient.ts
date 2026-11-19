@@ -14,6 +14,7 @@ import {
   UpdateContactWithNoOutcome,
   UpdateContactWithOutcome,
   TemplateDetails,
+  ContactOutcomes,
 } from './model/contacts'
 import { HmppsUser } from '../interfaces/hmppsUser'
 import { mapPersonAppointmentWithApprovedContactDisplayNames } from '../utils/contactDisplayNames'
@@ -60,6 +61,10 @@ export default class MasApiClient extends RestClient {
 
   async getContactType(code: string, username: string): Promise<ContactType> {
     return this.get({ path: `/contact/types/${code}` }, asSystem(username))
+  }
+
+  async getContactTypeOutcomes(code: string, username: string): Promise<ContactOutcomes> {
+    return this.get({ path: `/contact/types/${code}/outcomes` }, asSystem(username))
   }
 
   async getUserProviders(username: string, regionCode?: string, teamCode?: string): Promise<UserProviders> {

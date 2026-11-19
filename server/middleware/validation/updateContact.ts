@@ -38,8 +38,10 @@ const updateContact: RequestHandler = (req, res, next) => {
   }
 
   const contactDetails = OutcomeContactTypeDetails(res.locals.flags).find(item => item.description === displayName)
-
-  const outcomeRequired = contactDetails?.outcomes?.length > 1
+  const contactDetailsOutcomes = res.locals.flags?.enableCheckOutcomes20261124Squad3
+    ? contactDetails?.outcomes?.filter(outcome => res.locals.outcomeCodes?.includes(outcome.value))
+    : contactDetails?.outcomes
+  const outcomeRequired = contactDetailsOutcomes?.length > 1
   const responsibleOfficer: string | undefined = !res.locals.isResponsibleOfficer ? showOfficer : undefined
 
   const validationErrors = validateWithSpec(body, updateContactValidation(outcomeRequired, responsibleOfficer))
@@ -52,7 +54,7 @@ const updateContact: RequestHandler = (req, res, next) => {
   const detailsRaw = getStringValue(body.details)
   const detailsLength = countTextareaChars(detailsRaw)
 
-  const isOutcome = OutcomeContactTypeDetails(res.locals.flags).some(item => item.description === displayName)
+  const isOutcome = outcomeRequired
   let outcomeSection
   let outcomeLabel
 
@@ -61,6 +63,7 @@ const updateContact: RequestHandler = (req, res, next) => {
       {
         displayName,
         contact,
+        outcomeCodes: res.locals.outcomeCodes,
       },
       res.locals.flags,
     )
