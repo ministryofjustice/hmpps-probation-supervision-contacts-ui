@@ -18,7 +18,7 @@ describe('getTemplates', () => {
   it('sets contactCode based on type options', async () => {
     const { req, res } = createReqRes()
 
-    await getContactCode()(req, res, next)
+    await getContactCode(req, res, next)
 
     expect(res.locals.contactCode).toEqual('C204')
     expect(next).toHaveBeenCalled()
