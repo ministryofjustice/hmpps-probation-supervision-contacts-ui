@@ -8,7 +8,7 @@ const ET_ENTRIES = (flags: FeatureFlags = {}): ContactTypeDetail[] => [
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
-    outcomes: flags.enableETAdditionalOutcomes20261117Squad3
+    outcomes: flags?.enableETAdditionalOutcomes20261117Squad3
       ? [...BASE_ET_OUTCOMES, ...ADD_ET_OUTCOMES]
       : BASE_ET_OUTCOMES,
   },
