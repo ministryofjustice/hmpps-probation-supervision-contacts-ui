@@ -1,11 +1,15 @@
 import type { RequestHandler } from 'express'
-import { getRiskBadges, RiskBadgeData } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import {
+  getProbationRisk,
+  getRiskBadges,
+  getRiskRoshScore,
+  getStaffRisk,
+  RiskBadgeData,
+} from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import MasApiClient from '../data/masApiClient'
 import { PersonRiskFlags, RiskFlag, RiskScore } from '../data/model/risk'
 import { setDataValue } from '../utils/setDataValue'
 import { findReplace } from '../utils/findReplace'
-import { getStaffRisk, getProbationRisk } from '../utils/getStaffRisk'
-import { getRiskRoshScore } from '../utils/getRiskRoshScore'
 
 export const getPersonRiskFlags = (masApiClient: MasApiClient): RequestHandler => {
   return async function getPersonRiskFlagsInner(req, res, next) {

@@ -1,9 +1,9 @@
 import httpMocks from 'node-mocks-http'
+import { getStaffRisk } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { getPersonRiskFlags } from './getPersonRiskFlags'
 import MasApiClient from '../data/masApiClient'
 import { findReplace } from '../utils/findReplace'
 import { setDataValue } from '../utils/setDataValue'
-import { getStaffRisk } from '../utils/getStaffRisk'
 import { PersonRiskFlags, RiskFlag } from '../data/model/risk'
 
 jest.mock('../utils/findReplace', () => {
@@ -16,12 +16,11 @@ jest.mock('../utils/setDataValue', () => {
     setDataValue: jest.fn(),
   }
 })
-jest.mock('../utils/getStaffRisk', () => {
-  return {
-    getStaffRisk: jest.fn(),
-    getProbationRisk: jest.fn(),
-  }
-})
+jest.mock('@ministryofjustice/hmpps-mpop-frontend-components-lib', () => ({
+  ...jest.requireActual('@ministryofjustice/hmpps-mpop-frontend-components-lib'),
+  getStaffRisk: jest.fn(),
+  getProbationRisk: jest.fn(),
+}))
 
 const getStaffRiskMock = getStaffRisk as jest.MockedFunction<typeof getStaffRisk>
 
