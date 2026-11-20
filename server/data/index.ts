@@ -45,6 +45,7 @@ export const dataAccess = () => {
         supervisionPackageApiConfig: config.apis.mpopApi,
         prisonerSearchApiConfig: config.apis.prisonerSearchApi,
         personRecordApiConfig: config.apis.personRecordApi,
+        eSupervisionApiConfig: config.apis.eSupervisionApi,
       },
       logger,
     ),

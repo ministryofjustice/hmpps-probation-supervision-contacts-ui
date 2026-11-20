@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import arnsApi from '../mockApis/arnsApi'
+import eSupervisionApi from '../mockApis/eSupervisionApi'
 import hmppsAuth from '../mockApis/hmppsAuth'
 import masApi from '../mockApis/masApi'
 import mpopApi from '../mockApis/mpopApi'
@@ -26,6 +27,7 @@ test.describe('Health', () => {
         tierApi.stubPing(),
         prisonerSearchApi.stubPing(),
         personRecordApi.stubPing(),
+        eSupervisionApi.stubPing(),
         probationFrontendComponentsApi.stubPing(),
         tokenVerification.stubPing(),
       ])
@@ -60,6 +62,7 @@ test.describe('Health', () => {
         tierApi.stubPing(),
         prisonerSearchApi.stubPing(),
         personRecordApi.stubPing(),
+        eSupervisionApi.stubPing(),
         probationFrontendComponentsApi.stubPing(),
         tokenVerification.stubPing(500),
       ])

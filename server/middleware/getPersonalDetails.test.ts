@@ -101,7 +101,9 @@ let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getPersonalDetails'>>
 let mockHmppsAuthClient: jest.Mocked<Pick<AuthenticationClient, 'getToken'>>
 let mockTierApiClient: jest.Mocked<Pick<TierApiClient, 'getCalculationDetails'>>
 let mockArnsComponents: jest.Mocked<Pick<ArnsComponents, 'getRiskData' | 'getRoshData'>>
-let mockMpopComponents: jest.Mocked<Pick<MPoPComponents, 'getPrisonerDetails' | 'getContacts' | 'hasPersonPhoto'>>
+let mockMpopComponents: jest.Mocked<
+  Pick<MPoPComponents, 'getPrisonerDetails' | 'getContacts' | 'hasPersonPhoto' | 'getCheckInPhotoUrl'>
+>
 
 let req: httpMocks.MockRequest<any>
 let res: httpMocks.MockResponse<any>
@@ -175,6 +177,7 @@ describe('/middleware/getPersonalDetails', () => {
       getPrisonerDetails: jest.fn().mockResolvedValue({ prisoner: null, httpStatus: 404 }),
       getContacts: jest.fn().mockResolvedValue({ professionalContact: null, httpStatus: 404 }),
       hasPersonPhoto: jest.fn().mockResolvedValue({ hasPhoto: false, httpStatus: 404 }),
+      getCheckInPhotoUrl: jest.fn().mockResolvedValue({ photoUrl: null, httpStatus: 404 }),
     }
     mockTierApiClient = { getCalculationDetails: jest.fn().mockResolvedValue(mockTierCalculation) }
     mockArnsComponents = {
@@ -563,6 +566,90 @@ describe('/middleware/getPersonalDetails', () => {
       await run()
 
       expect(res.locals.personPhotoSrc).toBeUndefined()
+    })
+
+    describe('online check-in photo', () => {
+      const checkInPhotoUrl = 'https://bucket.s3.eu-west-2.amazonaws.com/photo.jpg'
+      const getCheckInRes = () => {
+        const checkInRes = getRes()
+        checkInRes.locals.flags = {
+          enablePersonHeader: true,
+          enablePersonHeaderPhoto: true,
+          enableESUPCheckInPhotosForSearch: true,
+        }
+        return checkInRes
+      }
+
+      it('uses the check-in photo without checking for a prison photo or caching it', async () => {
+        mockMpopComponents.getCheckInPhotoUrl.mockResolvedValue({ photoUrl: checkInPhotoUrl, httpStatus: 200 })
+        req = getReq()
+        res = getCheckInRes()
+
+        await run()
+
+        expect(mockMpopComponents.getCheckInPhotoUrl).toHaveBeenCalledWith('token', 'X000002')
+        expect(mockMpopComponents.hasPersonPhoto).not.toHaveBeenCalled()
+        expect(res.locals.personPhotoSrc).toEqual(checkInPhotoUrl)
+        expect(req.session.data.personalDetails.X000002.personPhotoSrc).toBeUndefined()
+      })
+
+      it('looks up the check-in photo again on the next request', async () => {
+        mockMpopComponents.getCheckInPhotoUrl.mockResolvedValue({ photoUrl: checkInPhotoUrl, httpStatus: 200 })
+        req = getReq()
+        res = getCheckInRes()
+        await run()
+        res = getCheckInRes()
+        await run()
+
+        expect(mockMpopComponents.getCheckInPhotoUrl).toHaveBeenCalledTimes(2)
+        expect(res.locals.personPhotoSrc).toEqual(checkInPhotoUrl)
+      })
+
+      it('falls back to the prison photo when there is no check-in photo', async () => {
+        mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: true, httpStatus: 200 })
+        req = getReq()
+        res = getCheckInRes()
+
+        await run()
+
+        expect(mockMpopComponents.hasPersonPhoto).toHaveBeenCalledWith('token', 'A1234BC')
+        expect(res.locals.personPhotoSrc).toEqual('/person-photo/A1234BC')
+      })
+
+      it('logs the error and falls back to the prison photo when the check-in request fails', async () => {
+        const loggerSpy = jest.spyOn(logger, 'error').mockImplementation()
+        const error = new Error('500')
+        mockMpopComponents.getCheckInPhotoUrl.mockResolvedValue({ photoUrl: null, httpStatus: 500, error })
+        mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: true, httpStatus: 200 })
+        req = getReq()
+        res = getCheckInRes()
+
+        await run()
+
+        expect(loggerSpy).toHaveBeenCalledWith(error, 'Failed to get the online check-in photo for CRN X000002')
+        expect(res.locals.personPhotoSrc).toEqual('/person-photo/A1234BC')
+        expect(res.locals.prisonsUnavailable).toBe(false)
+      })
+
+      it('does not request the check-in photo when enableESUPCheckInPhotosForSearch is off', async () => {
+        req = getReq()
+        res = getHeaderRes()
+
+        await run()
+
+        expect(mockMpopComponents.getCheckInPhotoUrl).not.toHaveBeenCalled()
+      })
+
+      it('does not request the check-in photo when enablePersonHeaderPhoto is off', async () => {
+        req = getReq()
+        res = getCheckInRes()
+        res.locals.flags.enablePersonHeaderPhoto = false
+
+        await run()
+
+        expect(mockMpopComponents.getCheckInPhotoUrl).not.toHaveBeenCalled()
+        expect(res.locals.personPhotoSrc).toBeUndefined()
+      })
     })
 
     it('flags arns as unavailable instead of failing the page when arns fails', async () => {

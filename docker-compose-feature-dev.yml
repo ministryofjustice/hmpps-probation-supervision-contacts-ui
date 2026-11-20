@@ -29,6 +29,7 @@ services:
       - ARNS_API_URL=http://wiremock:8080/arns-api
       - TIER_API_URL=http://wiremock:8080/tier-api
       - PERSON_RECORD_API_URL=http://wiremock:8080/person-record
+      - E_SUPERVISION_API_URL=http://wiremock:8080/esupervision
       - PRISONER_SEARCH_API_URL=http://wiremock:8080/prisoner-search
       - FLIPT_URL=http://wiremock:8080/flipt
       - TOKEN_VERIFICATION_ENABLED=true

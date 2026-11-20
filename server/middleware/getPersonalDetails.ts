@@ -123,11 +123,22 @@ export const getPersonalDetails = (
       // The photo can be switched off on its own with enablePersonHeaderPhoto. No image is cached as null rather
       // than undefined, as undefined values are dropped when the session is serialised to JSON and the photo
       // would then be looked up again on every request.
+      const { noms } = data.overview
+      let token: string | undefined
+      let checkInPhotoUrl: string | null = null
+      if (enablePersonHeaderPhoto && res.locals.flags?.enableESUPCheckInPhotosForSearch) {
+        token = await hmppsAuthClient.getToken(username)
+        const { photoUrl, error } = await mpopComponents.getCheckInPhotoUrl(token, crn)
+        if (error) {
+          logger.error(error, `Failed to get the online check-in photo for CRN ${crn}`)
+        }
+        checkInPhotoUrl = photoUrl
+      }
+
       const fetchManagedBy = data.professionalContact === undefined
-      const fetchPhoto = enablePersonHeaderPhoto && data.personPhotoSrc === undefined
+      const fetchPhoto = enablePersonHeaderPhoto && !checkInPhotoUrl && data.personPhotoSrc === undefined
       if (fetchManagedBy || fetchPhoto) {
-        const { noms } = data.overview
-        const token = await hmppsAuthClient.getToken(username)
+        token ??= await hmppsAuthClient.getToken(username)
         const [professionalContact, photo] = await Promise.all([
           fetchManagedBy
             ? mpopComponents
@@ -148,7 +159,8 @@ export const getPersonalDetails = (
       res.locals.showPersonHeaderPhoto = enablePersonHeaderPhoto
       res.locals.personPhotoSrc = enablePersonHeaderPhoto
         ? toPersonPhotoSrc({
-            noms: data.overview.noms,
+            checkInPhotoUrl,
+            noms,
             hasPrisonPhoto: Boolean(data.personPhotoSrc),
             prisonPhotoHref: personPhotoHref,
           })

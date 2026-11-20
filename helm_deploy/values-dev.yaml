@@ -67,6 +67,7 @@ generic-service:
     MPOP_API_URL: 'https://supervision-packages-api-dev.hmpps.service.justice.gov.uk'
     TIER_API_URL: 'https://hmpps-tier-dev.hmpps.service.justice.gov.uk'
     PERSON_RECORD_API_URL: 'https://hmpps-person-record-dev.hmpps.service.justice.gov.uk'
+    E_SUPERVISION_API_URL: 'https://esupervision-api-dev.hmpps.service.justice.gov.uk'
     PRISONER_SEARCH_API_URL: 'https://prisoner-search-dev.prison.service.justice.gov.uk'
     TIER_LINK: 'https://tier-dev.hmpps.service.justice.gov.uk/case'
     TIER_URL: 'https://tier-dev.hmpps.service.justice.gov.uk'

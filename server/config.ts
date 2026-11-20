@@ -128,6 +128,15 @@ export default {
       },
       agent: new AgentConfig(Number(get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 5000))),
     },
+    eSupervisionApi: {
+      url: get('E_SUPERVISION_API_URL', 'http://localhost:8100', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('E_SUPERVISION_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('E_SUPERVISION_API_TIMEOUT_DEADLINE', 10000)),
+      },
+      agent: new AgentConfig(Number(get('E_SUPERVISION_API_TIMEOUT_RESPONSE', 10000))),
+    },
     personRecordApi: {
       url: get('PERSON_RECORD_API_URL', 'http://localhost:8100', requiredInProduction),
       healthPath: '/health/ping',
