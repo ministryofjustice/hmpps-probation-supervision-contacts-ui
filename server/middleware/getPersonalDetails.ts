@@ -11,7 +11,7 @@ import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient from '../data/tierApiClient'
 import PrisonApiClient from '../data/prisonApiClient'
-import { tierLink, tierUrlV3 } from '../utils/tierLink'
+import { tierLink } from '../utils/tierLink'
 import type { PersonalDetailsCache } from '../@types/express'
 import logger from '../../logger'
 
@@ -199,7 +199,6 @@ export const getPersonalDetails = (
     res.locals.headerCRN = crn
     res.locals.headerDob = data.overview.dateOfBirth
     res.locals.headerTierLink = tierLink(crn)
-    res.locals.headerTierUrlV3 = tierUrlV3(crn)
 
     if (data.overview.dateOfDeath) {
       res.locals.dateOfDeath = data.overview.dateOfDeath
