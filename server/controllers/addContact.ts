@@ -20,7 +20,6 @@ import { isBlank } from '../utils/isBlank'
 import { FeatureFlags } from '../data/model/featureFlags'
 import { showOfficer } from '../data/model/contants'
 import { resolveBackUrl, withBackUrl } from '../utils/backLink'
-import logger from '../../logger'
 
 const buildContactTypeLinksJson = (crn: string, flags: FeatureFlags = {}, backUrl?: string) =>
   JSON.stringify(
