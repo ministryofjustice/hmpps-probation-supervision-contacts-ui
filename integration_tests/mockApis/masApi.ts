@@ -141,6 +141,21 @@ export default {
       },
     }),
 
+  stubGetNoSentences: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/mas-api/sentences/ETRP',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          sentences: [],
+        },
+      },
+    }),
+
   stubIsResponsibleOfficer: (isResponsible = true): SuperAgentRequest =>
     stubFor({
       request: {

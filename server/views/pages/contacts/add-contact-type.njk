@@ -11,6 +11,7 @@
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 {% set addContactType = 'Add ' + contactTypeName | toSentenceCase([], null, false, true) %}
+{% set contactsLink = '/case/' + headerCRN + '/activity-log' %}
 
 {% block pageTitle %}
     {{ addContactType }} - {{ headerPersonName.forename }} {{ headerPersonName.surname }}
@@ -19,365 +20,377 @@
 {% block content %}
     {% include "../../partials/pop-header.njk" %}
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    {% if noOptions %}
+        <h2 class="govuk-heading-l">
+            Not eligible for {{ contactTypeName | toSentenceCase([], null, false, true) }}
+        </h2>
+        <p class="govuk-!-margin-bottom-4">
+            {{ headerPersonName.forename }} does not have an eligibile sentence type for {{ contactTypeName | toSentenceCase([], null, false, true) }}
+        </p>
+        <a class="govuk-link" href="{{contactsLink}}" data-qa="contactsLink">
+                Return to contacts
+        </a>
+    {% else %}
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
 
-      {% if errorMessages %}
-        {% set errorList = [] %}
+            {% if errorMessages %}
+                {% set errorList = [] %}
 
-        {% for field, message in errorMessages %}
-          {% set errorList = (errorList.push({
-            text: message,
-            href: "#" + field
-          }), errorList) %}
-        {% endfor %}
+                {% for field, message in errorMessages %}
+                {% set errorList = (errorList.push({
+                    text: message,
+                    href: "#" + field
+                }), errorList) %}
+                {% endfor %}
 
-        {{ govukErrorSummary({
-          titleText: "There is a problem",
-          classes: "govuk-!-margin-bottom-6",
-          attributes: { "data-qa": "errorList" },
-          errorList: errorList
-        }) }}
+                {{ govukErrorSummary({
+                titleText: "There is a problem",
+                classes: "govuk-!-margin-bottom-6",
+                attributes: { "data-qa": "errorList" },
+                errorList: errorList
+                }) }}
 
-      {% endif %}
+            {% endif %}
 
-    </div>
-  </div>
+            </div>
+        </div>
 
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            <h2 class="govuk-heading-l govuk-!-margin-bottom-7">
-                {{ addContactType }}
-            </h2>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-two-thirds">
+                <h2 class="govuk-heading-l govuk-!-margin-bottom-7">
+                    {{ addContactType }}
+                </h2>
 
-            <form method="post" enctype="multipart/form-data" novalidate>
+                <form method="post" enctype="multipart/form-data" novalidate>
 
-                {% if showRelatesToQuestion %}
-                    {{ govukRadios({
-                        fieldset: {
-                            legend: {
-                                text: 'What is the contact related to?',
-                                isPageHeading: false,
-                                classes: "govuk-fieldset__legend--m"
+                    {% if showRelatesToQuestion %}
+                        {{ govukRadios({
+                            fieldset: {
+                                legend: {
+                                    text: 'What is the contact related to?',
+                                    isPageHeading: false,
+                                    classes: "govuk-fieldset__legend--m"
+                                },
+                                attributes: {
+                                    'data-qa': 'sentences'
+                                }
                             },
+                            name: 'sentence',
+                            id: 'sentence',
+                            items: relatesToOptions,
+                            errorMessage: { text: errorMessages.sentence } if errorMessages.sentence
+                        }) }}
+                    {% else %}
+                        <input type="hidden" name="sentence" value="{{ formValues.sentence or 'PERSON_LEVEL_CONTACT' }}">
+                        {{ govukInsetText({
+                            text: "This contact will be logged against the person."
+                        }) }}
+                    {% endif %}
+
+                    {{ govukInput({
+                        label: {
+                            text: "Give the contact a different title (optional)",
+                            classes: "govuk-label--m"
+                        },
+                        hint: {
+                            text: "This will become the title of the contact in the contact list."
+                        },
+                        id: "title",
+                        name: "title",
+                        value: formValues.title,
+                        classes: "govuk-!-width-three-quarters",
+                        formGroup: {
                             attributes: {
-                                'data-qa': 'sentences'
+                                'data-qa': 'contactTitle'
+                            }
+                        }
+                    }) }}
+
+                    <h3 class="govuk-heading-m">Enter the date and time of the contact</h3>
+                    <div class="govuk-hint">You can only add contacts for the current date or time or in the past.</div>
+
+                    {{ mojDatePicker({
+                        label: {
+                            text: "Date"
+                        },
+                        hint: {
+                            text: "For example, 17/5/2024."
+                        },
+                        id: "date",
+                        name: "date",
+                        maxDate: dateToday,
+                        value: formValues.date,
+                        errorMessage: { text: errorMessages.date } if errorMessages.date
+                    }) }}
+
+                    {{ govukInput({
+                        label: {
+                            text: "Time",
+                            classes: "govuk-label--s govuk-!-font-weight-regular"
+                        },
+                        hint: {
+                            text: "Use the 24-hour format, for example 09:30 or 16:30."
+                        },
+                        id: "time",
+                        name: "time",
+                        value: formValues.time,
+                        attributes: {
+                            size: 7,
+                            maxlength: 7
+                        },
+                        formGroup: {
+                            attributes: {
+                                'data-qa': 'time'
                             }
                         },
-                        name: 'sentence',
-                        id: 'sentence',
-                        items: relatesToOptions,
-                        errorMessage: { text: errorMessages.sentence } if errorMessages.sentence
+                        classes: "govuk-input--width-5",
+                        errorMessage: { text: errorMessages.time } if errorMessages.time
                     }) }}
-                {% else %}
-                    <input type="hidden" name="sentence" value="{{ formValues.sentence or 'PERSON_LEVEL_CONTACT' }}">
-                    {{ govukInsetText({
-                        text: "This contact will be logged against the person."
-                    }) }}
-                {% endif %}
 
-                {{ govukInput({
-                    label: {
-                        text: "Give the contact a different title (optional)",
-                        classes: "govuk-label--m"
-                    },
-                    hint: {
-                        text: "This will become the title of the contact in the contact list."
-                    },
-                    id: "title",
-                    name: "title",
-                    value: formValues.title,
-                    classes: "govuk-!-width-three-quarters",
-                    formGroup: {
-                        attributes: {
-                            'data-qa': 'contactTitle'
-                        }
-                    }
-                }) }}
-
-                <h3 class="govuk-heading-m">Enter the date and time of the contact</h3>
-                <div class="govuk-hint">You can only add contacts for the current date or time or in the past.</div>
-
-                {{ mojDatePicker({
-                    label: {
-                        text: "Date"
-                    },
-                    hint: {
-                        text: "For example, 17/5/2024."
-                    },
-                    id: "date",
-                    name: "date",
-                    maxDate: dateToday,
-                    value: formValues.date,
-                    errorMessage: { text: errorMessages.date } if errorMessages.date
-                }) }}
-
-                {{ govukInput({
-                    label: {
-                        text: "Time",
-                        classes: "govuk-label--s govuk-!-font-weight-regular"
-                    },
-                    hint: {
-                        text: "Use the 24-hour format, for example 09:30 or 16:30."
-                    },
-                    id: "time",
-                    name: "time",
-                    value: formValues.time,
-                    attributes: {
-                        size: 7,
-                        maxlength: 7
-                    },
-                    formGroup: {
-                        attributes: {
-                            'data-qa': 'time'
-                        }
-                    },
-                    classes: "govuk-input--width-5",
-                    errorMessage: { text: errorMessages.time } if errorMessages.time
-                }) }}
-
-                {% set detailsGuidanceHtml %}
-                    {% if guidance %}
-                        <details class="govuk-details govuk-!-padding-bottom-4" data-module="govuk-details" data-qa="detailsGuidance">
-                            <summary class="govuk-details__summary">
-                                <span class="govuk-details__summary-text">What to include</span>
-                            </summary>
-                            <div class="govuk-details__text">
-                                {% if guidance.sections %}
-                                    {% for section in guidance.sections %}
-                                        {% if section.paragraph %}
-                                            <p class="govuk-body">{{ section.paragraph }}</p>
-                                        {% endif %}
-                                        {% if section.bullets %}
+                    {% set detailsGuidanceHtml %}
+                        {% if guidance %}
+                            <details class="govuk-details govuk-!-padding-bottom-4" data-module="govuk-details" data-qa="detailsGuidance">
+                                <summary class="govuk-details__summary">
+                                    <span class="govuk-details__summary-text">What to include</span>
+                                </summary>
+                                <div class="govuk-details__text">
+                                    {% if guidance.sections %}
+                                        {% for section in guidance.sections %}
+                                            {% if section.paragraph %}
+                                                <p class="govuk-body">{{ section.paragraph }}</p>
+                                            {% endif %}
+                                            {% if section.bullets %}
+                                                <ul class="govuk-list govuk-list--bullet">
+                                                    {% for item in section.bullets %}
+                                                        <li>{{ item }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for paragraph in guidance.paragraphs %}
+                                            <p class="govuk-body">{{ paragraph }}</p>
+                                        {% endfor %}
+                                        {% if guidance.bullets %}
                                             <ul class="govuk-list govuk-list--bullet">
-                                                {% for item in section.bullets %}
+                                                {% for item in guidance.bullets %}
                                                     <li>{{ item }}</li>
                                                 {% endfor %}
                                             </ul>
                                         {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    {% for paragraph in guidance.paragraphs %}
-                                        <p class="govuk-body">{{ paragraph }}</p>
-                                    {% endfor %}
-                                    {% if guidance.bullets %}
-                                        <ul class="govuk-list govuk-list--bullet">
-                                            {% for item in guidance.bullets %}
-                                                <li>{{ item }}</li>
-                                            {% endfor %}
-                                        </ul>
                                     {% endif %}
-                                {% endif %}
-                                <button type="button" class="govuk-button govuk-button--secondary govuk-!-padding-bottom-3" data-qa="add-guidance-button" data-guidance-text="{{ guidance.insertText | escape }}">Add guidance to details box</button>
-                            </div>
-                        </details>
-                    {% endif %}
-                {% endset %}
+                                    <button type="button" class="govuk-button govuk-button--secondary govuk-!-padding-bottom-3" data-qa="add-guidance-button" data-guidance-text="{{ guidance.insertText | escape }}">Add guidance to details box</button>
+                                </div>
+                            </details>
+                        {% endif %}
+                    {% endset %}
 
-                {{ govukCharacterCount({
-                    name: "details",
-                    id: "details",
-                    maxlength: detailsMaxLength,
-                    rows: '10',
-                    value: formValues.details,
-                    label: {
-                        text: "Add details of the contact",
-                        classes: "govuk-label--m"
-                    },
-                    formGroup: {
-                        attributes: {
-                            'data-qa': 'details'
+                    {{ govukCharacterCount({
+                        name: "details",
+                        id: "details",
+                        maxlength: detailsMaxLength,
+                        rows: '10',
+                        value: formValues.details,
+                        label: {
+                            text: "Add details of the contact",
+                            classes: "govuk-label--m"
                         },
-                        beforeInput: {
-                            html: detailsGuidanceHtml
-                        } if guidance
-                    },
-                    errorMessage: { text: errorMessages.details } if errorMessages.details
-                }) }}
-
-                {% if outcomeSection %}
-                    {% if showOutcomeBanner and outcomeSection.type != 'inset' %}
-                        {{ mojBanner({
-                            type: 'information',
-                            text: 'You should select an outcome and add details.'
-                        }) }}
-                    {% endif %}
-                    {% if outcomeSection.type == 'inset' %}
-                        <h3 class="govuk-heading-m">Outcome</h3>
-                        {{ govukInsetText({
-                            text: outcomeSection.insetText,
-                            attributes: { 'data-qa': 'outcomeInsetText' }
-                        }) }}
-                        <input type="hidden" name="outcomeCode" value="{{ formValues.outcomeCode }}">
-                    {% elif outcomeSection.type == 'checkbox' %}
-                        {{ govukCheckboxes({
-                            fieldset: {
-                                legend: {
-                                    text: outcomeSection.legend,
-                                    classes: "govuk-fieldset__legend--m",
-                                    isPageHeading: false
-                                }
+                        formGroup: {
+                            attributes: {
+                                'data-qa': 'details'
                             },
-                            name: 'outcomeCode',
-                            idPrefix: 'outcomeCode',
-                            items: outcomeSection.items,
-                            errorMessage: { text: errorMessages.outcomeCode } if errorMessages.outcomeCode
-                        }) }}
-                    {% else %}
+                            beforeInput: {
+                                html: detailsGuidanceHtml
+                            } if guidance
+                        },
+                        errorMessage: { text: errorMessages.details } if errorMessages.details
+                    }) }}
+
+                    {% if outcomeSection %}
+                        {% if showOutcomeBanner and outcomeSection.type != 'inset' %}
+                            {{ mojBanner({
+                                type: 'information',
+                                text: 'You should select an outcome and add details.'
+                            }) }}
+                        {% endif %}
+                        {% if outcomeSection.type == 'inset' %}
+                            <h3 class="govuk-heading-m">Outcome</h3>
+                            {{ govukInsetText({
+                                text: outcomeSection.insetText,
+                                attributes: { 'data-qa': 'outcomeInsetText' }
+                            }) }}
+                            <input type="hidden" name="outcomeCode" value="{{ formValues.outcomeCode }}">
+                        {% elif outcomeSection.type == 'checkbox' %}
+                            {{ govukCheckboxes({
+                                fieldset: {
+                                    legend: {
+                                        text: outcomeSection.legend,
+                                        classes: "govuk-fieldset__legend--m",
+                                        isPageHeading: false
+                                    }
+                                },
+                                name: 'outcomeCode',
+                                idPrefix: 'outcomeCode',
+                                items: outcomeSection.items,
+                                errorMessage: { text: errorMessages.outcomeCode } if errorMessages.outcomeCode
+                            }) }}
+                        {% else %}
+                            {{ govukRadios({
+                                fieldset: {
+                                    legend: {
+                                        text: outcomeSection.legend,
+                                        classes: "govuk-fieldset__legend--m",
+                                        isPageHeading: false
+                                    }
+                                },
+                                name: 'outcomeCode',
+                                idPrefix: 'outcomeCode',
+                                items: outcomeSection.items,
+                                errorMessage: { text: errorMessages.outcomeCode } if errorMessages.outcomeCode
+                            }) }}
+                        {% endif %}
+                    {% endif %}
+
+                    {% if isEarlyTermination %}
+                        {% include "../../partials/early-termination-guidance.njk" %}
+                    {% endif %}
+
+                    {% include "../../partials/templates.njk" %}
+
+                    <div class="govuk-form-group">
+                        <label class="govuk-label govuk-label--m" for="fileUpload">
+                            Upload a file (optional)
+                        </label>
+                        {% if errorMessages.fileUpload %}
+                            <p id="fileUpload-error" class="govuk-error-message">
+                            <span class="govuk-visually-hidden">Error:</span> {{ errorMessages.fileUpload }}
+                            </p>
+                        {% endif %}
+                        <div class="govuk-drop-zone" data-module="govuk-file-upload">
+                            {{ govukFileUpload({
+                                id: "fileUpload",
+                                name: "fileUpload",
+                                classes: "govuk-file-upload",
+                                attributes: {
+                                    accept: "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.jpeg"
+                                }
+                            }) }}
+                        </div>
+                    </div>
+
+                    {% if isVisor %}
                         {{ govukRadios({
                             fieldset: {
                                 legend: {
-                                    text: outcomeSection.legend,
+                                    text: 'Include contact in ViSOR report?',
                                     classes: "govuk-fieldset__legend--m",
                                     isPageHeading: false
                                 }
                             },
-                            name: 'outcomeCode',
-                            idPrefix: 'outcomeCode',
-                            items: outcomeSection.items,
-                            errorMessage: { text: errorMessages.outcomeCode } if errorMessages.outcomeCode
+                            formGroup: {
+                                attributes: {
+                                    'data-qa': 'visorReport'
+                                }
+                            },
+                            hint: {
+                                text: 'This will add the contact to their record on the ViSOR secure national database.'
+                            },
+                            name: 'visor',
+                            id: 'visor',
+                            classes: "govuk-radios--inline",
+                            items: [
+                                {
+                                    value: 'Yes',
+                                    text: "Yes",
+                                    checked: true if formValues.visor == 'Yes'
+                                },
+                                {
+                                    value: 'No',
+                                    text: "No",
+                                    checked: true if formValues.visor == 'No'
+                                }
+                            ],
+                            errorMessage: { text: errorMessages.visor } if errorMessages.visor
                         }) }}
                     {% endif %}
-                {% endif %}
 
-                {% if isEarlyTermination %}
-                    {% include "../../partials/early-termination-guidance.njk" %}
-                {% endif %}
-
-                {% include "../../partials/templates.njk" %}
-
-                <div class="govuk-form-group">
-                    <label class="govuk-label govuk-label--m" for="fileUpload">
-                        Upload a file (optional)
-                    </label>
-                    {% if errorMessages.fileUpload %}
-                        <p id="fileUpload-error" class="govuk-error-message">
-                        <span class="govuk-visually-hidden">Error:</span> {{ errorMessages.fileUpload }}
-                        </p>
-                    {% endif %}
-                    <div class="govuk-drop-zone" data-module="govuk-file-upload">
-                        {{ govukFileUpload({
-                            id: "fileUpload",
-                            name: "fileUpload",
-                            classes: "govuk-file-upload",
-                            attributes: {
-                                accept: "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.jpeg"
-                            }
-                        }) }}
-                    </div>
-                </div>
-
-                {% if isVisor %}
                     {{ govukRadios({
                         fieldset: {
                             legend: {
-                                text: 'Include contact in ViSOR report?',
+                                text: 'Does this contact include sensitive information?',
                                 classes: "govuk-fieldset__legend--m",
                                 isPageHeading: false
                             }
                         },
                         formGroup: {
                             attributes: {
-                                'data-qa': 'visorReport'
+                                'data-qa': 'sensitiveInformation'
                             }
                         },
                         hint: {
-                            text: 'This will add the contact to their record on the ViSOR secure national database.'
+                            text: 'This is information that you believe must be recorded but not shared with a person on probation. If they make a request for their record, the Data Protection Team will decide whether the information can be shared.'
                         },
-                        name: 'visor',
-                        id: 'visor',
-                        classes: "govuk-radios--inline",
+                        name: 'sensitivity',
+                        id: 'sensitivity',
                         items: [
                             {
                                 value: 'Yes',
-                                text: "Yes",
-                                checked: true if formValues.visor == 'Yes'
+                                text: "Yes, it includes sensitive information",
+                                checked: true if formValues.sensitivity == 'Yes'
                             },
                             {
                                 value: 'No',
-                                text: "No",
-                                checked: true if formValues.visor == 'No'
+                                text: "No, it is not sensitive",
+                                checked: true if formValues.sensitivity == 'No'
                             }
                         ],
-                        errorMessage: { text: errorMessages.visor } if errorMessages.visor
+                        errorMessage: { text: errorMessages.sensitivity } if errorMessages.sensitivity
                     }) }}
-                {% endif %}
 
-                {{ govukRadios({
-                    fieldset: {
-                        legend: {
-                            text: 'Does this contact include sensitive information?',
-                            classes: "govuk-fieldset__legend--m",
-                            isPageHeading: false
-                        }
-                    },
-                    formGroup: {
-                        attributes: {
-                            'data-qa': 'sensitiveInformation'
-                        }
-                    },
-                    hint: {
-                        text: 'This is information that you believe must be recorded but not shared with a person on probation. If they make a request for their record, the Data Protection Team will decide whether the information can be shared.'
-                    },
-                    name: 'sensitivity',
-                    id: 'sensitivity',
-                    items: [
-                        {
-                            value: 'Yes',
-                            text: "Yes, it includes sensitive information",
-                            checked: true if formValues.sensitivity == 'Yes'
-                        },
-                        {
-                            value: 'No',
-                            text: "No, it is not sensitive",
-                            checked: true if formValues.sensitivity == 'No'
-                        }
-                    ],
-                    errorMessage: { text: errorMessages.sensitivity } if errorMessages.sensitivity
-                }) }}
-
-                {% if responsibleOfficer %}
-                    {{ govukRadios({
-                        fieldset: {
-                            legend: {
-                                text: "Do you want to alert " + responsibleOfficerForename + ' ' + responsibleOfficerSurname + " (the responsible officer) about this contact?",
-                                classes: "govuk-fieldset__legend--m",
-                                isPageHeading: false
-                            }
-                        },
-                        formGroup: {
-                            attributes: {
-                                'data-qa': 'alertResponsibleOfficer'
-                            }
-                        },
-                        name: 'alertResponsibleOfficer',
-                        id: 'alertResponsibleOfficer',
-                        items: [
-                            {
-                                value: 'Yes',
-                                text: "Yes",
-                                checked: true if formValues.alertResponsibleOfficer == 'Yes'
+                    {% if responsibleOfficer %}
+                        {{ govukRadios({
+                            fieldset: {
+                                legend: {
+                                    text: "Do you want to alert " + responsibleOfficerForename + ' ' + responsibleOfficerSurname + " (the responsible officer) about this contact?",
+                                    classes: "govuk-fieldset__legend--m",
+                                    isPageHeading: false
+                                }
                             },
-                            {
-                                value: 'No',
-                                text: "No",
-                                checked: true if formValues.alertResponsibleOfficer == 'No'
-                            }
-                        ],
-                        errorMessage: { text: errorMessages.alertResponsibleOfficer } if errorMessages.alertResponsibleOfficer
+                            formGroup: {
+                                attributes: {
+                                    'data-qa': 'alertResponsibleOfficer'
+                                }
+                            },
+                            name: 'alertResponsibleOfficer',
+                            id: 'alertResponsibleOfficer',
+                            items: [
+                                {
+                                    value: 'Yes',
+                                    text: "Yes",
+                                    checked: true if formValues.alertResponsibleOfficer == 'Yes'
+                                },
+                                {
+                                    value: 'No',
+                                    text: "No",
+                                    checked: true if formValues.alertResponsibleOfficer == 'No'
+                                }
+                            ],
+                            errorMessage: { text: errorMessages.alertResponsibleOfficer } if errorMessages.alertResponsibleOfficer
+                        }) }}
+                    {% endif %}
+
+                    <input type="hidden" name="responsibleOfficer" value="{{ responsibleOfficer }}">
+                    <input type="hidden" name="isVisor" value="{{ isVisor }}">
+                    <input type="hidden" name="responsibleOfficerForename" value="{{ responsibleOfficerForename }}">
+                    <input type="hidden" name="responsibleOfficerSurname" value="{{ responsibleOfficerSurname }}">
+
+                    {{ govukButton({
+                        text: "Create contact",
+                        attributes: { "data-qa": "create-contact-button" }
                     }) }}
-                {% endif %}
-
-                <input type="hidden" name="responsibleOfficer" value="{{ responsibleOfficer }}">
-                <input type="hidden" name="isVisor" value="{{ isVisor }}">
-                <input type="hidden" name="responsibleOfficerForename" value="{{ responsibleOfficerForename }}">
-                <input type="hidden" name="responsibleOfficerSurname" value="{{ responsibleOfficerSurname }}">
-
-                {{ govukButton({
-                    text: "Create contact",
-                    attributes: { "data-qa": "create-contact-button" }
-                }) }}
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}
