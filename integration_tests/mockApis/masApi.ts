@@ -128,6 +128,7 @@ export default {
 
   stubGetSentences: (): SuperAgentRequest =>
     stubFor({
+      priority: 2,
       request: {
         method: 'GET',
         urlPattern: '/mas-api/sentences/.+',
@@ -143,9 +144,10 @@ export default {
 
   stubGetNoSentences: (): SuperAgentRequest =>
     stubFor({
+      priority: 1,
       request: {
         method: 'GET',
-        urlPattern: '/mas-api/sentences/ETRP',
+        urlPattern: '/mas-api/sentences/.+',
       },
       response: {
         status: 200,

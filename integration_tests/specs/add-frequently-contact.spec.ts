@@ -86,7 +86,6 @@ test.describe('Adding contact with no relates to options', async () => {
     await expect(frequentlyUsedContactsPage.pageHeading).toBeVisible()
     await frequentlyUsedContactsPage.selectFrequentlyUsedContact('Early termination request')
 
-    const addContactPage = new AddContactPage(page, 'Early termination request')
-    await expect(addContactPage.pageHeading).toContainText('Not eligible for')
+    await expect(page.getByRole('heading', { level: 2, name: 'Not eligible for' })).toBeVisible()
   })
 })
