@@ -128,6 +128,7 @@ export default {
 
   stubGetSentences: (): SuperAgentRequest =>
     stubFor({
+      priority: 2,
       request: {
         method: 'GET',
         urlPattern: '/mas-api/sentences/.+',
@@ -137,6 +138,22 @@ export default {
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
         jsonBody: {
           sentences: [{ id: 1, order: { description: 'ORA Community Order', startDate: '2023-01-01' } }],
+        },
+      },
+    }),
+
+  stubGetNoSentences: (): SuperAgentRequest =>
+    stubFor({
+      priority: 1,
+      request: {
+        method: 'GET',
+        urlPattern: '/mas-api/sentences/.+',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          sentences: [],
         },
       },
     }),

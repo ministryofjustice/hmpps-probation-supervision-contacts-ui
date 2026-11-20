@@ -156,6 +156,8 @@ export const buildAddContactViewModel = (
     })
   }
 
+  const noOptions = flags?.enableContactAccessLimitation20261116Squad3 && !isPersonOnly && relatesToOptions.length === 0
+
   return {
     crn,
     contactTypeName,
@@ -170,6 +172,7 @@ export const buildAddContactViewModel = (
     showRelatesToQuestion: !isPersonOnly,
     showPersonOption,
     showEventOptions,
+    noOptions,
     guidance: buildGuidanceContent(detail),
     detailsMaxLength: CONTACT_DETAILS_MAX_LENGTH,
     showOutcomeBanner: detail?.showOutcomeBanner ?? false,

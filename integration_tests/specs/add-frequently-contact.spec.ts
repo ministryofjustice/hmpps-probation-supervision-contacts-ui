@@ -70,3 +70,22 @@ test.describe('Adding Early termination request', async () => {
     expect(download.suggestedFilename()).toBe('NAT_ET_Checklist_template.docx')
   })
 })
+
+test.describe('Adding contact with no relates to options', async () => {
+  test.beforeAll(async () => {
+    flags = [
+      { key: 'enableEarlyTermination20261103Squad3', enabled: true },
+      { key: 'enableContactAccessLimitation20261116Squad3', enabled: true },
+    ]
+    await Promise.all([masApi.stubGetNoSentences()])
+  })
+  test('shows an ineligible message when the contact has no relates-to options', async ({ page }) => {
+    const frequentlyUsedContactsPage = new FrequentlyUsedContactsPage(page, 'X123456')
+
+    await frequentlyUsedContactsPage.goto()
+    await expect(frequentlyUsedContactsPage.pageHeading).toBeVisible()
+    await frequentlyUsedContactsPage.selectFrequentlyUsedContact('Early termination request')
+
+    await expect(page.getByRole('heading', { level: 2, name: 'Not eligible for' })).toBeVisible()
+  })
+})
