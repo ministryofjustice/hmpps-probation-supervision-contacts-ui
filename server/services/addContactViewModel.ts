@@ -10,6 +10,7 @@ import {
   PERSON_ONLY_CONTACT_CODES,
 } from './contactTypeDetails'
 import { FeatureFlags } from '../data/model/featureFlags'
+import logger from '../../logger'
 
 type BuildAddContactViewModelArgs = {
   crn: string
@@ -56,6 +57,9 @@ export const buildAddContactViewModel = (
     (flags?.enableETAdditionalOutcomes20261117Squad3
       ? detail?.outcomes?.filter(outcome => outcomeCodes?.includes(outcome.value))
       : detail?.outcomes) ?? []
+  if (outcomes.length === 0 && detail?.mandatoryOutcome) {
+    logger.error('No valid outcomes for mandatory outcome contact')
+  }
   const showPersonOption = !isPersonOnly && relatesTo.includes('Person')
   const showEventOptions =
     !isPersonOnly && (relatesTo.includes('Pre-CJA Events') || relatesTo.includes('CJA/ORA Events'))
