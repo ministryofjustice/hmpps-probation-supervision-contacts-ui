@@ -1,11 +1,11 @@
 import httpMocks from 'node-mocks-http'
 import limitedAccess from './limitedAccessMiddleware'
 import MasApiClient from '../data/masApiClient'
-import type { AppResponse } from '../models/Locals'
 import { services } from '../services'
-import type { CaseAccess } from '../data/model/caseAccess'
-import { isValidCrn } from '../utils'
-import { renderError } from './renderError'
+import {renderError} from "./renderError";
+import {isValidCrn} from "../utils/isValidCrn";
+import {AuthenticationClient} from "@ministryofjustice/hmpps-auth-clients";
+import {CaseAccess} from "../models/caseAccess";
 
 jest.mock('../data/masApiClient')
 jest.mock('../data/hmppsAuthClient')
@@ -29,7 +29,8 @@ const mockRenderError = renderError as jest.MockedFunction<typeof renderError>
 const mockIsValidCrn = isValidCrn as jest.MockedFunction<typeof isValidCrn>
 const mockServices = services()
 
-jest.spyOn(mockServices.hmppsAuthClient, 'getSystemClientToken').mockImplementation(() => Promise.resolve('token-1'))
+let mockHmppsAuthClient: jest.Mocked<Pick<AuthenticationClient, 'getToken'>>
+mockHmppsAuthClient.getToken.mockResolvedValue('token-1')
 
 const crn = 'X000001'
 const backLink = '/back/link'
