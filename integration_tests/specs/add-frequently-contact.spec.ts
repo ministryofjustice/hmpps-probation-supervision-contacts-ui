@@ -79,7 +79,7 @@ test.describe('Adding contact with no relates to options', async () => {
     ]
     await Promise.all([masApi.stubGetNoSentences()])
   })
-  test('user can select Early termination request from the list and download the template file', async ({ page }) => {
+  test('shows an ineligible message when the contact has no relates-to options', async ({ page }) => {
     const frequentlyUsedContactsPage = new FrequentlyUsedContactsPage(page, 'X123456')
 
     await frequentlyUsedContactsPage.goto()
