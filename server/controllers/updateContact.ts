@@ -138,7 +138,12 @@ const updateContactController = {
       const formattedDateandTime = toIsoDateTime(date, time)
 
       if (isOutcome) {
-        const outcomeCode = updateContactOutcomeCode(displayName, req.body?.outcomeCode, res.locals.flags)
+        const outcomeCode = updateContactOutcomeCode(
+          displayName,
+          req.body?.outcomeCode,
+          res.locals.flags,
+          res.locals.outcomeCodes,
+        )
 
         const payload: UpdateContactWithOutcome = {
           date: convertDateToIso(date),
