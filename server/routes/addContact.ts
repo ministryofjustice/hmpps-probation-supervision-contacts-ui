@@ -17,7 +17,7 @@ import { getTemplates } from '../middleware/getTemplates'
 
 export default function addContactRoutes(
   router: Router,
-  { masApiClient, tierApiClient, prisonApiClient, arnsComponents, mpopComponents, hmppsAuthClient }: Services,
+  { masApiClient, tierApiClient, arnsComponents, mpopComponents, hmppsAuthClient }: Services,
 ): void {
   router.param('crn', validateCrnParam)
   const populate = populateContactTypes()
@@ -25,7 +25,6 @@ export default function addContactRoutes(
     masApiClient,
     tierApiClient,
     arnsComponents,
-    prisonApiClient,
     hmppsAuthClient,
     mpopComponents,
   )

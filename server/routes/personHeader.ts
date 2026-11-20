@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import type { Services } from '../services'
-import controllers from '../controllers'
+import { getPersonPhoto } from '../middleware/getPersonPhoto'
 
-export default function addPersonHeaderRoutes(router: Router, { prisonApiClient }: Services): void {
-  router.get('/search/prisoner-image/:prisonerId', controllers.personHeader.getPhoto(prisonApiClient))
+export default function addPersonHeaderRoutes(router: Router, { hmppsAuthClient, mpopComponents }: Services): void {
+  router.get('/person-photo/:nomsNumber', getPersonPhoto(hmppsAuthClient, mpopComponents))
 }

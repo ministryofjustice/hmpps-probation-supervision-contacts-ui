@@ -2,11 +2,11 @@ import type { RequestHandler } from 'express'
 import createError from 'http-errors'
 import { ArnsComponents } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { asUser } from '@ministryofjustice/hmpps-rest-client'
-import { getStatusTag, MPoPComponents } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import { getStatusTag, MPoPComponents, toPersonPhotoSrc } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient from '../data/tierApiClient'
-import PrisonApiClient from '../data/prisonApiClient'
+import { personPhotoHref } from './getPersonPhoto'
 import { tierLink } from '../utils/tierLink'
 import type { PersonalDetailsCache } from '../@types/express'
 import logger from '../../logger'
@@ -15,7 +15,6 @@ export const getPersonalDetails = (
   masApiClient: MasApiClient,
   tierApiClient: TierApiClient,
   arnsComponents: ArnsComponents,
-  prisonApiClient: PrisonApiClient,
   hmppsAuthClient: AuthenticationClient,
   mpopComponents: MPoPComponents,
 ): RequestHandler => {
@@ -128,33 +127,32 @@ export const getPersonalDetails = (
       const fetchPhoto = enablePersonHeaderPhoto && data.personPhotoSrc === undefined
       if (fetchManagedBy || fetchPhoto) {
         const { noms } = data.overview
-        const token = fetchManagedBy ? await hmppsAuthClient.getToken(username) : undefined
-        const [professionalContact, photoData] = await Promise.all([
+        const token = await hmppsAuthClient.getToken(username)
+        const [professionalContact, photo] = await Promise.all([
           fetchManagedBy
             ? mpopComponents
                 .getContacts(token, crn)
                 .then(response => response.professionalContact as PersonalDetailsCache['professionalContact'])
             : data.professionalContact,
-          fetchPhoto && noms
-            ? prisonApiClient.getImageData(noms, username).catch((): null => {
-                prisonsUnavailable = true
-                return null
-              })
-            : null,
+          fetchPhoto && noms ? mpopComponents.hasPersonPhoto(token, noms) : null,
         ])
-        photoData?.destroy()
+        prisonsUnavailable = Boolean(photo?.error)
         data = { ...data, professionalContact }
         if (fetchPhoto && !prisonsUnavailable) {
-          data = {
-            ...data,
-            personPhotoSrc: photoData ? `/search/prisoner-image/${encodeURIComponent(noms)}` : null,
-          }
+          data = { ...data, personPhotoSrc: photo?.hasPhoto ? personPhotoHref(noms) : null }
         }
         cache()
       }
 
       res.locals.professionalContact = data.professionalContact ?? null
-      res.locals.personPhotoSrc = (enablePersonHeaderPhoto && data.personPhotoSrc) || undefined
+      res.locals.showPersonHeaderPhoto = enablePersonHeaderPhoto
+      res.locals.personPhotoSrc = enablePersonHeaderPhoto
+        ? toPersonPhotoSrc({
+            noms: data.overview.noms,
+            hasPrisonPhoto: Boolean(data.personPhotoSrc),
+            prisonPhotoHref: personPhotoHref,
+          })
+        : undefined
       const roshAssessment = data.roshData?.assessment
       res.locals.risksWidget = roshAssessment?.overallRisk
         ? {
