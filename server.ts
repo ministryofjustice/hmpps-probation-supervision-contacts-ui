@@ -1,3 +1,5 @@
+// Sentry must be initialised before express is imported so its express instrumentation can patch it
+import './server/sentry'
 // Require app insights before anything else to allow for instrumentation of bunyan and express
 import './server/utils/azureAppInsightsInit'
 
