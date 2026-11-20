@@ -2,11 +2,7 @@ import type { RequestHandler } from 'express'
 import createError from 'http-errors'
 import { ArnsComponents } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { asUser } from '@ministryofjustice/hmpps-rest-client'
-import {
-  getManagedByDetails,
-  getStatusTag,
-  MPoPComponents,
-} from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import { getStatusTag, MPoPComponents } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient from '../data/tierApiClient'
@@ -157,7 +153,7 @@ export const getPersonalDetails = (
         cache()
       }
 
-      res.locals.managedBy = getManagedByDetails(crn, data.professionalContact ?? null)
+      res.locals.professionalContact = data.professionalContact ?? null
       res.locals.personPhotoSrc = (enablePersonHeaderPhoto && data.personPhotoSrc) || undefined
       const roshAssessment = data.roshData?.assessment
       res.locals.risksWidget = roshAssessment?.overallRisk

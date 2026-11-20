@@ -222,7 +222,7 @@ describe('/middleware/getPersonalDetails', () => {
     expect(res.locals.headerTierLink).toEqual('https://tier-dev.hmpps.service.justice.gov.uk/case/X000002')
     expect(mockMpopComponents.getContacts).not.toHaveBeenCalled()
     expect(mockPrisonApiClient.getImageData).not.toHaveBeenCalled()
-    expect(res.locals.managedBy).toBeUndefined()
+    expect(res.locals.professionalContact).toBeUndefined()
     expect(nextSpy).toHaveBeenCalled()
   })
 
@@ -398,12 +398,7 @@ describe('/middleware/getPersonalDetails', () => {
       expect(mockMpopComponents.getContacts).toHaveBeenCalledWith('token', 'X000002')
       expect(mockPrisonApiClient.getImageData).toHaveBeenCalledWith('A1234BC', 'user-1')
       expect(photoData.destroy).toHaveBeenCalled()
-      expect(res.locals.managedBy).toEqual({
-        text: 'Jack Frost (Worksop Probation Office)',
-        name: 'Jack Frost',
-        location: 'Worksop Probation Office',
-        href: '/case/X000002/personal-details/staff-contacts',
-      })
+      expect(res.locals.professionalContact).toEqual(professionalContact)
       expect(res.locals.personPhotoSrc).toEqual('/search/prisoner-image/A1234BC')
       expect(res.locals.arnsUnavailable).toBe(false)
       expect(res.locals.prisonsUnavailable).toBe(false)
@@ -429,7 +424,7 @@ describe('/middleware/getPersonalDetails', () => {
 
       expect(mockMpopComponents.getContacts).not.toHaveBeenCalled()
       expect(mockPrisonApiClient.getImageData).not.toHaveBeenCalled()
-      expect(res.locals.managedBy.name).toEqual('Jack Frost')
+      expect(res.locals.professionalContact).toEqual(professionalContact)
       expect(res.locals.personPhotoSrc).toEqual('/search/prisoner-image/A1')
     })
 
@@ -444,7 +439,7 @@ describe('/middleware/getPersonalDetails', () => {
       expect(res.locals.personPhotoSrc).toBeUndefined()
     })
 
-    it('shows managed by as no data available when the contacts request fails', async () => {
+    it('sets professionalContact to null when the contacts request fails', async () => {
       mockMpopComponents.getContacts.mockResolvedValue({
         professionalContact: null,
         httpStatus: 500,
@@ -456,7 +451,7 @@ describe('/middleware/getPersonalDetails', () => {
 
       await run()
 
-      expect(res.locals.managedBy).toEqual({ text: 'No data available' })
+      expect(res.locals.professionalContact).toBeNull()
       expect(nextSpy).toHaveBeenCalledWith()
     })
 
@@ -469,7 +464,7 @@ describe('/middleware/getPersonalDetails', () => {
 
       expect(res.locals.prisonsUnavailable).toBe(true)
       expect(res.locals.personPhotoSrc).toBeUndefined()
-      expect(res.locals.managedBy.name).toEqual('Jack Frost')
+      expect(res.locals.professionalContact).toEqual(professionalContact)
       expect(req.session.data.personalDetails.X000002.professionalContact).toEqual(professionalContact)
       expect(req.session.data.personalDetails.X000002.personPhotoSrc).toBeUndefined()
       expect(nextSpy).toHaveBeenCalledWith()
@@ -485,7 +480,7 @@ describe('/middleware/getPersonalDetails', () => {
       expect(mockPrisonApiClient.getImageData).not.toHaveBeenCalled()
       expect(res.locals.personPhotoSrc).toBeUndefined()
       expect(res.locals.prisonsUnavailable).toBe(false)
-      expect(res.locals.managedBy.name).toEqual('Jack Frost')
+      expect(res.locals.professionalContact).toEqual(professionalContact)
       expect(req.session.data.personalDetails.X000002.personPhotoSrc).toBeUndefined()
     })
 
