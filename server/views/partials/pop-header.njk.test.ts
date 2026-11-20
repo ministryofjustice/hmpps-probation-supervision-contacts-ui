@@ -19,6 +19,7 @@ type TestModel = {
   tierUrlV3?: string
   tierDetails?: { calculation: { tierScore: string; provisional: boolean } }
   personPhotoSrc?: string
+  showPersonHeaderPhoto?: boolean
   arnsUnavailable?: boolean
   prisonsUnavailable?: boolean
   collapsibleRiskFlags?: boolean
@@ -477,11 +478,16 @@ describe('POP header', () => {
             ],
             previousContacts: [],
           } as unknown as ProfessionalContact,
-          personPhotoSrc: '/search/prisoner-image/A1234BC',
+          personPhotoSrc: '/person-photo/A1234BC',
         })
         expect($('[data-qa="managedBy"]').text().trim()).toBe('Jack Frost (Worksop Probation Office)')
         expect($('[data-qa="managedBy"]').attr('href')).toBe('/case/X000001/personal-details/staff-contacts')
-        expect($('[data-qa="personPhoto"]').attr('src')).toBe('/search/prisoner-image/A1234BC')
+        expect($('[data-qa="personPhoto"]').attr('src')).toBe('/person-photo/A1234BC')
+      })
+
+      it('should not render the photo when showPersonHeaderPhoto is false', () => {
+        const $ = renderPersonHeader({ personPhotoSrc: '/person-photo/A1234BC', showPersonHeaderPhoto: false })
+        expect($('[data-qa="personPhoto"]').length).toBe(0)
       })
 
       it('should render the name, date of birth and v3 tier', () => {
