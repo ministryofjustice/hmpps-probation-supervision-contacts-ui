@@ -3,6 +3,7 @@ import httpMocks from 'node-mocks-http'
 import { RiskData } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import type { RiskBadgeData } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { RoshRiskWidgetDto } from '../../data/model/risk'
+import { ProfessionalContact } from '../../data/model/professionalContact'
 import { createNunjucksTestEnv } from '../../testutils/nunjucksTestEnv'
 
 type TestModel = {
@@ -12,7 +13,11 @@ type TestModel = {
   riskBadgeData: RiskBadgeData
   riskData: RiskData
   headerCRN: string
-  managedBy?: { text: string; name?: string; location?: string; href?: string }
+  professionalContact?: ProfessionalContact | null
+  headerPersonName?: { forename: string; surname: string }
+  headerDob?: string
+  tierUrlV3?: string
+  tierDetails?: { calculation: { tierScore: string; provisional: boolean } }
   personPhotoSrc?: string
   arnsUnavailable?: boolean
   prisonsUnavailable?: boolean
@@ -465,17 +470,37 @@ describe('POP header', () => {
     describe('person details', () => {
       it('should render the managed by link and the photo', () => {
         const $ = renderPersonHeader({
-          managedBy: {
-            text: 'Jack Frost (Worksop Probation Office)',
-            name: 'Jack Frost',
-            location: 'Worksop Probation Office',
-            href: '/case/X000001/personal-details/staff-contacts',
-          },
+          professionalContact: {
+            name: { forename: 'Caroline', surname: 'Wolff' },
+            currentContacts: [
+              { name: 'Jack Frost', probationDeliveryUnit: 'Worksop Probation Office', responsibleOfficer: true },
+            ],
+            previousContacts: [],
+          } as unknown as ProfessionalContact,
           personPhotoSrc: '/search/prisoner-image/A1234BC',
         })
         expect($('[data-qa="managedBy"]').text().trim()).toBe('Jack Frost (Worksop Probation Office)')
         expect($('[data-qa="managedBy"]').attr('href')).toBe('/case/X000001/personal-details/staff-contacts')
         expect($('[data-qa="personPhoto"]').attr('src')).toBe('/search/prisoner-image/A1234BC')
+      })
+
+      it('should render the name, date of birth and v3 tier', () => {
+        const $ = renderPersonHeader({
+          headerPersonName: { forename: 'Caroline', surname: 'Wolff' },
+          headerDob: '1979-08-18',
+          tierUrlV3: 'https://tier-dev.hmpps.service.justice.gov.uk/v3/case/X000001',
+          tierDetails: { calculation: { tierScore: 'B2', provisional: true } },
+        })
+        expect($('[data-qa="personName"]').text().trim()).toBe('Caroline Wolff')
+        expect($('[data-qa="dob"]').text().trim()).toBe('18 August 1979')
+        expect($('[data-qa="tier"]').attr('href')).toBe('https://tier-dev.hmpps.service.justice.gov.uk/v3/case/X000001')
+        expect($('[data-qa="tier"]').text()).toContain('B2')
+        expect($('[data-qa="tierProvisional"]').text()).toBe('(provisional)')
+      })
+
+      it('should show managed by as no data available when there are no professional contacts', () => {
+        const $ = renderPersonHeader({ professionalContact: null })
+        expect($('[data-qa="managedBy"]').text().trim()).toBe('No data available')
       })
 
       it('should not render the legacy header', () => {

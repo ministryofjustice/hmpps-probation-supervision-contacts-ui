@@ -2,7 +2,11 @@ import nunjucks from 'nunjucks'
 import path from 'path'
 import { Request, Response } from 'express-serve-static-core'
 import { arnsNunjucksSetup } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
-import { mpopNunjucksSetup, toSentenceCase } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import {
+  mpopNunjucksSetup,
+  toPersonHeaderParams,
+  toSentenceCase,
+} from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { convertToTitleCase } from '../utils/convertToTitleCase'
 import { dateWithYear } from '../utils/dateWithYear'
 import { deliusDeepLinkUrl } from '../utils/deliusDeepLinkUrl'
@@ -37,5 +41,6 @@ export const createNunjucksTestEnv = (_req?: Request, _res?: Response) => {
   env.addFilter('convertToTitleCase', convertToTitleCase)
   arnsNunjucksSetup(env)
   mpopNunjucksSetup(env)
+  env.addGlobal('toPersonHeaderParams', toPersonHeaderParams)
   return env
 }
