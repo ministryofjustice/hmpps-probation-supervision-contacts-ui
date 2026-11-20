@@ -44,6 +44,7 @@ describe('getUpdateContact', () => {
         },
       },
       csrfToken: 'token',
+      outcomeCodes: ['AAM01', 'AAM13', 'AAM02'],
     })
 
     await updateContactController.getUpdateContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)
@@ -74,6 +75,7 @@ describe('getUpdateContact', () => {
         },
       },
       csrfToken: 'token',
+      outcomeCodes: ['AAM01', 'AAM13', 'AAM02'],
     })
 
     await updateContactController.getUpdateContact(mockMasApiClient as unknown as MasApiClient)(req, res, next)

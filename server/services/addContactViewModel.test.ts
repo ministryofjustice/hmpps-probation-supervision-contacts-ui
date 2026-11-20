@@ -120,6 +120,7 @@ describe('buildAddContactViewModel', () => {
       sentences,
       personName: 'Stuart Morrison',
       formValues: { outcomeCode: 'MO3' },
+      outcomeCodes: ['MO13', 'MO1', 'MO28', 'MO12', 'MO3'],
     })
 
     expect(result.showRelatesToQuestion).toBe(false)
@@ -136,6 +137,23 @@ describe('buildAddContactViewModel', () => {
     })
   })
 
+  it('no outcomes found if do not match API results of valid codes', () => {
+    const result = buildAddContactViewModel(
+      {
+        crn: 'X123456',
+        slug: 'management-oversight',
+        sentences,
+        personName: 'Stuart Morrison',
+        formValues: { outcomeCode: 'MO3' },
+        outcomeCodes: [],
+      },
+      { enableETAdditionalOutcomes20261117Squad3: true },
+    )
+
+    expect(result.showRelatesToQuestion).toBe(false)
+    expect(result.outcomeSection).toEqual(undefined)
+  })
+
   it('builds an inset outcome section with auto-selected value for single-outcome showOutcomeBanner contacts', () => {
     const result = buildAddContactViewModel({
       crn: 'X123456',
@@ -143,6 +161,7 @@ describe('buildAddContactViewModel', () => {
       sentences,
       personName: 'Stuart Morrison',
       formValues: {},
+      outcomeCodes: ['CO29'],
     })
 
     expect(result.formValues.outcomeCode).toBe('CO29')
@@ -240,6 +259,7 @@ describe('buildAddContactViewModel', () => {
       sentences,
       personName: 'Stuart Morrison',
       formValues: { outcomeCode: 'MO23' },
+      outcomeCodes: ['MO26', 'MO23', 'MO24', 'MO25'],
     })
 
     expect(result.showRelatesToQuestion).toBe(false)

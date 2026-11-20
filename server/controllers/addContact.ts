@@ -221,6 +221,7 @@ const addContactController = {
           csrfToken: getStringValue(res.locals.csrfToken),
           backUrl: resolveBackUrl(req.query?.backUrl, crn),
           documentTemplates: res.locals.documentTemplates,
+          outcomeCodes: res.locals.outcomeCodes,
         },
         res.locals.flags,
       )

@@ -7,6 +7,7 @@ export const buildUpdateContactViewModelWithOutcome = (
   {
     displayName,
     contact,
+    outcomeCodes,
   }: {
     displayName: string
     contact: {
@@ -14,18 +15,22 @@ export const buildUpdateContactViewModelWithOutcome = (
         outcome: string
       }
     }
+    outcomeCodes?: string[]
   },
   flags: FeatureFlags = {},
 ) => {
   const contactDetails = OutcomeContactTypeDetails(flags).find(item => item.description === displayName)
-  const selectedOutcome = contactDetails?.outcomes?.find(
+  const contactDetailsOutcomes = flags?.enableETAdditionalOutcomes20261117Squad3
+    ? contactDetails?.outcomes?.filter(outcome => outcomeCodes?.includes(outcome.value))
+    : contactDetails?.outcomes
+  const selectedOutcome = contactDetailsOutcomes.find(
     outcome =>
       normalise(outcome.label) === normalise(contact.appointment.outcome) ||
       normalise(outcome.systemLabel) === normalise(contact.appointment.outcome),
   )
   const outcomeLabel = selectedOutcome?.label ?? contact.appointment.outcome
 
-  if (contactDetails?.outcomes?.length === 1) {
+  if (contactDetailsOutcomes.length === 1) {
     return {
       outcomeSection: false,
       outcomeLabel,
@@ -37,7 +42,7 @@ export const buildUpdateContactViewModelWithOutcome = (
 
     type: 'radios',
 
-    items: contactDetails?.outcomes.map(outcome => ({
+    items: contactDetailsOutcomes.map(outcome => ({
       text: outcome.label,
       value: outcome.value,
 
@@ -52,11 +57,19 @@ export const buildUpdateContactViewModelWithOutcome = (
   }
 }
 
-export const updateContactOutcomeCode = (displayName: string, outcomeCode: string, flags: FeatureFlags = {}) => {
+export const updateContactOutcomeCode = (
+  displayName: string,
+  outcomeCode: string,
+  flags: FeatureFlags = {},
+  outcomeCodes: string[] = [],
+) => {
   const contactDetails = OutcomeContactTypeDetails(flags).find(item => item.description === displayName)
-  const hasSingleOutcome = contactDetails?.outcomes?.length === 1
+  const contactDetailsOutcomes = flags?.enableETAdditionalOutcomes20261117Squad3
+    ? contactDetails?.outcomes?.filter(outcome => outcomeCodes?.includes(outcome.value))
+    : contactDetails?.outcomes
+  const hasSingleOutcome = contactDetailsOutcomes?.length === 1
   if (hasSingleOutcome) {
-    return contactDetails.outcomes[0].value
+    return contactDetailsOutcomes[0].value
   }
 
   return outcomeCode

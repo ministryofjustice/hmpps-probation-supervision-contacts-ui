@@ -14,6 +14,8 @@ import { getPersonRiskFlags } from '../middleware/getPersonRiskFlags'
 import { setCollapsibleRiskFlags } from '../middleware/setCollapsibleRiskFlags'
 import { downloadDocument } from '../middleware/downloadDocument'
 import { getTemplates } from '../middleware/getTemplates'
+import { getContactCode } from '../middleware/getContactCode'
+import { getContactOutcomes } from '../middleware/getContactOutcomes'
 
 export default function addContactRoutes(
   router: Router,
@@ -38,7 +40,9 @@ export default function addContactRoutes(
     getSentences(masApiClient),
     loadTierDetails,
     setCollapsibleRiskFlags,
+    getContactCode,
     getTemplates(masApiClient),
+    getContactOutcomes(masApiClient),
   ]
 
   router.get(
