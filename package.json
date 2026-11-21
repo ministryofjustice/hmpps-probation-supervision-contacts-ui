@@ -119,7 +119,7 @@
   "overrides": {
     "flatted": "^3.4.4",
     "js-yaml": "^5.5.0",
-    "@opentelemetry/core": "^2.12.0",
+    "@opentelemetry/core": "^3.1.1",
     "qs": "^6.17.1",
     "@humanfs/node": "^0.17.0",
     "@azure/monitor-opentelemetry": "^1.21.0",
