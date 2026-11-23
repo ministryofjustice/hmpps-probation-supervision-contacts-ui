@@ -572,11 +572,7 @@ describe('/middleware/getPersonalDetails', () => {
       const checkInPhotoUrl = 'https://bucket.s3.eu-west-2.amazonaws.com/photo.jpg'
       const getCheckInRes = () => {
         const checkInRes = getRes()
-        checkInRes.locals.flags = {
-          enablePersonHeader: true,
-          enablePersonHeaderPhoto: true,
-          enableESUPCheckInPhotosForSearch: true,
-        }
+        checkInRes.locals.flags = { enablePersonHeader: true, enablePersonHeaderPhoto: true }
         return checkInRes
       }
 
@@ -629,15 +625,6 @@ describe('/middleware/getPersonalDetails', () => {
         expect(loggerSpy).toHaveBeenCalledWith(error, 'Failed to get the online check-in photo for CRN X000002')
         expect(res.locals.personPhotoSrc).toEqual('/person-photo/A1234BC')
         expect(res.locals.prisonsUnavailable).toBe(false)
-      })
-
-      it('does not request the check-in photo when enableESUPCheckInPhotosForSearch is off', async () => {
-        req = getReq()
-        res = getHeaderRes()
-
-        await run()
-
-        expect(mockMpopComponents.getCheckInPhotoUrl).not.toHaveBeenCalled()
       })
 
       it('does not request the check-in photo when enablePersonHeaderPhoto is off', async () => {

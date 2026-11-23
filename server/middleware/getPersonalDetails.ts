@@ -126,7 +126,7 @@ export const getPersonalDetails = (
       const { noms } = data.overview
       let token: string | undefined
       let checkInPhotoUrl: string | null = null
-      if (enablePersonHeaderPhoto && res.locals.flags?.enableESUPCheckInPhotosForSearch) {
+      if (enablePersonHeaderPhoto) {
         token = await hmppsAuthClient.getToken(username)
         const { photoUrl, error } = await mpopComponents.getCheckInPhotoUrl(token, crn)
         if (error) {

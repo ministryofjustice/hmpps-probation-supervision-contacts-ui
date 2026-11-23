@@ -31,13 +31,14 @@ export default function setUpWebSecurity(): Router {
             '*.applicationinsights.azure.com/v2/track',
             config.probationFrontendComponents.connectSrc,
           ],
+          imgSrc: ["'self'", 'data:', 'https://*.s3.eu-west-2.amazonaws.com/'],
           styleSrc: ["'self'", (_req: Request, res: Response) => `'nonce-${res.locals.cspNonce}'`],
           fontSrc: ["'self'", config.probationFrontendComponents.fontSrc],
           formAction: [`'self' ${config.apis.hmppsAuth.externalUrl} ${config.manageProbationUrl}`],
           ...(config.production ? {} : { upgradeInsecureRequests: null }),
         },
       },
-      crossOriginEmbedderPolicy: true,
+      crossOriginEmbedderPolicy: { policy: 'credentialless' },
     }),
   )
   return router
