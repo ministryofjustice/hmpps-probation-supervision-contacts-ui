@@ -67,7 +67,7 @@ export default function createApp(services: Services): express.Application {
   app.use(setUpCsrf())
 
   app.use((req, res, next) => next(createError(404, 'Not found')))
-  app.use(errorHandler(process.env.NODE_ENV === 'production'))
+  app.use(errorHandler(process.env.NODE_ENV === 'production' && process.env.ENVIRONMENT_NAME !== 'dev'))
 
   return app
 }
