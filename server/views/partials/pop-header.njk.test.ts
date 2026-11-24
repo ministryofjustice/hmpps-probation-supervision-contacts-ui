@@ -19,7 +19,6 @@ type TestModel = {
   tierUrlV3?: string
   tierDetails?: { calculation: { tierScore: string; provisional: boolean } }
   personPhotoSrc?: string
-  showPersonHeaderPhoto?: boolean
   arnsUnavailable?: boolean
   prisonsUnavailable?: boolean
   collapsibleRiskFlags?: boolean
@@ -485,8 +484,8 @@ describe('POP header', () => {
         expect($('[data-qa="personPhoto"]').attr('src')).toBe('/person-photo/A1234BC')
       })
 
-      it('should not render the photo when showPersonHeaderPhoto is false', () => {
-        const $ = renderPersonHeader({ personPhotoSrc: '/person-photo/A1234BC', showPersonHeaderPhoto: false })
+      it('should not render the photo when there is no photo', () => {
+        const $ = renderPersonHeader({ personPhotoSrc: undefined })
         expect($('[data-qa="personPhoto"]').length).toBe(0)
       })
 

@@ -390,7 +390,6 @@ describe('/middleware/getPersonalDetails', () => {
 
       expect(mockMpopComponents.getContacts).toHaveBeenCalledWith('token', 'X000002')
       expect(mockMpopComponents.hasPersonPhoto).toHaveBeenCalledWith('token', 'A1234BC')
-      expect(res.locals.showPersonHeaderPhoto).toBe(true)
       expect(res.locals.professionalContact).toEqual(professionalContact)
       expect(res.locals.personPhotoSrc).toEqual('/person-photo/A1234BC')
       expect(res.locals.arnsUnavailable).toBe(false)

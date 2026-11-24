@@ -156,7 +156,6 @@ export const getPersonalDetails = (
       }
 
       res.locals.professionalContact = data.professionalContact ?? null
-      res.locals.showPersonHeaderPhoto = enablePersonHeaderPhoto
       res.locals.personPhotoSrc = enablePersonHeaderPhoto
         ? toPersonPhotoSrc({
             checkInPhotoUrl,
