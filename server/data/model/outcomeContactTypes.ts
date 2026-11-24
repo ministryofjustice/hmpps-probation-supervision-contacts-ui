@@ -61,7 +61,7 @@ export const ADD_ET_OUTCOMES: ContactOutcome[] = [
   {
     label: 'Panel decision declined - further information required',
     value: '_',
-    systemLabel: 'Panel Decision Declined - Furher information reqd',
+systemLabel: 'Panel Decision Declined - Further information reqd',
   },
   {
     label: 'Panel date confirmed',
