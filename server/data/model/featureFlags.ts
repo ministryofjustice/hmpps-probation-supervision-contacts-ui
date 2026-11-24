@@ -8,4 +8,5 @@ export class FeatureFlags {
   enableNDeliusRosh?: boolean = undefined
   enableEarlyTermination20261103Squad3?: boolean = undefined
   earlyTerminationTemplatesAPI20261112Squad3?: boolean = undefined
+  enableCheckOutcomes20261124Squad3?: boolean = undefined
 }

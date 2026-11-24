@@ -57,7 +57,7 @@ const updateContactController = {
       const displayName = contact.appointment?.displayName ?? contact.appointment?.type
 
       const contactDetails = OutcomeContactTypeDetails(res.locals.flags).find(item => item.description === displayName)
-      const contactDetailsOutcomes = res.locals.flags?.enableETAdditionalOutcomes20261117Squad3
+      const contactDetailsOutcomes = res.locals.flags?.enableCheckOutcomes20261124Squad3
         ? contactDetails?.outcomes?.filter(outcome => res.locals.outcomeCodes?.includes(outcome.value))
         : contactDetails?.outcomes
       const outcomeRequired = contactDetailsOutcomes?.length > 1

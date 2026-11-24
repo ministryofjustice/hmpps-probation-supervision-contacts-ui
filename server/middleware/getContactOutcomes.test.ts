@@ -20,7 +20,7 @@ describe('getContactOutcomes', () => {
       locals: {
         user: { username },
         contactCode: 'ETRP',
-        flags: { enableEarlyTermination20261103Squad3: true, enableETAdditionalOutcomes20261117Squad3: true },
+        flags: { enableEarlyTermination20261103Squad3: true, enableCheckOutcomes20261124Squad3: true },
       },
     } as unknown as Response
     return { req, res }

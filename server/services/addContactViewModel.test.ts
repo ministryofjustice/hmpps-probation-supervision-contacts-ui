@@ -147,7 +147,7 @@ describe('buildAddContactViewModel', () => {
         formValues: { outcomeCode: 'MO3' },
         outcomeCodes: [],
       },
-      { enableETAdditionalOutcomes20261117Squad3: true },
+      { enableCheckOutcomes20261124Squad3: true },
     )
 
     expect(result.showRelatesToQuestion).toBe(false)
