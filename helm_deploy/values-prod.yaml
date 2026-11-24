@@ -47,7 +47,7 @@ generic-service:
           ctl:ruleRemoveTargetById=922130;MULTIPART_PART_HEADERS:fileUpload,\
           ctl:ruleRemoveTargetById=920120;FILES:fileUpload"
 
-      SecRule REQUEST_URI "@rx ^/case/[^/]+/contacts/add-email-or-text-from-other$" \
+      SecRule REQUEST_FILENAME "@rx ^/case/[^/]+/contacts/add-email-or-text-from-other$" \
       "id:1001004,\
          phase:1,\
          pass,\

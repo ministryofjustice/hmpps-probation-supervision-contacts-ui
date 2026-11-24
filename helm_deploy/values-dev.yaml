@@ -52,7 +52,7 @@ generic-service:
       "id:1001004,\
          phase:1,\
          pass,\
-         log,\
+         nolog,\
          ctl:ruleRemoveTargetById=932231;ARGS:details,\
          ctl:ruleRemoveTargetById=932235;ARGS:details,\
          ctl:ruleRemoveTargetById=932236;ARGS:details"
