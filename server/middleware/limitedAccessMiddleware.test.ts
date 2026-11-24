@@ -4,12 +4,13 @@ import { CaseAccess } from '../models/caseAccess'
 import { limitedAccess } from './limitedAccessMiddleware'
 
 const mockAccess = ({
+  crn = 'X000001',
   userExcluded = false,
   userRestricted = false,
   exclusionMessage = '',
   restrictionMessage = '',
-}): CaseAccess => ({
-  crn: 'X000001',
+}: Partial<CaseAccess>): CaseAccess => ({
+  crn,
   userExcluded,
   userRestricted,
   exclusionMessage,
