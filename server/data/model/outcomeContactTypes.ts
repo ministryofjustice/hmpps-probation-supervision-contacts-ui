@@ -1,7 +1,7 @@
 import { FeatureFlags } from './featureFlags'
 import { ContactOutcome, ContactTypeDetail } from './noOutcomeContactTypes'
 
-const ET_ENTRIES = (flags: FeatureFlags = {}): ContactTypeDetail[] => [
+export const ET_ENTRIES = (flags: FeatureFlags = {}): ContactTypeDetail[] => [
   {
     code: 'ETRP',
     description: 'Early termination request',
@@ -14,7 +14,7 @@ const ET_ENTRIES = (flags: FeatureFlags = {}): ContactTypeDetail[] => [
   },
 ]
 
-const BASE_ET_OUTCOMES: ContactOutcome[] = [
+export const BASE_ET_OUTCOMES: ContactOutcome[] = [
   {
     label: 'Checklist in progress',
     value: 'ET01',
@@ -32,7 +32,7 @@ const BASE_ET_OUTCOMES: ContactOutcome[] = [
   },
 ]
 
-const ADD_ET_OUTCOMES: ContactOutcome[] = [
+export const ADD_ET_OUTCOMES: ContactOutcome[] = [
   {
     label: 'Panel decision approved',
     value: 'ET03',
@@ -75,7 +75,7 @@ const ADD_ET_OUTCOMES: ContactOutcome[] = [
   },
 ]
 
-const BASE_ENTRIES: ContactTypeDetail[] = [
+export const BASE_ENTRIES: ContactTypeDetail[] = [
   {
     code: 'AAM1',
     description: 'Alcohol consumption',
