@@ -1,0 +1,16 @@
+{% extends "./partials/layout.njk" %}
+
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% block beforeContent %}
+  {% if backLink %}
+    {{ govukBackLink({
+      href: backLink
+    }) }}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <h1 class="govuk-heading-l">You are restricted from viewing this case</h1>
+  <p>{{ message }}</p>
+{% endblock %}
