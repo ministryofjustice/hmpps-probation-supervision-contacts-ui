@@ -30,7 +30,7 @@ describe('limitedAccess', () => {
   })
 
   function createReqRes(crn = 'X000001', username = 'test-user'): { req: Request; res: Response } {
-    const req = { params: { crn }, query: { backUrl: '/back/link' } } as unknown as Request
+    const req = { params: { crn }, query: { backUrl: `/case/${crn}/contacts/search-keyword` } } as unknown as Request
     const res = { locals: { user: { username } }, render: jest.fn() } as unknown as Response
     return { req, res }
   }
@@ -54,7 +54,10 @@ describe('limitedAccess', () => {
     await limitedAccess(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
     expect(mockMasApiClient.getUserAccess).toHaveBeenCalledWith('test-user', 'X000001')
-    expect(res.render).toHaveBeenCalledWith('autherror-lao', { message: 'user is excluded', backLink: '/back/link' })
+    expect(res.render).toHaveBeenCalledWith('autherror-lao', {
+      message: 'user is excluded',
+      backLink: '/case/X000001/contacts/search-keyword',
+    })
     expect(next).not.toHaveBeenCalled()
   })
 
@@ -67,7 +70,10 @@ describe('limitedAccess', () => {
     await limitedAccess(mockMasApiClient as unknown as MasApiClient)(req, res, next)
 
     expect(mockMasApiClient.getUserAccess).toHaveBeenCalledWith('test-user', 'X000001')
-    expect(res.render).toHaveBeenCalledWith('autherror-lao', { message: 'user is restricted', backLink: '/back/link' })
+    expect(res.render).toHaveBeenCalledWith('autherror-lao', {
+      message: 'user is restricted',
+      backLink: '/case/X000001/contacts/search-keyword',
+    })
     expect(next).not.toHaveBeenCalled()
   })
 
@@ -79,7 +85,7 @@ describe('limitedAccess', () => {
 
     expect(res.render).toHaveBeenCalledWith('autherror-lao', {
       message: 'You are not authorised to view this case.',
-      backLink: '/back/link',
+      backLink: '/case/X000001/contacts/search-keyword',
     })
     expect(next).not.toHaveBeenCalled()
   })
@@ -92,5 +98,18 @@ describe('limitedAccess', () => {
     expect(mockMasApiClient.getUserAccess).toHaveBeenCalledWith('test-user', 'X000001')
     expect(res.render).not.toHaveBeenCalled()
     expect(next).toHaveBeenCalledWith()
+  })
+
+  it('does not use the backUrl query param if it does not sanitise', async () => {
+    mockMasApiClient.getUserAccess.mockResolvedValue(
+      mockAccess({ userExcluded: true, exclusionMessage: 'user is excluded' }),
+    )
+    const { req, res } = createReqRes()
+
+    req.query.backUrl = 'http://some-other-url/back/link'
+
+    await limitedAccess(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+
+    expect(res.render).toHaveBeenCalledWith('autherror-lao', expect.objectContaining({ backLink: undefined }))
   })
 })

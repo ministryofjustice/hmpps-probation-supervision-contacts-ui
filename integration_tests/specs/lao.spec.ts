@@ -67,9 +67,12 @@ test('restricts every page under the case', async ({ page }) => {
 })
 
 test('shows a back link when a backUrl is provided', async ({ page }) => {
-  await page.goto('/case/X778160/add-frequently-used-contact?backUrl=/previous-page')
+  await page.goto('/case/X778160/add-frequently-used-contact?backUrl=/case/X778160/add-frequently-used-contact')
 
-  await expect(page.getByRole('link', { name: 'Back', exact: true })).toHaveAttribute('href', '/previous-page')
+  await expect(page.getByRole('link', { name: 'Back', exact: true })).toHaveAttribute(
+    'href',
+    '/case/X778160/add-frequently-used-contact',
+  )
 })
 
 test('does not show a back link when no backUrl is provided', async ({ page }) => {
