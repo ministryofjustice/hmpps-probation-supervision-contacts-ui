@@ -1,5 +1,6 @@
-import { RestClient, asSystem } from '@ministryofjustice/hmpps-rest-client'
+import { asSystem } from '@ministryofjustice/hmpps-rest-client'
 import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
+import BaseRestClient from './restClient'
 import config from '../config'
 import logger from '../../logger'
 import { PersonalDetails } from './model/personalDetails'
@@ -40,7 +41,7 @@ export interface ProbationPractitioner {
   username: string
 }
 
-export default class MasApiClient extends RestClient {
+export default class MasApiClient extends BaseRestClient {
   constructor(authenticationClient: AuthenticationClient) {
     super('Manage a Supervision API', config.apis.masApi, logger, authenticationClient)
   }
@@ -96,10 +97,7 @@ export default class MasApiClient extends RestClient {
     const result = await this.get<{ isResponsibleOfficer: boolean } | null>(
       {
         path: `/case/${crn}/officer-status/${username}`,
-        errorHandler: (_path, _method, error) => {
-          if (error.responseStatus === 404) return null
-          throw error
-        },
+        handle404: true,
       },
       asSystem(username),
     )
@@ -153,10 +151,7 @@ export default class MasApiClient extends RestClient {
     return this.get<Overview | null>(
       {
         path: `/overview/${crn}`,
-        errorHandler: (_path, _method, error) => {
-          if (error.responseStatus === 404) return null
-          throw error
-        },
+        handle404: true,
       },
       asSystem(username),
     )
@@ -166,10 +161,7 @@ export default class MasApiClient extends RestClient {
     return this.get<PersonalDetails | null>(
       {
         path: `/personal-details/${crn}`,
-        errorHandler: (_path, _method, error) => {
-          if (error.responseStatus === 404) return null
-          throw error
-        },
+        handle404: true,
       },
       asSystem(username),
     )
@@ -179,10 +171,7 @@ export default class MasApiClient extends RestClient {
     return this.get<ProfessionalContact | null>(
       {
         path: `/sentence/${crn}/contacts`,
-        errorHandler: (_path, _method, error) => {
-          if (error.responseStatus === 404) return null
-          throw error
-        },
+        handle404: true,
       },
       asSystem(username),
     )
@@ -192,10 +181,7 @@ export default class MasApiClient extends RestClient {
     return this.get<HmppsUser | null>(
       {
         path: `/user/${username}`,
-        errorHandler: (_path, _method, error) => {
-          if (error.responseStatus === 404) return null
-          throw error
-        },
+        handle404: true,
       },
       asSystem(username),
     )
