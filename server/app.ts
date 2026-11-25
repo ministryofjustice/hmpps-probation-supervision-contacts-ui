@@ -26,6 +26,7 @@ import addUpdateContactRoutes from './routes/updateContact'
 import { metricsMiddleware } from './monitoring/metricsApp'
 import addMpopRedirectRoutes from './routes/mpopRedirects'
 import addPersonHeaderRoutes from './routes/personHeader'
+import { limitedAccess } from './middleware/limitedAccessMiddleware'
 
 export default function createApp(services: Services): express.Application {
   const app = express()
@@ -49,6 +50,7 @@ export default function createApp(services: Services): express.Application {
   app.use(getFrontendComponents(services.probationComponentsService))
   app.use(authorisationMiddleware(['ROLE_MANAGE_SUPERVISIONS']))
   app.use(getUserAlertsCount(services.masApiClient))
+  app.use(['/case/:crn', '/case/:crn/*path'], limitedAccess(services.masApiClient))
   app.use(metricsMiddleware)
 
   app.use((req, res, next) => {

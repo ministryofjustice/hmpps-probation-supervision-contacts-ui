@@ -33,6 +33,7 @@ export const login = async (
     hmppsAuth.token({ name, roles, authSource }),
     tokenVerification.stubVerifyToken(active),
     masApi.stubGetAlertsCount(),
+    masApi.stubGetUserAccessUnrestricted(),
     fliptApi.stubSnapshot(flags),
   ])
   await attemptHmppsAuthLogin(page)

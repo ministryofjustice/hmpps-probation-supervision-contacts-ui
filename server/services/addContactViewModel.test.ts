@@ -264,4 +264,21 @@ describe('buildAddContactViewModel', () => {
       }),
     )
   })
+
+  it('note that no relatesTo options exist if missing and access flag is on', () => {
+    const result = buildAddContactViewModel(
+      {
+        crn: 'X123456',
+        slug: 'early-termination-request',
+        sentences: [],
+        contactCode: 'ETRP',
+        personName: 'Stuart Morrison',
+        formValues: {},
+        documentTemplates: [],
+      },
+      { enableEarlyTermination20261103Squad3: true, enableContactAccessLimitation20261116Squad3: true },
+    )
+
+    expect(result.noOptions).toEqual(true)
+  })
 })

@@ -2,6 +2,7 @@ import type { SuperAgentRequest } from 'superagent'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import { stubFor } from './wiremock'
+import { CaseAccess } from '../../server/models/caseAccess'
 
 const filePath = path.join(__dirname, 'fixtures/template.dotx')
 const fileBase64 = fs.readFileSync(filePath).toString('base64')
@@ -36,6 +37,34 @@ export default {
           page: 0,
           size: 0,
         },
+      },
+    }),
+
+  stubGetUserAccess: (access: CaseAccess): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `/mas-api/user/.+/access/${access.crn}`,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: access,
+      },
+    }),
+
+  // Lower priority than the default (5) so per-crn stubs from stubGetUserAccess take precedence
+  stubGetUserAccessUnrestricted: (): SuperAgentRequest =>
+    stubFor({
+      priority: 10,
+      request: {
+        method: 'GET',
+        urlPattern: '/mas-api/user/.+/access/.+',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: { userExcluded: false, userRestricted: false },
       },
     }),
 
@@ -128,6 +157,7 @@ export default {
 
   stubGetSentences: (): SuperAgentRequest =>
     stubFor({
+      priority: 2,
       request: {
         method: 'GET',
         urlPattern: '/mas-api/sentences/.+',
@@ -137,6 +167,22 @@ export default {
         headers: { 'Content-Type': 'application/json;charset=UTF-8' },
         jsonBody: {
           sentences: [{ id: 1, order: { description: 'ORA Community Order', startDate: '2023-01-01' } }],
+        },
+      },
+    }),
+
+  stubGetNoSentences: (): SuperAgentRequest =>
+    stubFor({
+      priority: 1,
+      request: {
+        method: 'GET',
+        urlPattern: '/mas-api/sentences/.+',
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          sentences: [],
         },
       },
     }),

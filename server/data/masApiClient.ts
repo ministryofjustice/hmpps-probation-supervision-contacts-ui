@@ -21,6 +21,7 @@ import { sanitizeFilename } from '../utils/sanitizeFilename'
 import { PersonRiskFlags } from './model/risk'
 import { ProfessionalContact } from './model/professionalContact'
 import { FeatureFlags } from './model/featureFlags'
+import { CaseAccess } from '../models/caseAccess'
 
 interface UserAlerts {
   content: unknown[]
@@ -47,6 +48,10 @@ export default class MasApiClient extends RestClient {
   async getUserAlertsCount(username: string): Promise<number> {
     const response = await this.get<UserAlerts>({ path: `/alerts` }, asSystem(username))
     return response.totalResults
+  }
+
+  async getUserAccess(username: string, crn: string): Promise<CaseAccess> {
+    return this.get({ path: `/user/${username}/access/${crn}` }, asSystem(username))
   }
 
   async getFrequentContactTypes(username: string): Promise<ContactType[]> {
