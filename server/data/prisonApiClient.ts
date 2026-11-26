@@ -1,10 +1,11 @@
 import { Readable } from 'stream'
-import { RestClient, asSystem } from '@ministryofjustice/hmpps-rest-client'
+import { asSystem } from '@ministryofjustice/hmpps-rest-client'
 import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
+import BaseRestClient from './restClient'
 import config from '../config'
 import logger from '../../logger'
 
-export default class PrisonApiClient extends RestClient {
+export default class PrisonApiClient extends BaseRestClient {
   constructor(authenticationClient: AuthenticationClient) {
     super('Prison API', config.apis.prisonApi, logger, authenticationClient)
   }

@@ -1,10 +1,11 @@
-import { RestClient, asSystem } from '@ministryofjustice/hmpps-rest-client'
+import { asSystem } from '@ministryofjustice/hmpps-rest-client'
 import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
+import BaseRestClient from './restClient'
 import config from '../config'
 import logger from '../../logger'
 import { ErrorSummary } from './model/common'
 
-export default class TierApiClient extends RestClient {
+export default class TierApiClient extends BaseRestClient {
   constructor(authenticationClient: AuthenticationClient) {
     super('Tier API', config.apis.tierApi, logger, authenticationClient)
   }
@@ -15,11 +16,9 @@ export default class TierApiClient extends RestClient {
     return this.get<TierCalculation | ErrorSummary | null>(
       {
         path: `/crn/${crn}/tier/details`,
-        errorHandler: (_path, _method, error) => {
-          if (error.responseStatus === 404) return null
-          if (error.responseStatus === 500) return { errors: [{ text: errorMessage }] }
-          throw error
-        },
+        handle404: true,
+        handle500: true,
+        errorMessage,
       },
       asSystem(username),
     )
