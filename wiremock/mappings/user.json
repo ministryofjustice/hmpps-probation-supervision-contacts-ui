@@ -8,7 +8,9 @@
       "response": {
         "status": 200,
         "jsonBody": {
-          "roles": ["OIBT0002"],
+          "roles": [
+            "OIBT0002"
+          ],
           "userId": 1234,
           "username": "USER1",
           "firstName": "Test",
@@ -17,9 +19,28 @@
           "enabled": true,
           "staff": {
             "probationDeliveryUnits": [
-              { "code": "N03CTM", "description": "Test PDU" }
+              {
+                "code": "N03CTM",
+                "description": "Test PDU"
+              }
             ]
           }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPathPattern": "/mas-api/user/.+/access/.+",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "userExcluded": false,
+          "userRestricted": false
         },
         "headers": {
           "Content-Type": "application/json"

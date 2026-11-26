@@ -22,7 +22,7 @@ generic-service:
          t:none,\
          setvar:tx.paranoia_level=2"
 
-      SecRule REQUEST_URI "@rx ^/case/[^/]+/contacts/[^/]+$" \
+      SecRule REQUEST_FILENAME "@rx ^/case/[^/]+/contacts/[^/]+$" \
         "id:1001001,\
          phase:1,\
          pass,\
@@ -32,7 +32,7 @@ generic-service:
          ctl:ruleRemoveTargetByTag=attack-sqli;ARGS:details,\
          ctl:ruleRemoveTargetByTag=attack-xss;ARGS:details"
 
-      SecRule REQUEST_URI "@rx ^/case/[A-Z][0-9]{6}/[0-9]+/update-contact$" \
+      SecRule REQUEST_FILENAME "@rx ^/case/[A-Z][0-9]{6}/[0-9]+/update-contact$" \
         "id:1001002,\
           phase:1,\
           pass,\
@@ -46,15 +46,6 @@ generic-service:
         "id:100103,phase:1,pass,nolog,\
           ctl:ruleRemoveTargetById=922130;MULTIPART_PART_HEADERS:fileUpload,\
           ctl:ruleRemoveTargetById=920120;FILES:fileUpload"
-
-      SecRule REQUEST_FILENAME "@rx ^/case/[^/]+/contacts/add-email-or-text-from-other$" \
-      "id:1001004,\
-         phase:1,\
-         pass,\
-         nolog,\
-         ctl:ruleRemoveTargetById=932231;ARGS:details,\
-         ctl:ruleRemoveTargetById=932235;ARGS:details,\
-         ctl:ruleRemoveTargetById=932236;ARGS:details"
   env:
     INGRESS_URL: "https://probation-supervision-contacts-ui.hmpps.service.justice.gov.uk"
     HMPPS_AUTH_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
