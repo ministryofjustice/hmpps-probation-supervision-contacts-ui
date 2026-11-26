@@ -151,6 +151,7 @@ describe('getSupervisionPackage middleware', () => {
     expect(hmppsAuthClient.getToken).toHaveBeenCalledWith('user-1')
     expect(mpopComponents.getSupervisionPackageFrontendContext).toHaveBeenCalledWith(SYSTEM_TOKEN, CRN)
     expect(res.locals.supervisionPackageDetails).toEqual(packageResponse)
+    expect(res.locals.supervisionPackageUnavailable).toBe(false)
     expect(nextSpy).toHaveBeenCalled()
   })
 
@@ -172,6 +173,7 @@ describe('getSupervisionPackage middleware', () => {
     )
     expect(res.locals.supervisionPackageDetails).toBeUndefined()
     expect(res.locals.supervisionPackageAttempted).toBe(true)
+    expect(res.locals.supervisionPackageUnavailable).toBe(false)
     expect(nextSpy).toHaveBeenCalled()
   })
 
@@ -212,6 +214,7 @@ describe('getSupervisionPackage middleware', () => {
       'Failed to connect to MPoP Components API.',
     )
     expect(res.locals.supervisionPackageDetails).toBeUndefined()
+    expect(res.locals.supervisionPackageUnavailable).toBe(true)
     expect(nextSpy).toHaveBeenCalled()
   })
 

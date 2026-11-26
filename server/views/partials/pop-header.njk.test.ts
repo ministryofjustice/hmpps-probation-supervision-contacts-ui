@@ -20,7 +20,8 @@ type TestModel = {
   tierDetails?: { calculation: { tierScore: string; provisional: boolean } }
   personPhotoSrc?: string
   arnsUnavailable?: boolean
-  prisonsUnavailable?: boolean
+  photoUnavailable?: boolean
+  statusUnavailable?: boolean
   collapsibleRiskFlags?: boolean
 }
 
@@ -515,11 +516,22 @@ describe('POP header', () => {
     })
 
     describe('header errors', () => {
-      it('should show an error when photos and risk information are unavailable', () => {
-        const $ = renderPersonHeader({ arnsUnavailable: true, prisonsUnavailable: true })
-        const errors = $('[data-qa="headerErrors"]').text()
-        expect(errors).toContain('Photos and throughcare information are currently unavailable.')
-        expect(errors).toContain('Risk information from the ARNS service is currently unavailable.')
+      it('should list every message when status, photo and risk information are unavailable', () => {
+        const $ = renderPersonHeader({ statusUnavailable: true, arnsUnavailable: true, photoUnavailable: true })
+        const errors = $('[data-qa="headerErrors"] li')
+          .map((_, item) => $(item).text().trim())
+          .get()
+        expect(errors).toEqual([
+          'Risk information from the ARNS service is currently unavailable.',
+          'Photo is currently unavailable.',
+          'Status information is currently unavailable.',
+        ])
+      })
+
+      it('should show the photo error on its own', () => {
+        const $ = renderPersonHeader({ photoUnavailable: true })
+        expect($('[data-qa="headerErrors"]').text()).toContain('Photo is currently unavailable.')
+        expect($('[data-qa="headerErrors"] li').length).toBe(0)
       })
 
       it('should still render the header and risk flags when the ARNS risk data is missing', () => {

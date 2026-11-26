@@ -393,7 +393,7 @@ describe('/middleware/getPersonalDetails', () => {
       expect(res.locals.professionalContact).toEqual(professionalContact)
       expect(res.locals.personPhotoSrc).toEqual('/person-photo/A1234BC')
       expect(res.locals.arnsUnavailable).toBe(false)
-      expect(res.locals.prisonsUnavailable).toBe(false)
+      expect(res.locals.photoUnavailable).toBe(false)
       expect(req.session.data.personalDetails.X000002.professionalContact).toEqual(professionalContact)
       expect(req.session.data.personalDetails.X000002.personPhotoSrc).toEqual('/person-photo/A1234BC')
       expect(nextSpy).toHaveBeenCalledWith()
@@ -459,7 +459,7 @@ describe('/middleware/getPersonalDetails', () => {
 
       await run()
 
-      expect(res.locals.prisonsUnavailable).toBe(true)
+      expect(res.locals.photoUnavailable).toBe(true)
       expect(res.locals.personPhotoSrc).toBeUndefined()
       expect(res.locals.professionalContact).toEqual(professionalContact)
       expect(req.session.data.personalDetails.X000002.professionalContact).toEqual(professionalContact)
@@ -476,7 +476,7 @@ describe('/middleware/getPersonalDetails', () => {
 
       expect(mockMpopComponents.hasPersonPhoto).not.toHaveBeenCalled()
       expect(res.locals.personPhotoSrc).toBeUndefined()
-      expect(res.locals.prisonsUnavailable).toBe(false)
+      expect(res.locals.photoUnavailable).toBe(false)
       expect(res.locals.professionalContact).toEqual(professionalContact)
       expect(req.session.data.personalDetails.X000002.personPhotoSrc).toBeUndefined()
     })
@@ -623,7 +623,24 @@ describe('/middleware/getPersonalDetails', () => {
 
         expect(loggerSpy).toHaveBeenCalledWith(error, 'Failed to get the online check-in photo for CRN X000002')
         expect(res.locals.personPhotoSrc).toEqual('/person-photo/A1234BC')
-        expect(res.locals.prisonsUnavailable).toBe(false)
+        expect(res.locals.photoUnavailable).toBe(false)
+      })
+
+      it('flags the photo as unavailable when the check-in request fails and there is no prison photo', async () => {
+        jest.spyOn(logger, 'error').mockImplementation()
+        mockMpopComponents.getCheckInPhotoUrl.mockResolvedValue({
+          photoUrl: null,
+          httpStatus: 500,
+          error: new Error('500'),
+        })
+        mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: false, httpStatus: 404 })
+        req = getReq()
+        res = getCheckInRes()
+
+        await run()
+
+        expect(res.locals.personPhotoSrc).toBeUndefined()
+        expect(res.locals.photoUnavailable).toBe(true)
       })
 
       it('does not request the check-in photo when enablePersonHeaderPhoto is off', async () => {
@@ -816,5 +833,23 @@ describe('/middleware/getPersonalDetails', () => {
       expect(res.locals.personStatusTag).toBeUndefined()
       expect(nextSpy).toHaveBeenCalled()
     })
+
+    it.each([
+      [undefined, true, true],
+      ['In custody', true, false],
+      [undefined, false, false],
+    ])(
+      'with a status tag of %s and supervisionPackageUnavailable %s, statusUnavailable is %s',
+      async (statusTag, supervisionPackageUnavailable, expected) => {
+        mockMasApiClient.getPersonalDetails.mockResolvedValueOnce({ ...overview('X000002'), noms: 'A1234BC' })
+        mockedGetStatusTag.mockResolvedValueOnce(statusTag)
+        res.locals.flags = { enablePersonHeader: true }
+        res.locals.supervisionPackageUnavailable = supervisionPackageUnavailable
+
+        await run()
+
+        expect(res.locals.statusUnavailable).toBe(expected)
+      },
+    )
   })
 })

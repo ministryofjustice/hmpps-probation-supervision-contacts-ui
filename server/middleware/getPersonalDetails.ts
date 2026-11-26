@@ -24,7 +24,7 @@ export const getPersonalDetails = (
     const enablePersonHeader = res.locals.flags?.enablePersonHeader === true
     const enablePersonHeaderPhoto = enablePersonHeader && res.locals.flags?.enablePersonHeaderPhoto === true
     let arnsUnavailable = false
-    let prisonsUnavailable = false
+    let photoUnavailable = false
     const isolateArnsFailure = <T>(promise: Promise<T>): Promise<T | null> =>
       enablePersonHeader
         ? promise.catch((): null => {
@@ -126,6 +126,7 @@ export const getPersonalDetails = (
       const { noms } = data.overview
       let token: string | undefined
       let checkInPhotoUrl: string | null = null
+      let checkInPhotoFailed = false
       if (enablePersonHeaderPhoto) {
         token = await hmppsAuthClient.getToken(username)
         const { photoUrl, error } = await mpopComponents.getCheckInPhotoUrl(token, crn)
@@ -133,10 +134,12 @@ export const getPersonalDetails = (
           logger.error(error, `Failed to get the online check-in photo for CRN ${crn}`)
         }
         checkInPhotoUrl = photoUrl
+        checkInPhotoFailed = Boolean(error)
       }
 
       const fetchManagedBy = data.professionalContact === undefined
       const fetchPhoto = enablePersonHeaderPhoto && !checkInPhotoUrl && data.personPhotoSrc === undefined
+      let prisonPhotoFailed = false
       if (fetchManagedBy || fetchPhoto) {
         token ??= await hmppsAuthClient.getToken(username)
         const [professionalContact, photo] = await Promise.all([
@@ -147,9 +150,9 @@ export const getPersonalDetails = (
             : data.professionalContact,
           fetchPhoto && noms ? mpopComponents.hasPersonPhoto(token, noms) : null,
         ])
-        prisonsUnavailable = Boolean(photo?.error)
+        prisonPhotoFailed = Boolean(photo?.error)
         data = { ...data, professionalContact }
-        if (fetchPhoto && !prisonsUnavailable) {
+        if (fetchPhoto && !prisonPhotoFailed) {
           data = { ...data, personPhotoSrc: photo?.hasPhoto ? personPhotoHref(noms) : null }
         }
         cache()
@@ -164,6 +167,7 @@ export const getPersonalDetails = (
             prisonPhotoHref: personPhotoHref,
           })
         : undefined
+      photoUnavailable = !res.locals.personPhotoSrc && (checkInPhotoFailed || prisonPhotoFailed)
       const roshAssessment = data.roshData?.assessment
       res.locals.risksWidget = roshAssessment?.overallRisk
         ? {
@@ -173,7 +177,7 @@ export const getPersonalDetails = (
           }
         : { overallRisk: 'NOT_FOUND', assessedOn: undefined, risks: undefined }
       res.locals.arnsUnavailable = arnsUnavailable
-      res.locals.prisonsUnavailable = prisonsUnavailable
+      res.locals.photoUnavailable = photoUnavailable
     }
 
     const { overview } = data
@@ -191,6 +195,7 @@ export const getPersonalDetails = (
         res.locals.supervisionPackageDetails,
         res.locals.prisoner,
       )
+      res.locals.statusUnavailable = !res.locals.personStatusTag && Boolean(res.locals.supervisionPackageUnavailable)
     }
 
     res.locals.case = data.overview
