@@ -1,19 +1,15 @@
 export type ContactRelatesTo = 'Person' | 'Pre-CJA Events' | 'CJA/ORA Events'
-
 export type ContactOutcome = {
   label: string
   value: string
   systemLabel: string
 }
-
 export type ContactTypeDetails = {
   [code: string]: ContactTypeDetail
 }
-
 export type Categories = {
   [category: string]: string
 }
-
 export type ContactTypeDetail = {
   code: string
   displayName: string
@@ -27,7 +23,6 @@ export type ContactTypeDetail = {
   showOutcomeBanner?: boolean
   isFrequentlyUsed?: boolean
 }
-
 export const contactInfo: ContactTypeDetails = {
   CCON: {
     code: 'CCON',
@@ -35,7 +30,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case meetings',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -45,7 +39,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case meetings',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -55,7 +48,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case meetings',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -65,7 +57,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case meetings',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -75,7 +66,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case meetings',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -85,7 +75,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management support',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -95,7 +84,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management support',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -105,7 +93,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management support',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -115,7 +102,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management support',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -125,7 +111,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management support',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -135,7 +120,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management support',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -145,7 +129,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management support',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -155,7 +138,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management support',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -165,7 +147,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management support',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -175,7 +156,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management support',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -185,7 +165,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -223,7 +202,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -233,7 +211,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -243,7 +220,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -253,7 +229,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Case management',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -265,7 +240,6 @@ export const contactInfo: ContactTypeDetails = {
       'Non-compliance and enforcement': '',
       'Sentence management': '',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -288,7 +262,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Management oversight',
     },
-
     sensitive: false,
     relatesTo: ['Person'],
     mandatoryOutcome: true,
@@ -331,7 +304,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Case management and meetings': 'Management oversight',
     },
-
     sensitive: false,
     relatesTo: ['Person'],
     defaultHeading:
@@ -368,7 +340,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': '',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -378,7 +349,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Courts',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -388,7 +358,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Courts',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -398,7 +367,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Courts',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -408,7 +376,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Courts',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -418,7 +385,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Electronic monitoring',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -428,7 +394,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Electronic monitoring',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'CJA/ORA Events'],
   },
@@ -438,7 +403,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Electronic monitoring',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'CJA/ORA Events'],
   },
@@ -448,7 +412,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Electronic monitoring',
     },
-
     sensitive: false,
     relatesTo: ['Person'],
   },
@@ -459,7 +422,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'External communications',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -470,7 +432,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'External communications',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -480,7 +441,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'External communications',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -490,7 +450,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'External communications',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -500,7 +459,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'External communications',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -510,7 +468,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'External communications',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -521,7 +478,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'External communications',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -532,7 +488,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'External communications',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -542,7 +497,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Information sharing and requests',
     },
-
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     defaultHeading:
@@ -554,7 +508,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Information sharing and requests',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -564,7 +517,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Information sharing and requests',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -574,7 +526,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Information sharing and requests',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -584,7 +535,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Information sharing and requests',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -594,7 +544,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Information sharing and requests',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -604,7 +553,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Information sharing and requests',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -615,7 +563,6 @@ export const contactInfo: ContactTypeDetails = {
       'Communication and information sharing with others': 'Information sharing and requests',
       'Sentence management': '',
     },
-
     sensitive: false,
     relatesTo: ['Person'],
     mandatoryOutcome: true,
@@ -704,7 +651,6 @@ export const contactInfo: ContactTypeDetails = {
       'Communication and information sharing with others': 'Information sharing and requests',
       'Sentence management': '',
     },
-
     sensitive: true,
     relatesTo: ['Person'],
   },
@@ -715,7 +661,6 @@ export const contactInfo: ContactTypeDetails = {
       'Communication and information sharing with others': 'Information sharing and requests',
       'Sentence management': '',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -725,7 +670,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Information sharing and requests',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -735,7 +679,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Information sharing and requests',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -745,7 +688,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Information sharing and requests',
     },
-
     sensitive: true,
     relatesTo: ['Person'],
   },
@@ -755,7 +697,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Information sharing and requests',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -765,7 +706,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Information sharing and requests',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     defaultHeading:
@@ -778,7 +718,6 @@ export const contactInfo: ContactTypeDetails = {
       'Communication and information sharing with others': 'Information sharing and requests',
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     defaultHeading:
@@ -792,7 +731,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Home detention curfew (HDC)',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -802,7 +740,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Home detention curfew (HDC)',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -812,7 +749,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Home detention curfew (HDC)',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -824,7 +760,6 @@ export const contactInfo: ContactTypeDetails = {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'MARAC',
       'Non-compliance and enforcement': '',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: false,
@@ -843,7 +778,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Police',
     },
-
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: false,
@@ -877,7 +811,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Police',
     },
-
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: false,
@@ -907,7 +840,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Police',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -917,7 +849,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Prisons',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -927,7 +858,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication and information sharing with others': 'Prisons',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -938,7 +868,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication with person on probation': 'Email or telephone',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -949,7 +878,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication with person on probation': 'Email or telephone',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -960,7 +888,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication with person on probation': 'Email or telephone',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -971,7 +898,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication with person on probation': 'Email or telephone',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -981,7 +907,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication with person on probation': 'Letters',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -991,7 +916,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication with person on probation': 'Letters',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1002,7 +926,6 @@ export const contactInfo: ContactTypeDetails = {
       'Communication with person on probation': 'Letters',
       'Non-compliance and enforcement': '',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1012,7 +935,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication with person on probation': 'Information',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1022,7 +944,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication with person on probation': 'Information',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1032,7 +953,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication with person on probation': 'Other communications',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1042,7 +962,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Communication with person on probation': 'Other communications',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1052,7 +971,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'IOM',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1062,7 +980,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'IOM',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1073,7 +990,6 @@ export const contactInfo: ContactTypeDetails = {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'IOM',
       Referrals: '',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -1101,7 +1017,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'IOM',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1111,7 +1026,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'MAPPA',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1121,7 +1035,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'MAPPA',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1131,7 +1044,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'MAPPA',
     },
-
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -1164,7 +1076,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'MAPPA',
     },
-
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -1194,7 +1105,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'MAPPA',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     defaultHeading:
@@ -1207,7 +1117,6 @@ export const contactInfo: ContactTypeDetails = {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'MAPPA',
       Referrals: '',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -1245,7 +1154,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'MARAC',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     defaultHeading:
@@ -1257,7 +1165,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'MARAC',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1267,7 +1174,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'MARAC',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     defaultHeading:
@@ -1280,7 +1186,6 @@ export const contactInfo: ContactTypeDetails = {
       'Multi-agency working (including IOM, MAPPA and MARAC)': 'MARAC',
       Referrals: '',
     },
-
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     defaultHeading:
@@ -1310,7 +1215,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Non-compliance and enforcement': '',
     },
-
     sensitive: false,
     relatesTo: ['Person'],
   },
@@ -1320,7 +1224,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Non-compliance and enforcement': '',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1330,7 +1233,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Non-compliance and enforcement': '',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     defaultHeading:
@@ -1342,7 +1244,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       Referrals: '',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1352,7 +1253,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       Referrals: '',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -1380,7 +1280,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       Referrals: '',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -1408,7 +1307,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       Referrals: '',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -1436,7 +1334,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -1484,7 +1381,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -1522,7 +1418,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1532,7 +1427,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1542,7 +1436,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1552,7 +1445,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1562,7 +1454,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1572,7 +1463,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1582,7 +1472,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1592,7 +1481,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: false,
@@ -1616,7 +1504,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: true,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -1639,7 +1526,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     defaultHeading: 'Has a safety plan been completed?',
@@ -1651,7 +1537,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Safeguarding and victim liaison': '',
     },
-
     sensitive: true,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     defaultHeading:
@@ -1665,7 +1550,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Sentence management': '',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -1773,7 +1657,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Sentence management': '',
     },
-
     sensitive: false,
     relatesTo: ['Person', 'Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
@@ -1801,7 +1684,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Sentence management': '',
     },
-
     sensitive: false,
     relatesTo: ['Person'],
   },
@@ -1811,7 +1693,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Sentence management': '',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1821,7 +1702,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Sentence management': '',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
   },
@@ -1832,7 +1712,6 @@ export const contactInfo: ContactTypeDetails = {
     categories: {
       'Sentence management': '',
     },
-
     sensitive: false,
     relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
     mandatoryOutcome: true,
