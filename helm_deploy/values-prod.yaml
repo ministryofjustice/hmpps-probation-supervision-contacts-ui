@@ -42,10 +42,13 @@ generic-service:
           ctl:ruleRemoveTargetByTag=attack-sqli;ARGS:details,\
           ctl:ruleRemoveTargetByTag=attack-xss;ARGS:details"
 
-      SecRule REQUEST_FILENAME "@rx ^/case/[^/]+/contacts/add-email-or-text-from-other$" \
+      SecRule REQUEST_FILENAME "@rx ^/case/[^/]+/(contacts/[^/]+|[^/]+/update-contact)$" \
         "id:100103,phase:1,pass,nolog,\
           ctl:ruleRemoveTargetById=922130;MULTIPART_PART_HEADERS:fileUpload,\
-          ctl:ruleRemoveTargetById=920120;FILES:fileUpload"
+          ctl:ruleRemoveTargetById=920120;FILES:fileUpload,\
+          ctl:ruleRemoveTargetById=920120;FILES_NAMES:fileUpload,\
+          ctl:ruleRemoveTargetById=920121;FILES:fileUpload,\
+          ctl:ruleRemoveTargetById=920121;FILES_NAMES:fileUpload"
   env:
     INGRESS_URL: "https://probation-supervision-contacts-ui.hmpps.service.justice.gov.uk"
     HMPPS_AUTH_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
