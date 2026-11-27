@@ -2,6 +2,7 @@ import { FeatureFlags } from '../data/model/featureFlags'
 import { slugify } from '../utils/slugify'
 import { withBackUrl } from '../utils/backLink'
 import { CATEGORY_IDS, Category, ContactTypeCategoryEntries, categoryFromId } from '../data/model/contactCategories'
+import { ContactTypeFullDetail } from '../data/model/contactInfo'
 
 type CategoryCheckboxItem = {
   value: number
@@ -33,10 +34,25 @@ export const normaliseSelectedCategories = (value: undefined | string | string[]
 export const buildCategoryCheckboxItems = (
   selectedCategories: number[],
   flags: FeatureFlags = {},
+  contactTypes?: ContactTypeFullDetail[],
 ): CategoryCheckboxItem[] => {
-  const categories = Array.from(new Set(ContactTypeCategoryEntries(flags).map(entry => entry.category))).sort((a, b) =>
-    a.localeCompare(b),
-  )
+  let categories: Category[]
+  if (flags?.enableCheckOutcomes20261124Squad3 && contactTypes) {
+    categories = []
+    contactTypes.forEach(entry => {
+      Object.keys(entry.categories).forEach(key => {
+        if (!categories.includes(key as Category)) {
+          categories.push(key as Category)
+        }
+      })
+    })
+    categories.sort((a, b) => a.localeCompare(b))
+  } else {
+    categories = Array.from(new Set(ContactTypeCategoryEntries(flags).map(entry => entry.category))).sort((a, b) =>
+      a.localeCompare(b),
+    )
+  }
+
   return categories.map(category => ({
     value: CATEGORY_IDS[category],
     text: category,
@@ -44,30 +60,66 @@ export const buildCategoryCheckboxItems = (
   }))
 }
 
-export const buildSearchResults = (categoryIds: number[], crn: string, flags: FeatureFlags = {}, backUrl?: string) => {
+export const buildSearchResults = (
+  categoryIds: number[],
+  crn: string,
+  flags: FeatureFlags = {},
+  backUrl?: string,
+  contactTypes?: ContactTypeFullDetail[],
+) => {
   const categories = categoryIds.map(categoryFromId).filter((category): category is Category => !!category)
-  const entries = ContactTypeCategoryEntries(flags).filter(entry => categories.includes(entry.category))
   const grouped = new Map<string, { items: CategorySearchItem[]; subcategories: Map<string, CategorySearchItem[]> }>()
 
-  entries.forEach(entry => {
-    if (!grouped.has(entry.category)) {
-      grouped.set(entry.category, { items: [], subcategories: new Map() })
-    }
-    const group = grouped.get(entry.category)!
-    const item = {
-      code: entry.code,
-      displayName: entry.displayName,
-      href: withBackUrl(`/case/${crn}/contacts/add-${slugify(entry.displayName)}`, backUrl),
-    }
-    if (entry.subcategory) {
-      if (!group.subcategories.has(entry.subcategory)) {
-        group.subcategories.set(entry.subcategory, [])
+  let entries
+  if (flags?.enableCheckOutcomes20261124Squad3 && contactTypes) {
+    entries = contactTypes
+    entries.forEach(entry => {
+      if (entry.categories) {
+        Object.keys(entry.categories).forEach((category: Category) => {
+          if (categories.includes(category)) {
+            if (!grouped.has(category)) {
+              grouped.set(category, { items: [], subcategories: new Map() })
+            }
+            const group = grouped.get(category)!
+            const item = {
+              code: entry.code,
+              displayName: entry.description,
+              href: withBackUrl(`/case/${crn}/contacts/add-${slugify(entry.description)}`, backUrl),
+            }
+            if (entry.categories[category] !== '') {
+              if (!group.subcategories.has(entry.categories[category])) {
+                group.subcategories.set(entry.categories[category], [])
+              }
+              group.subcategories.get(entry.categories[category])!.push(item)
+            } else {
+              group.items.push(item)
+            }
+          }
+        })
       }
-      group.subcategories.get(entry.subcategory)!.push(item)
-    } else {
-      group.items.push(item)
-    }
-  })
+    })
+  } else {
+    entries = ContactTypeCategoryEntries(flags).filter(entry => categories.includes(entry.category))
+    entries.forEach(entry => {
+      if (!grouped.has(entry.category)) {
+        grouped.set(entry.category, { items: [], subcategories: new Map() })
+      }
+      const group = grouped.get(entry.category)!
+      const item = {
+        code: entry.code,
+        displayName: entry.displayName,
+        href: withBackUrl(`/case/${crn}/contacts/add-${slugify(entry.displayName)}`, backUrl),
+      }
+      if (entry.subcategory) {
+        if (!group.subcategories.has(entry.subcategory)) {
+          group.subcategories.set(entry.subcategory, [])
+        }
+        group.subcategories.get(entry.subcategory)!.push(item)
+      } else {
+        group.items.push(item)
+      }
+    })
+  }
 
   const categoriesSorted: CategorySearchGroup[] = Array.from(grouped.entries())
     .sort(([first], [second]) => first.localeCompare(second))
@@ -89,20 +141,40 @@ export const buildSearchResults = (categoryIds: number[], crn: string, flags: Fe
   }
 }
 
-export const buildKeywordSearchResults = (keyword: string, crn: string, flags: FeatureFlags = {}, backUrl?: string) => {
+export const buildKeywordSearchResults = (
+  keyword: string,
+  crn: string,
+  flags: FeatureFlags = {},
+  backUrl?: string,
+  contactTypes?: ContactTypeFullDetail[],
+) => {
   const lowerKeyword = keyword.toLowerCase()
   const seen = new Set<string>()
-  const items = ContactTypeCategoryEntries(flags)
-    .filter(entry => {
-      if (seen.has(entry.code)) return false
-      seen.add(entry.code)
-      return entry.displayName.toLowerCase().includes(lowerKeyword)
-    })
-    .sort((a, b) => a.displayName.localeCompare(b.displayName))
-    .map(entry => ({
-      displayName: entry.displayName,
-      href: withBackUrl(`/case/${crn}/contacts/add-${slugify(entry.displayName)}`, backUrl),
-    }))
-
+  let items
+  if (flags?.enableCheckOutcomes20261124Squad3 && contactTypes) {
+    items = contactTypes
+      .filter(entry => {
+        if (seen.has(entry.code)) return false
+        seen.add(entry.code)
+        return entry.description.toLowerCase().includes(lowerKeyword)
+      })
+      .sort((a, b) => a.description.localeCompare(b.description))
+      .map(entry => ({
+        displayName: entry.description,
+        href: withBackUrl(`/case/${crn}/contacts/add-${slugify(entry.description)}`, backUrl),
+      }))
+  } else {
+    items = ContactTypeCategoryEntries(flags)
+      .filter(entry => {
+        if (seen.has(entry.code)) return false
+        seen.add(entry.code)
+        return entry.displayName.toLowerCase().includes(lowerKeyword)
+      })
+      .sort((a, b) => a.displayName.localeCompare(b.displayName))
+      .map(entry => ({
+        displayName: entry.displayName,
+        href: withBackUrl(`/case/${crn}/contacts/add-${slugify(entry.displayName)}`, backUrl),
+      }))
+  }
   return { keyword, count: items.length, items }
 }

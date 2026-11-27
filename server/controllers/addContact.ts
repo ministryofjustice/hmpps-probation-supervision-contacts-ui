@@ -20,14 +20,29 @@ import { isBlank } from '../utils/isBlank'
 import { FeatureFlags } from '../data/model/featureFlags'
 import { showOfficer } from '../data/model/contants'
 import { resolveBackUrl, withBackUrl } from '../utils/backLink'
+import { ContactTypeFullDetail } from '../data/model/contactInfo'
 
-const buildContactTypeLinksJson = (crn: string, flags: FeatureFlags = {}, backUrl?: string) =>
-  JSON.stringify(
+const buildContactTypeLinksJson = (
+  crn: string,
+  flags: FeatureFlags = {},
+  backUrl?: string,
+  contactTypes?: ContactTypeFullDetail[],
+) => {
+  if (flags?.enableCheckOutcomes20261124Squad3 && contactTypes) {
+    return JSON.stringify(
+      [...new Set(contactTypes.map(t => t.description))].map(description => ({
+        text: description,
+        href: withBackUrl(`/case/${crn}/contacts/add-${slugify(description)}`, backUrl),
+      })),
+    )
+  }
+  return JSON.stringify(
     [...new Set(ContactTypeOptions(flags).map(t => t.description))].map(description => ({
       text: description,
       href: withBackUrl(`/case/${crn}/contacts/add-${slugify(description)}`, backUrl),
     })),
   )
+}
 
 const isContactTypeValid = (slug: string, flags: FeatureFlags = {}) =>
   ContactTypeOptions(flags).some(c => slugify(c.description) === slug)
@@ -57,8 +72,14 @@ const addContactController = {
 
       await sendAuditMessage(res, AuditAction.VIEW_ADD_FREQUENTLY_USED_CONTACT, crn as string, SubjectType.CRN)
 
-      const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
-      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn, backUrl)
+      let frequentlyUsedContacts
+      if (res.locals.flags?.enableCheckOutcomes20261124Squad3 && res.locals.frequentContactTypes) {
+        const { frequentContactTypes } = res.locals
+        frequentlyUsedContacts = buildFrequentlyUsedContacts(frequentContactTypes, crn, backUrl)
+      } else {
+        const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
+        frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn, backUrl)
+      }
 
       if (req.query?.contactType === 'APPOINTMENT') {
         const uuid = crypto.randomUUID()
@@ -67,7 +88,7 @@ const addContactController = {
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags, res.locals.contactTypes),
         selectedCategories: [],
         searchResults: null,
         searchByCategoryTabActive: false,
@@ -94,13 +115,19 @@ const addContactController = {
       )
       const action = req.query?.action
 
-      const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
-      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn, backUrl)
+      let frequentlyUsedContacts
+      if (res.locals.flags?.enableCheckOutcomes20261124Squad3 && res.locals.frequentContactTypes) {
+        const { frequentContactTypes } = res.locals
+        frequentlyUsedContacts = buildFrequentlyUsedContacts(frequentContactTypes, crn, backUrl)
+      } else {
+        const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
+        frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn, backUrl)
+      }
 
       const baseLocals = {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags, res.locals.contactTypes),
         searchResults: null as ReturnType<typeof buildSearchResults> | null,
         searchByCategoryTabActive: true,
         lastCategories: '',
@@ -124,12 +151,22 @@ const addContactController = {
         })
       }
 
-      const searchResults = buildSearchResults(selectedCategories, crn, res.locals.flags, backUrl)
+      const searchResults = buildSearchResults(
+        selectedCategories,
+        crn,
+        res.locals.flags,
+        backUrl,
+        res.locals.contactTypes,
+      )
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems(selectedCategories, res.locals.flags),
+        categoryCheckboxItems: buildCategoryCheckboxItems(
+          selectedCategories,
+          res.locals.flags,
+          res.locals.contactTypes,
+        ),
         searchResults,
         searchByCategoryTabActive: true,
         lastCategories: selectedCategories.join(','),
@@ -146,18 +183,24 @@ const addContactController = {
       const keyword = typeof req.query?.keyword === 'string' ? req.query.keyword.trim() : ''
       const action = req.query?.action
 
-      const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
-      const frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn, backUrl)
+      let frequentlyUsedContacts
+      if (res.locals.flags?.enableCheckOutcomes20261124Squad3 && res.locals.frequentContactTypes) {
+        const { frequentContactTypes } = res.locals
+        frequentlyUsedContacts = buildFrequentlyUsedContacts(frequentContactTypes, crn, backUrl)
+      } else {
+        const contactTypes = Array.isArray(res.locals.contactTypes) ? res.locals.contactTypes : []
+        frequentlyUsedContacts = buildFrequentlyUsedContacts(contactTypes, crn, backUrl)
+      }
 
       const baseLocals = {
         crn,
         frequentlyUsedContacts,
-        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags),
+        categoryCheckboxItems: buildCategoryCheckboxItems([], res.locals.flags, res.locals.contactTypes),
         searchByCategoryTabActive: false,
         searchByKeywordTabActive: true,
         keywordSearch: keyword,
         keywordSearchResults: null as ReturnType<typeof buildKeywordSearchResults> | null,
-        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags, backUrl),
+        contactTypeLinksJson: buildContactTypeLinksJson(crn, res.locals.flags, backUrl, res.locals.contactTypes),
         lastCategories: '',
         csrfToken: res.locals.csrfToken,
         contactLogUrl: `${config.manageProbationUrl}/case/${crn}/activity-log`,
@@ -184,7 +227,13 @@ const addContactController = {
 
       return res.render('pages/contacts/add-frequently-used-contact', {
         ...baseLocals,
-        keywordSearchResults: buildKeywordSearchResults(keyword, crn, res.locals.flags, backUrl),
+        keywordSearchResults: buildKeywordSearchResults(
+          keyword,
+          crn,
+          res.locals.flags,
+          backUrl,
+          res.locals.contactTypes,
+        ),
       })
     }
   },

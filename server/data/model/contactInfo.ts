@@ -1,3 +1,4 @@
+import { Category } from './contactCategories'
 import { FeatureFlags } from './featureFlags'
 
 export type ContactRelatesTo = 'Person' | 'Pre-CJA Events' | 'CJA/ORA Events'
@@ -7,17 +8,17 @@ export type ContactOutcome = {
   systemLabel: string
 }
 export type ContactTypeDetails = {
-  [code: string]: ContactTypeDetail
+  [code: string]: ContactTypeFullDetail
 }
 export type Categories = {
-  [category: string]: string
+  [category in Category]?: string
 }
 export type ContactOutcomes = {
   [code: string]: ContactOutcome
 }
-export type ContactTypeDetail = {
+export type ContactTypeFullDetail = {
   code: string
-  displayName: string
+  description: string
   sensitive: boolean
   categories: Categories
   relatesTo: ContactRelatesTo[]
@@ -33,7 +34,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
   return {
     CCON: {
       code: 'CCON',
-      displayName: 'Case conference',
+      description: 'Case conference',
       categories: {
         'Case management and meetings': 'Case meetings',
       },
@@ -42,7 +43,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     RRPCC1: {
       code: 'RRPCC1',
-      displayName: 'Case consultation',
+      description: 'Case consultation',
       categories: {
         'Case management and meetings': 'Case meetings',
       },
@@ -51,7 +52,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C238: {
       code: 'C238',
-      displayName: 'Case discussion',
+      description: 'Case discussion',
       categories: {
         'Case management and meetings': 'Case meetings',
       },
@@ -60,7 +61,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CSPO: {
       code: 'CSPO',
-      displayName: 'Consultation with manager',
+      description: 'Consultation with manager',
       categories: {
         'Case management and meetings': 'Case meetings',
       },
@@ -69,7 +70,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     NSD1: {
       code: 'NSD1',
-      displayName: 'Core group meeting',
+      description: 'Core group meeting',
       categories: {
         'Case management and meetings': 'Case meetings',
       },
@@ -78,7 +79,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CMS40: {
       code: 'CMS40',
-      displayName: 'CMS - assistance with assessments',
+      description: 'CMS - assistance with assessments',
       categories: {
         'Case management and meetings': 'Case management support',
       },
@@ -87,7 +88,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CMS41: {
       code: 'CMS41',
-      displayName: 'CMS - assistance with case conferencing',
+      description: 'CMS - assistance with case conferencing',
       categories: {
         'Case management and meetings': 'Case management support',
       },
@@ -96,7 +97,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CMS42: {
       code: 'CMS42',
-      displayName: 'CMS - attending partnership meetings',
+      description: 'CMS - attending partnership meetings',
       categories: {
         'Case management and meetings': 'Case management support',
       },
@@ -105,7 +106,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CMS43: {
       code: 'CMS43',
-      displayName: 'CMS - case related communication',
+      description: 'CMS - case related communication',
       categories: {
         'Case management and meetings': 'Case management support',
       },
@@ -114,7 +115,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CMS44: {
       code: 'CMS44',
-      displayName: 'CMS - completing and assisting with referrals',
+      description: 'CMS - completing and assisting with referrals',
       categories: {
         'Case management and meetings': 'Case management support',
       },
@@ -123,7 +124,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CMS45: {
       code: 'CMS45',
-      displayName: 'CMS - court liaison and applications to court',
+      description: 'CMS - court liaison and applications to court',
       categories: {
         'Case management and meetings': 'Case management support',
       },
@@ -132,7 +133,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CMS47: {
       code: 'CMS47',
-      displayName: 'CMS - home and prison visits',
+      description: 'CMS - home and prison visits',
       categories: {
         'Case management and meetings': 'Case management support',
       },
@@ -141,7 +142,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CMS48: {
       code: 'CMS48',
-      displayName: 'CMS - information and intelligence gathering',
+      description: 'CMS - information and intelligence gathering',
       categories: {
         'Case management and meetings': 'Case management support',
       },
@@ -150,7 +151,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CMS49: {
       code: 'CMS49',
-      displayName: 'CMS - ROTL assessments and support',
+      description: 'CMS - ROTL assessments and support',
       categories: {
         'Case management and meetings': 'Case management support',
       },
@@ -159,7 +160,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CMS50: {
       code: 'CMS50',
-      displayName: 'CMS - sentence plan intervention delivery',
+      description: 'CMS - sentence plan intervention delivery',
       categories: {
         'Case management and meetings': 'Case management support',
       },
@@ -168,7 +169,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C053: {
       code: 'C053',
-      displayName: 'Case decisions',
+      description: 'Case decisions',
       categories: {
         'Case management and meetings': 'Case management',
       },
@@ -205,7 +206,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CRCO: {
       code: 'CRCO',
-      displayName: 'Case reviewed by case manager',
+      description: 'Case reviewed by case manager',
       categories: {
         'Case management and meetings': 'Case management',
       },
@@ -214,7 +215,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C201: {
       code: 'C201',
-      displayName: 'Comment',
+      description: 'Comment',
       categories: {
         'Case management and meetings': 'Case management',
       },
@@ -223,7 +224,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C333: {
       code: 'C333',
-      displayName: 'Interpreter requested or confirmed',
+      description: 'Interpreter requested or confirmed',
       categories: {
         'Case management and meetings': 'Case management',
       },
@@ -232,7 +233,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C256: {
       code: 'C256',
-      displayName: 'Order or licence received',
+      description: 'Order or licence received',
       categories: {
         'Case management and meetings': 'Case management',
       },
@@ -241,7 +242,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CNPS: {
       code: 'CNPS',
-      displayName: 'PS recall decision',
+      description: 'PS recall decision',
       categories: {
         'Case management and meetings': 'Case management',
         'Non-compliance and enforcement': '',
@@ -265,7 +266,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     MO1: {
       code: 'MO1',
-      displayName: 'Management oversight',
+      description: 'Management oversight',
       categories: {
         'Case management and meetings': 'Management oversight',
       },
@@ -307,7 +308,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     MO8: {
       code: 'MO8',
-      displayName: 'Management oversight – home visit risk assessment',
+      description: 'Management oversight – home visit risk assessment',
       categories: {
         'Case management and meetings': 'Management oversight',
       },
@@ -342,7 +343,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C326: {
       code: 'C326',
-      displayName: 'Internal communications',
+      description: 'Internal communications',
       isFrequentlyUsed: true,
       categories: {
         'Communication and information sharing with others': '',
@@ -352,7 +353,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CRTUP4: {
       code: 'CRTUP4',
-      displayName: 'Assistance at court - court query',
+      description: 'Assistance at court - court query',
       categories: {
         'Communication and information sharing with others': 'Courts',
       },
@@ -361,7 +362,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CRTUP: {
       code: 'CRTUP',
-      displayName: 'Assistance to court – update from probation practitioner',
+      description: 'Assistance to court – update from probation practitioner',
       categories: {
         'Communication and information sharing with others': 'Courts',
       },
@@ -370,7 +371,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C016: {
       code: 'C016',
-      displayName: 'CPS received',
+      description: 'CPS received',
       categories: {
         'Communication and information sharing with others': 'Courts',
       },
@@ -379,7 +380,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C294: {
       code: 'C294',
-      displayName: 'Information from court team',
+      description: 'Information from court team',
       categories: {
         'Communication and information sharing with others': 'Courts',
       },
@@ -388,7 +389,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C063: {
       code: 'C063',
-      displayName: 'Contact with electronic monitoring provider',
+      description: 'Contact with electronic monitoring provider',
       categories: {
         'Communication and information sharing with others': 'Electronic monitoring',
       },
@@ -397,7 +398,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     INFFES: {
       code: 'INFFES',
-      displayName: 'Information from EMS provider',
+      description: 'Information from EMS provider',
       categories: {
         'Communication and information sharing with others': 'Electronic monitoring',
       },
@@ -406,7 +407,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     INFTES: {
       code: 'INFTES',
-      displayName: 'Information to EMS provider',
+      description: 'Information to EMS provider',
       categories: {
         'Communication and information sharing with others': 'Electronic monitoring',
       },
@@ -415,7 +416,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     RTEMS: {
       code: 'RTEMS',
-      displayName: 'Risk notification to EMS provider',
+      description: 'Risk notification to EMS provider',
       categories: {
         'Communication and information sharing with others': 'Electronic monitoring',
       },
@@ -424,7 +425,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CM3A: {
       code: 'CM3A',
-      displayName: 'Email or text from other',
+      description: 'Email or text from other',
       isFrequentlyUsed: true,
       categories: {
         'Communication and information sharing with others': 'External communications',
@@ -434,7 +435,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CM3B: {
       code: 'CM3B',
-      displayName: 'Email or text to other',
+      description: 'Email or text to other',
       isFrequentlyUsed: true,
       categories: {
         'Communication and information sharing with others': 'External communications',
@@ -444,7 +445,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C203: {
       code: 'C203',
-      displayName: 'Health and social service liaison',
+      description: 'Health and social service liaison',
       categories: {
         'Communication and information sharing with others': 'External communications',
       },
@@ -453,7 +454,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CL3A: {
       code: 'CL3A',
-      displayName: 'Letter or fax from other',
+      description: 'Letter or fax from other',
       categories: {
         'Communication and information sharing with others': 'External communications',
       },
@@ -462,7 +463,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CL3B: {
       code: 'CL3B',
-      displayName: 'Letter or fax to other',
+      description: 'Letter or fax to other',
       categories: {
         'Communication and information sharing with others': 'External communications',
       },
@@ -471,7 +472,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CLDR: {
       code: 'CLDR',
-      displayName: 'Liaison with drug treatment provider',
+      description: 'Liaison with drug treatment provider',
       categories: {
         'Communication and information sharing with others': 'External communications',
       },
@@ -480,7 +481,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CT3A: {
       code: 'CT3A',
-      displayName: 'Telephone contact from other',
+      description: 'Telephone contact from other',
       isFrequentlyUsed: true,
       categories: {
         'Communication and information sharing with others': 'External communications',
@@ -490,7 +491,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CT3B: {
       code: 'CT3B',
-      displayName: 'Telephone contact to other',
+      description: 'Telephone contact to other',
       isFrequentlyUsed: true,
       categories: {
         'Communication and information sharing with others': 'External communications',
@@ -500,7 +501,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C344: {
       code: 'C344',
-      displayName: 'Gang member information sharing',
+      description: 'Gang member information sharing',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
       },
@@ -511,7 +512,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CIZZ: {
       code: 'CIZZ',
-      displayName: 'Information - other',
+      description: 'Information - other',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
       },
@@ -520,7 +521,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CIEA: {
       code: 'CIEA',
-      displayName: 'Information from external agency',
+      description: 'Information from external agency',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
       },
@@ -529,7 +530,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CI3A: {
       code: 'CI3A',
-      displayName: 'Information from third party',
+      description: 'Information from third party',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
       },
@@ -538,7 +539,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C325: {
       code: 'C325',
-      displayName: 'Information or documents requested',
+      description: 'Information or documents requested',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
       },
@@ -547,7 +548,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CIEB: {
       code: 'CIEB',
-      displayName: 'Information to external agency',
+      description: 'Information to external agency',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
       },
@@ -556,7 +557,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CI3B: {
       code: 'CI3B',
-      displayName: 'Information to third party',
+      description: 'Information to third party',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
       },
@@ -565,7 +566,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     IRP2: {
       code: 'IRP2',
-      displayName: 'IPP progression panel',
+      description: 'IPP progression panel',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
         'Sentence management': '',
@@ -653,7 +654,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     LRP1: {
       code: 'LRP1',
-      displayName: 'Lifer review panel',
+      description: 'Lifer review panel',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
         'Sentence management': '',
@@ -663,7 +664,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C395: {
       code: 'C395',
-      displayName: 'Parole hearing - notification of outcome',
+      description: 'Parole hearing - notification of outcome',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
         'Sentence management': '',
@@ -673,7 +674,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     DPRE: {
       code: 'DPRE',
-      displayName: 'Pre-cons received',
+      description: 'Pre-cons received',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
       },
@@ -682,7 +683,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C187: {
       code: 'C187',
-      displayName: 'Pre-cons requested',
+      description: 'Pre-cons requested',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
       },
@@ -691,7 +692,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     PREVENT: {
       code: 'PREVENT',
-      displayName: 'Prevent activity',
+      description: 'Prevent activity',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
       },
@@ -700,7 +701,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CRFI: {
       code: 'CRFI',
-      displayName: 'Request for information',
+      description: 'Request for information',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
       },
@@ -709,7 +710,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CNDC: {
       code: 'CNDC',
-      displayName: 'Sensitive information contact',
+      description: 'Sensitive information contact',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
       },
@@ -720,7 +721,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     VINC: {
       code: 'VINC',
-      displayName: 'ViSOR information contact',
+      description: 'ViSOR information contact',
       categories: {
         'Communication and information sharing with others': 'Information sharing and requests',
         'Safeguarding and victim liaison': '',
@@ -734,7 +735,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CDHC: {
       code: 'CDHC',
-      displayName: 'HDC - correspondence or communication',
+      description: 'HDC - correspondence or communication',
       categories: {
         'Communication and information sharing with others': 'Home detention curfew (HDC)',
       },
@@ -743,7 +744,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C399: {
       code: 'C399',
-      displayName: 'QA - HDC2 and 3/PD1 received',
+      description: 'QA - HDC2 and 3/PD1 received',
       categories: {
         'Communication and information sharing with others': 'Home detention curfew (HDC)',
       },
@@ -752,7 +753,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C401: {
       code: 'C401',
-      displayName: 'QA - HDC3/PD1 returned to prison',
+      description: 'QA - HDC3/PD1 returned to prison',
       categories: {
         'Communication and information sharing with others': 'Home detention curfew (HDC)',
       },
@@ -761,7 +762,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CARR: {
       code: 'CARR',
-      displayName: 'Arrest incident',
+      description: 'Arrest incident',
       categories: {
         'Communication and information sharing with others': 'Police',
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'MARAC',
@@ -781,7 +782,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C369: {
       code: 'C369',
-      displayName: 'Police intelligence enquiries - requested',
+      description: 'Police intelligence enquiries - requested',
       categories: {
         'Communication and information sharing with others': 'Police',
       },
@@ -814,7 +815,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C515: {
       code: 'C515',
-      displayName: 'Police intelligence enquiries - response received',
+      description: 'Police intelligence enquiries - response received',
       categories: {
         'Communication and information sharing with others': 'Police',
       },
@@ -842,7 +843,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C204: {
       code: 'C204',
-      displayName: 'Police liaison',
+      description: 'Police liaison',
       isFrequentlyUsed: true,
       categories: {
         'Communication and information sharing with others': 'Police',
@@ -852,7 +853,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     POM4: {
       code: 'POM4',
-      displayName: 'POM/COM standard handover - information received',
+      description: 'POM/COM standard handover - information received',
       categories: {
         'Communication and information sharing with others': 'Prisons',
       },
@@ -861,7 +862,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C202: {
       code: 'C202',
-      displayName: 'Prison liaison',
+      description: 'Prison liaison',
       categories: {
         'Communication and information sharing with others': 'Prisons',
       },
@@ -870,7 +871,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CMOA: {
       code: 'CMOA',
-      displayName: 'Email or text from person on probation',
+      description: 'Email or text from person on probation',
       isFrequentlyUsed: true,
       categories: {
         'Communication with person on probation': 'Email or telephone',
@@ -880,7 +881,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CMOB: {
       code: 'CMOB',
-      displayName: 'Email or text to person on probation',
+      description: 'Email or text to person on probation',
       isFrequentlyUsed: true,
       categories: {
         'Communication with person on probation': 'Email or telephone',
@@ -890,7 +891,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CTOA: {
       code: 'CTOA',
-      displayName: 'Telephone contact from person on probation',
+      description: 'Telephone contact from person on probation',
       isFrequentlyUsed: true,
       categories: {
         'Communication with person on probation': 'Email or telephone',
@@ -900,7 +901,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CTOB: {
       code: 'CTOB',
-      displayName: 'Telephone contact to person on probation',
+      description: 'Telephone contact to person on probation',
       isFrequentlyUsed: true,
       categories: {
         'Communication with person on probation': 'Email or telephone',
@@ -910,7 +911,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CLOA: {
       code: 'CLOA',
-      displayName: 'Letter or fax from person on probation',
+      description: 'Letter or fax from person on probation',
       categories: {
         'Communication with person on probation': 'Letters',
       },
@@ -919,7 +920,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CLOB: {
       code: 'CLOB',
-      displayName: 'Letter or fax to person on probation',
+      description: 'Letter or fax to person on probation',
       categories: {
         'Communication with person on probation': 'Letters',
       },
@@ -928,7 +929,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     LCL: {
       code: 'LCL',
-      displayName: 'Licence compliance letter',
+      description: 'Licence compliance letter',
       categories: {
         'Communication with person on probation': 'Letters',
         'Non-compliance and enforcement': '',
@@ -938,7 +939,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CIOA: {
       code: 'CIOA',
-      displayName: 'Information from person on probation',
+      description: 'Information from person on probation',
       categories: {
         'Communication with person on probation': 'Information',
       },
@@ -947,7 +948,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CIOB: {
       code: 'CIOB',
-      displayName: 'Information to person on probation',
+      description: 'Information to person on probation',
       categories: {
         'Communication with person on probation': 'Information',
       },
@@ -956,7 +957,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CTXT: {
       code: 'CTXT',
-      displayName: 'Text message to send',
+      description: 'Text message to send',
       categories: {
         'Communication with person on probation': 'Other communications',
       },
@@ -965,7 +966,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C129: {
       code: 'C129',
-      displayName: 'Use of video link or teleconference',
+      description: 'Use of video link or teleconference',
       categories: {
         'Communication with person on probation': 'Other communications',
       },
@@ -974,7 +975,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     ICON: {
       code: 'ICON',
-      displayName: 'IOM case conference',
+      description: 'IOM case conference',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'IOM',
       },
@@ -983,7 +984,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CAIL: {
       code: 'CAIL',
-      displayName: 'IOM correspondence contact',
+      description: 'IOM correspondence contact',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'IOM',
       },
@@ -992,7 +993,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     ERFI: {
       code: 'ERFI',
-      displayName: 'IOM referral',
+      description: 'IOM referral',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'IOM',
         Referrals: '',
@@ -1020,7 +1021,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CAIR: {
       code: 'CAIR',
-      displayName: 'IOM review',
+      description: 'IOM review',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'IOM',
       },
@@ -1029,7 +1030,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C200: {
       code: 'C200',
-      displayName: 'MAPPA information',
+      description: 'MAPPA information',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'MAPPA',
       },
@@ -1038,7 +1039,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C484: {
       code: 'C484',
-      displayName: 'MAPPA J Form - Job Centre+ notification',
+      description: 'MAPPA J Form - Job Centre+ notification',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'MAPPA',
       },
@@ -1047,7 +1048,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C281: {
       code: 'C281',
-      displayName: 'MAPPA level 1 review',
+      description: 'MAPPA level 1 review',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'MAPPA',
       },
@@ -1079,7 +1080,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     MAPLS: {
       code: 'MAPLS',
-      displayName: 'MAPPA level setting process',
+      description: 'MAPPA level setting process',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'MAPPA',
       },
@@ -1108,7 +1109,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CCMM: {
       code: 'CCMM',
-      displayName: 'MAPPA meeting',
+      description: 'MAPPA meeting',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'MAPPA',
       },
@@ -1119,7 +1120,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CCMR: {
       code: 'CCMR',
-      displayName: 'MAPPA referral',
+      description: 'MAPPA referral',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'MAPPA',
         Referrals: '',
@@ -1157,7 +1158,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C150: {
       code: 'C150',
-      displayName: 'MARAC - perpetrated DV incident',
+      description: 'MARAC - perpetrated DV incident',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'MARAC',
       },
@@ -1168,7 +1169,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C151: {
       code: 'C151',
-      displayName: 'MARAC - victim of DV incident',
+      description: 'MARAC - victim of DV incident',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'MARAC',
       },
@@ -1177,7 +1178,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C005: {
       code: 'C005',
-      displayName: 'MARAC meeting',
+      description: 'MARAC meeting',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'MARAC',
       },
@@ -1188,7 +1189,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     ERFM: {
       code: 'ERFM',
-      displayName: 'MARAC referral',
+      description: 'MARAC referral',
       categories: {
         'Multi-agency working (including IOM, MAPPA and MARAC)': 'MARAC',
         Referrals: '',
@@ -1218,7 +1219,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     ACOM1: {
       code: 'ACOM1',
-      displayName: 'Accommodation evidence',
+      description: 'Accommodation evidence',
       categories: {
         'Non-compliance and enforcement': '',
       },
@@ -1227,7 +1228,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     BRED: {
       code: 'BRED',
-      displayName: 'Other enforcement action',
+      description: 'Other enforcement action',
       categories: {
         'Non-compliance and enforcement': '',
       },
@@ -1236,7 +1237,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CSNR: {
       code: 'CSNR',
-      displayName: 'Sick note received',
+      description: 'Sick note received',
       categories: {
         'Non-compliance and enforcement': '',
       },
@@ -1247,7 +1248,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C115: {
       code: 'C115',
-      displayName: 'Health and well being referral',
+      description: 'Health and well being referral',
       categories: {
         Referrals: '',
       },
@@ -1256,7 +1257,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CGRF: {
       code: 'CGRF',
-      displayName: 'Referral',
+      description: 'Referral',
       categories: {
         Referrals: '',
       },
@@ -1283,7 +1284,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C507: {
       code: 'C507',
-      displayName: 'Referral - children and families of person on probation',
+      description: 'Referral - children and families of person on probation',
       categories: {
         Referrals: '',
       },
@@ -1310,7 +1311,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C347: {
       code: 'C347',
-      displayName: 'Referral - finance, benefits or debt',
+      description: 'Referral - finance, benefits or debt',
       categories: {
         Referrals: '',
       },
@@ -1337,7 +1338,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     DAD1: {
       code: 'DAD1',
-      displayName: 'Disclosure considered',
+      description: 'Disclosure considered',
       categories: {
         'Safeguarding and victim liaison': '',
       },
@@ -1384,7 +1385,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     DAD2: {
       code: 'DAD2',
-      displayName: 'Disclosure response or completion',
+      description: 'Disclosure response or completion',
       categories: {
         'Safeguarding and victim liaison': '',
       },
@@ -1421,7 +1422,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C159: {
       code: 'C159',
-      displayName: 'Safeguarding - child protection core group meeting',
+      description: 'Safeguarding - child protection core group meeting',
       categories: {
         'Safeguarding and victim liaison': '',
       },
@@ -1430,7 +1431,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C078: {
       code: 'C078',
-      displayName: 'Safeguarding - child protection meeting',
+      description: 'Safeguarding - child protection meeting',
       categories: {
         'Safeguarding and victim liaison': '',
       },
@@ -1439,7 +1440,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C157: {
       code: 'C157',
-      displayName: 'Safeguarding - child related contact',
+      description: 'Safeguarding - child related contact',
       categories: {
         'Safeguarding and victim liaison': '',
       },
@@ -1448,7 +1449,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C161: {
       code: 'C161',
-      displayName: 'Safeguarding - vulnerable adult contact',
+      description: 'Safeguarding - vulnerable adult contact',
       categories: {
         'Safeguarding and victim liaison': '',
       },
@@ -1457,7 +1458,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C160: {
       code: 'C160',
-      displayName: 'Safeguarding - vulnerable adult strategy meeting',
+      description: 'Safeguarding - vulnerable adult strategy meeting',
       categories: {
         'Safeguarding and victim liaison': '',
       },
@@ -1466,7 +1467,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     EASS: {
       code: 'EASS',
-      displayName: 'Safeguarding assessment',
+      description: 'Safeguarding assessment',
       categories: {
         'Safeguarding and victim liaison': '',
       },
@@ -1475,7 +1476,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CCCP: {
       code: 'CCCP',
-      displayName: 'Safeguarding case conference',
+      description: 'Safeguarding case conference',
       categories: {
         'Safeguarding and victim liaison': '',
       },
@@ -1484,7 +1485,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     SFRR: {
       code: 'SFRR',
-      displayName: 'Safeguarding enquiries - response received',
+      description: 'Safeguarding enquiries - response received',
       categories: {
         'Safeguarding and victim liaison': '',
       },
@@ -1507,7 +1508,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     SFGC: {
       code: 'SFGC',
-      displayName: 'Safeguarding enquiries requested',
+      description: 'Safeguarding enquiries requested',
       categories: {
         'Safeguarding and victim liaison': '',
       },
@@ -1529,7 +1530,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     C280: {
       code: 'C280',
-      displayName: 'Suicide or self harm information',
+      description: 'Suicide or self harm information',
       categories: {
         'Safeguarding and victim liaison': '',
       },
@@ -1540,7 +1541,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CVIC: {
       code: 'CVIC',
-      displayName: 'Victim liaison contact',
+      description: 'Victim liaison contact',
       categories: {
         'Safeguarding and victim liaison': '',
       },
@@ -1553,7 +1554,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     DUS01: {
       code: 'DUS01',
-      displayName: 'Death under supervision category and notification',
+      description: 'Death under supervision category and notification',
       categories: {
         'Sentence management': '',
       },
@@ -1660,7 +1661,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     CTPJ: {
       code: 'CTPJ',
-      displayName: 'Professional judgement',
+      description: 'Professional judgement',
       categories: {
         'Sentence management': '',
       },
@@ -1687,7 +1688,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     ROTL: {
       code: 'ROTL',
-      displayName: 'ROTL - release',
+      description: 'ROTL - release',
       categories: {
         'Sentence management': '',
       },
@@ -1696,7 +1697,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     ROTR: {
       code: 'ROTR',
-      displayName: 'ROTL - return',
+      description: 'ROTL - return',
       categories: {
         'Sentence management': '',
       },
@@ -1705,7 +1706,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     DRAT: {
       code: 'DRAT',
-      displayName: 'Substance misuse screening tool',
+      description: 'Substance misuse screening tool',
       categories: {
         'Sentence management': '',
       },
@@ -1716,7 +1717,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
       ? {
           ETRP: {
             code: 'ETRP',
-            displayName: 'Early termination request',
+            description: 'Early termination request',
             isFrequentlyUsed: true,
             categories: {
               'Sentence management': '',
@@ -1746,7 +1747,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
       : {}),
     AAM1: {
       code: 'AAM1',
-      displayName: 'Alcohol consumption',
+      description: 'Alcohol consumption',
       categories: {},
       sensitive: false,
       relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],
@@ -1771,7 +1772,7 @@ export const ContactTypeInfo = (flags: FeatureFlags = {}): ContactTypeDetails =>
     },
     AAM10: {
       code: 'AAM10',
-      displayName: 'Critical communications',
+      description: 'Critical communications',
       categories: {},
       sensitive: false,
       relatesTo: ['Pre-CJA Events', 'CJA/ORA Events'],

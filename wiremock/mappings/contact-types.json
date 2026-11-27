@@ -1,0 +1,611 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/mas-api/contact/types"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+        "Content-Type": "application/json;charset=UTF-8"
+    },
+    "jsonBody": {
+      "contactTypes": [
+        {
+          "code": "C078",
+          "description": "Safeguarding - Child Protection Meeting",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C115",
+          "description": "Health and Well Being Referral",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C129",
+          "description": "Use of Video Link / Teleconference",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CNDC",
+          "description": "Sensitive Information Contact",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CRTUP",
+          "description": "Assistance to Court - Update from PP",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CRTUP4",
+          "description": "Assistance at Court - Court Query",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "BRED",
+          "description": "Other Enforcement Action",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CSPO",
+          "description": "Consultation with Manager",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CCON",
+          "description": "Case Conference",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CTXT",
+          "description": "Text Message to Send",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CVIC",
+          "description": "Victim Liaison Contact",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CLOA",
+          "description": "Letter/Fax from PoP",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CLOB",
+          "description": "Letter/Fax to PoP",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CARR",
+          "description": "Arrest Incident",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "COUP",
+          "description": "Unplanned Contact from Person on Probation",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "RRPCC1",
+          "description": "Case Consultation",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "SFGC",
+          "description": "Safeguarding Enquiries Requested",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "SFRR",
+          "description": "Safeguarding Enquiries - Response Received",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C507",
+          "description": "Referral - Children and Families of Person on Prob",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C515",
+          "description": "Police Intelligence Enquiries -Response Received",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "ICON",
+          "description": "IOM Case Conference",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CI3A",
+          "description": "Information - from 3rd Party",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CIEA",
+          "description": "Information - from External Agency",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CIEB",
+          "description": "Information - to External Agency",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CIOA",
+          "description": "Information - from PoP",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CIOB",
+          "description": "Information - to PoP",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CIZZ",
+          "description": "Information - Other",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CL3A",
+          "description": "Letter/Fax from Other",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "VINC",
+          "description": "ViSOR Information Contact",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C187",
+          "description": "Pre-Cons Requested",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C200",
+          "description": "MAPPA Information",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C202",
+          "description": "Prison Liaison",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C203",
+          "description": "Health and Social Service Liaison",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C238",
+          "description": "Case Discussion",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "RTEMS",
+          "description": "Risk Notification to EMS Provider",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "PREVENT",
+          "description": "Prevent Activity",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "AAM1",
+          "description": "Alcohol Consumption",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "AAM10",
+          "description": "Critical Communications",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "DPRE",
+          "description": "Pre-Cons Received",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "LCL",
+          "description": "Licence Compliance Letter",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "INFFES",
+          "description": "Information - from EMS Provider",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "INFTES",
+          "description": "Information - to EMS Provider",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C326",
+          "description": "Internal Communications",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C333",
+          "description": "Interpreter Requested/ Confirmed",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C369",
+          "description": "Police Intelligence Enquiries - Requested",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C151",
+          "description": "MARAC - Victim of DV Incident",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C159",
+          "description": "Safeguarding - Child Protection Core Group Meeting",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C161",
+          "description": "Safeguarding - Vulnerable Adult Contact",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C395",
+          "description": "Parole Hearing - Notification of Outcome",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C399",
+          "description": "QA - HDC2 and 3/PD1 Received",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C401",
+          "description": "QA - HDC3/PD1 Returned to Prison",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C484",
+          "description": "MAPPA J Form - Job Centre+ Notification",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C053",
+          "description": "Case Decisions",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C063",
+          "description": "Contact with Electronic Monitoring Provider",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "DUS01",
+          "description": "Death Under Supervision Category and Notification",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "ERFM",
+          "description": "MARAC Referral",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CCCP",
+          "description": "Safeguarding Case Conference",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CM3B",
+          "description": "eMail/Text to Other",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C256",
+          "description": "Order/ Licence Received",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C280",
+          "description": "Suicide/Self Harm Information",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C281",
+          "description": "MAPPA Level 1 Review",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C294",
+          "description": "Information from Court Team",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CL3B",
+          "description": "Letter/Fax to Other",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CT3A",
+          "description": "Phone Contact from Other",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CT3B",
+          "description": "Phone Contact to Other",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CTOA",
+          "description": "Phone Contact from PoP",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CTOB",
+          "description": "Phone Contact to PoP",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CAIR",
+          "description": "IOM Review",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CAIL",
+          "description": "IOM Correspondence/Mail Contact",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CM3A",
+          "description": "eMail/Text from Other",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CMOA",
+          "description": "eMail/Text from PoP",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CMOB",
+          "description": "eMail/Text to PoP",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CCMR",
+          "description": "MAPPA Referral",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CRFI",
+          "description": "Request For Information",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CGRF",
+          "description": "Referral",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CSNR",
+          "description": "Sick Note Received",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CDHC",
+          "description": "HDC - Correspondence / Communication",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "ERFI",
+          "description": "IOM Referral",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CRCO",
+          "description": "Case Reviewed by Case Manager",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "ROTL",
+          "description": "ROTL - Release",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "ROTR",
+          "description": "ROTL - Return",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C016",
+          "description": "CPS Received",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C005",
+          "description": "Marac Meeting",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C150",
+          "description": "MARAC - Perpetrated DV Incident",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C344",
+          "description": "Gang Member Information Sharing",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CCMM",
+          "description": "MAPPA Meeting",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CLDR",
+          "description": "Liaison with Drug Treatment Provider",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "MAPLS",
+          "description": "MAPPA Level setting process",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CNPS",
+          "description": "PS Recall Decision",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "ACOM1",
+          "description": "Accommodation Evidence",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "NSD1",
+          "description": "Core Group meeting",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "LRP1",
+          "description": "Lifer Review Panel",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "IRP1",
+          "description": "IPP Review Panel",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CMS40",
+          "description": "CMS - Assistance with Assessments",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CMS41",
+          "description": "CMS - Assistance with Case Conferencing",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CMS42",
+          "description": "CMS - Attending Partnership Meetings",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CMS43",
+          "description": "CMS - Case Related Communication",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CMS44",
+          "description": "CMS - Completing & Assisting with Referrals",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CMS45",
+          "description": "CMS - Court Liaison & Applications to Court",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CMS47",
+          "description": "CMS - Home & Prison Visits",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CMS48",
+          "description": "CMS - Information & Intelligence Gathering",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CMS49",
+          "description": "CMS - ROTL Assessments & Support",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "CMS50",
+          "description": "CMS - Sentence Plan Intervention Delivery",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "DAD1",
+          "description": "Disclosure Considered",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "DAD2",
+          "description": "Disclosure Response  / Completion",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C325",
+          "description": "Information / Documents Requested",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C347",
+          "description": "Referral - Finance/ Benefits/ Debt",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C157",
+          "description": "Safeguarding - Child Related Contact",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "C160",
+          "description": "Safeguarding - Vulnerable Adult Strategy Meeting",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CTPJ",
+          "description": "Professional Judgement",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "CI3B",
+          "description": "Information - to 3rd Party",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "C201",
+          "description": "Comment",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "DRAT",
+          "description": "Substance use Screening Tool",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "ETRP",
+          "description": "Request for Early Termination",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "IRP2",
+          "description": "IPP Progression Panel",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "MO8",
+          "description": "Management Oversight - HVRA",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "POM4",
+          "description": "POM/COM Standard Handover - Information Received",
+          "isPersonLevelContact": false
+        },
+        {
+          "code": "MO1",
+          "description": "Management Oversight",
+          "isPersonLevelContact": true
+        },
+        {
+          "code": "EASS",
+          "description": "Safeguarding Assessment",
+          "isPersonLevelContact": true
+        }
+      ]
+    }
+  }
+}

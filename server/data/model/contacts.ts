@@ -21,6 +21,10 @@ export interface ContactType {
   isPersonLevelContact: boolean
 }
 
+export interface ContactTypes {
+  contactTypes: ContactType[]
+}
+
 /**
  * The payload structure for creating a new contact.
  * This matches the JSON body expected by the API.
