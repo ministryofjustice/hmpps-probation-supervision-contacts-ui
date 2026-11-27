@@ -17,7 +17,7 @@ import { getTemplates } from '../middleware/getTemplates'
 
 export default function addContactRoutes(
   router: Router,
-  { masApiClient, tierApiClient, prisonApiClient, arnsComponents, mpopComponents, hmppsAuthClient }: Services,
+  { masApiClient, tierApiClient, arnsComponents, mpopComponents, hmppsAuthClient }: Services,
 ): void {
   router.param('crn', validateCrnParam)
   const populate = populateContactTypes()
@@ -25,8 +25,8 @@ export default function addContactRoutes(
     masApiClient,
     tierApiClient,
     arnsComponents,
-    prisonApiClient,
     hmppsAuthClient,
+    mpopComponents,
   )
   const loadTierDetails = getTierDetails(hmppsAuthClient, mpopComponents)
   const loadSupervisionPackage = getSupervisionPackage(hmppsAuthClient, mpopComponents)
@@ -34,7 +34,7 @@ export default function addContactRoutes(
     loadSupervisionPackage,
     loadPersonalDetails,
     isResponsibleOfficerMiddleware(masApiClient),
-    getPersonRiskFlags(masApiClient),
+    getPersonRiskFlags(hmppsAuthClient, mpopComponents),
     getSentences(masApiClient),
     loadTierDetails,
     setCollapsibleRiskFlags,
@@ -45,7 +45,7 @@ export default function addContactRoutes(
     '/case/:crn/add-frequently-used-contact',
     loadSupervisionPackage,
     loadPersonalDetails,
-    getPersonRiskFlags(masApiClient),
+    getPersonRiskFlags(hmppsAuthClient, mpopComponents),
     loadTierDetails,
     setCollapsibleRiskFlags,
     populate,
@@ -56,7 +56,7 @@ export default function addContactRoutes(
     '/case/:crn/contacts/find-contact-to-add',
     loadSupervisionPackage,
     loadPersonalDetails,
-    getPersonRiskFlags(masApiClient),
+    getPersonRiskFlags(hmppsAuthClient, mpopComponents),
     loadTierDetails,
     setCollapsibleRiskFlags,
     populate,
@@ -67,7 +67,7 @@ export default function addContactRoutes(
     '/case/:crn/contacts/search-keyword',
     loadSupervisionPackage,
     loadPersonalDetails,
-    getPersonRiskFlags(masApiClient),
+    getPersonRiskFlags(hmppsAuthClient, mpopComponents),
     loadTierDetails,
     setCollapsibleRiskFlags,
     populate,

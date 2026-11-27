@@ -1,7 +1,8 @@
 import { Router } from 'express'
+import { PERSON_PHOTO_PATH } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import type { Services } from '../services'
-import controllers from '../controllers'
+import { getPersonPhoto } from '../middleware/getPersonPhoto'
 
-export default function addPersonHeaderRoutes(router: Router, { prisonApiClient }: Services): void {
-  router.get('/search/prisoner-image/:prisonerId', controllers.personHeader.getPhoto(prisonApiClient))
+export default function addPersonHeaderRoutes(router: Router, { hmppsAuthClient, mpopComponents }: Services): void {
+  router.get(PERSON_PHOTO_PATH, getPersonPhoto(hmppsAuthClient, mpopComponents))
 }

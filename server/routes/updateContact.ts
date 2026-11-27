@@ -16,15 +16,15 @@ import { getTemplates } from '../middleware/getTemplates'
 
 export default function addUpdateContactRoutes(
   router: Router,
-  { masApiClient, tierApiClient, prisonApiClient, arnsComponents, mpopComponents, hmppsAuthClient }: Services,
+  { masApiClient, tierApiClient, arnsComponents, mpopComponents, hmppsAuthClient }: Services,
 ): void {
   router.param('crn', validateCrnParam)
   const loadPersonalDetails = getPersonalDetails(
     masApiClient,
     tierApiClient,
     arnsComponents,
-    prisonApiClient,
     hmppsAuthClient,
+    mpopComponents,
   )
   const loadTierDetails = getTierDetails(hmppsAuthClient, mpopComponents)
   const loadSupervisionPackage = getSupervisionPackage(hmppsAuthClient, mpopComponents)
@@ -34,7 +34,7 @@ export default function addUpdateContactRoutes(
     loadPersonalDetails,
     loadTierDetails,
     isResponsibleOfficerMiddleware(masApiClient),
-    getPersonRiskFlags(masApiClient),
+    getPersonRiskFlags(hmppsAuthClient, mpopComponents),
     getSentences(masApiClient),
     getExistingContact(masApiClient),
     setCollapsibleRiskFlags,

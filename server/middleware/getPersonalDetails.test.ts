@@ -1,10 +1,10 @@
 import httpMocks from 'node-mocks-http'
 import { ArnsComponents, RiskData } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
+import { MPoPComponents } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { getPersonalDetails } from './getPersonalDetails'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient, { TierCalculation } from '../data/tierApiClient'
-import PrisonApiClient from '../data/prisonApiClient'
 import {
   AddressType,
   Circumstances,
@@ -16,15 +16,7 @@ import {
   Provisions,
 } from '../data/model/personalDetails'
 import { Contact, ProfessionalContact } from '../data/model/professionalContact'
-import * as personStatusTag from '../utils/personStatusTag'
-
-jest.mock('../data/prisonerSearchApiClient')
-jest.mock('../utils/personStatusTag', () => ({
-  ...jest.requireActual('../utils/personStatusTag'),
-  getStatusTag: jest.fn(),
-}))
-
-const mockedGetStatusTag = jest.mocked(personStatusTag.getStatusTag)
+import logger from '../../logger'
 
 const mockRiskData: RiskData = {
   assessments: [
@@ -98,11 +90,13 @@ const mockTierCalculation = {
   calculationDate: '2023-12-07T12:05:11.524616',
 } as unknown as TierCalculation
 
-let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getPersonalDetails' | 'getContacts'>>
-let mockPrisonApiClient: jest.Mocked<Pick<PrisonApiClient, 'getImageData'>>
+let mockMasApiClient: jest.Mocked<Pick<MasApiClient, 'getPersonalDetails'>>
 let mockHmppsAuthClient: jest.Mocked<Pick<AuthenticationClient, 'getToken'>>
 let mockTierApiClient: jest.Mocked<Pick<TierApiClient, 'getCalculationDetails'>>
 let mockArnsComponents: jest.Mocked<Pick<ArnsComponents, 'getRiskData' | 'getRoshData'>>
+let mockMpopComponents: jest.Mocked<
+  Pick<MPoPComponents, 'getPrisonerDetails' | 'getContacts' | 'hasPersonPhoto' | 'getCheckInPhotoUrl'>
+>
 
 let req: httpMocks.MockRequest<any>
 let res: httpMocks.MockResponse<any>
@@ -170,9 +164,19 @@ describe('/middleware/getPersonalDetails', () => {
     nextSpy = jest.fn()
     process.env = { ...ORIGINAL_ENV }
 
-    mockMasApiClient = { getPersonalDetails: jest.fn(), getContacts: jest.fn() }
-    mockPrisonApiClient = { getImageData: jest.fn() }
+    mockMasApiClient = { getPersonalDetails: jest.fn() }
     mockHmppsAuthClient = { getToken: jest.fn().mockResolvedValue('token') }
+    mockMpopComponents = {
+      getPrisonerDetails: jest.fn().mockResolvedValue({ prisoner: null, httpStatus: 404 }),
+      getContacts: jest.fn().mockResolvedValue({ professionalContact: null, httpStatus: 404 }),
+      hasPersonPhoto: jest.fn().mockResolvedValue({ hasPhoto: false, httpStatus: 404 }),
+      getCheckInPhotoUrl: jest.fn().mockResolvedValue({ photoUrl: null, httpStatus: 404 }),
+    }
+    Object.assign(mockMpopComponents, {
+      logger,
+      getPersonHeaderPhoto: MPoPComponents.prototype.getPersonHeaderPhoto.bind(mockMpopComponents),
+      getPersonHeaderStatus: MPoPComponents.prototype.getPersonHeaderStatus.bind(mockMpopComponents),
+    })
     mockTierApiClient = { getCalculationDetails: jest.fn().mockResolvedValue(mockTierCalculation) }
     mockArnsComponents = {
       getRiskData: jest.fn().mockResolvedValue(mockRiskData),
@@ -193,8 +197,8 @@ describe('/middleware/getPersonalDetails', () => {
       mockMasApiClient as unknown as MasApiClient,
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
-      mockPrisonApiClient as unknown as PrisonApiClient,
       mockHmppsAuthClient as unknown as AuthenticationClient,
+      mockMpopComponents as unknown as MPoPComponents,
     )(req, res, nextSpy)
     const expected = {
       personalDetails: {
@@ -214,9 +218,9 @@ describe('/middleware/getPersonalDetails', () => {
     expect(res.locals.headerCRN).toEqual(req.params.crn)
     expect(res.locals.headerDob).toEqual('1979-08-18')
     expect(res.locals.headerTierLink).toEqual('https://tier-dev.hmpps.service.justice.gov.uk/case/X000002')
-    expect(mockMasApiClient.getContacts).not.toHaveBeenCalled()
-    expect(mockPrisonApiClient.getImageData).not.toHaveBeenCalled()
-    expect(res.locals.managedBy).toBeUndefined()
+    expect(mockMpopComponents.getContacts).not.toHaveBeenCalled()
+    expect(mockMpopComponents.hasPersonPhoto).not.toHaveBeenCalled()
+    expect(res.locals.professionalContact).toBeUndefined()
     expect(nextSpy).toHaveBeenCalled()
   })
 
@@ -244,8 +248,8 @@ describe('/middleware/getPersonalDetails', () => {
       mockMasApiClient as unknown as MasApiClient,
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
-      mockPrisonApiClient as unknown as PrisonApiClient,
       mockHmppsAuthClient as unknown as AuthenticationClient,
+      mockMpopComponents as unknown as MPoPComponents,
     )(req, res, nextSpy)
     expect(mockMasApiClient.getPersonalDetails).not.toHaveBeenCalled()
     expect(mockTierApiClient.getCalculationDetails).not.toHaveBeenCalled()
@@ -271,8 +275,8 @@ describe('/middleware/getPersonalDetails', () => {
       mockMasApiClient as unknown as MasApiClient,
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
-      mockPrisonApiClient as unknown as PrisonApiClient,
       mockHmppsAuthClient as unknown as AuthenticationClient,
+      mockMpopComponents as unknown as MPoPComponents,
     )(req, res, nextSpy)
     expect(nextSpy).toHaveBeenCalledWith(expect.objectContaining({ status: 404 }))
   })
@@ -291,8 +295,8 @@ describe('/middleware/getPersonalDetails', () => {
       mockMasApiClient as unknown as MasApiClient,
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
-      mockPrisonApiClient as unknown as PrisonApiClient,
       mockHmppsAuthClient as unknown as AuthenticationClient,
+      mockMpopComponents as unknown as MPoPComponents,
     )(req, res, nextSpy)
     expect(res.locals.dateOfDeath).toEqual(dateOfDeath)
   })
@@ -314,8 +318,8 @@ describe('/middleware/getPersonalDetails', () => {
       mockMasApiClient as unknown as MasApiClient,
       mockTierApiClient as unknown as TierApiClient,
       mockArnsComponents as unknown as ArnsComponents,
-      mockPrisonApiClient as unknown as PrisonApiClient,
       mockHmppsAuthClient as unknown as AuthenticationClient,
+      mockMpopComponents as unknown as MPoPComponents,
     )(req, res, nextSpy)
 
     const expected = {
@@ -354,7 +358,6 @@ describe('/middleware/getPersonalDetails', () => {
       ],
       previousContacts: [],
     }
-    const photo = () => ({ destroy: jest.fn() }) as unknown as Awaited<ReturnType<PrisonApiClient['getImageData']>>
 
     const getHeaderRes = () => {
       const headerRes = getRes()
@@ -367,37 +370,30 @@ describe('/middleware/getPersonalDetails', () => {
         mockMasApiClient as unknown as MasApiClient,
         mockTierApiClient as unknown as TierApiClient,
         mockArnsComponents as unknown as ArnsComponents,
-        mockPrisonApiClient as unknown as PrisonApiClient,
         mockHmppsAuthClient as unknown as AuthenticationClient,
+        mockMpopComponents as unknown as MPoPComponents,
       )(req, res, nextSpy)
 
     beforeEach(() => {
       mockMasApiClient.getPersonalDetails.mockResolvedValue({ ...overview('X000002'), noms: 'A1234BC' })
-      mockMasApiClient.getContacts.mockResolvedValue(professionalContact)
+      mockMpopComponents.getContacts.mockResolvedValue({ professionalContact, httpStatus: 200 })
     })
 
     it('sets managed by and the photo, and caches them in the session', async () => {
-      const photoData = photo()
-      mockPrisonApiClient.getImageData.mockResolvedValue(photoData)
+      mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: true, httpStatus: 200 })
       req = getReq()
       res = getHeaderRes()
 
       await run()
 
-      expect(mockMasApiClient.getContacts).toHaveBeenCalledWith('X000002', 'user-1')
-      expect(mockPrisonApiClient.getImageData).toHaveBeenCalledWith('A1234BC', 'user-1')
-      expect(photoData.destroy).toHaveBeenCalled()
-      expect(res.locals.managedBy).toEqual({
-        text: 'Jack Frost (Worksop Probation Office)',
-        name: 'Jack Frost',
-        location: 'Worksop Probation Office',
-        href: '/case/X000002/personal-details/staff-contacts',
-      })
-      expect(res.locals.personPhotoSrc).toEqual('/search/prisoner-image/A1234BC')
+      expect(mockMpopComponents.getContacts).toHaveBeenCalledWith('token', 'X000002')
+      expect(mockMpopComponents.hasPersonPhoto).toHaveBeenCalledWith('token', 'A1234BC')
+      expect(res.locals.professionalContact).toEqual(professionalContact)
+      expect(res.locals.personPhotoSrc).toEqual('/person-photo/A1234BC')
       expect(res.locals.arnsUnavailable).toBe(false)
-      expect(res.locals.prisonsUnavailable).toBe(false)
+      expect(res.locals.photoUnavailable).toBe(false)
       expect(req.session.data.personalDetails.X000002.professionalContact).toEqual(professionalContact)
-      expect(req.session.data.personalDetails.X000002.personPhotoSrc).toEqual('/search/prisoner-image/A1234BC')
+      expect(req.session.data.personalDetails.X000002.personPhotoSrc).toEqual('/person-photo/A1234BC')
       expect(nextSpy).toHaveBeenCalledWith()
     })
 
@@ -407,7 +403,12 @@ describe('/middleware/getPersonalDetails', () => {
         session: {
           data: {
             personalDetails: {
-              X000002: { ...mockSession('X000002'), professionalContact, personPhotoSrc: '/search/prisoner-image/A1' },
+              X000002: {
+                ...mockSession('X000002'),
+                overview: { ...overview('X000002'), noms: 'A1' },
+                professionalContact,
+                personPhotoSrc: '/search/prisoner-image/A1',
+              },
             },
           },
         },
@@ -416,10 +417,10 @@ describe('/middleware/getPersonalDetails', () => {
 
       await run()
 
-      expect(mockMasApiClient.getContacts).not.toHaveBeenCalled()
-      expect(mockPrisonApiClient.getImageData).not.toHaveBeenCalled()
-      expect(res.locals.managedBy.name).toEqual('Jack Frost')
-      expect(res.locals.personPhotoSrc).toEqual('/search/prisoner-image/A1')
+      expect(mockMpopComponents.getContacts).not.toHaveBeenCalled()
+      expect(mockMpopComponents.hasPersonPhoto).not.toHaveBeenCalled()
+      expect(res.locals.professionalContact).toEqual(professionalContact)
+      expect(res.locals.personPhotoSrc).toEqual('/person-photo/A1')
     })
 
     it('does not set a photo when there is no noms number', async () => {
@@ -429,32 +430,36 @@ describe('/middleware/getPersonalDetails', () => {
 
       await run()
 
-      expect(mockPrisonApiClient.getImageData).not.toHaveBeenCalled()
+      expect(mockMpopComponents.hasPersonPhoto).not.toHaveBeenCalled()
       expect(res.locals.personPhotoSrc).toBeUndefined()
     })
 
-    it('shows managed by as no data available when the contacts request fails', async () => {
-      mockMasApiClient.getContacts.mockRejectedValue(new Error('500'))
-      mockPrisonApiClient.getImageData.mockResolvedValue(null)
+    it('sets professionalContact to null when the contacts request fails', async () => {
+      mockMpopComponents.getContacts.mockResolvedValue({
+        professionalContact: null,
+        httpStatus: 500,
+        error: new Error('500'),
+      })
+      mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: false, httpStatus: 404 })
       req = getReq()
       res = getHeaderRes()
 
       await run()
 
-      expect(res.locals.managedBy).toEqual({ text: 'No data available' })
+      expect(res.locals.professionalContact).toBeNull()
       expect(nextSpy).toHaveBeenCalledWith()
     })
 
     it('flags prisons as unavailable and does not cache the photo when the prison api fails', async () => {
-      mockPrisonApiClient.getImageData.mockRejectedValue(new Error('500'))
+      mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: false, httpStatus: 500, error: new Error('500') })
       req = getReq()
       res = getHeaderRes()
 
       await run()
 
-      expect(res.locals.prisonsUnavailable).toBe(true)
+      expect(res.locals.photoUnavailable).toBe(true)
       expect(res.locals.personPhotoSrc).toBeUndefined()
-      expect(res.locals.managedBy.name).toEqual('Jack Frost')
+      expect(res.locals.professionalContact).toEqual(professionalContact)
       expect(req.session.data.personalDetails.X000002.professionalContact).toEqual(professionalContact)
       expect(req.session.data.personalDetails.X000002.personPhotoSrc).toBeUndefined()
       expect(nextSpy).toHaveBeenCalledWith()
@@ -467,15 +472,15 @@ describe('/middleware/getPersonalDetails', () => {
 
       await run()
 
-      expect(mockPrisonApiClient.getImageData).not.toHaveBeenCalled()
+      expect(mockMpopComponents.hasPersonPhoto).not.toHaveBeenCalled()
       expect(res.locals.personPhotoSrc).toBeUndefined()
-      expect(res.locals.prisonsUnavailable).toBe(false)
-      expect(res.locals.managedBy.name).toEqual('Jack Frost')
+      expect(res.locals.photoUnavailable).toBe(false)
+      expect(res.locals.professionalContact).toEqual(professionalContact)
       expect(req.session.data.personalDetails.X000002.personPhotoSrc).toBeUndefined()
     })
 
     it('requests only the photo once enablePersonHeaderPhoto is turned on for an already cached person', async () => {
-      mockPrisonApiClient.getImageData.mockResolvedValue(photo())
+      mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: true, httpStatus: 200 })
       req = httpMocks.createRequest({
         params: { crn: 'X000002' },
         session: {
@@ -494,10 +499,10 @@ describe('/middleware/getPersonalDetails', () => {
 
       await run()
 
-      expect(mockMasApiClient.getContacts).not.toHaveBeenCalled()
-      expect(mockPrisonApiClient.getImageData).toHaveBeenCalledWith('A1234BC', 'user-1')
-      expect(res.locals.personPhotoSrc).toEqual('/search/prisoner-image/A1234BC')
-      expect(req.session.data.personalDetails.X000002.personPhotoSrc).toEqual('/search/prisoner-image/A1234BC')
+      expect(mockMpopComponents.getContacts).not.toHaveBeenCalled()
+      expect(mockMpopComponents.hasPersonPhoto).toHaveBeenCalledWith('token', 'A1234BC')
+      expect(res.locals.personPhotoSrc).toEqual('/person-photo/A1234BC')
+      expect(req.session.data.personalDetails.X000002.personPhotoSrc).toEqual('/person-photo/A1234BC')
     })
 
     it('does not look up the photo again when it is cached as having no image', async () => {
@@ -515,12 +520,12 @@ describe('/middleware/getPersonalDetails', () => {
 
       await run()
 
-      expect(mockPrisonApiClient.getImageData).not.toHaveBeenCalled()
+      expect(mockMpopComponents.hasPersonPhoto).not.toHaveBeenCalled()
       expect(res.locals.personPhotoSrc).toBeUndefined()
     })
 
     it('does not look up the photo again for a crn with no image after the session is saved and reloaded', async () => {
-      mockPrisonApiClient.getImageData.mockResolvedValue(null)
+      mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: false, httpStatus: 404 })
       req = getReq()
       res = getHeaderRes()
       await run()
@@ -531,7 +536,7 @@ describe('/middleware/getPersonalDetails', () => {
       res = getHeaderRes()
       await run()
 
-      expect(mockPrisonApiClient.getImageData).toHaveBeenCalledTimes(1)
+      expect(mockMpopComponents.hasPersonPhoto).toHaveBeenCalledTimes(1)
       expect(savedSession.personalDetails.X000002.personPhotoSrc).toBeNull()
       expect(res.locals.personPhotoSrc).toBeUndefined()
     })
@@ -542,7 +547,12 @@ describe('/middleware/getPersonalDetails', () => {
         session: {
           data: {
             personalDetails: {
-              X000002: { ...mockSession('X000002'), professionalContact, personPhotoSrc: '/search/prisoner-image/A1' },
+              X000002: {
+                ...mockSession('X000002'),
+                overview: { ...overview('X000002'), noms: 'A1' },
+                professionalContact,
+                personPhotoSrc: '/search/prisoner-image/A1',
+              },
             },
           },
         },
@@ -555,8 +565,96 @@ describe('/middleware/getPersonalDetails', () => {
       expect(res.locals.personPhotoSrc).toBeUndefined()
     })
 
+    describe('online check-in photo', () => {
+      const checkInPhotoUrl = 'https://bucket.s3.eu-west-2.amazonaws.com/photo.jpg'
+      const getCheckInRes = () => {
+        const checkInRes = getRes()
+        checkInRes.locals.flags = { enablePersonHeader: true, enablePersonHeaderPhoto: true }
+        return checkInRes
+      }
+
+      it('uses the check-in photo without checking for a prison photo or caching it', async () => {
+        mockMpopComponents.getCheckInPhotoUrl.mockResolvedValue({ photoUrl: checkInPhotoUrl, httpStatus: 200 })
+        req = getReq()
+        res = getCheckInRes()
+
+        await run()
+
+        expect(mockMpopComponents.getCheckInPhotoUrl).toHaveBeenCalledWith('token', 'X000002')
+        expect(mockMpopComponents.hasPersonPhoto).not.toHaveBeenCalled()
+        expect(res.locals.personPhotoSrc).toEqual(checkInPhotoUrl)
+        expect(req.session.data.personalDetails.X000002.personPhotoSrc).toBeUndefined()
+      })
+
+      it('looks up the check-in photo again on the next request', async () => {
+        mockMpopComponents.getCheckInPhotoUrl.mockResolvedValue({ photoUrl: checkInPhotoUrl, httpStatus: 200 })
+        req = getReq()
+        res = getCheckInRes()
+        await run()
+        res = getCheckInRes()
+        await run()
+
+        expect(mockMpopComponents.getCheckInPhotoUrl).toHaveBeenCalledTimes(2)
+        expect(res.locals.personPhotoSrc).toEqual(checkInPhotoUrl)
+      })
+
+      it('falls back to the prison photo when there is no check-in photo', async () => {
+        mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: true, httpStatus: 200 })
+        req = getReq()
+        res = getCheckInRes()
+
+        await run()
+
+        expect(mockMpopComponents.hasPersonPhoto).toHaveBeenCalledWith('token', 'A1234BC')
+        expect(res.locals.personPhotoSrc).toEqual('/person-photo/A1234BC')
+      })
+
+      it('logs the error and falls back to the prison photo when the check-in request fails', async () => {
+        const loggerSpy = jest.spyOn(logger, 'error').mockImplementation()
+        const error = new Error('500')
+        mockMpopComponents.getCheckInPhotoUrl.mockResolvedValue({ photoUrl: null, httpStatus: 500, error })
+        mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: true, httpStatus: 200 })
+        req = getReq()
+        res = getCheckInRes()
+
+        await run()
+
+        expect(loggerSpy).toHaveBeenCalledWith(error, 'Failed to get the online check-in photo for CRN X000002')
+        expect(res.locals.personPhotoSrc).toEqual('/person-photo/A1234BC')
+        expect(res.locals.photoUnavailable).toBe(false)
+      })
+
+      it('flags the photo as unavailable when the check-in request fails and there is no prison photo', async () => {
+        jest.spyOn(logger, 'error').mockImplementation()
+        mockMpopComponents.getCheckInPhotoUrl.mockResolvedValue({
+          photoUrl: null,
+          httpStatus: 500,
+          error: new Error('500'),
+        })
+        mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: false, httpStatus: 404 })
+        req = getReq()
+        res = getCheckInRes()
+
+        await run()
+
+        expect(res.locals.personPhotoSrc).toBeUndefined()
+        expect(res.locals.photoUnavailable).toBe(true)
+      })
+
+      it('does not request the check-in photo when enablePersonHeaderPhoto is off', async () => {
+        req = getReq()
+        res = getCheckInRes()
+        res.locals.flags.enablePersonHeaderPhoto = false
+
+        await run()
+
+        expect(mockMpopComponents.getCheckInPhotoUrl).not.toHaveBeenCalled()
+        expect(res.locals.personPhotoSrc).toBeUndefined()
+      })
+    })
+
     it('flags arns as unavailable instead of failing the page when arns fails', async () => {
-      mockPrisonApiClient.getImageData.mockResolvedValue(null)
+      mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: false, httpStatus: 404 })
       mockArnsComponents.getRiskData.mockRejectedValue(new Error('500'))
       req = getReq()
       res = getHeaderRes()
@@ -569,7 +667,7 @@ describe('/middleware/getPersonalDetails', () => {
     })
 
     it('flags arns as unavailable when the risk data has an error status', async () => {
-      mockPrisonApiClient.getImageData.mockResolvedValue(null)
+      mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: false, httpStatus: 404 })
       mockArnsComponents.getRiskData.mockResolvedValue({ ...mockRiskData, httpStatus: 500 })
       req = getReq()
       res = getHeaderRes()
@@ -582,7 +680,7 @@ describe('/middleware/getPersonalDetails', () => {
     })
 
     it('flags arns as unavailable and requests the rosh data again when it has an error status', async () => {
-      mockPrisonApiClient.getImageData.mockResolvedValue(null)
+      mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: false, httpStatus: 404 })
       mockArnsComponents.getRoshData.mockResolvedValueOnce({ ...mockRoshData, httpStatus: 500 })
       req = getReq()
       res = getHeaderRes()
@@ -600,7 +698,7 @@ describe('/middleware/getPersonalDetails', () => {
     })
 
     it('sets the rosh widget from the rosh data', async () => {
-      mockPrisonApiClient.getImageData.mockResolvedValue(null)
+      mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: false, httpStatus: 404 })
       req = getReq()
       res = getHeaderRes()
 
@@ -614,7 +712,7 @@ describe('/middleware/getPersonalDetails', () => {
     })
 
     it('sets the rosh widget to not found when there is no rosh assessment', async () => {
-      mockPrisonApiClient.getImageData.mockResolvedValue(null)
+      mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: false, httpStatus: 404 })
       mockArnsComponents.getRoshData.mockResolvedValue({ assessment: null, httpStatus: 404 })
       req = getReq()
       res = getHeaderRes()
@@ -625,7 +723,7 @@ describe('/middleware/getPersonalDetails', () => {
     })
 
     it('requests the risk data again on the next request after arns failed', async () => {
-      mockPrisonApiClient.getImageData.mockResolvedValue(null)
+      mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: false, httpStatus: 404 })
       mockArnsComponents.getRiskData.mockResolvedValueOnce({ ...mockRiskData, httpStatus: 500 })
       req = getReq()
       res = getHeaderRes()
@@ -641,66 +739,73 @@ describe('/middleware/getPersonalDetails', () => {
   })
 
   describe('person status tag', () => {
+    const personOverview = { ...overview('X000002'), noms: 'A1234BC' }
+    const prisoner = { prisonerNumber: 'A1234BC', status: 'ACTIVE IN' }
+
     beforeEach(() => {
-      mockedGetStatusTag.mockReset()
-      mockMasApiClient.getContacts.mockResolvedValue(null)
-      mockPrisonApiClient.getImageData.mockResolvedValue(null)
+      mockMpopComponents.getContacts.mockResolvedValue({ professionalContact: null, httpStatus: 404 })
+      mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: false, httpStatus: 404 })
+      Object.assign(mockMpopComponents, {
+        getPersonHeaderStatus: jest.fn().mockResolvedValue({
+          personStatusTag: 'In custody',
+          statusUnavailable: true,
+          prisoner,
+          prisonerUnavailable: false,
+        }),
+      })
       req = getReq()
       res = getRes()
     })
+
+    const getPersonHeaderStatus = () =>
+      (mockMpopComponents as unknown as jest.Mocked<MPoPComponents>).getPersonHeaderStatus
 
     const run = () =>
       getPersonalDetails(
         mockMasApiClient as unknown as MasApiClient,
         mockTierApiClient as unknown as TierApiClient,
         mockArnsComponents as unknown as ArnsComponents,
-        mockPrisonApiClient as unknown as PrisonApiClient,
         mockHmppsAuthClient as unknown as AuthenticationClient,
+        mockMpopComponents as unknown as MPoPComponents,
       )(req, res, nextSpy)
 
-    it('sets personStatusTag when the feature flag is enabled and NOMS number exists', async () => {
-      const personOverview = { ...overview('X000002'), noms: 'A1234BC' }
+    it('gets the status from the lib and sets it on res.locals when the feature flag is enabled', async () => {
       mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(personOverview)
-      mockedGetStatusTag.mockResolvedValueOnce('In custody')
       res.locals.flags = { enablePersonHeader: true }
+      res.locals.supervisionPackageDetails = { outcome: 'success' }
+      res.locals.supervisionPackageUnavailable = false
 
       await run()
 
       expect(mockHmppsAuthClient.getToken).toHaveBeenCalledWith('user-1')
-      expect(mockedGetStatusTag).toHaveBeenCalledWith(
-        personOverview,
-        res.locals.supervisionPackageDetails,
-        res.locals.prisoner,
-      )
+      expect(getPersonHeaderStatus()).toHaveBeenCalledWith('token', {
+        personalDetails: personOverview,
+        supervisionPackage: { outcome: 'success' },
+        supervisionPackageUnavailable: false,
+      })
       expect(res.locals.personStatusTag).toBe('In custody')
+      expect(res.locals.statusUnavailable).toBe(true)
+      expect(res.locals.prisoner).toEqual(prisoner)
       expect(nextSpy).toHaveBeenCalled()
     })
 
-    it('does not call getStatusTag when the feature flag is disabled', async () => {
-      const personOverview = { ...overview('X000002'), noms: 'A1234BC' }
+    it('does not set the prisoner when there is no NOMS number', async () => {
+      mockMasApiClient.getPersonalDetails.mockResolvedValueOnce({ ...overview('X000002'), noms: undefined })
+      res.locals.flags = { enablePersonHeader: true }
+
+      await run()
+
+      expect(res.locals.personStatusTag).toBe('In custody')
+      expect(res.locals.prisoner).toBeUndefined()
+    })
+
+    it('does not get the status when the feature flag is disabled', async () => {
       mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(personOverview)
       res.locals.flags = { enablePersonHeader: false }
 
       await run()
 
-      expect(mockedGetStatusTag).not.toHaveBeenCalled()
-      expect(res.locals.personStatusTag).toBeUndefined()
-      expect(nextSpy).toHaveBeenCalled()
-    })
-
-    it('sets personStatusTag to undefined when getStatusTag returns undefined', async () => {
-      const personOverview = { ...overview('X000002'), noms: 'A1234BC' }
-      mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(personOverview)
-      mockedGetStatusTag.mockResolvedValueOnce(undefined)
-      res.locals.flags = { enablePersonHeader: true }
-
-      await run()
-
-      expect(mockedGetStatusTag).toHaveBeenCalledWith(
-        personOverview,
-        res.locals.supervisionPackageDetails,
-        res.locals.prisoner,
-      )
+      expect(getPersonHeaderStatus()).not.toHaveBeenCalled()
       expect(res.locals.personStatusTag).toBeUndefined()
       expect(nextSpy).toHaveBeenCalled()
     })

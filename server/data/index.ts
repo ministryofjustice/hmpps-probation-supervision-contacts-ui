@@ -8,7 +8,6 @@ import config from '../config'
 import logger from '../../logger'
 import MasApiClient from './masApiClient'
 import TierApiClient from './tierApiClient'
-import PrisonApiClient from './prisonApiClient'
 
 const applicationInfo = applicationInfoSupplier()
 
@@ -37,11 +36,17 @@ export const dataAccess = () => {
     probationFrontendComponentsApiClient: new ProbationFrontendComponentsApiClient(),
     masApiClient: new MasApiClient(hmppsAuthClient),
     tierApiClient: new TierApiClient(hmppsAuthClient),
-    prisonApiClient: new PrisonApiClient(hmppsAuthClient),
     arnsComponents: new ArnsComponents(authClientArns as any, config.apis.arnsApi, logger),
     mpopComponents: new MPoPComponents(
       authClientMpop as any,
-      { ...config.apis.tierApi, masApiConfig: config.apis.masApi, supervisionPackageApiConfig: config.apis.mpopApi },
+      {
+        ...config.apis.tierApi,
+        masApiConfig: config.apis.masApi,
+        supervisionPackageApiConfig: config.apis.mpopApi,
+        prisonerSearchApiConfig: config.apis.prisonerSearchApi,
+        personRecordApiConfig: config.apis.personRecordApi,
+        eSupervisionApiConfig: config.apis.eSupervisionApi,
+      },
       logger,
     ),
   }

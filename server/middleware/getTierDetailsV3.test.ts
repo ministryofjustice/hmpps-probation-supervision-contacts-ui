@@ -3,7 +3,6 @@ import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import { MPoPComponents } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { getTierDetails } from './getTierDetailsV3'
 import { TierV3Response } from '../data/tierV3'
-import { tierUrlV3 } from '../utils/tierLink'
 import logger from '../../logger'
 
 jest.mock('../../logger', () => ({
@@ -49,7 +48,7 @@ describe('getTierDetails', () => {
     expect(mockHmppsAuthClient.getToken).toHaveBeenCalledWith('test-user')
     expect(mockMpopComponents.getTierDetails).toHaveBeenCalledWith('test-token', 'X123456')
     expect(res.locals.tierDetails).toEqual(tierData)
-    expect(res.locals.tierUrlV3).toEqual(tierUrlV3('X123456'))
+    expect(res.locals.tierUrlV3).toEqual('https://tier-dev.hmpps.service.justice.gov.uk/v3/case/X123456')
     expect(next).toHaveBeenCalledWith()
   })
 
@@ -107,11 +106,11 @@ describe('getTierDetails', () => {
     expect(next).toHaveBeenCalledWith()
   })
 
-  it('fetches tier details for the person header when tier v3 is enabled for it', async () => {
+  it('fetches tier details for the person header', async () => {
     const req = httpMocks.createRequest({ params: { crn: 'X123456' } })
     const res = httpMocks.createResponse()
     res.locals.user = { username: 'test-user' } as any
-    res.locals.flags = { enablePersonHeader: true, enablePersonHeaderTierV3: true } as any
+    res.locals.flags = { enablePersonHeader: true } as any
 
     await getTierDetails(
       mockHmppsAuthClient as unknown as AuthenticationClient,
@@ -120,24 +119,6 @@ describe('getTierDetails', () => {
 
     expect(mockMpopComponents.getTierDetails).toHaveBeenCalledWith('test-token', 'X123456')
     expect(res.locals.tierDetails).toEqual(tierData)
-    expect(next).toHaveBeenCalledWith()
-  })
-
-  it.each([
-    { enablePersonHeader: true, enablePersonHeaderTierV3: false },
-    { enablePersonHeader: false, enablePersonHeaderTierV3: true },
-  ])('skips fetching tier details when only one person header flag is enabled: %o', async flags => {
-    const req = httpMocks.createRequest({ params: { crn: 'X123456' } })
-    const res = httpMocks.createResponse()
-    res.locals.user = { username: 'test-user' } as any
-    res.locals.flags = flags as any
-
-    await getTierDetails(
-      mockHmppsAuthClient as unknown as AuthenticationClient,
-      mockMpopComponents as unknown as MPoPComponents,
-    )(req, res, next)
-
-    expect(mockMpopComponents.getTierDetails).not.toHaveBeenCalled()
     expect(next).toHaveBeenCalledWith()
   })
 

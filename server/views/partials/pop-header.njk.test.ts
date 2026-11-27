@@ -1,9 +1,10 @@
 import * as cheerio from 'cheerio'
 import httpMocks from 'node-mocks-http'
 import { RiskData } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
+import type { RiskBadgeData } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { RoshRiskWidgetDto } from '../../data/model/risk'
+import { ProfessionalContact } from '../../data/model/professionalContact'
 import { createNunjucksTestEnv } from '../../testutils/nunjucksTestEnv'
-import { RiskBadgeData } from '../../utils/personRiskFlagSorter'
 
 type TestModel = {
   flags: Record<string, boolean>
@@ -12,10 +13,15 @@ type TestModel = {
   riskBadgeData: RiskBadgeData
   riskData: RiskData
   headerCRN: string
-  managedBy?: { text: string; name?: string; location?: string; href?: string }
+  professionalContact?: ProfessionalContact | null
+  headerPersonName?: { forename: string; surname: string }
+  headerDob?: string
+  tierUrlV3?: string
+  tierDetails?: { calculation: { tierScore: string; provisional: boolean } }
   personPhotoSrc?: string
   arnsUnavailable?: boolean
-  prisonsUnavailable?: boolean
+  photoUnavailable?: boolean
+  statusUnavailable?: boolean
   collapsibleRiskFlags?: boolean
 }
 
@@ -465,17 +471,42 @@ describe('POP header', () => {
     describe('person details', () => {
       it('should render the managed by link and the photo', () => {
         const $ = renderPersonHeader({
-          managedBy: {
-            text: 'Jack Frost (Worksop Probation Office)',
-            name: 'Jack Frost',
-            location: 'Worksop Probation Office',
-            href: '/case/X000001/personal-details/staff-contacts',
-          },
-          personPhotoSrc: '/search/prisoner-image/A1234BC',
+          professionalContact: {
+            name: { forename: 'Caroline', surname: 'Wolff' },
+            currentContacts: [
+              { name: 'Jack Frost', probationDeliveryUnit: 'Worksop Probation Office', responsibleOfficer: true },
+            ],
+            previousContacts: [],
+          } as unknown as ProfessionalContact,
+          personPhotoSrc: '/person-photo/A1234BC',
         })
         expect($('[data-qa="managedBy"]').text().trim()).toBe('Jack Frost (Worksop Probation Office)')
         expect($('[data-qa="managedBy"]').attr('href')).toBe('/case/X000001/personal-details/staff-contacts')
-        expect($('[data-qa="personPhoto"]').attr('src')).toBe('/search/prisoner-image/A1234BC')
+        expect($('[data-qa="personPhoto"]').attr('src')).toBe('/person-photo/A1234BC')
+      })
+
+      it('should not render the photo when there is no photo', () => {
+        const $ = renderPersonHeader({ personPhotoSrc: undefined })
+        expect($('[data-qa="personPhoto"]').length).toBe(0)
+      })
+
+      it('should render the name, date of birth and v3 tier', () => {
+        const $ = renderPersonHeader({
+          headerPersonName: { forename: 'Caroline', surname: 'Wolff' },
+          headerDob: '1979-08-18',
+          tierUrlV3: 'https://tier-dev.hmpps.service.justice.gov.uk/v3/case/X000001',
+          tierDetails: { calculation: { tierScore: 'B2', provisional: true } },
+        })
+        expect($('[data-qa="personName"]').text().trim()).toBe('Caroline Wolff')
+        expect($('[data-qa="dob"]').text().trim()).toBe('18 August 1979')
+        expect($('[data-qa="tier"]').attr('href')).toBe('https://tier-dev.hmpps.service.justice.gov.uk/v3/case/X000001')
+        expect($('[data-qa="tier"]').text()).toContain('B2')
+        expect($('[data-qa="tierProvisional"]').text()).toBe('(provisional)')
+      })
+
+      it('should show managed by as no data available when there are no professional contacts', () => {
+        const $ = renderPersonHeader({ professionalContact: null })
+        expect($('[data-qa="managedBy"]').text().trim()).toBe('No data available')
       })
 
       it('should not render the legacy header', () => {
@@ -485,11 +516,22 @@ describe('POP header', () => {
     })
 
     describe('header errors', () => {
-      it('should show an error when photos and risk information are unavailable', () => {
-        const $ = renderPersonHeader({ arnsUnavailable: true, prisonsUnavailable: true })
-        const errors = $('[data-qa="headerErrors"]').text()
-        expect(errors).toContain('Photos and throughcare information are currently unavailable.')
-        expect(errors).toContain('Risk information from the ARNS service is currently unavailable.')
+      it('should list every message when status, photo and risk information are unavailable', () => {
+        const $ = renderPersonHeader({ statusUnavailable: true, arnsUnavailable: true, photoUnavailable: true })
+        const errors = $('[data-qa="headerErrors"] li')
+          .map((_, item) => $(item).text().trim())
+          .get()
+        expect(errors).toEqual([
+          'Risk information from the ARNS service is currently unavailable.',
+          'Photo is currently unavailable.',
+          'Status information is currently unavailable.',
+        ])
+      })
+
+      it('should show the photo error on its own', () => {
+        const $ = renderPersonHeader({ photoUnavailable: true })
+        expect($('[data-qa="headerErrors"]').text()).toContain('Photo is currently unavailable.')
+        expect($('[data-qa="headerErrors"] li').length).toBe(0)
       })
 
       it('should still render the header and risk flags when the ARNS risk data is missing', () => {

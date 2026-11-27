@@ -2,13 +2,12 @@ import type { RequestHandler } from 'express'
 import createError from 'http-errors'
 import { ArnsComponents } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { asUser } from '@ministryofjustice/hmpps-rest-client'
+import { MPoPComponents, personPhotoHref } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import type { PersonHeaderPhoto } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient from '../data/tierApiClient'
-import PrisonApiClient from '../data/prisonApiClient'
-import { tierLink, tierUrlV3 } from '../utils/tierLink'
-import { getManagedByDetails } from '../utils/getManagedByDetails'
-import { getPrisonerDetails, getStatusTag } from '../utils/personStatusTag'
+import { tierLink } from '../utils/tierLink'
 import type { PersonalDetailsCache } from '../@types/express'
 import logger from '../../logger'
 
@@ -16,8 +15,8 @@ export const getPersonalDetails = (
   masApiClient: MasApiClient,
   tierApiClient: TierApiClient,
   arnsComponents: ArnsComponents,
-  prisonApiClient: PrisonApiClient,
   hmppsAuthClient: AuthenticationClient,
+  mpopComponents: MPoPComponents,
 ): RequestHandler => {
   return async (req, res, next) => {
     const crn = req.params.crn as string
@@ -25,7 +24,7 @@ export const getPersonalDetails = (
     const enablePersonHeader = res.locals.flags?.enablePersonHeader === true
     const enablePersonHeaderPhoto = enablePersonHeader && res.locals.flags?.enablePersonHeaderPhoto === true
     let arnsUnavailable = false
-    let prisonsUnavailable = false
+    let photoUnavailable = false
     const isolateArnsFailure = <T>(promise: Promise<T>): Promise<T | null> =>
       enablePersonHeader
         ? promise.catch((): null => {
@@ -124,32 +123,38 @@ export const getPersonalDetails = (
       // The photo can be switched off on its own with enablePersonHeaderPhoto. No image is cached as null rather
       // than undefined, as undefined values are dropped when the session is serialised to JSON and the photo
       // would then be looked up again on every request.
+      const { noms } = data.overview
       const fetchManagedBy = data.professionalContact === undefined
-      const fetchPhoto = enablePersonHeaderPhoto && data.personPhotoSrc === undefined
-      if (fetchManagedBy || fetchPhoto) {
-        const { noms } = data.overview
-        const [professionalContact, photoData] = await Promise.all([
-          fetchManagedBy ? masApiClient.getContacts(crn, username).catch((): null => null) : data.professionalContact,
-          fetchPhoto && noms
-            ? prisonApiClient.getImageData(noms, username).catch((): null => {
-                prisonsUnavailable = true
-                return null
+      let personHeaderPhoto: PersonHeaderPhoto | null = null
+      if (fetchManagedBy || enablePersonHeaderPhoto) {
+        const token = await hmppsAuthClient.getToken(username)
+        const [professionalContact, photo] = await Promise.all([
+          fetchManagedBy
+            ? mpopComponents
+                .getContacts(token, crn)
+                .then(response => response.professionalContact as PersonalDetailsCache['professionalContact'])
+            : data.professionalContact,
+          enablePersonHeaderPhoto
+            ? mpopComponents.getPersonHeaderPhoto(token, {
+                crn,
+                noms,
+                hasPrisonPhoto: data.personPhotoSrc === undefined ? undefined : Boolean(data.personPhotoSrc),
               })
             : null,
         ])
-        photoData?.destroy()
+        personHeaderPhoto = photo
         data = { ...data, professionalContact }
-        if (fetchPhoto && !prisonsUnavailable) {
-          data = {
-            ...data,
-            personPhotoSrc: photoData ? `/search/prisoner-image/${encodeURIComponent(noms)}` : null,
-          }
+        if (photo?.hasPrisonPhoto !== undefined) {
+          data = { ...data, personPhotoSrc: photo.hasPrisonPhoto ? personPhotoHref(noms) : null }
         }
-        cache()
+        if (fetchManagedBy || photo?.hasPrisonPhoto !== undefined) {
+          cache()
+        }
       }
 
-      res.locals.managedBy = getManagedByDetails(crn, data.professionalContact ?? null)
-      res.locals.personPhotoSrc = (enablePersonHeaderPhoto && data.personPhotoSrc) || undefined
+      res.locals.professionalContact = data.professionalContact ?? null
+      res.locals.personPhotoSrc = personHeaderPhoto?.photo
+      photoUnavailable = Boolean(personHeaderPhoto?.photoUnavailable)
       const roshAssessment = data.roshData?.assessment
       res.locals.risksWidget = roshAssessment?.overallRisk
         ? {
@@ -159,20 +164,24 @@ export const getPersonalDetails = (
           }
         : { overallRisk: 'NOT_FOUND', assessedOn: undefined, risks: undefined }
       res.locals.arnsUnavailable = arnsUnavailable
-      res.locals.prisonsUnavailable = prisonsUnavailable
+      res.locals.photoUnavailable = photoUnavailable
     }
 
     const { overview } = data
     if (res.locals.flags?.enablePersonHeader) {
-      if (overview.noms) {
-        const token = await hmppsAuthClient.getToken(username)
-        res.locals.prisoner = await getPrisonerDetails(token, overview.noms, overview.crn)
-      }
-      res.locals.personStatusTag = await getStatusTag(
-        overview,
-        res.locals.supervisionPackageDetails,
-        res.locals.prisoner,
+      const { personStatusTag, statusUnavailable, prisoner } = await mpopComponents.getPersonHeaderStatus(
+        await hmppsAuthClient.getToken(username),
+        {
+          personalDetails: overview,
+          supervisionPackage: res.locals.supervisionPackageDetails,
+          supervisionPackageUnavailable: res.locals.supervisionPackageUnavailable,
+        },
       )
+      res.locals.personStatusTag = personStatusTag
+      res.locals.statusUnavailable = statusUnavailable
+      if (overview.noms) {
+        res.locals.prisoner = prisoner
+      }
     }
 
     res.locals.case = data.overview
@@ -186,7 +195,6 @@ export const getPersonalDetails = (
     res.locals.headerCRN = crn
     res.locals.headerDob = data.overview.dateOfBirth
     res.locals.headerTierLink = tierLink(crn)
-    res.locals.headerTierUrlV3 = tierUrlV3(crn)
 
     if (data.overview.dateOfDeath) {
       res.locals.dateOfDeath = data.overview.dateOfDeath

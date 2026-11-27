@@ -3,7 +3,6 @@ import { PersonalDetails } from '../../data/model/personalDetails'
 import { TierCalculation } from '../../data/tierApiClient'
 import { ErrorSummary } from '../../data/model/common'
 import { PersonRiskFlags } from '../../data/model/risk'
-import { RiskBadgeData } from '../../utils/personRiskFlagSorter'
 import { ProfessionalContact } from '../../data/model/professionalContact'
 
 export type PersonalDetailsCache = {
@@ -20,9 +19,6 @@ type AppSessionData = {
   personalDetails?: Record<string, PersonalDetailsCache>
   risks?: {
     [crn: string]: PersonRiskFlags
-  }
-  riskBadgeData?: {
-    [crn: string]: RiskBadgeData
   }
 }
 

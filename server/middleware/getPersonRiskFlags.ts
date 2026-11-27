@@ -1,79 +1,38 @@
 import type { RequestHandler } from 'express'
-import MasApiClient from '../data/masApiClient'
-import { PersonRiskFlags, RiskFlag, RiskScore } from '../data/model/risk'
-import { getRiskBadges, RiskBadgeData } from '../utils/personRiskFlagSorter'
+import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
+import { MPoPComponents, toPersonRiskDetails } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import { PersonRiskFlags } from '../data/model/risk'
 import { setDataValue } from '../utils/setDataValue'
-import { findReplace } from '../utils/findReplace'
-import { getStaffRisk, getProbationRisk } from '../utils/getStaffRisk'
-import { getRiskRoshScore } from '../utils/getRiskRoshScore'
 
-export const getPersonRiskFlags = (masApiClient: MasApiClient): RequestHandler => {
+export const getPersonRiskFlags = (
+  hmppsAuthClient: AuthenticationClient,
+  mpopComponents: MPoPComponents,
+): RequestHandler => {
   return async function getPersonRiskFlagsInner(req, res, next) {
     if (!res.locals?.flags?.enableNDeliusRosh && !res.locals?.flags?.enablePersonHeader) {
       return next()
     }
     const { crn } = req.params as Record<string, string>
-    const { username } = res.locals.user
-    let personRisks: PersonRiskFlags
-    let riskBadgeData: RiskBadgeData
-    if (!req.session?.data?.risks?.[crn]) {
-      personRisks = await masApiClient.getPersonRiskFlags(crn, username)
+    let personRiskFlags = req.session?.data?.risks?.[crn]
 
-      if (personRisks.riskFlags) {
-        riskBadgeData = getRiskBadges(personRisks.riskFlags)
+    if (!personRiskFlags) {
+      const token = await hmppsAuthClient.getToken(res.locals.user.username)
+      const response = await mpopComponents.getPersonRiskFlags(token, crn)
+      if (response.error) {
+        throw response.error
       }
-
-      const term = 'RoSH'
-      ;['riskFlags', 'removedRiskFlags'].forEach(path => {
-        personRisks = findReplace<PersonRiskFlags, RiskFlag>({
-          data: personRisks,
-          path: [path],
-          key: 'description',
-          find: term,
-          replace: term.toUpperCase(),
-        })
-      })
-      const { data } = req.session
-      setDataValue(data, ['risks', crn], personRisks)
-      setDataValue(data, ['riskBadgeData', crn], riskBadgeData)
-    } else {
-      personRisks = req.session.data.risks[crn]
-      riskBadgeData = req.session.data.riskBadgeData?.[crn] ?? getRiskBadges(personRisks.riskFlags ?? [])
-    }
-    const riskToStaff = getStaffRisk(personRisks.riskFlags)
-    const riskToProbationStaff = getProbationRisk(personRisks.riskFlags)
-    let riskToStaffLevel = riskToStaff?.levelDescription ?? riskToStaff?.level
-    if (riskToStaffLevel?.toUpperCase() === 'VERY HIGH') {
-      riskToStaffLevel = 'VERY_HIGH'
-    }
-    const level =
-      riskToStaffLevel && ['VERY_HIGH', 'HIGH', 'MEDIUM'].includes(riskToStaffLevel.toUpperCase())
-        ? (riskToStaffLevel.toUpperCase() as RiskScore)
-        : null
-    res.locals.riskToProbationStaff = riskToProbationStaff ? { id: riskToProbationStaff?.id } : undefined
-    res.locals.riskToStaff = riskToStaff ? { id: riskToStaff?.id, level } : undefined
-    const riskFlags = personRisks?.riskFlags?.map(item => {
-      if (item.description === 'Risk to Probation Staff') {
-        return {
-          ...item,
-          level: undefined,
-        }
-      }
-      return item
-    })
-    const personRisksForLocals = {
-      ...personRisks,
-      riskFlags,
+      personRiskFlags = response.personRiskFlags as PersonRiskFlags
+      setDataValue(req.session.data, ['risks', crn], personRiskFlags)
     }
 
+    const { personRisks, riskBadgeData, riskToStaff, riskToProbationStaff, rosh } = toPersonRiskDetails(personRiskFlags)
+
+    res.locals.riskToProbationStaff = riskToProbationStaff
+    res.locals.riskToStaff = riskToStaff
     if (res.locals.flags.enableNDeliusRosh) {
-      const { score, assessedOn } = getRiskRoshScore(riskFlags)
-      res.locals.rosh = {
-        level: score,
-        assessedOn,
-      }
+      res.locals.rosh = rosh
     }
-    res.locals.personRisks = personRisksForLocals
+    res.locals.personRisks = personRisks as PersonRiskFlags
     res.locals.riskBadgeData = riskBadgeData
 
     return next()

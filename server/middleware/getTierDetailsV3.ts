@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express'
-import { MPoPComponents } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import { MPoPComponents, tierUrlV3 } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import { TierV3Response } from '../data/tierV3'
 import logger from '../../logger'
-import { tierUrlV3 } from '../utils/tierLink'
+import config from '../config'
 
 export const getTierDetails = (
   hmppsAuthClient: AuthenticationClient,
@@ -44,11 +44,10 @@ export const getTierDetails = (
 
   return async (req, res, next) => {
     const { flags } = res.locals
-    const personHeaderTierV3 = flags?.enablePersonHeader && flags?.enablePersonHeaderTierV3
-    if (!flags?.enableSupervisionPackagePoPHeader && !personHeaderTierV3) return next()
+    if (!flags?.enableSupervisionPackagePoPHeader && !flags?.enablePersonHeader) return next()
 
     const { crn } = req.params as Record<string, string>
-    res.locals.tierUrlV3 = tierUrlV3(crn)
+    res.locals.tierUrlV3 = tierUrlV3(config.tier.url, crn)
 
     let token: string
     try {
