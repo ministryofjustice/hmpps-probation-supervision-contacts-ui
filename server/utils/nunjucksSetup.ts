@@ -4,11 +4,7 @@ import nunjucks from 'nunjucks'
 import express from 'express'
 import fs from 'fs'
 import { arnsNunjucksSetup } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
-import {
-  mpopNunjucksSetup,
-  toPersonHeaderParams,
-  toSentenceCase,
-} from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import { mpopNunjucksSetup, toSentenceCase } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { initialiseName } from './utils'
 import { dateWithYear } from './dateWithYear'
 import { yearsSince } from './yearsSince'
@@ -69,5 +65,4 @@ export default function nunjucksSetup(app: express.Express): void {
 
   arnsNunjucksSetup(njkEnv)
   mpopNunjucksSetup(njkEnv)
-  njkEnv.addGlobal('toPersonHeaderParams', toPersonHeaderParams)
 }

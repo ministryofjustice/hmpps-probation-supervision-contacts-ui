@@ -2,12 +2,11 @@ import type { RequestHandler } from 'express'
 import createError from 'http-errors'
 import { ArnsComponents } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { asUser } from '@ministryofjustice/hmpps-rest-client'
-import { getStatusTag, MPoPComponents } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import { MPoPComponents, personPhotoHref } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import type { PersonHeaderPhoto } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient from '../data/tierApiClient'
-import { personPhotoHref } from './getPersonPhoto'
 import { tierLink } from '../utils/tierLink'
 import type { PersonalDetailsCache } from '../@types/express'
 import logger from '../../logger'
@@ -139,7 +138,6 @@ export const getPersonalDetails = (
             ? mpopComponents.getPersonHeaderPhoto(token, {
                 crn,
                 noms,
-                prisonPhotoHref: personPhotoHref,
                 hasPrisonPhoto: data.personPhotoSrc === undefined ? undefined : Boolean(data.personPhotoSrc),
               })
             : null,
@@ -171,20 +169,19 @@ export const getPersonalDetails = (
 
     const { overview } = data
     if (res.locals.flags?.enablePersonHeader) {
-      if (overview.noms) {
-        const token = await hmppsAuthClient.getToken(username)
-        const { prisoner, error } = await mpopComponents.getPrisonerDetails(token, overview.noms)
-        if (error) {
-          logger.error(`Failed to get prisoner details for NOMS number: ${overview.noms} CRN: ${overview.crn}`, error)
-        }
-        res.locals.prisoner = prisoner ?? undefined
-      }
-      res.locals.personStatusTag = await getStatusTag(
-        overview,
-        res.locals.supervisionPackageDetails,
-        res.locals.prisoner,
+      const { personStatusTag, statusUnavailable, prisoner } = await mpopComponents.getPersonHeaderStatus(
+        await hmppsAuthClient.getToken(username),
+        {
+          personalDetails: overview,
+          supervisionPackage: res.locals.supervisionPackageDetails,
+          supervisionPackageUnavailable: res.locals.supervisionPackageUnavailable,
+        },
       )
-      res.locals.statusUnavailable = !res.locals.personStatusTag && Boolean(res.locals.supervisionPackageUnavailable)
+      res.locals.personStatusTag = personStatusTag
+      res.locals.statusUnavailable = statusUnavailable
+      if (overview.noms) {
+        res.locals.prisoner = prisoner
+      }
     }
 
     res.locals.case = data.overview

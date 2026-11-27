@@ -1,7 +1,7 @@
 import httpMocks from 'node-mocks-http'
 import { ArnsComponents, RiskData } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
-import { getStatusTag, MPoPComponents } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import { MPoPComponents } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { getPersonalDetails } from './getPersonalDetails'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient, { TierCalculation } from '../data/tierApiClient'
@@ -17,13 +17,6 @@ import {
 } from '../data/model/personalDetails'
 import { Contact, ProfessionalContact } from '../data/model/professionalContact'
 import logger from '../../logger'
-
-jest.mock('@ministryofjustice/hmpps-mpop-frontend-components-lib', () => ({
-  ...jest.requireActual('@ministryofjustice/hmpps-mpop-frontend-components-lib'),
-  getStatusTag: jest.fn(),
-}))
-
-const mockedGetStatusTag = jest.mocked(getStatusTag)
 
 const mockRiskData: RiskData = {
   assessments: [
@@ -182,6 +175,7 @@ describe('/middleware/getPersonalDetails', () => {
     Object.assign(mockMpopComponents, {
       logger,
       getPersonHeaderPhoto: MPoPComponents.prototype.getPersonHeaderPhoto.bind(mockMpopComponents),
+      getPersonHeaderStatus: MPoPComponents.prototype.getPersonHeaderStatus.bind(mockMpopComponents),
     })
     mockTierApiClient = { getCalculationDetails: jest.fn().mockResolvedValue(mockTierCalculation) }
     mockArnsComponents = {
@@ -745,13 +739,26 @@ describe('/middleware/getPersonalDetails', () => {
   })
 
   describe('person status tag', () => {
+    const personOverview = { ...overview('X000002'), noms: 'A1234BC' }
+    const prisoner = { prisonerNumber: 'A1234BC', status: 'ACTIVE IN' }
+
     beforeEach(() => {
-      mockedGetStatusTag.mockReset()
       mockMpopComponents.getContacts.mockResolvedValue({ professionalContact: null, httpStatus: 404 })
       mockMpopComponents.hasPersonPhoto.mockResolvedValue({ hasPhoto: false, httpStatus: 404 })
+      Object.assign(mockMpopComponents, {
+        getPersonHeaderStatus: jest.fn().mockResolvedValue({
+          personStatusTag: 'In custody',
+          statusUnavailable: true,
+          prisoner,
+          prisonerUnavailable: false,
+        }),
+      })
       req = getReq()
       res = getRes()
     })
+
+    const getPersonHeaderStatus = () =>
+      (mockMpopComponents as unknown as jest.Mocked<MPoPComponents>).getPersonHeaderStatus
 
     const run = () =>
       getPersonalDetails(
@@ -762,98 +769,45 @@ describe('/middleware/getPersonalDetails', () => {
         mockMpopComponents as unknown as MPoPComponents,
       )(req, res, nextSpy)
 
-    it('sets personStatusTag when the feature flag is enabled and NOMS number exists', async () => {
-      const personOverview = { ...overview('X000002'), noms: 'A1234BC' }
+    it('gets the status from the lib and sets it on res.locals when the feature flag is enabled', async () => {
       mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(personOverview)
-      mockedGetStatusTag.mockResolvedValueOnce('In custody')
       res.locals.flags = { enablePersonHeader: true }
+      res.locals.supervisionPackageDetails = { outcome: 'success' }
+      res.locals.supervisionPackageUnavailable = false
 
       await run()
 
       expect(mockHmppsAuthClient.getToken).toHaveBeenCalledWith('user-1')
-      expect(mockedGetStatusTag).toHaveBeenCalledWith(
-        personOverview,
-        res.locals.supervisionPackageDetails,
-        res.locals.prisoner,
-      )
+      expect(getPersonHeaderStatus()).toHaveBeenCalledWith('token', {
+        personalDetails: personOverview,
+        supervisionPackage: { outcome: 'success' },
+        supervisionPackageUnavailable: false,
+      })
       expect(res.locals.personStatusTag).toBe('In custody')
+      expect(res.locals.statusUnavailable).toBe(true)
+      expect(res.locals.prisoner).toEqual(prisoner)
       expect(nextSpy).toHaveBeenCalled()
     })
 
-    it('does not call getStatusTag when the feature flag is disabled', async () => {
-      const personOverview = { ...overview('X000002'), noms: 'A1234BC' }
+    it('does not set the prisoner when there is no NOMS number', async () => {
+      mockMasApiClient.getPersonalDetails.mockResolvedValueOnce({ ...overview('X000002'), noms: undefined })
+      res.locals.flags = { enablePersonHeader: true }
+
+      await run()
+
+      expect(res.locals.personStatusTag).toBe('In custody')
+      expect(res.locals.prisoner).toBeUndefined()
+    })
+
+    it('does not get the status when the feature flag is disabled', async () => {
       mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(personOverview)
       res.locals.flags = { enablePersonHeader: false }
 
       await run()
 
-      expect(mockedGetStatusTag).not.toHaveBeenCalled()
+      expect(getPersonHeaderStatus()).not.toHaveBeenCalled()
       expect(res.locals.personStatusTag).toBeUndefined()
       expect(nextSpy).toHaveBeenCalled()
     })
-
-    it('gets the prisoner details from the lib and sets res.locals.prisoner', async () => {
-      const prisoner = { prisonerNumber: 'A1234BC', status: 'ACTIVE IN' }
-      mockMasApiClient.getPersonalDetails.mockResolvedValueOnce({ ...overview('X000002'), noms: 'A1234BC' })
-      mockMpopComponents.getPrisonerDetails.mockResolvedValueOnce({ prisoner, httpStatus: 200 })
-      res.locals.flags = { enablePersonHeader: true }
-
-      await run()
-
-      expect(mockMpopComponents.getPrisonerDetails).toHaveBeenCalledWith('token', 'A1234BC')
-      expect(res.locals.prisoner).toEqual(prisoner)
-    })
-
-    it('logs an error and leaves res.locals.prisoner undefined when getting prisoner details fails', async () => {
-      const loggerSpy = jest.spyOn(logger, 'error').mockImplementation()
-      const error = new Error('Server error')
-      mockMasApiClient.getPersonalDetails.mockResolvedValueOnce({ ...overview('X000002'), noms: 'A1234BC' })
-      mockMpopComponents.getPrisonerDetails.mockResolvedValueOnce({ prisoner: null, httpStatus: 500, error })
-      res.locals.flags = { enablePersonHeader: true }
-
-      await run()
-
-      expect(loggerSpy).toHaveBeenCalledWith(
-        'Failed to get prisoner details for NOMS number: A1234BC CRN: X000002',
-        error,
-      )
-      expect(res.locals.prisoner).toBeUndefined()
-      expect(nextSpy).toHaveBeenCalled()
-    })
-
-    it('sets personStatusTag to undefined when getStatusTag returns undefined', async () => {
-      const personOverview = { ...overview('X000002'), noms: 'A1234BC' }
-      mockMasApiClient.getPersonalDetails.mockResolvedValueOnce(personOverview)
-      mockedGetStatusTag.mockResolvedValueOnce(undefined)
-      res.locals.flags = { enablePersonHeader: true }
-
-      await run()
-
-      expect(mockedGetStatusTag).toHaveBeenCalledWith(
-        personOverview,
-        res.locals.supervisionPackageDetails,
-        res.locals.prisoner,
-      )
-      expect(res.locals.personStatusTag).toBeUndefined()
-      expect(nextSpy).toHaveBeenCalled()
-    })
-
-    it.each([
-      [undefined, true, true],
-      ['In custody', true, false],
-      [undefined, false, false],
-    ])(
-      'with a status tag of %s and supervisionPackageUnavailable %s, statusUnavailable is %s',
-      async (statusTag, supervisionPackageUnavailable, expected) => {
-        mockMasApiClient.getPersonalDetails.mockResolvedValueOnce({ ...overview('X000002'), noms: 'A1234BC' })
-        mockedGetStatusTag.mockResolvedValueOnce(statusTag)
-        res.locals.flags = { enablePersonHeader: true }
-        res.locals.supervisionPackageUnavailable = supervisionPackageUnavailable
-
-        await run()
-
-        expect(res.locals.statusUnavailable).toBe(expected)
-      },
-    )
   })
 })

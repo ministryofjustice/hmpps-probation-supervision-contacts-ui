@@ -1,19 +1,10 @@
 {% from "arns/components/rosh-badge/macro.njk" import roshBadge %}
 {% from "mpop/components/pop-header/macro.njk" import popHeader %}
 {% from "mpop/components/person-header/macro.njk" import personHeader %}
-{% from "mpop/components/person-header-errors/macro.njk" import personHeaderErrors %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
 {% from "arns/components/predictor-badge/macro.njk" import predictorBadge %}
 
 {% set calculation = tierDetails.calculation %}
-
-{% if flags.enablePersonHeader %}
-    {{ personHeaderErrors({
-        statusUnavailable: statusUnavailable,
-        photoUnavailable: photoUnavailable,
-        arnsUnavailable: arnsUnavailable
-    }) }}
-{% endif %}
 
 {% if flags.enablePersonHeader %}
     {{ personHeader(toPersonHeaderParams({
@@ -29,7 +20,12 @@
         riskData: riskData,
         roshLevel: rosh.level if flags.enableNDeliusRosh else risksWidget.overallRisk,
         useNDeliusRosh: flags.enableNDeliusRosh,
-        collapsibleRiskFlags: collapsibleRiskFlags
+        collapsibleRiskFlags: collapsibleRiskFlags,
+        errors: {
+            statusUnavailable: statusUnavailable,
+            photoUnavailable: photoUnavailable,
+            arnsUnavailable: arnsUnavailable
+        }
     })) }}
 {% else %}
 {% if flags.enableSupervisionPackagePoPHeader %}

@@ -65,7 +65,10 @@ describe('getSupervisionPackage middleware', () => {
     jest.clearAllMocks()
     process.env = { ...ORIGINAL_ENV, NODE_ENV: 'production' }
     nextSpy = jest.fn()
-    mpopComponents = { getSupervisionPackageFrontendContext: jest.fn() }
+    mpopComponents = { getSupervisionPackageFrontendContext: jest.fn(), logger } as typeof mpopComponents
+    Object.assign(mpopComponents, {
+      getSupervisionPackageContext: MPoPComponents.prototype.getSupervisionPackageContext.bind(mpopComponents),
+    })
     hmppsAuthClient = { getToken: jest.fn().mockResolvedValue(SYSTEM_TOKEN) }
   })
 
@@ -155,7 +158,7 @@ describe('getSupervisionPackage middleware', () => {
     expect(nextSpy).toHaveBeenCalled()
   })
 
-  it('should send error to the logger when the API returns null', async () => {
+  it('should not log an error when the person has no supervision package', async () => {
     mpopComponents.getSupervisionPackageFrontendContext.mockResolvedValue(null)
     const req = buildReq({ [CRN]: makeSessionEntry() })
     const res = buildRes()
@@ -165,12 +168,7 @@ describe('getSupervisionPackage middleware', () => {
       mpopComponents as unknown as MPoPComponents,
     )(req, res, nextSpy)
 
-    expect(logger.error).toHaveBeenCalledWith(
-      expect.objectContaining({
-        message: `Failed to fetch supervision package for CRN ${CRN}`,
-      }),
-      'Failed to fetch supervision package from MPoP Components API.',
-    )
+    expect(logger.error).not.toHaveBeenCalled()
     expect(res.locals.supervisionPackageDetails).toBeUndefined()
     expect(res.locals.supervisionPackageAttempted).toBe(true)
     expect(res.locals.supervisionPackageUnavailable).toBe(false)
@@ -211,7 +209,7 @@ describe('getSupervisionPackage middleware', () => {
 
     expect(logger.error).toHaveBeenCalledWith(
       expect.objectContaining({ message: 'Connection refused' }),
-      'Failed to connect to MPoP Components API.',
+      `Failed to get the supervision package for CRN ${CRN}`,
     )
     expect(res.locals.supervisionPackageDetails).toBeUndefined()
     expect(res.locals.supervisionPackageUnavailable).toBe(true)
