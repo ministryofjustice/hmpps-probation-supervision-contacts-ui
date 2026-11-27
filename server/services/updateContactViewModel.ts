@@ -67,7 +67,7 @@ export const updateContactOutcomeCode = (
   contactTypes?: ContactTypeFullDetail[],
 ) => {
   let contactDetails
-  if (flags.enableCheckOutcomes20261124Squad3 && contactTypes) {
+  if (flags?.enableCheckOutcomes20261124Squad3 && contactTypes) {
     contactDetails = contactTypes.find(entry => entry.description === displayName)
   } else {
     contactDetails = OutcomeContactTypeDetails(flags).find(item => item.description === displayName)
