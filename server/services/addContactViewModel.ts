@@ -11,6 +11,9 @@ import {
 } from './contactTypeDetails'
 import { FeatureFlags } from '../data/model/featureFlags'
 import logger from '../../logger'
+import { ContactOutcome, ContactTypeFullDetail } from '../data/model/contactInfo'
+import { slugify } from '../utils/slugify'
+import { ContactTypeDetail } from '../data/model/noOutcomeContactTypes'
 
 type BuildAddContactViewModelArgs = {
   crn: string
@@ -28,6 +31,7 @@ type BuildAddContactViewModelArgs = {
   isEarlyTermination?: boolean
   documentTemplates?: TemplateDetails[]
   outcomeCodes?: string[]
+  contactTypes?: ContactTypeFullDetail[]
 }
 
 export const buildAddContactViewModel = (
@@ -46,17 +50,27 @@ export const buildAddContactViewModel = (
     backUrl,
     documentTemplates,
     outcomeCodes,
+    contactTypes,
   }: BuildAddContactViewModelArgs,
   flags: FeatureFlags = {},
 ) => {
-  const detail = getContactTypeDetailBySlug(slug, flags)
-  const contactTypeName = getContactTypeNameBySlug(slug, flags)
+  let detail
+  let contactTypeName
+  if (flags.enableCheckOutcomes20261124Squad3 && contactTypes) {
+    detail = contactTypes.find(entry => slugify(entry.description) === slug)
+    contactTypeName = detail.description ?? 'Contact'
+  } else {
+    detail = getContactTypeDetailBySlug(slug, flags)
+    contactTypeName = getContactTypeNameBySlug(slug, flags)
+  }
   const relatesTo = detail?.relatesTo ?? ['Person', 'Pre-CJA Events', 'CJA/ORA Events']
   const isPersonOnly = !!detail && PERSON_ONLY_CONTACT_CODES.has(detail.code)
-  const outcomes =
+  const outcomes: ContactOutcome[] =
     (flags?.enableCheckOutcomes20261124Squad3
-      ? detail?.outcomes?.filter(outcome => outcomeCodes?.includes(outcome.value))
-      : detail?.outcomes) ?? []
+      ? Object.values((detail as ContactTypeFullDetail)?.outcomes)?.filter(outcome =>
+          outcomeCodes?.includes(outcome.value),
+        )
+      : (detail as ContactTypeDetail)?.outcomes) ?? []
   if (outcomes.length === 0 && detail?.mandatoryOutcome) {
     logger.error('No valid outcomes for mandatory outcome contact')
   }

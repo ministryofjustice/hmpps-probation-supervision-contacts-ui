@@ -44,8 +44,12 @@ const buildContactTypeLinksJson = (
   )
 }
 
-const isContactTypeValid = (slug: string, flags: FeatureFlags = {}) =>
-  ContactTypeOptions(flags).some(c => slugify(c.description) === slug)
+const isContactTypeValid = (slug: string, flags: FeatureFlags = {}, contactTypes?: ContactTypeFullDetail[]) => {
+  if (flags.enableCheckOutcomes20261124Squad3 && contactTypes) {
+    return contactTypes.some(c => slugify(c.description) === slug)
+  }
+  return ContactTypeOptions(flags).some(c => slugify(c.description) === slug)
+}
 
 export const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -242,7 +246,7 @@ const addContactController = {
       const crn = getStringValue(req.params?.crn)
       const contactType = getStringValue(req.params?.contactType)
 
-      if (!isContactTypeValid(contactType, res.locals.flags)) {
+      if (!isContactTypeValid(contactType, res.locals.flags, res.locals.contactTypes)) {
         return next(createError(404, 'Not found'))
       }
 
@@ -271,6 +275,7 @@ const addContactController = {
           backUrl: resolveBackUrl(req.query?.backUrl, crn),
           documentTemplates: res.locals.documentTemplates,
           outcomeCodes: res.locals.outcomeCodes,
+          contactTypes: res.locals.contactTypes,
         },
         res.locals.flags,
       )
@@ -281,7 +286,7 @@ const addContactController = {
     return async (req, res, next) => {
       const { crn } = req.params as Record<string, string>
       const slug = req.params.contactType as string
-      if (!isContactTypeValid(slug, res.locals.flags)) {
+      if (!isContactTypeValid(slug, res.locals.flags, res.locals.contactTypes)) {
         return next(createError(404, 'Not found'))
       }
       await sendAuditMessage(res, AuditAction.ADD_CONTACT, crn, SubjectType.CRN)

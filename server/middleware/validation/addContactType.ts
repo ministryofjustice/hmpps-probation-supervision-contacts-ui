@@ -70,6 +70,7 @@ const addContactType: RequestHandler = (req, res, next) => {
         backUrl: resolveBackUrl(req.query?.backUrl, crn),
         documentTemplates: res.locals.documentTemplates,
         outcomeCodes: res.locals.outcomeCodes,
+        contactTypes: res.locals.contactTypes,
       },
       res.locals.flags,
     )
