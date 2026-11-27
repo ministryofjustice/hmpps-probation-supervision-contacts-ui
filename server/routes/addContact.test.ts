@@ -4,7 +4,7 @@ import validateCrnParam from '../middleware/validateCrnParam'
 
 jest.mock('../middleware/validateCrnParam', () => jest.fn())
 jest.mock('../middleware/populateContactTypes', () => ({
-  populateContactTypes: jest.fn().mockReturnValue(jest.fn()),
+  populateFrequentContactTypes: jest.fn().mockReturnValue(jest.fn()),
 }))
 jest.mock('../middleware/isResponsibleOfficer', () => ({
   isResponsibleOfficerMiddleware: jest.fn().mockReturnValue(jest.fn()),

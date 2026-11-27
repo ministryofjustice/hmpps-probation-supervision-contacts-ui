@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import type { Services } from '../services'
-import { populateContactTypes } from '../middleware/populateContactTypes'
+import { populateFrequentContactTypes } from '../middleware/populateContactTypes'
 import { isResponsibleOfficerMiddleware } from '../middleware/isResponsibleOfficer'
 import { getSentences } from '../middleware/getSentences'
 import { getPersonalDetails } from '../middleware/getPersonalDetails'
@@ -14,13 +14,16 @@ import { getPersonRiskFlags } from '../middleware/getPersonRiskFlags'
 import { setCollapsibleRiskFlags } from '../middleware/setCollapsibleRiskFlags'
 import { downloadDocument } from '../middleware/downloadDocument'
 import { getTemplates } from '../middleware/getTemplates'
+import { getContactCode } from '../middleware/getContactCode'
+import { getContactOutcomes } from '../middleware/getContactOutcomes'
+import { getContactTypes } from '../middleware/getContactTypes'
 
 export default function addContactRoutes(
   router: Router,
   { masApiClient, tierApiClient, prisonApiClient, arnsComponents, mpopComponents, hmppsAuthClient }: Services,
 ): void {
   router.param('crn', validateCrnParam)
-  const populate = populateContactTypes()
+  const populateFrequent = populateFrequentContactTypes()
   const loadPersonalDetails = getPersonalDetails(
     masApiClient,
     tierApiClient,
@@ -38,7 +41,10 @@ export default function addContactRoutes(
     getSentences(masApiClient),
     loadTierDetails,
     setCollapsibleRiskFlags,
+    getContactTypes(masApiClient),
+    getContactCode,
     getTemplates(masApiClient),
+    getContactOutcomes(masApiClient),
   ]
 
   router.get(
@@ -48,7 +54,8 @@ export default function addContactRoutes(
     getPersonRiskFlags(masApiClient),
     loadTierDetails,
     setCollapsibleRiskFlags,
-    populate,
+    getContactTypes(masApiClient),
+    populateFrequent,
     controllers.addContact.getFrequentlyUsedContact(),
   )
 
@@ -59,7 +66,8 @@ export default function addContactRoutes(
     getPersonRiskFlags(masApiClient),
     loadTierDetails,
     setCollapsibleRiskFlags,
-    populate,
+    getContactTypes(masApiClient),
+    populateFrequent,
     controllers.addContact.getSearchByCategory(),
   )
 
@@ -70,7 +78,8 @@ export default function addContactRoutes(
     getPersonRiskFlags(masApiClient),
     loadTierDetails,
     setCollapsibleRiskFlags,
-    populate,
+    getContactTypes(masApiClient),
+    populateFrequent,
     controllers.addContact.getSearchByKeyword(),
   )
 

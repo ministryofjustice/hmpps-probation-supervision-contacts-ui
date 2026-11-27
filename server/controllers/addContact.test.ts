@@ -296,6 +296,7 @@ describe('addContactController', () => {
       const res = createRes({
         isResponsibleOfficer: false,
         sentences: [],
+        outcomeCodes: ['MO13', 'MO1', 'MO28', 'MO12', 'MO3'],
       })
 
       await addContactController.getAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)

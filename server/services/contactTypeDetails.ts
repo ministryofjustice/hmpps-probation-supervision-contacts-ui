@@ -3,6 +3,7 @@ import { ContactTypeOptions } from '../data/model/contactTypes'
 import { ContactTypeDetail, NoOutcomeContactTypeDetails } from '../data/model/noOutcomeContactTypes'
 import { OutcomeContactTypeDetails } from '../data/model/outcomeContactTypes'
 import { FeatureFlags } from '../data/model/featureFlags'
+import { ContactTypeFullDetail } from '../data/model/contactInfo'
 
 export type GuidanceContent = {
   paragraphs: string[]
@@ -43,7 +44,9 @@ export const getContactTypeNameBySlug = (slug: string, flags: FeatureFlags = {})
 export const getContactTypeDetailByCode = (code: string, flags: FeatureFlags = {}): ContactTypeDetail | undefined =>
   detailsByCode(flags).get(code)
 
-export const buildGuidanceContent = (detail?: ContactTypeDetail): GuidanceContent | undefined => {
+export const buildGuidanceContent = (
+  detail?: ContactTypeDetail | ContactTypeFullDetail,
+): GuidanceContent | undefined => {
   if (!detail || GUIDANCE_EXCLUDED_CODES.has(detail.code)) {
     return undefined
   }

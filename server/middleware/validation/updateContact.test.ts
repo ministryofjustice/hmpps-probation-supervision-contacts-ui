@@ -193,6 +193,7 @@ describe('middleware/validation/updateContact', () => {
     const res = createRes({
       flags: { enableEarlyTermination20261103Squad3: true },
       contact: { appointment: { displayName: 'Early termination request' } },
+      outcomeCodes: ['ET01', 'ET02', 'ET07'],
     })
     updateContact(req, res, next)
 
@@ -200,6 +201,7 @@ describe('middleware/validation/updateContact', () => {
       {
         displayName: 'Early termination request',
         contact: { appointment: { outcome: 'Early termination request' } },
+        outcomeCodes: ['ET01', 'ET02', 'ET07'],
       },
       { enableEarlyTermination20261103Squad3: true },
     ).outcomeSection

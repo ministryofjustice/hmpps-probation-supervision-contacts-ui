@@ -1,6 +1,7 @@
 import MasApiClient from '../data/masApiClient'
 import {
   ContactType,
+  ContactTypes,
   CreateContactRequest,
   CreateContactResponse,
   PersonContact,
@@ -12,8 +13,8 @@ import { FeatureFlags } from '../data/model/featureFlags'
 export default class ContactService {
   constructor(private readonly masApiClient: MasApiClient) {}
 
-  async getFrequentContactTypes(username: string): Promise<ContactType[]> {
-    return this.masApiClient.getFrequentContactTypes(username)
+  async getAllContactTypes(username: string): Promise<ContactTypes> {
+    return this.masApiClient.getAllContactTypes(username)
   }
 
   async getContactType(code: string, username: string): Promise<ContactType> {

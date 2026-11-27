@@ -35,15 +35,17 @@ describe('MasApiClient', () => {
     })
   })
 
-  describe('getFrequentContactTypes', () => {
+  describe('getAllContactTypes', () => {
     it('returns the list of contact types', async () => {
-      const contactTypes = [{ code: 'POL', description: 'Police Liaison', isPersonLevelContact: false }]
+      const contactTypes = {
+        contactTypes: [{ code: 'POL', description: 'Police Liaison', isPersonLevelContact: false }],
+      }
       nock(config.apis.masApi.url)
         .get('/contact/types')
         .matchHeader('authorization', 'Bearer test-system-token')
         .reply(200, contactTypes)
 
-      const result = await masApiClient.getFrequentContactTypes('test-user')
+      const result = await masApiClient.getAllContactTypes('test-user')
 
       expect(result).toEqual(contactTypes)
     })
