@@ -1,4 +1,6 @@
+import { ContactTypeFullDetail } from '../data/model/contactInfo'
 import { FeatureFlags } from '../data/model/featureFlags'
+import { ContactTypeDetail } from '../data/model/noOutcomeContactTypes'
 import { OutcomeContactTypeDetails } from '../data/model/outcomeContactTypes'
 
 const normalise = (value?: string) => value?.replace(/\s+/g, '').toLowerCase() ?? ''
@@ -62,11 +64,20 @@ export const updateContactOutcomeCode = (
   outcomeCode: string,
   flags: FeatureFlags = {},
   outcomeCodes: string[] = [],
+  contactTypes?: ContactTypeFullDetail[],
 ) => {
-  const contactDetails = OutcomeContactTypeDetails(flags).find(item => item.description === displayName)
-  const contactDetailsOutcomes = flags?.enableCheckOutcomes20261124Squad3
-    ? contactDetails?.outcomes?.filter(outcome => outcomeCodes?.includes(outcome.value))
-    : contactDetails?.outcomes
+  let contactDetails
+  if (flags.enableCheckOutcomes20261124Squad3 && contactTypes) {
+    contactDetails = contactTypes.find(entry => entry.description === displayName)
+  } else {
+    contactDetails = OutcomeContactTypeDetails(flags).find(item => item.description === displayName)
+  }
+  const contactDetailsOutcomes =
+    (flags?.enableCheckOutcomes20261124Squad3
+      ? Object.values((contactDetails as ContactTypeFullDetail)?.outcomes)?.filter(outcome =>
+          outcomeCodes?.includes(outcome.value),
+        )
+      : (contactDetails as ContactTypeDetail)?.outcomes) ?? []
   const hasSingleOutcome = contactDetailsOutcomes?.length === 1
   if (hasSingleOutcome) {
     return contactDetailsOutcomes[0].value

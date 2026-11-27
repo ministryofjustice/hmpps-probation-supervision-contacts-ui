@@ -56,7 +56,7 @@ export const buildAddContactViewModel = (
 ) => {
   let detail
   let contactTypeName
-  if (flags.enableCheckOutcomes20261124Squad3 && contactTypes) {
+  if (flags?.enableCheckOutcomes20261124Squad3 && contactTypes) {
     detail = contactTypes.find(entry => slugify(entry.description) === slug)
     contactTypeName = detail.description ?? 'Contact'
   } else {

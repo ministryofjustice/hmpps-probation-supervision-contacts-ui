@@ -10,6 +10,8 @@ import { buildUpdateContactViewModelWithOutcome, updateContactOutcomeCode } from
 import { convertDateToIso } from '../utils/toDateOnly'
 import { CONTACT_DETAILS_MAX_LENGTH } from '../utils/validationUtils'
 import { showOfficer } from '../data/model/contants'
+import { ContactTypeFullDetail } from '../data/model/contactInfo'
+import { ContactOutcome, ContactTypeDetail } from '../data/model/noOutcomeContactTypes'
 
 const getStringValue = (value: unknown): string => {
   if (Array.isArray(value)) {
@@ -56,10 +58,20 @@ const updateContactController = {
 
       const displayName = contact.appointment?.displayName ?? contact.appointment?.type
 
-      const contactDetails = OutcomeContactTypeDetails(res.locals.flags).find(item => item.description === displayName)
-      const contactDetailsOutcomes = res.locals.flags?.enableCheckOutcomes20261124Squad3
-        ? contactDetails?.outcomes?.filter(outcome => res.locals.outcomeCodes?.includes(outcome.value))
-        : contactDetails?.outcomes
+      let contactDetails
+      if (res.locals.flags?.enableCheckOutcomes20261124Squad3 && res.locals.contactTypes) {
+        contactDetails = res.locals.contactTypes.find(
+          (entry: ContactTypeFullDetail) => entry.description === displayName,
+        )
+      } else {
+        contactDetails = OutcomeContactTypeDetails(res.locals.flags).find(item => item.description === displayName)
+      }
+      const contactDetailsOutcomes: ContactOutcome[] =
+        (res.locals.flags?.enableCheckOutcomes20261124Squad3
+          ? Object.values((contactDetails as ContactTypeFullDetail)?.outcomes)?.filter(outcome =>
+              res.locals.outcomeCodes?.includes(outcome.value),
+            )
+          : (contactDetails as ContactTypeDetail)?.outcomes) ?? []
       const outcomeRequired = contactDetailsOutcomes?.length > 1
       const isOutcome = outcomeRequired
       let outcomeSection
@@ -131,7 +143,9 @@ const updateContactController = {
         notes = ''
       }
 
-      const isOutcome = OutcomeContactTypeDetails(res.locals.flags).some(item => item.description === displayName)
+      const isOutcome = res.locals.flags?.enableCheckOutcomes20261124Squad3
+        ? res.locals.contactTypes.some((entry: ContactTypeFullDetail) => entry.description === displayName)
+        : OutcomeContactTypeDetails(res.locals.flags).some(item => item.description === displayName)
 
       const contactService = new ContactService(masApiClient)
 
@@ -143,6 +157,7 @@ const updateContactController = {
           req.body?.outcomeCode,
           res.locals.flags,
           res.locals.outcomeCodes,
+          res.locals.contactTypes,
         )
 
         const payload: UpdateContactWithOutcome = {

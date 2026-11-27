@@ -15,6 +15,7 @@ import { setCollapsibleRiskFlags } from '../middleware/setCollapsibleRiskFlags'
 import { getTemplates } from '../middleware/getTemplates'
 import { getContactCode } from '../middleware/getContactCode'
 import { getContactOutcomes } from '../middleware/getContactOutcomes'
+import { getContactTypes } from '../middleware/getContactTypes'
 
 export default function addUpdateContactRoutes(
   router: Router,
@@ -40,6 +41,7 @@ export default function addUpdateContactRoutes(
     getSentences(masApiClient),
     getExistingContact(masApiClient),
     setCollapsibleRiskFlags,
+    getContactTypes(masApiClient),
     getContactCode,
     getTemplates(masApiClient),
     getContactOutcomes(masApiClient),

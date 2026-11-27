@@ -45,7 +45,7 @@ const buildContactTypeLinksJson = (
 }
 
 const isContactTypeValid = (slug: string, flags: FeatureFlags = {}, contactTypes?: ContactTypeFullDetail[]) => {
-  if (flags.enableCheckOutcomes20261124Squad3 && contactTypes) {
+  if (flags?.enableCheckOutcomes20261124Squad3 && contactTypes) {
     return contactTypes.some(c => slugify(c.description) === slug)
   }
   return ContactTypeOptions(flags).some(c => slugify(c.description) === slug)
