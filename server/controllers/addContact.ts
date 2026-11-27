@@ -248,10 +248,10 @@ const addContactController = {
       const contactTypes = ContactTypeOptions(res.locals.flags)
       const selectedContactType = contactTypes.find(c => slugify(c.description) === slug)!
       const contactService = new ContactService(masApiClient)
-      const pp = await masApiClient.getUserProviders(username)
+      const pp = await masApiClient.getProbationPractitioner(crn, username)
 
-      const staffCode = pp?.defaultUserDetails?.staffCode || 'UNKNOWN'
-      const teamCode = pp?.teams.find(team => team.description === pp.defaultUserDetails.team)?.code || 'UNKNOWN'
+      const staffCode = pp?.code || 'UNKNOWN'
+      const teamCode = pp?.team?.code || 'UNKNOWN'
       const eventId = sentence === 'PERSON_LEVEL_CONTACT' ? null : Number(sentence)
       const payload: CreateContactRequest = {
         date: formattedDate(date),
