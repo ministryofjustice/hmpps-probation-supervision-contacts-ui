@@ -2,7 +2,8 @@ import type { RequestHandler } from 'express'
 import createError from 'http-errors'
 import { ArnsComponents } from '@ministryofjustice/hmpps-arns-frontend-components-lib'
 import { asUser } from '@ministryofjustice/hmpps-rest-client'
-import { getStatusTag, MPoPComponents, toPersonPhotoSrc } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import { getStatusTag, MPoPComponents } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
+import type { PersonHeaderPhoto } from '@ministryofjustice/hmpps-mpop-frontend-components-lib'
 import { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import MasApiClient from '../data/masApiClient'
 import TierApiClient from '../data/tierApiClient'
@@ -124,50 +125,38 @@ export const getPersonalDetails = (
       // than undefined, as undefined values are dropped when the session is serialised to JSON and the photo
       // would then be looked up again on every request.
       const { noms } = data.overview
-      let token: string | undefined
-      let checkInPhotoUrl: string | null = null
-      let checkInPhotoFailed = false
-      if (enablePersonHeaderPhoto) {
-        token = await hmppsAuthClient.getToken(username)
-        const { photoUrl, error } = await mpopComponents.getCheckInPhotoUrl(token, crn)
-        if (error) {
-          logger.error(error, `Failed to get the online check-in photo for CRN ${crn}`)
-        }
-        checkInPhotoUrl = photoUrl
-        checkInPhotoFailed = Boolean(error)
-      }
-
       const fetchManagedBy = data.professionalContact === undefined
-      const fetchPhoto = enablePersonHeaderPhoto && !checkInPhotoUrl && data.personPhotoSrc === undefined
-      let prisonPhotoFailed = false
-      if (fetchManagedBy || fetchPhoto) {
-        token ??= await hmppsAuthClient.getToken(username)
+      let personHeaderPhoto: PersonHeaderPhoto | null = null
+      if (fetchManagedBy || enablePersonHeaderPhoto) {
+        const token = await hmppsAuthClient.getToken(username)
         const [professionalContact, photo] = await Promise.all([
           fetchManagedBy
             ? mpopComponents
                 .getContacts(token, crn)
                 .then(response => response.professionalContact as PersonalDetailsCache['professionalContact'])
             : data.professionalContact,
-          fetchPhoto && noms ? mpopComponents.hasPersonPhoto(token, noms) : null,
+          enablePersonHeaderPhoto
+            ? mpopComponents.getPersonHeaderPhoto(token, {
+                crn,
+                noms,
+                prisonPhotoHref: personPhotoHref,
+                hasPrisonPhoto: data.personPhotoSrc === undefined ? undefined : Boolean(data.personPhotoSrc),
+              })
+            : null,
         ])
-        prisonPhotoFailed = Boolean(photo?.error)
+        personHeaderPhoto = photo
         data = { ...data, professionalContact }
-        if (fetchPhoto && !prisonPhotoFailed) {
-          data = { ...data, personPhotoSrc: photo?.hasPhoto ? personPhotoHref(noms) : null }
+        if (photo?.hasPrisonPhoto !== undefined) {
+          data = { ...data, personPhotoSrc: photo.hasPrisonPhoto ? personPhotoHref(noms) : null }
         }
-        cache()
+        if (fetchManagedBy || photo?.hasPrisonPhoto !== undefined) {
+          cache()
+        }
       }
 
       res.locals.professionalContact = data.professionalContact ?? null
-      res.locals.personPhotoSrc = enablePersonHeaderPhoto
-        ? toPersonPhotoSrc({
-            checkInPhotoUrl,
-            noms,
-            hasPrisonPhoto: Boolean(data.personPhotoSrc),
-            prisonPhotoHref: personPhotoHref,
-          })
-        : undefined
-      photoUnavailable = !res.locals.personPhotoSrc && (checkInPhotoFailed || prisonPhotoFailed)
+      res.locals.personPhotoSrc = personHeaderPhoto?.photo
+      photoUnavailable = Boolean(personHeaderPhoto?.photoUnavailable)
       const roshAssessment = data.roshData?.assessment
       res.locals.risksWidget = roshAssessment?.overallRisk
         ? {

@@ -179,6 +179,10 @@ describe('/middleware/getPersonalDetails', () => {
       hasPersonPhoto: jest.fn().mockResolvedValue({ hasPhoto: false, httpStatus: 404 }),
       getCheckInPhotoUrl: jest.fn().mockResolvedValue({ photoUrl: null, httpStatus: 404 }),
     }
+    Object.assign(mockMpopComponents, {
+      logger,
+      getPersonHeaderPhoto: MPoPComponents.prototype.getPersonHeaderPhoto.bind(mockMpopComponents),
+    })
     mockTierApiClient = { getCalculationDetails: jest.fn().mockResolvedValue(mockTierCalculation) }
     mockArnsComponents = {
       getRiskData: jest.fn().mockResolvedValue(mockRiskData),
