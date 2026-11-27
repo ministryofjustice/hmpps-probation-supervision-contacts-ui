@@ -44,17 +44,14 @@ describe('addContactController', () => {
     mockMasApiClient = {
       getUserProviders: jest.fn().mockResolvedValue({
         defaultUserDetails: { staffCode: 'USER999', username: 'test-user', homeArea: 'N99', team: 'Team One' },
-        teams: [
-          { description: 'Team Two', code: 'N01T02' },
-          { description: 'Team One', code: 'N01T01' },
-        ],
+        teams: [{ description: 'Uset Team', code: 'N99' }],
       }),
       getOverview: jest.fn().mockResolvedValue({ registrations: [] }),
       getProbationPractitioner: jest.fn().mockResolvedValue({
         code: 'N01A001',
         name: { forename: 'jane', surname: 'doe' },
         provider: { code: 'N01', name: 'NPS North West' },
-        team: { description: 'Team Two', code: 'N01T02' },
+        team: { description: 'Team One', code: 'N01T01' },
         unallocated: false,
         username: 'PRACTITIONER1',
       }),
@@ -126,6 +123,18 @@ describe('addContactController', () => {
         text: expect.any(String),
         href: expect.stringContaining('/case/X123456/contacts/add-'),
       })
+    })
+
+    it('does not duplicate entries in contactTypeLinksJson', async () => {
+      const req = createReq({ params: { crn: 'X123456' } })
+      const res = createRes({ contactTypes: FrequentlyUsedContactTypeOptions({}) })
+
+      await addContactController.getFrequentlyUsedContact()(req, res, next)
+
+      const renderArgs = (res.render as jest.Mock).mock.calls[0][1]
+      const contactTypes = JSON.parse(renderArgs.contactTypeLinksJson).map((c: any) => c.text)
+      expect(contactTypes).toHaveLength(new Set(contactTypes).size)
+      expect(contactTypes.filter((text: string) => text === 'IPP progression panel')).toHaveLength(1)
     })
 
     describe('early termination contact type', () => {
@@ -319,7 +328,7 @@ describe('addContactController', () => {
       outcomeCode: 'MO27',
     }
 
-    it('creates a contact with current user staff and team codes and redirects to activity log', async () => {
+    it('creates a contact and redirects to activity log', async () => {
       const req = createReq({ params: { crn: 'X123456', contactType: 'email-or-text-from-other' }, body: validBody })
       const res = createRes()
 
@@ -331,7 +340,7 @@ describe('addContactController', () => {
         expect.objectContaining({
           date: '2024-05-17',
           time: '09:00',
-          staffCode: 'USER999',
+          staffCode: 'N01A001',
           teamCode: 'N01T01',
           type: 'CM3A',
           eventId: 1,
@@ -344,27 +353,6 @@ describe('addContactController', () => {
       )
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('/case/X123456/activity-log'))
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('showSuccessBanner=true'))
-    })
-
-    it('sets staff and team codes to UNKNOWN if not set', async () => {
-      mockMasApiClient.getUserProviders = jest.fn().mockResolvedValue({
-        defaultUserDetails: { username: 'test-user', homeArea: 'N99', team: 'Team One' },
-        teams: [],
-      })
-
-      const req = createReq({ params: { crn: 'X123456', contactType: 'email-or-text-from-other' }, body: validBody })
-      const res = createRes()
-
-      await addContactController.postAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
-
-      expect(mockCreateContact).toHaveBeenCalledWith(
-        'X123456',
-        expect.objectContaining({
-          staffCode: 'UNKNOWN',
-          teamCode: 'UNKNOWN',
-        }),
-        'test-user',
-      )
     })
 
     it('sets eventId to null when sentence is PERSON_LEVEL_CONTACT', async () => {
@@ -390,7 +378,7 @@ describe('addContactController', () => {
       expect(res.redirect).not.toHaveBeenCalledWith(expect.stringContaining('uploadFailed=true'))
     })
 
-    it('redirects with showSuccessBanner only when file upload succeeds', async () => {
+    it('redirects with showSuccessBanner only when file upload succeeds and uses RO staff code', async () => {
       const mockFile = { buffer: Buffer.from('data'), originalname: 'test.pdf', mimetype: 'application/pdf' }
 
       const req = createReq({
@@ -401,6 +389,14 @@ describe('addContactController', () => {
       const res = createRes()
 
       await addContactController.postAddContactType(mockMasApiClient as unknown as MasApiClient)(req, res, next)
+      expect(mockCreateContact).toHaveBeenCalledWith(
+        'X123456',
+        expect.objectContaining({
+          staffCode: 'N01A001',
+          teamCode: 'N01T01',
+        }),
+        'test-user',
+      )
 
       expect(mockPatchDocuments).toHaveBeenCalledWith('X123456', '1', mockFile, 'test-user')
       expect(res.redirect).toHaveBeenCalledWith(expect.stringContaining('showSuccessBanner=true'))
@@ -605,6 +601,14 @@ describe('addContactController', () => {
         text: expect.any(String),
         href: expect.stringContaining('/case/X123456/contacts/add-'),
       })
+    })
+
+    it('does not duplicate entries in contactTypeLinksJson for the autocomplete', async () => {
+      const renderArgs = await invokeKeyword({ keyword: 'IPP', action: 'search' })
+
+      const contactTypes = JSON.parse(renderArgs.contactTypeLinksJson).map((c: any) => c.text)
+      expect(contactTypes).toHaveLength(new Set(contactTypes).size)
+      expect(contactTypes.filter((text: string) => text === 'IPP progression panel')).toHaveLength(1)
     })
 
     it('treats non-string keyword query param as empty', async () => {
