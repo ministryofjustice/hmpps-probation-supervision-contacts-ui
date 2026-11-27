@@ -278,7 +278,7 @@ const BASE_ENTRIES: ContactTypeDetail[] = [
     ],
   },
   {
-    code: 'IRP2',
+    code: 'IRP1',
     description: 'IPP progression panel',
     sensitive: false,
     relatesTo: ['Person'],
